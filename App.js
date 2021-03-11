@@ -1,33 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  StatusBar,
-  Text,
-  Image,
-  ImageBackground,
-  LogBox,
-  SafeAreaView,
-} from 'react-native';
+import { View, StatusBar, Text, ImageBackground, LogBox, SafeAreaView } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
-import { Provider } from 'react-redux';
-import Spinner from 'react-native-loading-spinner-overlay';
-import { createStore, applyMiddleware } from 'redux';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-community/async-storage';
 import { ScaledSheet } from 'react-native-size-matters';
-import Toast from 'react-native-toast-message';
-import MoodEmotionDetector from './Src/Screens/MoodEmotionDetector';
-import MoodEmotionDetectorTouch from './Src/Screens/MoodEmotionDetectorTouch';
 import StackNavigation from './Src/navigator/StackNavigation';
 
-LogBox.ignoreAllLogs();
-// const sagaMiddleware = createSagaMiddleware();
-// const store = createStore(reducer, applyMiddleware(sagaMiddleware));
-// const persistor = persistStore(store);
-
-// sagaMiddleware.run(sagas);
 const slides = [
   {
     key: 1,
@@ -51,6 +31,7 @@ const slides = [
 
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
+
   useEffect(() => {
     try {
       let data = AsyncStorage.getItem('WelcomeScreen');
@@ -85,19 +66,6 @@ const App: () => React$Node = () => {
     }
   };
 
-  /********************************Request Permission Token**********************/
-  // const requestUserPermission = async () => {
-  //   const authStatus = await messaging().requestPermission();
-  //   const enabled =
-  //     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-  //     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  //   if (enabled) {
-  //     console.log('Authorization status:', authStatus);
-  //   } else {
-  //     await messaging.requestPermission();
-  //   }
-  // }
 
   return (
     <>
@@ -108,18 +76,6 @@ const App: () => React$Node = () => {
             <SafeAreaProvider>
               <View style={styles.container}>
                 <StackNavigation />
-                {/* <MoodEmotionDetectorTouch /> */}
-
-                {/* <Provider store={store}> */}
-                {/* <PersistGate
-                  loading={<Spinner visible={true} />}
-                  persistor={persistor}
-                >
-                  <Routes />
-                  <Loader />
-                  <Toast ref={(ref) => Toast.setRef(ref)} />
-                </PersistGate> */}
-                {/* </Provider> */}
               </View>
             </SafeAreaProvider>
           </SafeAreaView>
@@ -137,11 +93,7 @@ const App: () => React$Node = () => {
               dotStyle={styles.welcomeDotStyle}
               activeDotStyle={styles.activeWelcomeDotStyle}
               data={slides}
-              onDone={_onDone}
-            />
-            {/* <View style={styles.welcomeLogoStyle}>
-              <Image source={Constants.Images.Icon} />
-            </View> */}
+              onDone={_onDone} />
           </View>
         </ImageBackground>
       )}

@@ -1,23 +1,47 @@
 import * as React from "react"
-import Svg, { Path, Defs, Pattern, Use, Image } from "react-native-svg"
+import Svg, { Mask, Path, G, Defs, Pattern, Use, Image } from "react-native-svg"
 
-const LogoIcon = () => {
+const LogoIcon = ({ width, height }) => {
     return (
         <Svg
-            width={60}
-            height={61}
+            width={width}
+            height={height}
             viewBox="0 0 60 61"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             xmlnsXlink="http://www.w3.org/1999/xlink"
         >
-            <Path fill="url(#prefix__pattern0)" d="M-8-6h77v76H-8z" />
+            <Mask
+                id="prefix__a"
+                maskUnits="userSpaceOnUse"
+                x={0}
+                y={0}
+                width={60}
+                height={61}
+            >
+                <Path
+                    d="M30 60.627c16.569 0 30-13.563 30-30.294C60 13.603 46.569.04 30 .04 13.431.04 0 13.602 0 30.333s13.431 30.294 30 30.294z"
+                    fill="#fff"
+                />
+                <Path
+                    d="M30 60.627c16.569 0 30-13.563 30-30.294C60 13.603 46.569.04 30 .04 13.431.04 0 13.602 0 30.333s13.431 30.294 30 30.294z"
+                    fill="#fff"
+                />
+                <Path
+                    d="M30 60.627c16.569 0 30-13.563 30-30.294C60 13.603 46.569.04 30 .04 13.431.04 0 13.602 0 30.333s13.431 30.294 30 30.294z"
+                    fill="#fff"
+                />
+            </Mask>
+            <G mask="url(#prefix__a)">
+                <Path fill="url(#prefix__pattern0)" d="M-8-6h77v76H-8z" />
+            </G>
             <Defs>
                 <Pattern
                     id="prefix__pattern0"
                     patternContentUnits="objectBoundingBox"
                     width={1}
-                    height={1}>
+                    height={1}
+                >
                     <Use
                         xlinkHref="#prefix__image0"
                         transform="matrix(.00304 0 0 .00304 0 -.005)"
