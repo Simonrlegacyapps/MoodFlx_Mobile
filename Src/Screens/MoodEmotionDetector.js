@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 // import all the components we are going to use
 import {
@@ -8,6 +8,7 @@ import {
   Text,
   PanResponder,
   Animated,
+  TouchableOpacity,
 } from 'react-native';
 
 function useForceUpdate() {
@@ -15,7 +16,7 @@ function useForceUpdate() {
   return () => setValue((value) => value + 1); // update the state to force render
 }
 
-const MoodEmotionDetector = () => {
+const MoodEmotionDetector = ({ navigation }) => {
   const [locationX, setLocationX] = useState(0);
   const [locationY, setLocationY] = useState(0);
   const [ShowDraggable, setShowDraggable] = useState(true);
@@ -63,7 +64,7 @@ const MoodEmotionDetector = () => {
       setMoving(true);
     },
     onPanResponderRelease: (event, gestureState) => {
-      Animated.spring(pan, {toValue: {x: 0, y: 0}}).start();
+      Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
       //After the change in the location
       setLocationX(event.nativeEvent.locationX.toFixed(2));
       setLocationY(event.nativeEvent.locationY.toFixed(2));
@@ -74,7 +75,7 @@ const MoodEmotionDetector = () => {
   const renderDraggable = () => {
     if (ShowDraggable) {
       return (
-        <View style={{height: '100%', width: '100%'}}>
+        <View style={{ height: '100%', width: '100%' }}>
           <Animated.View
             {...panResponder.panHandlers}
             style={[pan.getLayout(), styles.pointStyle]}>
@@ -109,6 +110,9 @@ const MoodEmotionDetector = () => {
   // Middle =>  x:2, y:383 ||  x: 208 y: 383 || x: 411 y: 383
   // Bottom =>  x:0, y:774 ||  x: 208 y: 778 || x: 411 y: 776
 
+  const onPressButton = () => {
+    navigation.replace('HomeScreen')
+  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
@@ -122,36 +126,36 @@ const MoodEmotionDetector = () => {
             {
               backgroundColor:
                 0 < locationX &&
-                locationX < 208 &&
-                -15 < locationY &&
-                locationY < 383
+                  locationX < 208 &&
+                  -15 < locationY &&
+                  locationY < 383
                   ? 'pink'
                   : 208 < locationX &&
                     locationX < 411 &&
                     -15 < locationY &&
                     locationY < 383
-                  ? 'green'
-                  : 208 < locationX &&
-                    locationX < 411 &&
-                    383 < locationY &&
-                    locationY < 570
-                  ? 'yellow'
-                  : 0 < locationX &&
-                    locationX < 208 &&
-                    570 < locationY &&
-                    locationY < 774
-                  ? 'skyblue'
-                  : 0 < locationX &&
-                    locationX < 208 &&
-                    383 < locationY &&
-                    locationY < 570
-                  ? 'lightgreen'
-                  : 208 < locationX &&
-                    locationX < 411 &&
-                    570 < locationY &&
-                    locationY < 774
-                  ? 'orange'
-                  : 'purple',
+                    ? 'green'
+                    : 208 < locationX &&
+                      locationX < 411 &&
+                      383 < locationY &&
+                      locationY < 570
+                      ? 'yellow'
+                      : 0 < locationX &&
+                        locationX < 208 &&
+                        570 < locationY &&
+                        locationY < 774
+                        ? 'skyblue'
+                        : 0 < locationX &&
+                          locationX < 208 &&
+                          383 < locationY &&
+                          locationY < 570
+                          ? 'lightgreen'
+                          : 208 < locationX &&
+                            locationX < 411 &&
+                            570 < locationY &&
+                            locationY < 774
+                            ? 'orange'
+                            : 'purple',
             },
           ]}>
           <View
@@ -214,6 +218,9 @@ const MoodEmotionDetector = () => {
         </View>
         {/* {renderDraggable()} */}
       </View>
+      <TouchableOpacity onPress={() => onPressButton()}>
+        <Text>Hello Mood Flo</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };

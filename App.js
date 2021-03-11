@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StatusBar,
@@ -8,18 +8,19 @@ import {
   LogBox,
   SafeAreaView,
 } from 'react-native';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {NavigationContainer} from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
-import {Provider} from 'react-redux';
+import { Provider } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {createStore, applyMiddleware} from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-community/async-storage';
-import {ScaledSheet} from 'react-native-size-matters';
+import { ScaledSheet } from 'react-native-size-matters';
 import Toast from 'react-native-toast-message';
 import MoodEmotionDetector from './Src/Screens/MoodEmotionDetector';
 import MoodEmotionDetectorTouch from './Src/Screens/MoodEmotionDetectorTouch';
+import StackNavigation from './Src/navigator/StackNavigation';
 
 LogBox.ignoreAllLogs();
 // const sagaMiddleware = createSagaMiddleware();
@@ -66,7 +67,7 @@ const App: () => React$Node = () => {
     }, 2000);
   }, []);
 
-  const _renderItem = ({item}) => {
+  const _renderItem = ({ item }) => {
     return (
       <View style={styles.welRenderWrapper}>
         <Text style={styles.welTitletext}>{item.title}</Text>
@@ -103,12 +104,12 @@ const App: () => React$Node = () => {
       {screenName === true ? (
         <NavigationContainer>
           <StatusBar backgroundColor={'lightgreen'} barStyle="light-content" />
-          <SafeAreaView style={{flex: 1}}>
+          <SafeAreaView style={{ flex: 1 }}>
             <SafeAreaProvider>
               <View style={styles.container}>
-                <MoodEmotionDetector />
+                <StackNavigation />
                 {/* <MoodEmotionDetectorTouch /> */}
-                <Text>Hello Mood Flo</Text>
+
                 {/* <Provider store={store}> */}
                 {/* <PersistGate
                   loading={<Spinner visible={true} />}
@@ -126,8 +127,8 @@ const App: () => React$Node = () => {
       ) : (
         <ImageBackground
           source={require('./assets/welcomeBackground/WelcomeImage.jpg')}
-          style={{flex: 1}}>
-          <View style={{flex: 1, backgroundColor: 'black', opacity: 0.8}}>
+          style={{ flex: 1 }}>
+          <View style={{ flex: 1, backgroundColor: 'black', opacity: 0.8 }}>
             <View style={styles.welcomeTextWrapper}>
               <Text style={styles.welcometextStyle}>Welcome</Text>
             </View>
@@ -190,7 +191,7 @@ const styles = ScaledSheet.create({
     fontWeight: '600',
     color: 'white',
   },
-  welcomeTextWrapper: {position: 'absolute', top: '15%', alignSelf: 'center'},
+  welcomeTextWrapper: { position: 'absolute', top: '15%', alignSelf: 'center' },
   welRenderWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
