@@ -3,7 +3,8 @@ import { Text, View } from 'react-native';
 
 const LogoTab = () => {
     return (
-        <View>
+        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+            <Text>Add Tab</Text>
         </View>
     )
 }

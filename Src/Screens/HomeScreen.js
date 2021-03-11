@@ -12,7 +12,6 @@ import HomeIcon from '../../assets/tabicons/HomeIcon';
 import HomeActiveIcon from '../../assets/tabicons/HomeActiveIcon';
 import MicIcon from '../../assets/tabicons/MicIcon';
 import MicActiveIcon from '../../assets/tabicons/MicActiveIcon';
-import LogoIcon from '../../assets/tabicons/LogoIcon';
 import LinkActive from '../../assets/tabicons/LinkActive';
 import LinkIcon from '../../assets/tabicons/LinkIcon';
 
@@ -30,7 +29,11 @@ const HomeScreen = () => {
                     } else if (route.name === 'MicScreen') {
                         iconName = focused ? <MicActiveIcon /> : <MicIcon />;
                     } else if (route.name === 'LogoTab') {
-                        iconName = focused ? <LogoIcon /> : <LogoIcon />;
+                        iconName = focused ? <Image style={{ marginBottom: 30 }}
+                            source={require('../../assets/tabicons/logo.png')} /> :
+                            <Image
+                                style={{ marginBottom: 30 }}
+                                source={require('../../assets/tabicons/logo.png')} />;
                     } else if (route.name === 'Linktocompany') {
                         iconName = focused ? <LinkActive /> : <LinkIcon />;
                     } else if (route.name === 'ProfileTab') {
