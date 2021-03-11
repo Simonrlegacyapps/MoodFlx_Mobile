@@ -1,113 +1,207 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
   View,
-  Text,
   StatusBar,
+  Text,
+  Image,
+  ImageBackground,
+  LogBox,
+  SafeAreaView,
 } from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {NavigationContainer} from '@react-navigation/native';
+import SplashScreen from 'react-native-splash-screen';
+import {Provider} from 'react-redux';
+import Spinner from 'react-native-loading-spinner-overlay';
+import {createStore, applyMiddleware} from 'redux';
+import AppIntroSlider from 'react-native-app-intro-slider';
+import AsyncStorage from '@react-native-community/async-storage';
+import {ScaledSheet} from 'react-native-size-matters';
+import Toast from 'react-native-toast-message';
+import MoodEmotionDetector from './Src/Screens/MoodEmotionDetector';
+import MoodEmotionDetectorTouch from './Src/Screens/MoodEmotionDetectorTouch';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+LogBox.ignoreAllLogs();
+// const sagaMiddleware = createSagaMiddleware();
+// const store = createStore(reducer, applyMiddleware(sagaMiddleware));
+// const persistor = persistStore(store);
+
+// sagaMiddleware.run(sagas);
+const slides = [
+  {
+    key: 1,
+    title: `A multi species tournamet platform that fairly and accurately scores
+    scores North America's most popular gamefish for local, regional, and
+    International competition.`,
+  },
+  {
+    key: 2,
+    title: `A multi species tournamet platform that fairly and accurately scores
+    scores North America's most popular gamefish for local, regional, and
+    International competition.`,
+  },
+  {
+    key: 3,
+    title: `A multi species tournamet platform that fairly and accurately scores
+    scores North America's most popular gamefish for local, regional, and
+    International competition.`,
+  },
+];
 
 const App: () => React$Node = () => {
+  const [screenName, setScreenName] = useState(false);
+  useEffect(() => {
+    try {
+      let data = AsyncStorage.getItem('WelcomeScreen');
+      if (data !== null) {
+        setScreenName(true);
+      } else {
+        setScreenName(false);
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 2000);
+  }, []);
+
+  const _renderItem = ({item}) => {
+    return (
+      <View style={styles.welRenderWrapper}>
+        <Text style={styles.welTitletext}>{item.title}</Text>
+        <Text style={styles.text}>{item.text}</Text>
+      </View>
+    );
+  };
+
+  const _onDone = async () => {
+    try {
+      await AsyncStorage.setItem('WelcomeScreen', 'true');
+      setScreenName(true);
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
+  /********************************Request Permission Token**********************/
+  // const requestUserPermission = async () => {
+  //   const authStatus = await messaging().requestPermission();
+  //   const enabled =
+  //     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+  //     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  //   if (enabled) {
+  //     console.log('Authorization status:', authStatus);
+  //   } else {
+  //     await messaging.requestPermission();
+  //   }
+  // }
+
   return (
     <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
+      {screenName === true ? (
+        <NavigationContainer>
+          <StatusBar backgroundColor={'lightgreen'} barStyle="light-content" />
+          <SafeAreaView style={{flex: 1}}>
+            <SafeAreaProvider>
+              <View style={styles.container}>
+                <MoodEmotionDetector />
+                {/* <MoodEmotionDetectorTouch /> */}
+                <Text>Hello Mood Flo</Text>
+                {/* <Provider store={store}> */}
+                {/* <PersistGate
+                  loading={<Spinner visible={true} />}
+                  persistor={persistor}
+                >
+                  <Routes />
+                  <Loader />
+                  <Toast ref={(ref) => Toast.setRef(ref)} />
+                </PersistGate> */}
+                {/* </Provider> */}
+              </View>
+            </SafeAreaProvider>
+          </SafeAreaView>
+        </NavigationContainer>
+      ) : (
+        <ImageBackground
+          source={require('./assets/welcomeBackground/WelcomeImage.jpg')}
+          style={{flex: 1}}>
+          <View style={{flex: 1, backgroundColor: 'black', opacity: 0.8}}>
+            <View style={styles.welcomeTextWrapper}>
+              <Text style={styles.welcometextStyle}>Welcome</Text>
             </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
+            <AppIntroSlider
+              renderItem={_renderItem}
+              dotStyle={styles.welcomeDotStyle}
+              activeDotStyle={styles.activeWelcomeDotStyle}
+              data={slides}
+              onDone={_onDone}
+            />
+            {/* <View style={styles.welcomeLogoStyle}>
+              <Image source={Constants.Images.Icon} />
+            </View> */}
           </View>
-        </ScrollView>
-      </SafeAreaView>
+        </ImageBackground>
+      )}
     </>
   );
 };
 
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+const styles = ScaledSheet.create({
+  container: {
+    flex: 1,
   },
-  engine: {
+  messageStyle: {
+    color: 'white',
+    fontSize: 16,
+  },
+  containerStyle: {
+    backgroundColor: 'black',
+    paddingBottom: 8,
+  },
+  errorStyle: {
+    backgroundColor: 'red',
+    paddingBottom: 8,
+  },
+  welcomeLogoStyle: {
     position: 'absolute',
-    right: 0,
+    bottom: '15%',
+    left: '50%',
+    right: '50%',
+    alignItems: 'center',
   },
-  body: {
-    backgroundColor: Colors.white,
+  welcomeDotStyle: {
+    backgroundColor: 'gray',
+    height: '14@ms',
+    width: '14@ms',
+    borderRadius: '7@ms',
+    borderColor: 'red',
+    borderWidth: 1,
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  activeWelcomeDotStyle: {
+    backgroundColor: 'red',
+    height: '14@ms',
+    width: '14@ms',
+    borderRadius: '7@ms',
   },
-  sectionTitle: {
-    fontSize: 24,
+  welcometextStyle: {
+    fontSize: 28,
     fontWeight: '600',
-    color: Colors.black,
+    color: 'white',
   },
-  sectionDescription: {
-    marginTop: 8,
+  welcomeTextWrapper: {position: 'absolute', top: '15%', alignSelf: 'center'},
+  welRenderWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    paddingHorizontal: '25@ms',
+  },
+  welTitletext: {
     fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
+    color: 'green',
+    textAlign: 'center',
     fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
   },
 });
 
