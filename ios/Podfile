@@ -8,6 +8,8 @@ target 'MoodFlo' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
   target 'MoodFloTests' do
     inherit! :complete
     # Pods for testing

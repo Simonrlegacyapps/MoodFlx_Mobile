@@ -19,6 +19,7 @@
 		393A51EDFABD811B873E2539 /* libPods-MoodFlo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2DE61677C0E7347780605D4 /* libPods-MoodFlo.a */; };
 		5565C8601322DC875A52A908 /* libPods-MoodFlo-MoodFloTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D9E937FC7C4B182DB3B170B /* libPods-MoodFlo-MoodFloTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		CF7CE0F025F9E8FE00E73988 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */; };
 		D44DC30B46FE83A22E970E8D /* libPods-MoodFlo-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A69A0938A56881EEB8BD897 /* libPods-MoodFlo-tvOS.a */; };
 /* End PBXBuildFile section */
 
@@ -63,6 +64,7 @@
 		B3AD0251F24C3320763B4710 /* Pods-MoodFlo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo.debug.xcconfig"; path = "Target Support Files/Pods-MoodFlo/Pods-MoodFlo.debug.xcconfig"; sourceTree = "<group>"; };
 		CC9DFD5780AAAC06386B94C7 /* Pods-MoodFlo-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-MoodFlo-tvOSTests/Pods-MoodFlo-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CDD5E9DAAB340E45AE15383E /* Pods-MoodFlo-MoodFloTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-MoodFloTests.debug.xcconfig"; path = "Target Support Files/Pods-MoodFlo-MoodFloTests/Pods-MoodFlo-MoodFloTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		D2DE61677C0E7347780605D4 /* libPods-MoodFlo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MoodFlo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E60695D59B553664805A88F0 /* Pods-MoodFlo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo.release.xcconfig"; path = "Target Support Files/Pods-MoodFlo/Pods-MoodFlo.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -132,6 +134,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */,
 			);
 			name = MoodFlo;
 			sourceTree = "<group>";
@@ -194,7 +197,6 @@
 				CC9DFD5780AAAC06386B94C7 /* Pods-MoodFlo-tvOSTests.debug.xcconfig */,
 				5083E54020E670CFD7216FDA /* Pods-MoodFlo-tvOSTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -340,6 +342,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF7CE0F025F9E8FE00E73988 /* Launch Screen.storyboard in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
