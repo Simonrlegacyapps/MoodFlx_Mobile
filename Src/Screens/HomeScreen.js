@@ -1,6 +1,6 @@
 import React from 'react';
-import { Image } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {Image, View} from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from './Tabs/Home';
 import Linktocompany from './Tabs/Linktocompany';
 import MicScreen from './Tabs/MicScreen';
@@ -17,39 +17,58 @@ import LinkIcon from '../../assets/tabicons/LinkIcon';
 
 const Tab = createBottomTabNavigator();
 
-
 const HomeScreen = () => {
-    return (
-        <Tab.Navigator
-            screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
-                    if (route.name === 'Home') {
-                        iconName = focused ? <HomeActiveIcon /> : <HomeIcon />;
-                    } else if (route.name === 'MicScreen') {
-                        iconName = focused ? <MicActiveIcon /> : <MicIcon />;
-                    } else if (route.name === 'LogoTab') {
-                        iconName = focused ? <Image style={{ marginBottom: 30 }}
-                            source={require('../../assets/tabicons/logo.png')} /> :
-                            <Image
-                                style={{ marginBottom: 30 }}
-                                source={require('../../assets/tabicons/logo.png')} />;
-                    } else if (route.name === 'Linktocompany') {
-                        iconName = focused ? <LinkActive /> : <LinkIcon />;
-                    } else if (route.name === 'ProfileTab') {
-                        iconName = focused ? <ProfileActive /> : <Profile />;
-                    }
-                    return iconName;
-                },
-            })}
-            tabBarOptions={{ showLabel: false }}>
-            <Tab.Screen name={"Home"} component={Home} />
-            <Tab.Screen name={"MicScreen"} component={MicScreen} />
-            <Tab.Screen name={"LogoTab"} component={LogoTab} />
-            <Tab.Screen name={"Linktocompany"} component={Linktocompany} />
-            <Tab.Screen name={"ProfileTab"} component={ProfileTab} />
-        </Tab.Navigator>
-    )
-}
+  {
+    /* <View
+              style={{
+                position: 'absolute',
+                height: 20,
+                alignSelf: 'flex-end',
+                justifyContent: 'flex-end',
+                width: '100%',
+                backgroundColor: 'grey',
+                bottom: 40,
+              }}
+            /> */
+  }
 
-export default HomeScreen
+  return (
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName;
+          if (route.name === 'Home') {
+            iconName = focused ? <HomeActiveIcon /> : <HomeIcon />;
+          } else if (route.name === 'MicScreen') {
+            iconName = focused ? <MicActiveIcon /> : <MicIcon />;
+          } else if (route.name === 'LogoTab') {
+            iconName = focused ? (
+              <Image
+                style={{marginBottom: 30}}
+                source={require('../../assets/tabicons/logo.png')}
+              />
+            ) : (
+              <Image
+                style={{marginBottom: 30}}
+                source={require('../../assets/tabicons/logo.png')}
+              />
+            );
+          } else if (route.name === 'Linktocompany') {
+            iconName = focused ? <LinkActive /> : <LinkIcon />;
+          } else if (route.name === 'ProfileTab') {
+            iconName = focused ? <ProfileActive /> : <Profile />;
+          }
+          return iconName;
+        },
+      })}
+      tabBarOptions={{showLabel: false}}>
+      <Tab.Screen name={'Home'} component={Home} />
+      <Tab.Screen name={'MicScreen'} component={MicScreen} />
+      <Tab.Screen name={'LogoTab'} component={LogoTab} />
+      <Tab.Screen name={'Linktocompany'} component={Linktocompany} />
+      <Tab.Screen name={'ProfileTab'} component={ProfileTab} />
+    </Tab.Navigator>
+  );
+};
+
+export default HomeScreen;

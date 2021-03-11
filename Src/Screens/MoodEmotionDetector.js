@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 // import all the components we are going to use
 import {
@@ -8,21 +8,26 @@ import {
   Text,
   PanResponder,
   Animated,
+  Image,
   TouchableOpacity,
 } from 'react-native';
+import Constants from '../Constants';
+
+import AnonymousHeader from '../Components/AnonymousHeader/AnonymousHeader';
 
 function useForceUpdate() {
   const [value, setValue] = useState(0); // integer state
   return () => setValue((value) => value + 1); // update the state to force render
 }
 
-const MoodEmotionDetector = ({ navigation }) => {
+const MoodEmotionDetector = ({navigation}) => {
   const [locationX, setLocationX] = useState(0);
   const [locationY, setLocationY] = useState(0);
   const [ShowDraggable, setShowDraggable] = useState(true);
   const [pan, setPan] = useState(new Animated.ValueXY());
   const [Location, setLocation] = useState([]);
   const [Moving, setMoving] = useState(false);
+  const [Anonymous, setAnonymous] = useState(false);
 
   const forceUpdate = useForceUpdate();
 
@@ -64,7 +69,7 @@ const MoodEmotionDetector = ({ navigation }) => {
       setMoving(true);
     },
     onPanResponderRelease: (event, gestureState) => {
-      Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
+      Animated.spring(pan, {toValue: {x: 0, y: 0}}).start();
       //After the change in the location
       setLocationX(event.nativeEvent.locationX.toFixed(2));
       setLocationY(event.nativeEvent.locationY.toFixed(2));
@@ -75,7 +80,7 @@ const MoodEmotionDetector = ({ navigation }) => {
   const renderDraggable = () => {
     if (ShowDraggable) {
       return (
-        <View style={{ height: '100%', width: '100%' }}>
+        <View style={{height: '100%', width: '100%'}}>
           <Animated.View
             {...panResponder.panHandlers}
             style={[pan.getLayout(), styles.pointStyle]}>
@@ -84,6 +89,10 @@ const MoodEmotionDetector = ({ navigation }) => {
         </View>
       );
     }
+  };
+
+  const onPressButton = () => {
+    navigation.replace('HomeScreen');
   };
 
   const renderLine = (x, y) => {
@@ -110,9 +119,6 @@ const MoodEmotionDetector = ({ navigation }) => {
   // Middle =>  x:2, y:383 ||  x: 208 y: 383 || x: 411 y: 383
   // Bottom =>  x:0, y:774 ||  x: 208 y: 778 || x: 411 y: 776
 
-  const onPressButton = () => {
-    navigation.replace('HomeScreen')
-  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container}>
@@ -121,41 +127,81 @@ const MoodEmotionDetector = ({ navigation }) => {
         </Text> */}
         {console.log('Moving', Moving)}
         <View
+          style={{
+            backgroundColor:
+              0 < locationX &&
+              locationX < 208 &&
+              -15 < locationY &&
+              locationY < 383
+                ? '#B78391'
+                : 208 < locationX &&
+                  locationX < 411 &&
+                  -15 < locationY &&
+                  locationY < 383
+                ? '#0B5003'
+                : 208 < locationX &&
+                  locationX < 411 &&
+                  383 < locationY &&
+                  locationY < 570
+                ? '#949607'
+                : 0 < locationX &&
+                  locationX < 208 &&
+                  570 < locationY &&
+                  locationY < 774
+                ? '#62A2C4'
+                : 0 < locationX &&
+                  locationX < 208 &&
+                  383 < locationY &&
+                  locationY < 570
+                ? '#69C069'
+                : 208 < locationX &&
+                  locationX < 411 &&
+                  570 < locationY &&
+                  locationY < 774
+                ? '#D57F08'
+                : '#B400B9',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 15,
+          }}>
+          <AnonymousHeader />
+        </View>
+        <View
           style={[
             styles.childViewStyle,
             {
               backgroundColor:
                 0 < locationX &&
-                  locationX < 208 &&
-                  -15 < locationY &&
-                  locationY < 383
+                locationX < 208 &&
+                -15 < locationY &&
+                locationY < 383
                   ? 'pink'
                   : 208 < locationX &&
                     locationX < 411 &&
                     -15 < locationY &&
                     locationY < 383
-                    ? 'green'
-                    : 208 < locationX &&
-                      locationX < 411 &&
-                      383 < locationY &&
-                      locationY < 570
-                      ? 'yellow'
-                      : 0 < locationX &&
-                        locationX < 208 &&
-                        570 < locationY &&
-                        locationY < 774
-                        ? 'skyblue'
-                        : 0 < locationX &&
-                          locationX < 208 &&
-                          383 < locationY &&
-                          locationY < 570
-                          ? 'lightgreen'
-                          : 208 < locationX &&
-                            locationX < 411 &&
-                            570 < locationY &&
-                            locationY < 774
-                            ? 'orange'
-                            : 'purple',
+                  ? 'green'
+                  : 208 < locationX &&
+                    locationX < 411 &&
+                    383 < locationY &&
+                    locationY < 570
+                  ? 'yellow'
+                  : 0 < locationX &&
+                    locationX < 208 &&
+                    570 < locationY &&
+                    locationY < 774
+                  ? 'skyblue'
+                  : 0 < locationX &&
+                    locationX < 208 &&
+                    383 < locationY &&
+                    locationY < 570
+                  ? 'lightgreen'
+                  : 208 < locationX &&
+                    locationX < 411 &&
+                    570 < locationY &&
+                    locationY < 774
+                  ? 'orange'
+                  : 'purple',
             },
           ]}>
           <View
@@ -170,7 +216,7 @@ const MoodEmotionDetector = ({ navigation }) => {
           />
           <View
             style={{
-              borderWidth: 1,
+              borderBottomWidth: 1,
               borderColor: 'grey',
               width: '100%',
               height: '50%',
@@ -218,9 +264,97 @@ const MoodEmotionDetector = ({ navigation }) => {
         </View>
         {/* {renderDraggable()} */}
       </View>
-      <TouchableOpacity onPress={() => onPressButton()}>
-        <Text>Hello Mood Flo</Text>
-      </TouchableOpacity>
+      <View
+        style={{
+          backgroundColor:
+            0 < locationX &&
+            locationX < 208 &&
+            -15 < locationY &&
+            locationY < 383
+              ? '#B78391'
+              : 208 < locationX &&
+                locationX < 411 &&
+                -15 < locationY &&
+                locationY < 383
+              ? '#0B5003'
+              : 208 < locationX &&
+                locationX < 411 &&
+                383 < locationY &&
+                locationY < 570
+              ? '#949607'
+              : 0 < locationX &&
+                locationX < 208 &&
+                570 < locationY &&
+                locationY < 774
+              ? '#62A2C4'
+              : 0 < locationX &&
+                locationX < 208 &&
+                383 < locationY &&
+                locationY < 570
+              ? '#69C069'
+              : 208 < locationX &&
+                locationX < 411 &&
+                570 < locationY &&
+                locationY < 774
+              ? '#D57F08'
+              : '#B400B9',
+          // alignItems: 'center',
+          // justifyContent: 'center',
+          paddingVertical: 15,
+        }}>
+        <View
+          style={{
+            height: 80,
+            alignItems: 'flex-end',
+            justifyContent: 'space-around',
+            flexDirection: 'row',
+          }}>
+          <TouchableOpacity style={{marginLeft: 12}}>
+            <View
+              style={{
+                height: 60,
+                width: 60,
+                backgroundColor: '#4C5980',
+                borderRadius: 18,
+                opacity: 0.6,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Image source={require('../../assets/newImage/Plus/plus.png')} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <View
+              style={{
+                height: 60,
+                width: 60,
+                backgroundColor: '#fff',
+                borderRadius: 18,
+                opacity: 0.3,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            />
+            <Image
+              style={{position: 'absolute', top: 17, left: 17}}
+              source={Constants.Images.QuestionMark}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => onPressButton()}
+            style={{
+              height: 60,
+              width: 220,
+              backgroundColor: 'white',
+              borderRadius: 17,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <View />
+            <Text style={{textAlign: 'center', fontSize: 18}}>Save</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -240,8 +374,6 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
     backgroundColor: '#F5FCFF',
-    borderColor: 'black',
-    borderBottomWidth: 1,
     borderStyle: 'solid',
   },
   pointStyle: {
