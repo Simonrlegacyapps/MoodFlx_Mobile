@@ -1,0 +1,1 @@
+export const FIRST_ACTION_TYPE = "FIRST_ACTION_TYPE"

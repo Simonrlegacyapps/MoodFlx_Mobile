@@ -7,6 +7,13 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-community/async-storage';
 import { ScaledSheet } from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
+import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from "redux";
+import allReducers from './Src/redux/reducers'
+
+const store = createStore(allReducers, applyMiddleware(thunk));
+
 
 const slides = [
   {
@@ -69,34 +76,36 @@ const App: () => React$Node = () => {
 
   return (
     <>
-      {screenName === true ? (
-        <NavigationContainer>
-          <StatusBar backgroundColor={'lightgreen'} barStyle="light-content" />
-          <SafeAreaView style={{ flex: 1 }}>
-            <SafeAreaProvider>
-              <View style={styles.container}>
-                <StackNavigation />
+      <Provider store={store}>
+        {screenName === true ? (
+          <NavigationContainer>
+            <StatusBar backgroundColor={'lightgreen'} barStyle="light-content" />
+            <SafeAreaView style={{ flex: 1 }}>
+              <SafeAreaProvider>
+                <View style={styles.container}>
+                  <StackNavigation />
+                </View>
+              </SafeAreaProvider>
+            </SafeAreaView>
+          </NavigationContainer>
+        ) : (
+          <ImageBackground
+            source={require('./assets/welcomeBackground/WelcomeImage.jpg')}
+            style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: 'black', opacity: 0.8 }}>
+              <View style={styles.welcomeTextWrapper}>
+                <Text style={styles.welcometextStyle}>Welcome</Text>
               </View>
-            </SafeAreaProvider>
-          </SafeAreaView>
-        </NavigationContainer>
-      ) : (
-        <ImageBackground
-          source={require('./assets/welcomeBackground/WelcomeImage.jpg')}
-          style={{ flex: 1 }}>
-          <View style={{ flex: 1, backgroundColor: 'black', opacity: 0.8 }}>
-            <View style={styles.welcomeTextWrapper}>
-              <Text style={styles.welcometextStyle}>Welcome</Text>
+              <AppIntroSlider
+                renderItem={_renderItem}
+                dotStyle={styles.welcomeDotStyle}
+                activeDotStyle={styles.activeWelcomeDotStyle}
+                data={slides}
+                onDone={_onDone} />
             </View>
-            <AppIntroSlider
-              renderItem={_renderItem}
-              dotStyle={styles.welcomeDotStyle}
-              activeDotStyle={styles.activeWelcomeDotStyle}
-              data={slides}
-              onDone={_onDone} />
-          </View>
-        </ImageBackground>
-      )}
+          </ImageBackground>
+        )}
+      </Provider>
     </>
   );
 };
