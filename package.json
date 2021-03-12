@@ -30,7 +30,8 @@
     "react-native-svg": "^12.1.0",
     "react-native-toast-message": "^1.4.9",
     "react-redux": "^7.2.2",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "toggle-switch-react-native": "^3.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
