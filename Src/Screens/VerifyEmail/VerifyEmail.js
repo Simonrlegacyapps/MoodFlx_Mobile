@@ -1,10 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, TextInput, Image} from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import Constants from '../../Constants';
+import OTPInputView from '@twotalltotems/react-native-otp-input';
 
-const VerifyEmail = () => {
+const VerifyEmail = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
+  const [Code, setCode] = useState(0);
+
+  const onLink = () => {
+    console.log('run');
+    navigation.navigate('Linktocompany');
+  };
+
   return (
     <View style={{flex: 1}}>
       <AnonymousHeader backGround />
@@ -40,7 +48,31 @@ const VerifyEmail = () => {
           }}>
           example@company.com
         </Text>
-        <View
+        <OTPInputView
+          style={{width: '67%', height: 100}}
+          pinCount={4}
+          // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
+          // onCodeChanged = {code => { this.setState({code})}}
+          autoFocusOnLoad
+          codeInputFieldStyle={{
+            backgroundColor: 'white',
+            borderRadius: 12,
+            color: 'black',
+            height: 55,
+            width: 55,
+            fontSize: 18,
+          }}
+          codeInputHighlightStyle={{color: 'black'}}
+          // onCodeFilled={(code) => {
+          //   setCode(code);
+          //   console.log(`Code is ${code}, you are good to go!`);
+          // }}
+          onCodeChanged={(code) => {
+            setCode(code);
+            console.log('code changed', code);
+          }}
+        />
+        {/* <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -68,8 +100,13 @@ const VerifyEmail = () => {
             onChangeText={(text) => onChangeText(text)}
             value={value}
           />
-        </View>
-        <TouchableOpacity disabled={true} onPress={() => onLink()}>
+        </View> */}
+        {console.log('Code string', Code.toString().length)}
+        <TouchableOpacity
+          disabled={
+            Code != null && Code?.toString().length === 4 ? false : true
+          }
+          onPress={Code ? () => onLink() : () => console.log('no OTP entered')}>
           <View
             style={{
               marginTop: 48,
@@ -81,7 +118,7 @@ const VerifyEmail = () => {
               justifyContent: 'center',
             }}>
             <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
-              Verify
+              Continue
             </Text>
           </View>
         </TouchableOpacity>
