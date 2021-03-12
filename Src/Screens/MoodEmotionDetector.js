@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 // import all the components we are going to use
 import {
@@ -12,15 +12,17 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Constants from '../Constants';
-
 import AnonymousHeader from '../Components/AnonymousHeader/AnonymousHeader';
+import { getUniqueId } from 'react-native-device-info';
+import ToolTip from '../../assets/tooltip/ToolTip';
 
+const moods = ["Happy", "excited", "party", "Sad", "Funny", "Stocked", "Pumped"]
 function useForceUpdate() {
   const [value, setValue] = useState(0); // integer state
   return () => setValue((value) => value + 1); // update the state to force render
 }
 
-const MoodEmotionDetector = ({navigation}) => {
+const MoodEmotionDetector = ({ navigation }) => {
   const [locationX, setLocationX] = useState(0);
   const [locationY, setLocationY] = useState(0);
   const [ShowDraggable, setShowDraggable] = useState(true);
@@ -32,6 +34,7 @@ const MoodEmotionDetector = ({navigation}) => {
   const forceUpdate = useForceUpdate();
 
   useEffect(() => {
+    console.log('Unique id', getUniqueId())
     renderLine(locationX, locationY);
   });
   console.log('Location', Location);
@@ -56,7 +59,6 @@ const MoodEmotionDetector = ({navigation}) => {
           dy: pan.y,
         },
       ]);
-
       {
         forceUpdate;
       }
@@ -69,7 +71,7 @@ const MoodEmotionDetector = ({navigation}) => {
       setMoving(true);
     },
     onPanResponderRelease: (event, gestureState) => {
-      Animated.spring(pan, {toValue: {x: 0, y: 0}}).start();
+      Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
       //After the change in the location
       setLocationX(event.nativeEvent.locationX.toFixed(2));
       setLocationY(event.nativeEvent.locationY.toFixed(2));
@@ -80,7 +82,7 @@ const MoodEmotionDetector = ({navigation}) => {
   const renderDraggable = () => {
     if (ShowDraggable) {
       return (
-        <View style={{height: '100%', width: '100%'}}>
+        <View style={{ height: '100%', width: '100%' }}>
           <Animated.View
             {...panResponder.panHandlers}
             style={[pan.getLayout(), styles.pointStyle]}>
@@ -130,36 +132,36 @@ const MoodEmotionDetector = ({navigation}) => {
           style={{
             backgroundColor:
               0 < locationX &&
-              locationX < 208 &&
-              -15 < locationY &&
-              locationY < 383
+                locationX < 208 &&
+                -15 < locationY &&
+                locationY < 383
                 ? '#B78391'
                 : 208 < locationX &&
                   locationX < 411 &&
                   -15 < locationY &&
                   locationY < 383
-                ? '#0B5003'
-                : 208 < locationX &&
-                  locationX < 411 &&
-                  383 < locationY &&
-                  locationY < 570
-                ? '#949607'
-                : 0 < locationX &&
-                  locationX < 208 &&
-                  570 < locationY &&
-                  locationY < 774
-                ? '#62A2C4'
-                : 0 < locationX &&
-                  locationX < 208 &&
-                  383 < locationY &&
-                  locationY < 570
-                ? '#69C069'
-                : 208 < locationX &&
-                  locationX < 411 &&
-                  570 < locationY &&
-                  locationY < 774
-                ? '#D57F08'
-                : '#B400B9',
+                  ? '#0B5003'
+                  : 208 < locationX &&
+                    locationX < 411 &&
+                    383 < locationY &&
+                    locationY < 570
+                    ? '#949607'
+                    : 0 < locationX &&
+                      locationX < 208 &&
+                      570 < locationY &&
+                      locationY < 774
+                      ? '#62A2C4'
+                      : 0 < locationX &&
+                        locationX < 208 &&
+                        383 < locationY &&
+                        locationY < 570
+                        ? '#69C069'
+                        : 208 < locationX &&
+                          locationX < 411 &&
+                          570 < locationY &&
+                          locationY < 774
+                          ? '#D57F08'
+                          : '#B400B9',
             alignItems: 'center',
             justifyContent: 'center',
             paddingVertical: 15,
@@ -172,36 +174,36 @@ const MoodEmotionDetector = ({navigation}) => {
             {
               backgroundColor:
                 0 < locationX &&
-                locationX < 208 &&
-                -15 < locationY &&
-                locationY < 383
+                  locationX < 208 &&
+                  -15 < locationY &&
+                  locationY < 383
                   ? 'pink'
                   : 208 < locationX &&
                     locationX < 411 &&
                     -15 < locationY &&
                     locationY < 383
-                  ? 'green'
-                  : 208 < locationX &&
-                    locationX < 411 &&
-                    383 < locationY &&
-                    locationY < 570
-                  ? 'yellow'
-                  : 0 < locationX &&
-                    locationX < 208 &&
-                    570 < locationY &&
-                    locationY < 774
-                  ? 'skyblue'
-                  : 0 < locationX &&
-                    locationX < 208 &&
-                    383 < locationY &&
-                    locationY < 570
-                  ? 'lightgreen'
-                  : 208 < locationX &&
-                    locationX < 411 &&
-                    570 < locationY &&
-                    locationY < 774
-                  ? 'orange'
-                  : 'purple',
+                    ? 'green'
+                    : 208 < locationX &&
+                      locationX < 411 &&
+                      383 < locationY &&
+                      locationY < 570
+                      ? 'yellow'
+                      : 0 < locationX &&
+                        locationX < 208 &&
+                        570 < locationY &&
+                        locationY < 774
+                        ? 'skyblue'
+                        : 0 < locationX &&
+                          locationX < 208 &&
+                          383 < locationY &&
+                          locationY < 570
+                          ? 'lightgreen'
+                          : 208 < locationX &&
+                            locationX < 411 &&
+                            570 < locationY &&
+                            locationY < 774
+                            ? 'orange'
+                            : 'purple',
             },
           ]}>
           <View
@@ -235,10 +237,11 @@ const MoodEmotionDetector = ({navigation}) => {
                 left: parseFloat(locationX - 60),
               },
             ]}>
-            X: {locationX}, Y: {locationY}
+            {locationX !== 0 && locationY !== 0 && <ToolTip text={"Mood"} />}
+            {/* X: {locationX}, Y: {locationY} */}
           </Text>
           {/*View to show green dot where user touched*/}
-          <View
+          {/* <View
             style={[
               styles.pointStyle,
               {
@@ -246,13 +249,13 @@ const MoodEmotionDetector = ({navigation}) => {
                 left: parseFloat(locationX - 11),
               },
             ]}
-          />
+          /> */}
 
-          {Location &&
+          {/* {Location &&
             Location.length > 0 &&
             Location.map((item, index) => {
               return renderLine(item.x, item.y);
-            })}
+            })} */}
 
           {/* Marking touched position */}
           <View
@@ -269,36 +272,36 @@ const MoodEmotionDetector = ({navigation}) => {
         style={{
           backgroundColor:
             0 < locationX &&
-            locationX < 208 &&
-            -15 < locationY &&
-            locationY < 383
+              locationX < 208 &&
+              -15 < locationY &&
+              locationY < 383
               ? '#B78391'
               : 208 < locationX &&
                 locationX < 411 &&
                 -15 < locationY &&
                 locationY < 383
-              ? '#0B5003'
-              : 208 < locationX &&
-                locationX < 411 &&
-                383 < locationY &&
-                locationY < 570
-              ? '#949607'
-              : 0 < locationX &&
-                locationX < 208 &&
-                570 < locationY &&
-                locationY < 774
-              ? '#62A2C4'
-              : 0 < locationX &&
-                locationX < 208 &&
-                383 < locationY &&
-                locationY < 570
-              ? '#69C069'
-              : 208 < locationX &&
-                locationX < 411 &&
-                570 < locationY &&
-                locationY < 774
-              ? '#D57F08'
-              : '#B400B9',
+                ? '#0B5003'
+                : 208 < locationX &&
+                  locationX < 411 &&
+                  383 < locationY &&
+                  locationY < 570
+                  ? '#949607'
+                  : 0 < locationX &&
+                    locationX < 208 &&
+                    570 < locationY &&
+                    locationY < 774
+                    ? '#62A2C4'
+                    : 0 < locationX &&
+                      locationX < 208 &&
+                      383 < locationY &&
+                      locationY < 570
+                      ? '#69C069'
+                      : 208 < locationX &&
+                        locationX < 411 &&
+                        570 < locationY &&
+                        locationY < 774
+                        ? '#D57F08'
+                        : '#B400B9',
           // alignItems: 'center',
           // justifyContent: 'center',
           paddingVertical: 15,
@@ -310,7 +313,7 @@ const MoodEmotionDetector = ({navigation}) => {
             justifyContent: 'space-around',
             flexDirection: 'row',
           }}>
-          <TouchableOpacity style={{marginLeft: 12}}>
+          <TouchableOpacity style={{ marginLeft: 12 }}>
             <View
               style={{
                 height: 60,
@@ -337,7 +340,7 @@ const MoodEmotionDetector = ({navigation}) => {
               }}
             />
             <Image
-              style={{position: 'absolute', top: 17, left: 17}}
+              style={{ position: 'absolute', top: 17, left: 17 }}
               source={Constants.Images.QuestionMark}
             />
           </TouchableOpacity>
@@ -352,7 +355,7 @@ const MoodEmotionDetector = ({navigation}) => {
               alignItems: 'center',
             }}>
             <View />
-            <Text style={{textAlign: 'center', fontSize: 18}}>Save</Text>
+            <Text style={{ textAlign: 'center', fontSize: 18 }}>Save</Text>
           </TouchableOpacity>
         </View>
       </View>
