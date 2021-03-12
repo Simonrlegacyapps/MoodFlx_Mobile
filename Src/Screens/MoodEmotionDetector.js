@@ -226,12 +226,13 @@ const MoodEmotionDetector = ({navigation}) => {
               zIndex: -99999,
             }}
           />
+          {/* anxious */}
           {/*Text to show the screen location we get*/}
           <Text
             style={[
               {
-                top: parseFloat(locationY - 15),
-                left: parseFloat(locationX - 15),
+                top: parseFloat(locationY - 25),
+                left: parseFloat(locationX - 60),
               },
             ]}>
             X: {locationX}, Y: {locationY}

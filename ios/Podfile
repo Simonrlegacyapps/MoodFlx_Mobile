@@ -10,6 +10,8 @@ target 'MoodFlo' do
 
   pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
 
+  pod 'RCTAppleHealthKit', :path => '../node_modules/rn-apple-healthkit'
+
   target 'MoodFloTests' do
     inherit! :complete
     # Pods for testing

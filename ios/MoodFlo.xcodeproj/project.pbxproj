@@ -19,6 +19,7 @@
 		393A51EDFABD811B873E2539 /* libPods-MoodFlo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2DE61677C0E7347780605D4 /* libPods-MoodFlo.a */; };
 		5565C8601322DC875A52A908 /* libPods-MoodFlo-MoodFloTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D9E937FC7C4B182DB3B170B /* libPods-MoodFlo-MoodFloTests.a */; };
 		CF7CE0F025F9E8FE00E73988 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */; };
+		CF7CE0FF25FB70DB00E73988 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF7CE0FE25FB70DB00E73988 /* HealthKit.framework */; };
 		D44DC30B46FE83A22E970E8D /* libPods-MoodFlo-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A69A0938A56881EEB8BD897 /* libPods-MoodFlo-tvOS.a */; };
 /* End PBXBuildFile section */
 
@@ -63,6 +64,8 @@
 		CC9DFD5780AAAC06386B94C7 /* Pods-MoodFlo-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-MoodFlo-tvOSTests/Pods-MoodFlo-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CDD5E9DAAB340E45AE15383E /* Pods-MoodFlo-MoodFloTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-MoodFloTests.debug.xcconfig"; path = "Target Support Files/Pods-MoodFlo-MoodFloTests/Pods-MoodFlo-MoodFloTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		CF7CE0FD25FB70DA00E73988 /* MoodFlo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MoodFlo.entitlements; path = MoodFlo/MoodFlo.entitlements; sourceTree = "<group>"; };
+		CF7CE0FE25FB70DB00E73988 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		D2DE61677C0E7347780605D4 /* libPods-MoodFlo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MoodFlo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E60695D59B553664805A88F0 /* Pods-MoodFlo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo.release.xcconfig"; path = "Target Support Files/Pods-MoodFlo/Pods-MoodFlo.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -83,6 +86,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				393A51EDFABD811B873E2539 /* libPods-MoodFlo.a in Frameworks */,
+				CF7CE0FF25FB70DB00E73988 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +129,7 @@
 		13B07FAE1A68108700A75B9A /* MoodFlo */ = {
 			isa = PBXGroup;
 			children = (
+				CF7CE0FD25FB70DA00E73988 /* MoodFlo.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -139,6 +144,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CF7CE0FE25FB70DB00E73988 /* HealthKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				D2DE61677C0E7347780605D4 /* libPods-MoodFlo.a */,
@@ -293,6 +299,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = UV3Z6BTTHA;
 						LastSwiftMigration = 1120;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
@@ -654,7 +661,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -677,7 +686,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
