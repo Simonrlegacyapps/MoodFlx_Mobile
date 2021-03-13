@@ -1,18 +1,21 @@
-import React, {useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import DropDownPicker from 'react-native-dropdown-picker';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import Constants from '../../Constants';
 
-const Linktocompany = ({navigation}) => {
+const Linktocompany = ({ navigation }) => {
   const [Linked, setLinked] = useState('Link');
   const [selectedLanguage, setSelectedLanguage] = useState();
+
+
   const onLink = async (type) => {
     console.log('run');
     await navigation.navigate('EmailConfirmation');
     setLinked(type);
   };
+
   const onDone = (type) => {
     console.log('run');
     setLinked(type);
@@ -23,11 +26,11 @@ const Linktocompany = ({navigation}) => {
     setLinked(type);
   };
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <AnonymousHeader backGround />
       {Linked == 'Link' && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
-          <Text style={{fontWeight: '500', fontSize: 26}}>Link a company</Text>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 100 }}>
+          <Text style={{ fontWeight: '500', fontSize: 26 }}>Link a company</Text>
           <Text
             numberOfLines={4}
             style={{
@@ -54,7 +57,7 @@ const Linktocompany = ({navigation}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
                 Link Now
               </Text>
             </View>
@@ -62,8 +65,8 @@ const Linktocompany = ({navigation}) => {
         </View>
       )}
       {Linked == 'Complete' && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
-          <Text style={{fontWeight: '500', fontSize: 26}}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
+          <Text style={{ fontWeight: '500', fontSize: 26 }}>
             What division are you in?
           </Text>
           <Text
@@ -81,7 +84,7 @@ const Linktocompany = ({navigation}) => {
             This, and which region you are located, are the only things AIA will
             know about you
           </Text>
-          <View style={{width: 200}}>
+          <View style={{ width: 200 }}>
             <Picker
               style={{}}
               selectedValue={selectedLanguage}
@@ -112,7 +115,7 @@ const Linktocompany = ({navigation}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
                 Done
               </Text>
             </View>
@@ -133,7 +136,7 @@ const Linktocompany = ({navigation}) => {
         </View>
       )}
       {Linked == 'Done' && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
           </Text> */}
@@ -181,10 +184,10 @@ const Linktocompany = ({navigation}) => {
                 flexDirection: 'row',
               }}>
               <Image
-                style={{marginHorizontal: 10}}
+                style={{ marginHorizontal: 10 }}
                 source={Constants.Images.Unlock}
               />
-              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
                 Unlink
               </Text>
             </View>

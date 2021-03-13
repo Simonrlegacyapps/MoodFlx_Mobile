@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StatusBar, Text, ImageBackground, LogBox, SafeAreaView } from 'react-native';
+import { View, StatusBar, Text, ImageBackground, SafeAreaView } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
@@ -13,7 +13,6 @@ import { createStore, applyMiddleware } from "redux";
 import allReducers from './Src/redux/reducers'
 
 const store = createStore(allReducers, applyMiddleware(thunk));
-
 
 const slides = [
   {
