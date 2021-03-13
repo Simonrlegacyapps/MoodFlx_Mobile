@@ -1,2 +1,3 @@
 export const FIRST_ACTION_TYPE = 'FIRST_ACTION_TYPE';
 export const OTP_VERIFIED = 'OTP_VERIFIED';
+export const SET_DIVISION = 'SET_DIVISION';

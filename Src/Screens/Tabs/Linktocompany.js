@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, {useState} from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Picker } from '@react-native-picker/picker';
+import {Picker} from '@react-native-picker/picker';
 import Constants from '../../Constants';
+import {useDispatch, useSelector} from 'react-redux';
+import {Division, OTP_Verify} from '../../redux/actions/actions';
 
-const Linktocompany = ({ navigation }) => {
+const Linktocompany = ({navigation}) => {
   const [Linked, setLinked] = useState('Link');
-  const [selectedLanguage, setSelectedLanguage] = useState();
+  const [selectedDivision, setSelectedDivision] = useState('Raunak');
 
+  const {OTPVerified, setDivision} = useSelector((state) => state.First);
+  const dispatch = useDispatch();
 
   const onLink = async (type) => {
     console.log('run');
@@ -18,19 +22,24 @@ const Linktocompany = ({ navigation }) => {
 
   const onDone = (type) => {
     console.log('run');
-    setLinked(type);
+    dispatch(Division(selectedDivision));
+    // setLinked(type);
   };
 
   const onUnlink = (type) => {
     console.log('run');
-    setLinked(type);
+    // setLinked(type);
+    dispatch(OTP_Verify(false));
+    dispatch(Division(null));
   };
+
+  console.log('OTPVerified, division =============>', OTPVerified, setDivision);
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <AnonymousHeader backGround />
-      {Linked == 'Link' && (
-        <View style={{ flex: 1, alignItems: 'center', marginTop: 100 }}>
-          <Text style={{ fontWeight: '500', fontSize: 26 }}>Link a company</Text>
+      {!OTPVerified.success && (
+        <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
+          <Text style={{fontWeight: '500', fontSize: 26}}>Link a company</Text>
           <Text
             numberOfLines={4}
             style={{
@@ -57,16 +66,16 @@ const Linktocompany = ({ navigation }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
+              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
                 Link Now
               </Text>
             </View>
           </TouchableOpacity>
         </View>
       )}
-      {Linked == 'Complete' && (
-        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
-          <Text style={{ fontWeight: '500', fontSize: 26 }}>
+      {OTPVerified.success && setDivision === null && (
+        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
+          <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
           </Text>
           <Text
@@ -84,13 +93,13 @@ const Linktocompany = ({ navigation }) => {
             This, and which region you are located, are the only things AIA will
             know about you
           </Text>
-          <View style={{ width: 200 }}>
+          <View style={{width: 200}}>
             <Picker
               style={{}}
-              selectedValue={selectedLanguage}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedLanguage(itemValue)
-              }>
+              selectedValue={selectedDivision}
+              onValueChange={(itemValue, itemIndex) => {
+                setSelectedDivision(itemValue);
+              }}>
               <Picker.Item label="Java" value="java" />
               <Picker.Item label="JavaScript" value="js" />
               <Picker.Item label="Raunak" value="Raunak" />
@@ -101,9 +110,9 @@ const Linktocompany = ({ navigation }) => {
               <Picker.Item label="Dharma" value="Dharma" />
             </Picker>
           </View>
-          {console.log('selectedLanguage', selectedLanguage)}
+          {console.log('selectedLanguage', selectedDivision)}
           <TouchableOpacity
-            disabled={selectedLanguage ? false : true}
+            disabled={selectedDivision ? false : true}
             onPress={() => onDone('Done')}>
             <View
               style={{
@@ -115,7 +124,7 @@ const Linktocompany = ({ navigation }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
+              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
                 Done
               </Text>
             </View>
@@ -135,8 +144,8 @@ const Linktocompany = ({ navigation }) => {
           </Text>
         </View>
       )}
-      {Linked == 'Done' && (
-        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
+      {OTPVerified.success && setDivision !== null && (
+        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
           </Text> */}
@@ -167,10 +176,10 @@ const Linktocompany = ({ navigation }) => {
               marginBottom: 42,
               width: 270,
             }}>
-            Accounting
+            {setDivision}
           </Text>
           <TouchableOpacity
-            disabled={selectedLanguage ? false : true}
+            // disabled={selectedLanguage ? false : true}
             onPress={() => onUnlink('Link')}>
             <View
               style={{
@@ -184,10 +193,10 @@ const Linktocompany = ({ navigation }) => {
                 flexDirection: 'row',
               }}>
               <Image
-                style={{ marginHorizontal: 10 }}
+                style={{marginHorizontal: 10}}
                 source={Constants.Images.Unlock}
               />
-              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
+              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
                 Unlink
               </Text>
             </View>

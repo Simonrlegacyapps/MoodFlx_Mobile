@@ -13,28 +13,37 @@ import OTPInputView from '@twotalltotems/react-native-otp-input';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useDispatch} from 'react-redux';
 import {OTP_Verify} from '../../redux/actions/actions';
+import {useRoute} from '@react-navigation/native';
 
 const VerifyEmail = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
   const [Code, setCode] = useState(0);
   const [Loading, setLoading] = useState(false);
+  const [ShowWarning, setShowWarning] = useState(false);
 
   const dispatch = useDispatch();
+  const route = useRoute();
 
+  const {code} = route.params;
+  // console.log('code ye hai ', code);
   const onLink = () => {
     const params = {
       email: 'test.chapter247@gmail.com',
       otp: Code,
     };
     setLoading(true);
-    PostRequestApi('verifyOTP', params).then((resp) => {
-      if (resp.status == 200) {
-        setLoading(false);
-        console.log('Sucess');
-        dispatch(OTP_Verify(resp.data));
-        navigation.navigate('Linktocompany');
-      }
-    });
+    {
+      Code == code
+        ? PostRequestApi('verifyOTP', params).then((resp) => {
+            if (resp.status == 200) {
+              setLoading(false);
+              console.log('Sucess');
+              dispatch(OTP_Verify(resp.data));
+              navigation.navigate('Linktocompany');
+            }
+          })
+        : (setShowWarning(true), setLoading(false));
+    }
   };
 
   return (
@@ -71,6 +80,21 @@ const VerifyEmail = ({navigation}) => {
             lineHeight: 25,
           }}>
           example@company.com
+        </Text>
+        <Text
+          numberOfLines={2}
+          style={{
+            fontWeight: '400',
+            letterSpacing: 0.6,
+            fontSize: 14,
+            marginTop: 12,
+            marginLeft: 62,
+            marginRight: 62,
+            textAlign: 'center',
+            width: '60%',
+            lineHeight: 25,
+          }}>
+          Temporary for now, Code : {code}
         </Text>
         <OTPInputView
           style={{width: '67%', height: 100}}
@@ -146,6 +170,24 @@ const VerifyEmail = ({navigation}) => {
             </Text>
           </View>
         </TouchableOpacity>
+        {ShowWarning && (
+          <Text
+            numberOfLines={2}
+            style={{
+              fontWeight: '400',
+              letterSpacing: 0.6,
+              fontSize: 12,
+              marginTop: 12,
+              marginLeft: 62,
+              marginRight: 62,
+              textAlign: 'center',
+              width: '70%',
+              lineHeight: 25,
+              color: 'red',
+            }}>
+            NOTE: You have entered wrong code
+          </Text>
+        )}
       </View>
       {Loading && (
         <View
