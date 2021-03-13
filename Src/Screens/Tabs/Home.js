@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React from 'react';
 import {
     SafeAreaView,
@@ -488,11 +480,10 @@ export class App extends React.Component {
                                         </Text>
                                     )}
                                 </View>
-
                                 <View style={styles.sectionContainer}>
                                     <Text style={styles.sectionTitle}>
                                         Steps which is different
-                  </Text>
+                                    </Text>
                                     {steps &&
                                         steps.length > 0 &&
                                         steps?.map((i, k) => {
@@ -511,7 +502,6 @@ export class App extends React.Component {
                                 </View>
                             </View>
                         )}
-
                         {Platform.OS === 'android' && <GoogleFit />}
                     </ScrollView>
                 </SafeAreaView>
