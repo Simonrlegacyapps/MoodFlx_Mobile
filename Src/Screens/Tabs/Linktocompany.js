@@ -1,18 +1,33 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {Picker} from '@react-native-picker/picker';
 import Constants from '../../Constants';
 import {useDispatch, useSelector} from 'react-redux';
-import {Division, OTP_Verify} from '../../redux/actions/actions';
+import {Division, getDivisions, OTP_Verify} from '../../redux/actions/actions';
+import GetRequestApi from '../../apirequest/GetRequestApi';
 
 const Linktocompany = ({navigation}) => {
   const [Linked, setLinked] = useState('Link');
   const [selectedDivision, setSelectedDivision] = useState('Raunak');
+  const [Divisions, setDivisions] = useState(null);
 
-  const {OTPVerified, setDivision} = useSelector((state) => state.First);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    fetch('http://admin.moodflo.com/api/getDivision')
+      .then((data) => data.json())
+      .then(async (res) => {
+        await dispatch(getDivisions(res.data));
+        setDivisions(res.data);
+        console.log('response of division', res.data);
+      });
+  }, []);
+
+  const {OTPVerified, setDivision, getDivision} = useSelector(
+    (state) => state.First,
+  );
 
   const onLink = async (type) => {
     console.log('run');
@@ -33,9 +48,9 @@ const Linktocompany = ({navigation}) => {
     dispatch(Division(null));
   };
 
-  console.log('OTPVerified, division =============>', OTPVerified, setDivision);
   return (
     <View style={{flex: 1}}>
+      {console.log('REDUX DATA ==============>', getDivision)}
       <AnonymousHeader backGround />
       {!OTPVerified.success && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
@@ -100,14 +115,25 @@ const Linktocompany = ({navigation}) => {
               onValueChange={(itemValue, itemIndex) => {
                 setSelectedDivision(itemValue);
               }}>
-              <Picker.Item label="Java" value="java" />
+              {Divisions &&
+                Divisions.length > 0 &&
+                Divisions.map((item, index) => {
+                  return (
+                    <Picker.Item
+                      label={item.name}
+                      value={item.name}
+                      key={index}
+                    />
+                  );
+                })}
+              {/*               
               <Picker.Item label="JavaScript" value="js" />
               <Picker.Item label="Raunak" value="Raunak" />
               <Picker.Item label="Puneeet" value="Puneeet" />
               <Picker.Item label="ria" value="ria" />
               <Picker.Item label="madhu" value="madhu" />
               <Picker.Item label="zain" value="zain" />
-              <Picker.Item label="Dharma" value="Dharma" />
+              <Picker.Item label="Dharma" value="Dharma" /> */}
             </Picker>
           </View>
           {console.log('selectedLanguage', selectedDivision)}

@@ -1,5 +1,6 @@
 import {
   FIRST_ACTION_TYPE,
+  GET_DIVISION,
   OTP_VERIFIED,
   SET_DIVISION,
 } from '../constants/action-types';
@@ -7,6 +8,7 @@ import {
 const intializedState = {
   OTPVerified: false,
   setDivision: null,
+  getDivision: null,
 };
 
 export const First = (state = intializedState, action) => {
@@ -20,6 +22,10 @@ export const First = (state = intializedState, action) => {
     case SET_DIVISION:
       return Object.assign({}, state, {
         setDivision: action.payload,
+      });
+    case GET_DIVISION:
+      return Object.assign({}, state, {
+        getDivision: action.payload,
       });
     default:
       return state;

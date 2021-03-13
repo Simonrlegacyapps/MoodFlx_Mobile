@@ -1,5 +1,6 @@
 import {
   FIRST_ACTION_TYPE,
+  GET_DIVISION,
   OTP_VERIFIED,
   SET_DIVISION,
 } from '../constants/action-types';
@@ -17,9 +18,14 @@ export const OTP_Verify = (data) => {
   };
 };
 export const Division = (data) => {
-  console.log('data reaching here', data);
   return {
     type: SET_DIVISION,
+    payload: data,
+  };
+};
+export const getDivisions = (data) => {
+  return {
+    type: GET_DIVISION,
     payload: data,
   };
 };
