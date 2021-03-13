@@ -1,33 +1,47 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Image } from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import Constants from '../../Constants';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import PostRequestApi from '../../apirequest/PostRequestApi';
+import {useDispatch} from 'react-redux';
+import {OTP_Verify} from '../../redux/actions/actions';
 
-const VerifyEmail = ({ navigation }) => {
+const VerifyEmail = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
   const [Code, setCode] = useState(0);
+  const [Loading, setLoading] = useState(false);
 
+  const dispatch = useDispatch();
 
   const onLink = () => {
     const params = {
       email: 'test.chapter247@gmail.com',
-      otp: Code
-    }
-    PostRequestApi("verifyOTP", params).then(resp => {
+      otp: Code,
+    };
+    setLoading(true);
+    PostRequestApi('verifyOTP', params).then((resp) => {
       if (resp.status == 200) {
-        console.log('Sucess')
+        setLoading(false);
+        console.log('Sucess');
+        dispatch(OTP_Verify(resp.data));
         navigation.navigate('Linktocompany');
       }
-    })
+    });
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <AnonymousHeader backGround />
-      <View style={{ flex: 1, alignItems: 'center', marginTop: 100 }}>
-        <Text style={{ fontWeight: '500', fontSize: 24 }}>Verify your email</Text>
+      <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
+        <Text style={{fontWeight: '500', fontSize: 24}}>Verify your email</Text>
         <Text
           numberOfLines={2}
           style={{
@@ -59,7 +73,7 @@ const VerifyEmail = ({ navigation }) => {
           example@company.com
         </Text>
         <OTPInputView
-          style={{ width: '67%', height: 100 }}
+          style={{width: '67%', height: 100}}
           pinCount={4}
           // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
           // onCodeChanged = {code => { this.setState({code})}}
@@ -72,7 +86,7 @@ const VerifyEmail = ({ navigation }) => {
             width: 55,
             fontSize: 18,
           }}
-          codeInputHighlightStyle={{ color: 'black' }}
+          codeInputHighlightStyle={{color: 'black'}}
           // onCodeFilled={(code) => {
           //   setCode(code);
           //   console.log(`Code is ${code}, you are good to go!`);
@@ -127,12 +141,26 @@ const VerifyEmail = ({ navigation }) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
+            <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
               Continue
             </Text>
           </View>
         </TouchableOpacity>
       </View>
+      {Loading && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'black',
+            opacity: 0.2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
     </View>
   );
 };
