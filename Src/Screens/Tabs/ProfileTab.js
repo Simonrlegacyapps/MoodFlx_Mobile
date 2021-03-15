@@ -41,6 +41,8 @@ const ProfileTab = () => {
             </TouchableOpacity>
         )
     }
+
+
     return (
         <ScrollView style={{ flex: 1, backgroundColor: Constants.Colors.WhiteColor }}>
             <View style={styles.container}>
