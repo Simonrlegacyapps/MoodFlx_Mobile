@@ -1,14 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import DropDownPicker from 'react-native-dropdown-picker';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import Constants from '../../Constants';
-import {useDispatch, useSelector} from 'react-redux';
-import {Division, getDivisions, OTP_Verify} from '../../redux/actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { Division, getDivisions, OTP_Verify } from '../../redux/actions/actions';
 import GetRequestApi from '../../apirequest/GetRequestApi';
+import { dynamicSize } from '../../Constants/sizeChoose';
+import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
 
-const Linktocompany = ({navigation}) => {
+const Linktocompany = ({ navigation }) => {
   const [Linked, setLinked] = useState('Link');
   const [selectedDivision, setSelectedDivision] = useState('Raunak');
   const [Divisions, setDivisions] = useState(null);
@@ -25,7 +27,7 @@ const Linktocompany = ({navigation}) => {
       });
   }, []);
 
-  const {OTPVerified, setDivision, getDivision} = useSelector(
+  const { OTPVerified, setDivision, getDivision } = useSelector(
     (state) => state.First,
   );
 
@@ -49,12 +51,12 @@ const Linktocompany = ({navigation}) => {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       {console.log('REDUX DATA ==============>', getDivision)}
       <AnonymousHeader backGround />
       {!OTPVerified.success && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
-          <Text style={{fontWeight: '500', fontSize: 26}}>Link a company</Text>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 100 }}>
+          <Text style={{ fontWeight: '500', fontSize: 26 }}>Link a company</Text>
           <Text
             numberOfLines={4}
             style={{
@@ -73,15 +75,15 @@ const Linktocompany = ({navigation}) => {
           <TouchableOpacity onPress={() => onLink('Complete')}>
             <View
               style={{
-                marginTop: 48,
-                height: 56,
-                width: 250,
+                marginTop: dynamicSize(48),
+                height: dynamicSize(56),
+                width: dynamicSize(250),
                 backgroundColor: '#7265E3',
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
                 Link Now
               </Text>
             </View>
@@ -89,8 +91,8 @@ const Linktocompany = ({navigation}) => {
         </View>
       )}
       {OTPVerified.success && setDivision === null && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
-          <Text style={{fontWeight: '500', fontSize: 26}}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
+          <Text style={{ fontWeight: '500', fontSize: 26 }}>
             What division are you in?
           </Text>
           <Text
@@ -108,7 +110,7 @@ const Linktocompany = ({navigation}) => {
             This, and which region you are located, are the only things AIA will
             know about you
           </Text>
-          <View style={{width: 200}}>
+          <View style={{ width: 200 }}>
             <Picker
               style={{}}
               selectedValue={selectedDivision}
@@ -150,7 +152,7 @@ const Linktocompany = ({navigation}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
                 Done
               </Text>
             </View>
@@ -171,7 +173,7 @@ const Linktocompany = ({navigation}) => {
         </View>
       )}
       {OTPVerified.success && setDivision !== null && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
           </Text> */}
@@ -210,19 +212,16 @@ const Linktocompany = ({navigation}) => {
             <View
               style={{
                 marginTop: 20,
-                height: 56,
-                width: 250,
+                height: dynamicSize(56),
+                width: dynamicSize(250),
                 backgroundColor: '#7265E3',
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexDirection: 'row',
               }}>
-              <Image
-                style={{marginHorizontal: 10}}
-                source={Constants.Images.Unlock}
-              />
-              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+              <UnlockIcon />
+              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF', marginLeft: dynamicSize(11) }}>
                 Unlink
               </Text>
             </View>
