@@ -27,7 +27,7 @@ const EmailConfirmation = ({navigation}) => {
       if (resp.status == 200) {
         setLoading(false);
         console.log('otp', resp.data);
-        navigation.navigate('VerifyEmail');
+        navigation.navigate('VerifyEmail', {code: resp.data.otp});
       }
     });
   };
