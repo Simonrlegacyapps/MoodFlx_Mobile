@@ -2,6 +2,7 @@ import React from 'react';
 import HomeScreen from '../Screens/HomeScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import MoodEmotionDetector from '../Screens/MoodEmotionDetector';
+import MoodEmotionDetectorTouch from '../Screens/MoodEmotionDetectorTouch';
 import EmailConfirmation from '../Screens/EmailConfirmation/EmailConfirmation';
 import VerifyEmail from '../Screens/VerifyEmail/VerifyEmail';
 
@@ -10,6 +11,11 @@ const Stack = createStackNavigator();
 const StackNavigation = () => {
   return (
     <Stack.Navigator>
+      {/* <Stack.Screen
+        name="MoodEmotionDetectorTouch"
+        component={MoodEmotionDetectorTouch}
+        options={{header: () => null}}
+      /> */}
       <Stack.Screen
         name="MoodEmotionDetector"
         component={MoodEmotionDetector}
