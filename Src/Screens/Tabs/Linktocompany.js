@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
-import DropDownPicker from 'react-native-dropdown-picker';
 import { Picker } from '@react-native-picker/picker';
 import Constants from '../../Constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { Division, getDivisions, OTP_Verify } from '../../redux/actions/actions';
-import GetRequestApi from '../../apirequest/GetRequestApi';
 import { dynamicSize } from '../../Constants/sizeChoose';
 import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
+import { RubikBlack } from '../../Constants/fonts/Fonts';
 
 const Linktocompany = ({ navigation }) => {
   const [Linked, setLinked] = useState('Link');
@@ -83,7 +82,7 @@ const Linktocompany = ({ navigation }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
+              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF', fontFamily: RubikBlack }}>
                 Link Now
               </Text>
             </View>
@@ -128,14 +127,6 @@ const Linktocompany = ({ navigation }) => {
                     />
                   );
                 })}
-              {/*               
-              <Picker.Item label="JavaScript" value="js" />
-              <Picker.Item label="Raunak" value="Raunak" />
-              <Picker.Item label="Puneeet" value="Puneeet" />
-              <Picker.Item label="ria" value="ria" />
-              <Picker.Item label="madhu" value="madhu" />
-              <Picker.Item label="zain" value="zain" />
-              <Picker.Item label="Dharma" value="Dharma" /> */}
             </Picker>
           </View>
           {console.log('selectedLanguage', selectedDivision)}
