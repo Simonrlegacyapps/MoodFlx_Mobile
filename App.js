@@ -1,16 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { View, StatusBar, Text, ImageBackground, SafeAreaView } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  StatusBar,
+  Text,
+  ImageBackground,
+  SafeAreaView,
+} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-community/async-storage';
-import { ScaledSheet } from 'react-native-size-matters';
+import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from "redux";
-import allReducers from './Src/redux/reducers'
+import {Provider} from 'react-redux';
+import {createStore, applyMiddleware} from 'redux';
+import allReducers from './Src/redux/reducers';
 
 const store = createStore(allReducers, applyMiddleware(thunk));
 
@@ -54,7 +60,7 @@ const App: () => React$Node = () => {
     }, 2000);
   }, []);
 
-  const _renderItem = ({ item }) => {
+  const _renderItem = ({item}) => {
     return (
       <View style={styles.welRenderWrapper}>
         <Text style={styles.welTitletext}>{item.title}</Text>
@@ -72,26 +78,28 @@ const App: () => React$Node = () => {
     }
   };
 
-
   return (
     <>
       <Provider store={store}>
         {screenName === true ? (
           <NavigationContainer>
-            <StatusBar backgroundColor={'lightgreen'} barStyle="light-content" />
-            <SafeAreaView style={{ flex: 1 }}>
-              <SafeAreaProvider>
-                <View style={styles.container}>
-                  <StackNavigation />
-                </View>
-              </SafeAreaProvider>
+            {/* <StatusBar
+              backgroundColor={'lightgreen'}
+              barStyle="light-content"
+            /> */}
+            <SafeAreaView style={{flex: 1}}>
+              {/* <SafeAreaProvider> */}
+              <View style={styles.container}>
+                <StackNavigation />
+              </View>
+              {/* </SafeAreaProvider> */}
             </SafeAreaView>
           </NavigationContainer>
         ) : (
           <ImageBackground
             source={require('./assets/welcomeBackground/WelcomeImage.jpg')}
-            style={{ flex: 1 }}>
-            <View style={{ flex: 1, backgroundColor: 'black', opacity: 0.8 }}>
+            style={{flex: 1}}>
+            <View style={{flex: 1, backgroundColor: 'black', opacity: 0.8}}>
               <View style={styles.welcomeTextWrapper}>
                 <Text style={styles.welcometextStyle}>Welcome</Text>
               </View>
@@ -100,7 +108,8 @@ const App: () => React$Node = () => {
                 dotStyle={styles.welcomeDotStyle}
                 activeDotStyle={styles.activeWelcomeDotStyle}
                 data={slides}
-                onDone={_onDone} />
+                onDone={_onDone}
+              />
             </View>
           </ImageBackground>
         )}
@@ -151,7 +160,7 @@ const styles = ScaledSheet.create({
     fontWeight: '600',
     color: 'white',
   },
-  welcomeTextWrapper: { position: 'absolute', top: '15%', alignSelf: 'center' },
+  welcomeTextWrapper: {position: 'absolute', top: '15%', alignSelf: 'center'},
   welRenderWrapper: {
     justifyContent: 'center',
     alignItems: 'center',

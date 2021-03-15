@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,8 +11,9 @@ import PostRequestApi from '../../apirequest/PostRequestApi';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import Constants from '../../Constants';
 import DeviceInfo from 'react-native-device-info';
+import { dynamicSize } from '../../Constants/sizeChoose';
 
-const EmailConfirmation = ({navigation}) => {
+const EmailConfirmation = ({ navigation }) => {
   const [value, onChangeText] = React.useState('');
   const [Loading, setLoading] = useState(false);
 
@@ -27,17 +28,17 @@ const EmailConfirmation = ({navigation}) => {
       if (resp.status == 200) {
         setLoading(false);
         console.log('otp', resp.data);
-        navigation.navigate('VerifyEmail', {code: resp.data.otp});
+        navigation.navigate('VerifyEmail', { code: resp.data.otp });
       }
     });
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <AnonymousHeader backGround />
 
-      <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
-        <Text style={{fontWeight: '500', fontSize: 24}}>Work email</Text>
+      <View style={{ flex: 1, alignItems: 'center', marginTop: dynamicSize(100) }}>
+        <Text style={{ fontWeight: '500', fontSize: 24 }}>Work email</Text>
         <Text
           numberOfLines={2}
           style={{
@@ -63,14 +64,13 @@ const EmailConfirmation = ({navigation}) => {
             marginTop: 40,
           }}>
           <Image
-            style={{height: 20, width: 20}}
-            source={Constants.Images.mail}
-          />
+            style={{ height: 20, width: 20 }}
+            source={Constants.Images.mail} />
           <TextInput
             placeholder={'example@work-mail.com'}
             style={{
-              height: 50,
-              width: 250,
+              height: dynamicSize(50),
+              width: dynamicSize(250),
               backgroundColor: 'white',
               borderColor: 'transparent',
               borderWidth: 1,
@@ -92,7 +92,7 @@ const EmailConfirmation = ({navigation}) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+            <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
               Verify
             </Text>
           </View>

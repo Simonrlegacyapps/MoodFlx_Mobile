@@ -12,12 +12,14 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import Constants from '../Constants';
 import AnonymousHeader from '../Components/AnonymousHeader/AnonymousHeader';
 import {getUniqueId} from 'react-native-device-info';
 import ToolTip from '../../assets/tooltip/ToolTip';
 import Svg, {Path} from 'react-native-svg';
 import HappyIcon from '../../assets/emotionsicons/HappyIcon';
+import CloseIcon from '../../assets/commonicons/CloseIcon';
+import QuestionMarkIcon from '../../assets/commonicons/QuestionMarkIcon';
+import {dynamicSize} from '../Constants/sizeChoose';
 
 const moods = [
   'Happy',
@@ -244,7 +246,7 @@ const MoodEmotionDetector = ({navigation}) => {
   // Bottom =>  x:0, y:774 ||  x: 208 y: 778 || x: 411 y: 776
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={{flex: 1}}>
       <View style={styles.container}>
         {/* <Text style={styles.titleStyle}>
           React Native Get Clicked Location of Touchscreen Using PanResponder
@@ -430,42 +432,34 @@ const MoodEmotionDetector = ({navigation}) => {
             justifyContent: 'space-around',
             flexDirection: 'row',
           }}>
-          <TouchableOpacity style={{marginLeft: 12}}>
+          <TouchableOpacity
+            style={{marginLeft: 12}}
+            onPress={() => navigation.navigate('HomeScreen')}>
             <View
               style={{
-                height: 60,
-                width: 60,
-                backgroundColor: '#4C5980',
-                borderRadius: 18,
-                opacity: 0.6,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Image source={require('../../assets/newImage/Plus/plus.png')} />
+              <CloseIcon width={dynamicSize(56)} height={dynamicSize(56)} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity>
             <View
               style={{
-                height: 60,
-                width: 60,
-                backgroundColor: '#fff',
-                borderRadius: 18,
-                opacity: 0.3,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
             />
-            <Image
-              style={{position: 'absolute', top: 17, left: 17}}
-              source={Constants.Images.QuestionMark}
+            <QuestionMarkIcon
+              width={dynamicSize(56)}
+              height={dynamicSize(56)}
             />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => onPressButton()}
             style={{
-              height: 60,
-              width: 220,
+              height: dynamicSize(56),
+              width: dynamicSize(197),
               backgroundColor: 'white',
               borderRadius: 17,
               justifyContent: 'center',
@@ -476,7 +470,7 @@ const MoodEmotionDetector = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 export default MoodEmotionDetector;
@@ -484,7 +478,7 @@ export default MoodEmotionDetector;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
   },
   titleStyle: {
     fontSize: 20,
