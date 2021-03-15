@@ -11,10 +11,13 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import Constants from '../Constants';
 import AnonymousHeader from '../Components/AnonymousHeader/AnonymousHeader';
 import { getUniqueId } from 'react-native-device-info';
 import ToolTip from '../../assets/tooltip/ToolTip';
+import CloseIcon from '../../assets/commonicons/CloseIcon';
+import QuestionMarkIcon from '../../assets/commonicons/QuestionMarkIcon';
+import { dynamicSize } from '../Constants/sizeChoose';
+
 
 const moods = ["Happy", "excited", "party", "Sad", "Funny", "Stocked", "Pumped"]
 function useForceUpdate() {
@@ -316,39 +319,26 @@ const MoodEmotionDetector = ({ navigation }) => {
           <TouchableOpacity style={{ marginLeft: 12 }}>
             <View
               style={{
-                height: 60,
-                width: 60,
-                backgroundColor: '#4C5980',
-                borderRadius: 18,
-                opacity: 0.6,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Image source={require('../../assets/newImage/Plus/plus.png')} />
+              <CloseIcon width={dynamicSize(56)} height={dynamicSize(56)} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity>
             <View
               style={{
-                height: 60,
-                width: 60,
-                backgroundColor: '#fff',
-                borderRadius: 18,
-                opacity: 0.3,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
             />
-            <Image
-              style={{ position: 'absolute', top: 17, left: 17 }}
-              source={Constants.Images.QuestionMark}
-            />
+            <QuestionMarkIcon width={dynamicSize(56)} height={dynamicSize(56)} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => onPressButton()}
             style={{
-              height: 60,
-              width: 220,
+              height: dynamicSize(56),
+              width: dynamicSize(197),
               backgroundColor: 'white',
               borderRadius: 17,
               justifyContent: 'center',
