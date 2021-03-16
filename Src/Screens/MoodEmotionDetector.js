@@ -440,7 +440,7 @@ const MoodEmotionDetector = ({navigation}) => {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <CloseIcon width={dynamicSize(56)} height={dynamicSize(56)} />
+              <CloseIcon width={dynamicSize(52)} height={dynamicSize(52)} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity>
@@ -451,14 +451,14 @@ const MoodEmotionDetector = ({navigation}) => {
               }}
             />
             <QuestionMarkIcon
-              width={dynamicSize(56)}
-              height={dynamicSize(56)}
+              width={dynamicSize(52)}
+              height={dynamicSize(52)}
             />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => onPressButton()}
             style={{
-              height: dynamicSize(56),
+              height: dynamicSize(52),
               width: dynamicSize(197),
               backgroundColor: 'white',
               borderRadius: 17,

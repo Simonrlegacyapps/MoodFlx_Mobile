@@ -5,6 +5,9 @@ import {
   Text,
   ImageBackground,
   SafeAreaView,
+  ActivityIndicator,
+  Dimensions,
+  Image,
 } from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
@@ -17,8 +20,14 @@ import thunk from 'redux-thunk';
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware} from 'redux';
 import allReducers from './Src/redux/reducers';
+import ImageOne from './assets/OnBoarding/ImageOne';
+import FastImage from 'react-native-fast-image';
+import Carousel from 'react-native-snap-carousel';
+import One from './assets/OnBoarding/ImageOne.svg';
+import {SvgCssUri, SvgUri, SvgXml} from 'react-native-svg';
 
 const store = createStore(allReducers, applyMiddleware(thunk));
+const {width: screenWidth} = Dimensions.get('window');
 
 const slides = [
   {
@@ -41,37 +50,83 @@ const slides = [
   },
 ];
 
+const Images = [
+  {
+    key: 1,
+    img: require('./assets/OnBoarding/Onboarding1.png'),
+  },
+  {
+    key: 2,
+    img: require('./assets/OnBoarding/Onboarding2.png'),
+  },
+  {
+    key: 3,
+    img: require('./assets/OnBoarding/Onboarding3.png'),
+  },
+  {
+    key: 4,
+    img: require('./assets/OnBoarding/Onboarding4.png'),
+  },
+];
+
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
+  const [ShowWelcome, setShowWelcome] = useState('');
+
+  const CheckScreen = async () => {
+    let p = await AsyncStorage.getItem('ShowWelcomeScreen');
+    let welcome = await JSON.parse(p);
+    await setShowWelcome(welcome);
+    console.log('welcome', welcome);
+  };
 
   useEffect(() => {
-    try {
-      let data = AsyncStorage.getItem('WelcomeScreen');
-      if (data !== null) {
-        setScreenName(true);
-      } else {
-        setScreenName(false);
-      }
-    } catch (e) {
-      console.warn(e);
+    CheckScreen();
+    if (ShowWelcome == null) {
+      AsyncStorage.setItem('ShowWelcomeScreen', 'true');
+      CheckScreen();
+    } else {
+      setShowWelcome(false);
     }
+    // CheckScreen();
+
+    // try {
+    //   let data = AsyncStorage.getItem('WelcomeScreen');
+    //   if (data !== null) {
+    //     setScreenName(true);
+    //   } else {
+    //     setScreenName(false);
+    //   }
+    // } catch (e) {
+    //   console.warn(e);
+    // }
     setTimeout(() => {
       SplashScreen.hide();
     }, 2000);
   }, []);
 
-  const _renderItem = ({item}) => {
+  const renderItems = ({item, index}, parallaxProps) => {
+    // console.log('item', item.img);
+    // console.log('ShowWelcome--', ShowWelcome);
     return (
-      <View style={styles.welRenderWrapper}>
-        <Text style={styles.welTitletext}>{item.title}</Text>
-        <Text style={styles.text}>{item.text}</Text>
-      </View>
+      <>
+        <View activeOpacity={0.8} style={styles.item}>
+          <Image
+            source={item.img}
+            height={'100%'}
+            width={'100%'}
+            style={{height: '100%', width: '100%'}}
+          />
+        </View>
+      </>
     );
   };
 
   const _onDone = async () => {
+    await AsyncStorage.setItem('ShowWelcomeScreen', 'false');
+    CheckScreen();
     try {
-      await AsyncStorage.setItem('WelcomeScreen', 'true');
+      await AsyncStorage.setItem('WelcomeScreen', 'false');
       setScreenName(true);
     } catch (e) {
       console.warn(e);
@@ -80,38 +135,23 @@ const App: () => React$Node = () => {
 
   return (
     <>
+      {/* {console.log('ShowWelcome--', ShowWelcome)} */}
       <Provider store={store}>
-        {screenName === true ? (
+        {ShowWelcome === false ? (
           <NavigationContainer>
-            {/* <StatusBar
-              backgroundColor={'lightgreen'}
-              barStyle="light-content"
-            /> */}
             <SafeAreaView style={{flex: 1}}>
-              {/* <SafeAreaProvider> */}
               <View style={styles.container}>
                 <StackNavigation />
               </View>
-              {/* </SafeAreaProvider> */}
             </SafeAreaView>
           </NavigationContainer>
         ) : (
-          <ImageBackground
-            source={require('./assets/welcomeBackground/WelcomeImage.jpg')}
-            style={{flex: 1}}>
-            <View style={{flex: 1, backgroundColor: 'black', opacity: 0.8}}>
-              <View style={styles.welcomeTextWrapper}>
-                <Text style={styles.welcometextStyle}>Welcome</Text>
-              </View>
-              <AppIntroSlider
-                renderItem={_renderItem}
-                dotStyle={styles.welcomeDotStyle}
-                activeDotStyle={styles.activeWelcomeDotStyle}
-                data={slides}
-                onDone={_onDone}
-              />
-            </View>
-          </ImageBackground>
+          <AppIntroSlider
+            renderItem={renderItems}
+            data={Images}
+            onDone={_onDone}
+            showSkipButton={true}
+          />
         )}
       </Provider>
     </>
@@ -172,6 +212,21 @@ const styles = ScaledSheet.create({
     color: 'green',
     textAlign: 'center',
     fontWeight: '600',
+  },
+  sliderImage: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    width: '100%',
+    resizeMode: 'cover',
+    borderRadius: '10@ms',
+    marginLeft: 40,
+  },
+  sliderContentContainer: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    // paddingHorizontal:15,
+    // paddingVertical: '10@ms', // for custom animation
   },
 });
 
