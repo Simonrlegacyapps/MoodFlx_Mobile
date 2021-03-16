@@ -23,7 +23,7 @@ const EmailConfirmation = ({navigation}) => {
   const onLink = () => {
     const deviceId = DeviceInfo.getUniqueId();
     const params = {
-      email: 'test1.chapter247@gmail.com',
+      email: value,
       device_id: deviceId,
     };
     setLoading(true);
@@ -33,7 +33,11 @@ const EmailConfirmation = ({navigation}) => {
         if (resp.status == 200) {
           setLoading(false);
           console.log('otp', resp.data);
-          navigation.navigate('VerifyEmail', {code: resp.data.otp});
+          navigation.navigate('VerifyEmail', {
+            code: resp.data.otp,
+            mail: value,
+            deviceID: deviceId,
+          });
         } else {
           setLoading(false);
         }
