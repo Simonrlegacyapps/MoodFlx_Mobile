@@ -41,7 +41,7 @@ const VerifyEmail = ({navigation}) => {
               setLoading(false);
               console.log('Sucess');
               dispatch(OTP_Verify(resp.data));
-              navigation.navigate('Linktocompany');
+              navigation.navigate('Linktocompany', {email: mail});
             }
           })
         : (setShowWarning(true), setLoading(false));

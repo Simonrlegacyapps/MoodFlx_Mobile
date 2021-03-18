@@ -5,4 +5,10 @@ export default {
   mail: require('../../../assets/newImage/Mail/mail.png'),
   Unlock: require('../../../assets/newImage/Unlock/unlock.png'),
   CompanyLogo: require('../../../assets/newImage/CompanyLogo/Company.png'),
+  Sync: require('../../../assets/newImage/Sync/sync.png'),
+  RunningBackground: require('../../../assets/newImage/RunningBackground/RunningBackground.png'),
+  RunningMan: require('../../../assets/newImage/RunningMan/walk.png'),
+  Calories: require('../../../assets/newImage/Calories/calories.png'),
+  Distance: require('../../../assets/newImage/Distance/place.png'),
+  Time: require('../../../assets/newImage/Time/time.png'),
 };

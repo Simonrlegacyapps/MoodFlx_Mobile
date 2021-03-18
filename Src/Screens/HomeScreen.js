@@ -87,6 +87,9 @@ const HomeScreen = ({navigation, routes}) => {
           // width: '100%',
           // backgroundColor: 'grey',
           bottom: 0,
+          shadowColor: 'black',
+          shadowOffset: {height: 2},
+          shadowOpacity: 0.3,
         }}>
         <Image
           resizeMode={'stretch'}
