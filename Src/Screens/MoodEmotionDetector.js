@@ -7,7 +7,6 @@ import {
   View,
   Text,
   PanResponder,
-  Animated,
   Image,
   TouchableOpacity,
   Dimensions,
@@ -41,7 +40,6 @@ const MoodEmotionDetector = ({navigation}) => {
   const [locationX, setLocationX] = useState(0);
   const [locationY, setLocationY] = useState(0);
   const [ShowDraggable, setShowDraggable] = useState(true);
-  const [pan, setPan] = useState(new Animated.ValueXY());
   const [Location, setLocation] = useState([]);
   const [Moving, setMoving] = useState(false);
   const [Anonymous, setAnonymous] = useState(false);

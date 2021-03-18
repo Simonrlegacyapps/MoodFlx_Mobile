@@ -80,12 +80,25 @@ const App = () => {
   const [DOB, setDOB] = useState(false);
   const [Distance, setDistance] = useState(false);
   const [LatestWeight, setLatestWeight] = useState(false);
+  const [MovingTime, setMovingTime] = useState(false);
+  const [Workouts, setWorkouts] = useState(false);
 
   const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
   const stepsCount = {
     startDate: new Date(a).toISOString(), // required
     endDate: new Date().toISOString(), // optional; default now
+  };
+  const TimeCount = {
+    startDate: new Date(a).toISOString(), // required
+    endDate: new Date().toISOString(), // optional; default now
+    type: 'Walking', // one of: ['Walking', 'StairClimbing', 'Running', 'Cycling', 'Workout']
+  };
+
+  const WorkoutTimeCount = {
+    startDate: new Date(a).toISOString(), // required
+    endDate: new Date().toISOString(), // optional; default now
+    type: 'Workout', // one of: ['Walking', 'StairClimbing', 'Running', 'Cycling', 'Workout']
   };
 
   const OnAutoSync = () => {
@@ -109,12 +122,15 @@ const App = () => {
             PERMS.BodyTemperature,
             PERMS.BloodPressureDiastolic,
             PERMS.BloodPressureSystolic,
-            PERMS.ActiveEnergyBurned,
-            PERMS.BasalEnergyBurned,
-            PERMS.DistanceWalkingRunning,
+            PERMS.ActiveEnergyBurned, //
+            PERMS.BasalEnergyBurned, //
+            PERMS.DistanceWalkingRunning, //
             PERMS.HeartRate,
             PERMS.SleepAnalysis,
             PERMS.DateOfBirth,
+            PERMS.FlightsClimbed,
+            PERMS.DistanceCycling,
+            PERMS.Workout,
           ],
         },
       };
@@ -260,15 +276,50 @@ const App = () => {
             console.log('DOB', results);
           },
         );
+
+        AppleHealthKit.getSamples(
+          TimeCount,
+          async (err: Object, results: Array<Object>) => {
+            if (err) {
+              return;
+            }
+            await setMovingTime(results);
+            // console.log(
+            //   '<<<<<<<<============== Time ==============>>>>>>>>>',
+            //   results,
+            // );
+          },
+        );
+
+        AppleHealthKit.getSamples(
+          WorkoutTimeCount,
+          async (err: Object, results: Array<Object>) => {
+            if (err) {
+              return console.log(`errola`, err);
+            }
+            await setWorkouts(results);
+            // console.log(
+            //   '<<<<<<<<============== Workout Time ==============>>>>>>>>>',
+            //   results,
+            // );
+          },
+        );
+        console.log(
+          `bhal bhal bhal bhal blah blaj>>>>>>>>>>28684628643464646436546543265423654235643`,
+          Workouts,
+        );
       });
     }
 
     CheckForWeather();
     setTimeout(() => {
-      filterDates();
-      filterSteps();
-      AddDataToFilter();
-    }, 2000);
+      // findTime();
+      while (Fsteps.length == 0 && WalkTime.length == 0) {
+        filterDates();
+        filterSteps();
+        AddDataToFilter();
+      }
+    }, 1000);
   };
 
   const dates = [];
@@ -285,12 +336,25 @@ const App = () => {
   };
 
   const Fsteps = [];
+  const WalkTime = [];
   let totalSteps = 0;
   let totalDistance = 0;
   let totalCalories = 0;
   let totalHeartRate = 0;
   let highBp = 0;
   let lowBp = 0;
+  let totalWalkTime = 0;
+
+  // const findTime = () => {
+  //   for (let r in MovingTime) {
+  //     const startTime = moment(MovingTime[r].start);
+  //     const EndTime = moment(MovingTime[r].end);
+  //     const diff = EndTime.diff(startTime);
+  //     const diffDuration = moment.duration(diff).asMinutes();
+  //     console.log(`startTime`, startTime, EndTime);
+  //     console.log(`end ========== >>>> ${diffDuration} `);
+  //   }
+  // };
 
   const filterSteps = () => {
     for (let i in dates) {
@@ -325,6 +389,18 @@ const App = () => {
           lowBp = lowBp + BP[n].bloodPressureDiastolicValue;
         }
       }
+      for (let r in MovingTime) {
+        let iteratedate = moment(MovingTime[r].start).format('DD-MMM-YYYY');
+        // console.log(`startTime`, startTime, EndTime);
+        // console.log(`end ========== >>>> ${diffDuration} `);
+        if (dates[i] === iteratedate) {
+          const startTime = moment(MovingTime[r].start);
+          const EndTime = moment(MovingTime[r].end);
+          const diff = EndTime.diff(startTime);
+          const diffDuration = moment.duration(diff).asMinutes();
+          totalWalkTime = totalWalkTime + diffDuration;
+        }
+      }
       Fsteps.push({
         date: dates[i],
         steps: totalSteps,
@@ -334,14 +410,21 @@ const App = () => {
         highBP: highBp,
         lowBP: lowBp,
       });
+      WalkTime.push({
+        date: dates[i],
+        walkTime: totalWalkTime,
+      });
       totalSteps = 0;
       totalDistance = 0;
       totalCalories = 0;
       totalHeartRate = 0;
       highBp = 0;
       lowBp = 0;
+      totalWalkTime = 0;
     }
     console.log('Fsteps', Fsteps);
+    console.log(`walkTime |||||||||||| ppppppp =========`, WalkTime);
+    console.log(`Workouts |||||||||||| ppppppp =========`, Workouts);
   };
 
   const CheckForWeather = () => {
@@ -368,10 +451,12 @@ const App = () => {
       {DOB: DateOfBirth.value},
       {device_id: deviceId},
     );
+
+    console.log(`Fsteps at last`, Fsteps);
   };
   return (
     <View>
-      {/* <StatusBar barStyle="dark-content"/> */}
+      <StatusBar barStyle="dark-content" />
       <SafeAreaView style={{backgroundColor: 'white'}}>
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
