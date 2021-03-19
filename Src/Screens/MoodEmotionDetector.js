@@ -10,15 +10,18 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  NativeModules,
 } from 'react-native';
 import AnonymousHeader from '../Components/AnonymousHeader/AnonymousHeader';
 import {getUniqueId} from 'react-native-device-info';
 import ToolTip from '../../assets/tooltip/ToolTip';
-import Svg, {Path} from 'react-native-svg';
+import Svg, {Path, SvgUri} from 'react-native-svg';
 import HappyIcon from '../../assets/emotionsicons/HappyIcon';
 import CloseIcon from '../../assets/commonicons/CloseIcon';
 import QuestionMarkIcon from '../../assets/commonicons/QuestionMarkIcon';
 import {dynamicSize} from '../Constants/sizeChoose';
+import moment from 'moment';
+const {StatusBarManager, statusBarHeight} = NativeModules;
 
 const moods = [
   'Happy',
@@ -34,9 +37,11 @@ function useForceUpdate() {
   return () => setValue((value) => value + 1); // update the state to force render
 }
 
-const {width, height} = Dimensions.get('window');
+const {width, height} = Dimensions.get('screen');
 
 const MoodEmotionDetector = ({navigation}) => {
+  console.log(`width and height`, width, height);
+  console.log(`statusBarHeight`, statusBarHeight);
   const [locationX, setLocationX] = useState(0);
   const [locationY, setLocationY] = useState(0);
   const [ShowDraggable, setShowDraggable] = useState(true);
@@ -44,11 +49,136 @@ const MoodEmotionDetector = ({navigation}) => {
   const [Moving, setMoving] = useState(false);
   const [Anonymous, setAnonymous] = useState(false);
   const [Label, setLabel] = useState('Mood');
+  const [startTime, setstartTime] = useState(0);
+  const [EndTime, setEndTime] = useState(0);
+  const [StatusVertical, setStatusVertical] = useState(0);
+  const [GetMoods, setGetMoods] = useState(null);
+  const [Svgs, setSvgs] = useState('');
 
-  const forceUpdate = useForceUpdate();
+  useEffect(() => {
+    StatusBarManager.getHeight((statusBarHeight) => {
+      setStatusVertical(statusBarHeight.height);
+    });
+  }, []);
+
+  useEffect(() => {
+    fetch('http://admin.moodflo.com/api/getMood')
+      .then((data) => data.json())
+      .then(async (res) => {
+        await setGetMoods(res.data);
+        console.log('response of division', res.data);
+
+        console.log(`GetMoods`, GetMoods);
+        // setSelectedDivisionId(res.data[0].id);
+      });
+  }, []);
+
+  const FindId = () => {
+    const Id = GetMoods.find(({name}) => {
+      console.log(`name`, name);
+      return name === 'Chilled';
+    });
+    console.log(`Id`, Id);
+  };
+
+  const FindSvg = ({moveY, moveX, dx, dy, y0, x0}) => {
+    let Svg = '';
+
+    const locationX = moveX;
+    const locationY = moveY;
+    0 < locationX &&
+    locationX < fourthWidth &&
+    statusHeight < locationY &&
+    locationY < fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/16161615941398599996054ab3aa7d5a.svg')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/16161615941398599996054ab3aa7d5a.svg')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/161616020811568889776054a5d0a647b.svg')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/161616165713773338836054ab79f1da3.svg')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/16161615819211632466054ab2df10cd.svg')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/161616160519398103336054ab4547f6f.svg')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/16161598431282637146054a4639766f.svg')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/16161616415022878446054ab69f2c06.svg')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/16161618594253055676054ac43027d1.svg')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/1616161630114389416054ab5eabe61.svg')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/16161617966057941926054ac048c7bf.svg')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/161616167810216837516054ab8e7cb4e.svg')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/161616176321272238406054abe3bb450.svg')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/16161617438626044096054abcf2e5c9.svg')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/161616181011965041556054ac126be19.svg')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (Svg = 'mood_icons/16161616189187972696054ab524887b.svg')
+      : (Svg = 'mood_icons/16161618594253055676054ac43027d1.svg');
+    return Svg;
+    // console.log(`Svg`, Svg);
+  };
+
+  console.log('SB', StatusVertical);
+  let statusHeight = StatusVertical + 110;
+  const halfHeight = height / 2;
+  let fourthHeight = (halfHeight - statusHeight) / 2;
+  let fourthWidth = width / 4;
 
   const getDirectionAndColor = ({moveY, moveX, dx, dy, y0, x0}) => {
-    console.log('moveX, moveY, dx, dy, ', moveY, moveX, dx, dy, y0, x0);
+    console.log('moveX, moveY, dx, dy, move', moveY, moveX, dx, dy, y0, x0);
     // console.log('dx', dx)
     // console.log('dy', dy)
     let word = '';
@@ -59,49 +189,199 @@ const MoodEmotionDetector = ({navigation}) => {
     setLocationX(moveX.toFixed(2));
     setLocationY(moveY.toFixed(2));
 
-    0 < locationX && locationX < 208 && -15 < locationY && locationY < 383
-      ? (word = word + 'Sad')
-      : 208 < locationX && locationX < 411 && -15 < locationY && locationY < 383
-      ? (word = word + 'Very Sad')
-      : 208 < locationX && locationX < 411 && 383 < locationY && locationY < 570
-      ? (word = word + 'Excited')
-      : 0 < locationX && locationX < 208 && 570 < locationY && locationY < 774
-      ? (word = word + 'Happy')
-      : 0 < locationX && locationX < 208 && 383 < locationY && locationY < 570
-      ? (word = word + 'Very Happy')
-      : 208 < locationX && locationX < 411 && 570 < locationY && locationY < 774
-      ? (word = word + 'Anxious')
-      : (word = word + 'Delight');
+    0 < locationX &&
+    locationX < fourthWidth &&
+    statusHeight < locationY &&
+    locationY < fourthHeight + statusHeight
+      ? (word = 'Angry')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (word = 'Furious')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (word = 'Wierd')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (word = 'Tired')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (word = 'Flat')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (word = 'Sad')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (word = 'Spent')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (word = 'Anxious')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (word = 'Happy')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (word = 'Excited')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (word = 'Chilled')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (word = 'Alert')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (word = 'Pumped')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (word = 'Stoked')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (word = 'Sharp')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (word = 'Content')
+      : (word = 'Okay');
 
     // console.log('label', Label)
 
     return word;
   };
   const getDirectionAndColorOnClick = ({moveY, moveX, dx, dy, y0, x0}) => {
-    console.log('moveX, moveY, dx, dy, ', moveY, moveX, dx, dy, y0, x0);
+    console.log('moveX, moveY, dx, dy, click', moveY, moveX, dx, dy, y0, x0);
+    console.log(`fourthHeight`, fourthHeight);
     // console.log('dx', dx)
     // console.log('dy', dy)
     let word = '';
-
     const locationX = x0;
     const locationY = y0;
 
     setLocationX(x0.toFixed(2));
     setLocationY(y0.toFixed(2));
 
-    0 < locationX && locationX < 208 && -15 < locationY && locationY < 383
-      ? (word = word + 'Sad')
-      : 208 < locationX && locationX < 411 && -15 < locationY && locationY < 383
-      ? (word = word + 'Very Sad')
-      : 208 < locationX && locationX < 411 && 383 < locationY && locationY < 570
-      ? (word = word + 'Excited')
-      : 0 < locationX && locationX < 208 && 570 < locationY && locationY < 774
-      ? (word = word + 'Happy')
-      : 0 < locationX && locationX < 208 && 383 < locationY && locationY < 570
-      ? (word = word + 'Very Happy')
-      : 208 < locationX && locationX < 411 && 570 < locationY && locationY < 774
-      ? (word = word + 'Anxious')
-      : (word = word + 'Delight');
+    0 < locationX &&
+    locationX < fourthWidth &&
+    statusHeight < locationY &&
+    locationY < fourthHeight + statusHeight
+      ? (word = 'Angry')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (word = 'Furious')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (word = 'Wierd')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (word = 'Tired')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (word = 'Flat')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (word = 'Sad')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (word = 'Spent')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (word = 'Anxious')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (word = 'Happy')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (word = 'Excited')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (word = 'Chilled')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (word = 'Alert')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (word = 'Pumped')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (word = 'Stoked')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (word = 'Sharp')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (word = 'Content')
+      : (word = 'Okay');
+
+    // 0 < locationX && locationX < 208 && -15 < locationY && locationY < 383
+    //   ? (word = word + 'Sad')
+    //   : 208 < locationX && locationX < 411 && -15 < locationY && locationY < 383
+    //   ? (word = word + 'Very Sad')
+    //   : 208 < locationX && locationX < 411 && 383 < locationY && locationY < 570
+    //   ? (word = word + 'Excited')
+    //   : 0 < locationX && locationX < 208 && 570 < locationY && locationY < 774
+    //   ? (word = word + 'Happy')
+    //   : 0 < locationX && locationX < 208 && 383 < locationY && locationY < 570
+    //   ? (word = word + 'Very Happy')
+    //   : 208 < locationX && locationX < 411 && 570 < locationY && locationY < 774
+    //   ? (word = word + 'Anxious')
+    //   : (word = word + 'Delight');
 
     // console.log('label', Label)
 
@@ -115,21 +395,27 @@ const MoodEmotionDetector = ({navigation}) => {
   // console.log('Location', Location);
   //panResponder initialization
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: (event, gestureState) => true,
+    onStartShouldSetPanResponder: (event, gestureState) => {
+      !!getDirectionAndColorOnClick(gestureState);
+      setstartTime(Date.now());
+      console.log(`check check check`);
+    },
     onStartShouldSetPanResponderCapture: (event, gestureState) => true,
     onMoveShouldSetPanResponder: (event, gestureState) => {
       !!getDirectionAndColor(gestureState);
+      !!FindSvg(gestureState);
     },
     onPanResponderStart: (evt, gestureState) => {
-      console.log(
-        'check check check ================>>>>>>>>>>>>.',
-        evt,
-        gestureState.y0,
-        gestureState.x0,
-      );
+      // console.log(
+      //   'check check check ================>>>>>>>>>>>>.',
+      //   evt,
+      //   gestureState.y0,
+      //   gestureState.x0,
+      // );
       // setLocationX(gestureState.x0)
       // setLocationY(gestureState.y0)
-      !!getDirectionAndColorOnClick(gestureState);
+      const click = getDirectionAndColorOnClick(gestureState);
+      setLabel(click);
     },
     onMoveShouldSetPanResponderCapture: (event, gestureState) => {
       true;
@@ -137,80 +423,451 @@ const MoodEmotionDetector = ({navigation}) => {
     onPanResponderGrant: (event, gestureState) => true,
     onPanResponderMove: (event, gestureState) => {
       const drag = getDirectionAndColor(gestureState);
+      const svg = FindSvg(gestureState);
       setLabel(drag);
+      setSvgs(svg);
     },
-    onPanResponderRelease: (event, gestureState) => {},
+    onPanResponderRelease: (event, gestureState) => {
+      setEndTime(Date.now());
+      let start = moment(startTime);
+      let end = moment(EndTime);
+      const diff = end.diff(start);
+      const diffDuration = moment.duration(diff).asSeconds();
+      // console.log(`diffDuration`, diffDuration);
+      // console.log(`EndTime`, EndTime);
+      // console.log(`startTime`, startTime);
+      // console.log(`difference in time`, Math.abs(EndTime - startTime));
+    },
   });
 
   const ColorFunctionB1 = () => {
     var colorCode = '';
-    0 < locationX && locationX < 208 && -15 < locationY && locationY < 383
-      ? (colorCode = '#BE8796')
-      : 208 < locationX && locationX < 411 && -15 < locationY && locationY < 383
-      ? (colorCode = '#1F8802')
-      : 208 < locationX && locationX < 411 && 383 < locationY && locationY < 570
-      ? (colorCode = 'yellow')
-      : 0 < locationX && locationX < 208 && 570 < locationY && locationY < 774
-      ? (colorCode = '#63A3C5')
-      : 0 < locationX && locationX < 208 && 383 < locationY && locationY < 570
-      ? (colorCode = 'lightgreen')
-      : 208 < locationX && locationX < 411 && 570 < locationY && locationY < 774
-      ? (colorCode = '#814E04')
-      : (colorCode = 'purple'); //purple
+    0 < locationX &&
+    locationX < fourthWidth &&
+    statusHeight < locationY &&
+    locationY < fourthHeight + statusHeight
+      ? (colorCode = '#BEBFD5')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#CA929A')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#D9A790')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#82D1C3')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#8DC3B3')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#B6C9D8')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#A0C595')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#AFD4DA')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#BE7B83')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#C47CCF')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#D593A9')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#BEC947')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#DBB790')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#C59CB9')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#B7D9CE')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#89D881')
+      : (colorCode = '#BE7B83'); //purple
 
     return colorCode;
   };
   const ColorFunctionB2 = () => {
     var colorCode = '';
-    0 < locationX && locationX < 208 && -15 < locationY && locationY < 383
-      ? (colorCode = 'pink')
-      : 208 < locationX && locationX < 411 && -15 < locationY && locationY < 383
-      ? (colorCode = 'green')
-      : 208 < locationX && locationX < 411 && 383 < locationY && locationY < 570
-      ? (colorCode = '#D6D80A')
-      : 0 < locationX && locationX < 208 && 570 < locationY && locationY < 774
-      ? (colorCode = '#457087') //skyblue
-      : 0 < locationX && locationX < 208 && 383 < locationY && locationY < 570
-      ? (colorCode = '#73D373')
-      : 208 < locationX && locationX < 411 && 570 < locationY && locationY < 774
-      ? (colorCode = 'orange')
-      : (colorCode = '#9E00A2');
+    0 < locationX &&
+    locationX < fourthWidth &&
+    statusHeight < locationY &&
+    locationY < fourthHeight + statusHeight
+      ? (colorCode = '#ADADC9')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#BF7B85')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#D19377')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#6FC9B8')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#70A998')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#A3B9CC')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#91BB83')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#9BCAD0')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#B56873')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#BA65C6')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#CC7E99')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#B8C235')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#D2A77C')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#BA8AAB')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#A5CDC0')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#77D06D')
+      : (colorCode = '#B56873'); //purple
 
     return colorCode;
   };
   const ColorFunctionB3 = () => {
     var colorCode = '';
-    0 < locationX && locationX < 208 && -15 < locationY && locationY < 383
-      ? (colorCode = '#966B77')
-      : 208 < locationX && locationX < 411 && -15 < locationY && locationY < 383
-      ? (colorCode = '#134C01')
-      : 208 < locationX && locationX < 411 && 383 < locationY && locationY < 570
-      ? (colorCode = '#A8A908')
-      : 0 < locationX && locationX < 208 && 570 < locationY && locationY < 774
-      ? (colorCode = 'skyblue')
-      : 0 < locationX && locationX < 208 && 383 < locationY && locationY < 570
-      ? (colorCode = '#165701')
-      : 208 < locationX && locationX < 411 && 570 < locationY && locationY < 774
-      ? (colorCode = '#D17D08')
-      : (colorCode = '#E200E8');
+    0 < locationX &&
+    locationX < fourthWidth &&
+    statusHeight < locationY &&
+    locationY < fourthHeight + statusHeight
+      ? (colorCode = '#8688AF')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#B05D69')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#C37555')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#4DBAA5')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#5DA891')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#7F9DB8')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#72A661')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#77B4BD')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#A24551')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#A83FB6')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#BB5779')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#949E25')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#C58C55')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#A46891')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#81B9A6')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#54C347')
+      : (colorCode = '#A24551'); //purple
 
     return colorCode;
   };
   const ColorFunctionB4 = () => {
     var colorCode = '';
-    0 < locationX && locationX < 208 && -15 < locationY && locationY < 383
-      ? (colorCode = '#B4808E')
-      : 208 < locationX && locationX < 411 && -15 < locationY && locationY < 383
-      ? (colorCode = '#249F03')
-      : 208 < locationX && locationX < 411 && 383 < locationY && locationY < 570
-      ? (colorCode = '#838506')
-      : 0 < locationX && locationX < 208 && 570 < locationY && locationY < 774
-      ? (colorCode = '#568EAB')
-      : 0 < locationX && locationX < 208 && 383 < locationY && locationY < 570
-      ? (colorCode = '#5CA65C')
-      : 208 < locationX && locationX < 411 && 570 < locationY && locationY < 774
-      ? (colorCode = '#A16106')
-      : (colorCode = '#AE00B2');
+    0 < locationX &&
+    locationX < fourthWidth &&
+    statusHeight < locationY &&
+    locationY < fourthHeight + statusHeight
+      ? (colorCode = '#9C9DBE')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#B76B76')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#CB8466')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#5BC0AE')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#69AF99')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#92ACC3')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#80B072')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#87BEC6')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#AC5762')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#B052BE')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#C46988')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#ABB629')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#CB9866')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#AE779C')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#91C2B3')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#65CA5A')
+      : (colorCode = '#AC5762'); //purple
+
+    return colorCode;
+  };
+
+  const BottomAndTopBar = () => {
+    var colorCode = '';
+    0 < locationX &&
+    locationX < fourthWidth &&
+    statusHeight < locationY &&
+    locationY < fourthHeight + statusHeight
+      ? (colorCode = '#A7A8BF')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#C18390')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#DFBAA8')
+      : 0 < locationX &&
+        locationX < fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#89C7BB')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#82C6B1')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#ADBAC8')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#A3C499')
+      : fourthWidth < locationX &&
+        locationX < 2 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#A0C9CE')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#BA6D77')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#A964B4')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#C88BA1')
+      : 2 * fourthWidth < locationX &&
+        locationX < 3 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#AEB75A')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
+      ? (colorCode = '#CFB190')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        fourthHeight < locationY &&
+        locationY < 2 * fourthHeight + statusHeight
+      ? (colorCode = '#B994AD')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        2 * fourthHeight + statusHeight < locationY &&
+        locationY < 3 * fourthHeight + statusHeight
+      ? (colorCode = '#6AA290')
+      : 3 * fourthWidth < locationX &&
+        locationX < 4 * fourthWidth &&
+        3 * fourthHeight + statusHeight < locationY &&
+        locationY < 4 * fourthHeight + statusHeight
+      ? (colorCode = '#7CD272')
+      : (colorCode = '#BA6D77'); //purple
 
     return colorCode;
   };
@@ -221,10 +878,6 @@ const MoodEmotionDetector = ({navigation}) => {
 
   const renderLine = (x, y) => {
     return (
-      //   Location &&
-      //   Location.length > 0 &&
-      //   Location.map((item, index) => {
-      //     return (
       <View
         style={[
           styles.pointStyle2,
@@ -235,8 +888,6 @@ const MoodEmotionDetector = ({navigation}) => {
           },
         ]}
       />
-      // );
-      //   })
     );
   };
   // TOP => x:0 , y:-15 ||  x: 208 y: -15 || x: 411 y: -15
@@ -253,38 +904,7 @@ const MoodEmotionDetector = ({navigation}) => {
         {/* Header Bar */}
         <View
           style={{
-            backgroundColor:
-              0 < locationX &&
-              locationX < 208 &&
-              -15 < locationY &&
-              locationY < 383
-                ? '#B78391'
-                : 208 < locationX &&
-                  locationX < 411 &&
-                  -15 < locationY &&
-                  locationY < 383
-                ? '#0B5003'
-                : 208 < locationX &&
-                  locationX < 411 &&
-                  383 < locationY &&
-                  locationY < 570
-                ? '#949607'
-                : 0 < locationX &&
-                  locationX < 208 &&
-                  570 < locationY &&
-                  locationY < 774
-                ? '#62A2C4'
-                : 0 < locationX &&
-                  locationX < 208 &&
-                  383 < locationY &&
-                  locationY < 570
-                ? '#69C069'
-                : 208 < locationX &&
-                  locationX < 411 &&
-                  570 < locationY &&
-                  locationY < 774
-                ? '#D57F08'
-                : '#B400B9',
+            backgroundColor: BottomAndTopBar(),
             alignItems: 'center',
             justifyContent: 'center',
             paddingVertical: 15,
@@ -340,8 +960,15 @@ const MoodEmotionDetector = ({navigation}) => {
               {
                 alignItems: 'center',
                 position: 'absolute',
-                top: parseFloat(locationY - 210),
-                left: parseFloat(locationX - 25),
+                top: parseFloat(locationY - 220),
+                left:
+                  Label?.length >= 5 && Label?.length < 7
+                    ? parseFloat(locationX - 35)
+                    : Label?.length >= 7 && Label?.length <= 8
+                    ? parseFloat(locationX - 40)
+                    : Label?.length >= 8 && Label?.length < 11
+                    ? parseFloat(locationX - 51)
+                    : parseFloat(locationX - 25),
               },
             ]}>
             <View
@@ -353,12 +980,21 @@ const MoodEmotionDetector = ({navigation}) => {
                 borderRadius: 8,
                 overflow: 'hidden',
               }}>
+              {console.log(`Label`, Label.length)}
               <Text style={{paddingHorizontal: 7}}>
                 {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
                 {/* X: {locationX}, Y: {locationY} */}
               </Text>
-              <HappyIcon />
+              <SvgUri
+                width={20}
+                height={20}
+                // viewBox="0 0 24 24"
+                fill="none"
+                uri={Svgs}
+                // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+              />
             </View>
+
             <Svg
               style={{}}
               width={18}
@@ -376,6 +1012,19 @@ const MoodEmotionDetector = ({navigation}) => {
           </View>
           <View
             style={{
+              alignContent: 'center',
+              position: 'absolute',
+              top: parseFloat(locationY - 170),
+              left: parseFloat(locationX),
+              height: 20,
+              width: 20,
+              backgroundColor: 'white',
+              borderRadius: 10,
+              overflow: 'hidden',
+            }}
+          />
+          <View
+            style={{
               flex: 1,
               backgroundColor: 'transparent',
             }}
@@ -387,38 +1036,7 @@ const MoodEmotionDetector = ({navigation}) => {
       {/* Bottom Bar */}
       <View
         style={{
-          backgroundColor:
-            0 < locationX &&
-            locationX < 208 &&
-            -15 < locationY &&
-            locationY < 383
-              ? '#B78391'
-              : 208 < locationX &&
-                locationX < 411 &&
-                -15 < locationY &&
-                locationY < 383
-              ? '#0B5003'
-              : 208 < locationX &&
-                locationX < 411 &&
-                383 < locationY &&
-                locationY < 570
-              ? '#949607'
-              : 0 < locationX &&
-                locationX < 208 &&
-                570 < locationY &&
-                locationY < 774
-              ? '#62A2C4'
-              : 0 < locationX &&
-                locationX < 208 &&
-                383 < locationY &&
-                locationY < 570
-              ? '#69C069'
-              : 208 < locationX &&
-                locationX < 411 &&
-                570 < locationY &&
-                locationY < 774
-              ? '#D57F08'
-              : '#B400B9',
+          backgroundColor: BottomAndTopBar(),
           // alignItems: 'center',
           // justifyContent: 'center',
           paddingVertical: 15,
@@ -441,7 +1059,10 @@ const MoodEmotionDetector = ({navigation}) => {
               <CloseIcon width={dynamicSize(52)} height={dynamicSize(52)} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              // FindId();
+            }}>
             <View
               style={{
                 justifyContent: 'center',

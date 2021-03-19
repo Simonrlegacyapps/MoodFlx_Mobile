@@ -29,6 +29,7 @@ import {
 import Constants from '../../Constants';
 import ProgressBar from 'react-native-animated-progress';
 import Swiper from 'react-native-swiper';
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   ChartDot,
   ChartPath,
@@ -36,6 +37,7 @@ import {
   monotoneCubicInterpolation,
 } from '@rainbow-me/animated-charts';
 import GraphicChart from '../../Components/GraphicChart/GraphicChat';
+import PostRequestApi from '../../apirequest/PostRequestApi';
 
 export const {width: SIZE} = Dimensions.get('window');
 
@@ -82,6 +84,7 @@ const App = () => {
   const [LatestWeight, setLatestWeight] = useState(false);
   const [MovingTime, setMovingTime] = useState(false);
   const [Workouts, setWorkouts] = useState(false);
+  const [Perm, setPerm] = useState('');
 
   const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
@@ -101,7 +104,24 @@ const App = () => {
     type: 'Workout', // one of: ['Walking', 'StairClimbing', 'Running', 'Cycling', 'Workout']
   };
 
-  const OnAutoSync = () => {
+  useEffect(() => {
+    const checkStorage = async () => {
+      let p = await AsyncStorage.getItem('GiveHealthPerm');
+      let welcome = await JSON.parse(p);
+      await setPerm(welcome);
+      console.log('welcome', welcome);
+      if (welcome != null) {
+        console.log('good to go for API');
+      }
+    };
+
+    checkStorage();
+  }, []);
+
+  const OnAutoSync = async () => {
+    await AsyncStorage.setItem('GiveHealthPerm', 'true');
+    const a = moment().subtract(1, 'months').format('DD MMM YYYY');
+
     console.log('moment() month', new Date(a).toISOString());
     // console.log(
     //   `api.openweathermap.org/data/2.5/weather?lat=${this.state.lat}&lon=${this.state.lng}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
@@ -157,28 +177,31 @@ const App = () => {
 
         // Date of Birth Example
         AppleHealthKit.getDateOfBirth(null, async (err, results) => {
-          await setDateOfBirth(results), console.log('age', results);
+          await setDateOfBirth(results);
+          //  console.log('age', results);
         });
 
         // Get Latest Weight
         AppleHealthKit.getLatestWeight(
           null,
           async (err: string, results: Object) => {
-            await setLatestWeight(results), console.log('weight', results);
+            await setLatestWeight(results);
+            //  console.log('weight', results);
           },
         );
 
         AppleHealthKit.getHeightSamples(
           stepsCount,
           async (err: string, results: Object) => {
-            await setallHeights(results), console.log('All height', results);
+            await setallHeights(results);
+            // console.log('All height', results);
           },
         );
 
         AppleHealthKit.getLatestHeight(
           null,
           async (err: string, results: Object) => {
-            console.log('height', results);
+            // console.log('height', results);
 
             await setHeight(results);
           },
@@ -187,7 +210,7 @@ const App = () => {
         AppleHealthKit.getLatestBmi(
           null,
           async (err: string, results: Object) => {
-            console.log('BMI', results);
+            // console.log('BMI', results);
 
             await setBMI(results);
           },
@@ -197,7 +220,7 @@ const App = () => {
           async (err: Object, results: Array<Object>) => {
             await settemp(results);
 
-            console.log('All body temp', results);
+            // console.log('All body temp', results);
           },
         );
 
@@ -206,7 +229,7 @@ const App = () => {
           async (err: Object, results: Array<Object>) => {
             await setsteps(results);
 
-            console.log('All steps', results);
+            // console.log('All steps', results);
           },
         );
 
@@ -215,7 +238,7 @@ const App = () => {
           async (err: string, results: Object) => {
             await setBodyFatPerc(results);
 
-            console.log(' All Body Fat % ', results);
+            // console.log(' All Body Fat % ', results);
           },
         );
 
@@ -224,7 +247,7 @@ const App = () => {
           async (err: Object, results: Array<Object>) => {
             await setWeight(results);
 
-            console.log(' All Body Weight ', results);
+            // console.log(' All Body Weight ', results);
           },
         );
 
@@ -233,7 +256,7 @@ const App = () => {
           async (err: Object, results: Array<Object>) => {
             await setBP(results);
 
-            console.log('All BP', results);
+            // console.log('All BP', results);
           },
         );
         // Need to check from here for data ================================================================>>>>>>>>>>>>>>>>>>>>
@@ -241,7 +264,7 @@ const App = () => {
           stepsCount,
           async (err: Object, results: Object) => {
             await setCalories(results);
-            console.log('Active energy count', results);
+            // console.log('Active energy count', results);
           },
         );
 
@@ -249,7 +272,7 @@ const App = () => {
           stepsCount,
           async (err: Object, results: Array<Object>) => {
             await setDistance(results);
-            console.log('Distance in KMS', results);
+            // console.log('Distance in KMS', results);
           },
         );
 
@@ -257,7 +280,7 @@ const App = () => {
           stepsCount,
           async (err: Object, results: Array<Object>) => {
             await setHeartRate(results);
-            console.log('Heart Samples', results);
+            // console.log('Heart Samples', results);
           },
         );
 
@@ -265,7 +288,7 @@ const App = () => {
           stepsCount,
           async (err: Object, results: Array<Object>) => {
             await setSleep(results);
-            console.log('Sleep Analysis', results);
+            // console.log('Sleep Analysis', results);
           },
         );
 
@@ -273,7 +296,7 @@ const App = () => {
           null,
           async (err: Object, results: Object) => {
             await setDOB(results);
-            console.log('DOB', results);
+            // console.log('DOB', results);
           },
         );
 
@@ -304,27 +327,29 @@ const App = () => {
             // );
           },
         );
-        console.log(
-          `bhal bhal bhal bhal blah blaj>>>>>>>>>>28684628643464646436546543265423654235643`,
-          Workouts,
-        );
+        // console.log(
+        //   `bhal bhal bhal bhal blah blaj>>>>>>>>>>28684628643464646436546543265423654235643`,
+        //   Workouts,
+        // );
       });
     }
 
     CheckForWeather();
     setTimeout(() => {
       // findTime();
-      while (Fsteps.length == 0 && WalkTime.length == 0) {
-        filterDates();
-        filterSteps();
-        AddDataToFilter();
-      }
+      // while (Fsteps.length == 0 || WalkTime.length == 0) {
+      filterDates();
+      filterSteps();
+      AddDataToFilter();
+      // }
     }, 1000);
   };
 
   const dates = [];
 
   const filterDates = () => {
+    console.log(`------------steps in filterdates----------`, steps);
+
     steps &&
       steps.map((i) => {
         var date = moment(i.startDate).format('DD-MMM-YYYY');
@@ -453,6 +478,27 @@ const App = () => {
     );
 
     console.log(`Fsteps at last`, Fsteps);
+    console.log(`walkTime at last`, WalkTime);
+    console.log(`Workouts at last`, Workouts);
+    if (Fsteps.length > 5 && WalkTime.length > 5) {
+      console.log('good to go for API');
+      const data = {
+        steps: Fsteps,
+        moving_time: WalkTime,
+        workout_time: Workouts,
+      };
+      // PostRequestApi('',data)
+      // .then((resp) => {
+      //   if (resp.status == 200) {
+      //     console.log('set division status========>>>>>>>>', resp.data);
+      //   } else {
+      //     // setLoading(false);
+      //   }
+      // })
+      // .catch((err) => {
+      //   console.log('err', err), setLoading(false), setAPIfail(true);
+      // });
+    }
   };
   return (
     <View>
