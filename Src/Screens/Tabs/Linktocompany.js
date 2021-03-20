@@ -364,3 +364,71 @@ const styles = StyleSheet.create({
 });
 
 export default Linktocompany;
+
+//
+
+// <View style={styles.centeredView}>
+{
+  /* <Modal
+animationType="slide"
+transparent={true}
+visible={modalVisible}
+onRequestClose={() => {
+  Alert.alert('Modal has been closed.');
+  setModalVisible(!modalVisible);
+}}>
+<View
+  style={{
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
+  }}>
+  <View
+    style={{
+      backgroundColor: 'white',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+      width: '80%',
+      minHeight: 100,
+      borderRadius: 15,
+      paddingTop: 14,
+      paddingBottom: 14,
+    }}>
+    {Divisions &&
+      Divisions.length > 0 &&
+      Divisions.map((item, index) => {
+        return (
+          <TouchableOpacity onPress={()=>{}} key={index}>
+            <Text
+              style={{
+                textAlign: 'center',
+                marginVertical: 10,
+                fontSize: 18,
+                fontFamily: RubikRegular,
+              }}>
+              Hello World!
+            </Text>
+            <View
+              style={{
+                alignSelf: 'center',
+                width: '90%',
+                borderBottomColor: '#ebebeb',
+                borderBottomWidth: 1,
+                height: 1,
+              }}
+            />
+          </TouchableOpacity>
+        );
+      })}
+  </View>
+</View>
+</Modal>
+</View> */
+}

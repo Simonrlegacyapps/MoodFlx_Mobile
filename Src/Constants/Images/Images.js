@@ -11,4 +11,5 @@ export default {
   Calories: require('../../../assets/newImage/Calories/calories.png'),
   Distance: require('../../../assets/newImage/Distance/place.png'),
   Time: require('../../../assets/newImage/Time/time.png'),
+  DropDown: require('../../../assets/newImage/DropDown/Down.png'),
 };

@@ -21,6 +21,10 @@ import CloseIcon from '../../assets/commonicons/CloseIcon';
 import QuestionMarkIcon from '../../assets/commonicons/QuestionMarkIcon';
 import {dynamicSize} from '../Constants/sizeChoose';
 import moment from 'moment';
+import GetLocation from 'react-native-get-location';
+import PostRequestApi from '../apirequest/PostRequestApi';
+import DeviceInfo from 'react-native-device-info';
+
 const {StatusBarManager, statusBarHeight} = NativeModules;
 
 const moods = [
@@ -42,8 +46,8 @@ const {width, height} = Dimensions.get('screen');
 const MoodEmotionDetector = ({navigation}) => {
   console.log(`width and height`, width, height);
   console.log(`statusBarHeight`, statusBarHeight);
-  const [locationX, setLocationX] = useState(0);
-  const [locationY, setLocationY] = useState(0);
+  const [locationX, setLocationX] = useState(240);
+  const [locationY, setLocationY] = useState(330);
   const [ShowDraggable, setShowDraggable] = useState(true);
   const [Location, setLocation] = useState([]);
   const [Moving, setMoving] = useState(false);
@@ -54,8 +58,24 @@ const MoodEmotionDetector = ({navigation}) => {
   const [StatusVertical, setStatusVertical] = useState(0);
   const [GetMoods, setGetMoods] = useState(null);
   const [Svgs, setSvgs] = useState('');
+  const [lng, setlng] = useState(false);
+  const [lat, setlat] = useState(false);
 
   useEffect(() => {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+      .then((location) => {
+        //   console.log('Success', location);
+        setlat(location.latitude);
+        setlng(location.longitude);
+      })
+      .catch((error) => {
+        const {code, message} = error;
+        console.log('error', code, message);
+      });
+
     StatusBarManager.getHeight((statusBarHeight) => {
       setStatusVertical(statusBarHeight.height);
     });
@@ -68,17 +88,43 @@ const MoodEmotionDetector = ({navigation}) => {
         await setGetMoods(res.data);
         console.log('response of division', res.data);
 
-        console.log(`GetMoods`, GetMoods);
         // setSelectedDivisionId(res.data[0].id);
       });
   }, []);
+  console.log(`GetMoods`, GetMoods);
 
   const FindId = () => {
     const Id = GetMoods.find(({name}) => {
       console.log(`name`, name);
       return name === 'Chilled';
     });
-    console.log(`Id`, Id);
+    console.log(`Id`, Id.id);
+    console.log(`lat, lng`, lat, lng);
+    const deviceId = DeviceInfo.getUniqueId();
+
+    const params = {
+      mood_id: Id.id,
+      device_id: deviceId,
+      lat: lat,
+      long: lng,
+    };
+    PostRequestApi('moodUpdate', params)
+      .then((resp) => {
+        if (resp.status == 200) {
+          // setLoading(false);
+          console.log('OTP of respose mood', resp.data);
+          // navigation.navigate('VerifyEmail', {
+          //   code: resp.data.otp,
+          //   mail: value,
+          //   deviceID: deviceId,
+          // });
+          console.log(`params`, params);
+        }
+      })
+      .catch((err) => {
+        console.log('err of response mood', err);
+      });
+    navigation.replace('HomeScreen');
   };
 
   const FindSvg = ({moveY, moveX, dx, dy, y0, x0}) => {
@@ -873,7 +919,8 @@ const MoodEmotionDetector = ({navigation}) => {
   };
 
   const onPressButton = () => {
-    navigation.replace('HomeScreen');
+    // navigation.replace('HomeScreen');
+    FindId();
   };
 
   const renderLine = (x, y) => {
@@ -990,7 +1037,9 @@ const MoodEmotionDetector = ({navigation}) => {
                 height={20}
                 // viewBox="0 0 24 24"
                 fill="none"
-                uri={Svgs}
+                uri={
+                  'http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg'
+                }
                 // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
               />
             </View>
@@ -1075,7 +1124,7 @@ const MoodEmotionDetector = ({navigation}) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => onPressButton()}
+            onPress={() => FindId()}
             style={{
               height: dynamicSize(52),
               width: dynamicSize(197),

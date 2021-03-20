@@ -6,6 +6,7 @@ import {
   TextInput,
   Image,
   ActivityIndicator,
+  Keyboard,
 } from 'react-native';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
@@ -19,8 +20,10 @@ const EmailConfirmation = ({navigation}) => {
   const [email, setemail] = useState(null);
   const [ShowWarning, setShowWarning] = useState(false);
   const [APIfail, setAPIfail] = useState(false);
+  const [CompanyFail, setCompanyFail] = useState(false);
 
   const onLink = () => {
+    Keyboard.dismiss;
     const deviceId = DeviceInfo.getUniqueId();
     const params = {
       email: value,
@@ -30,7 +33,7 @@ const EmailConfirmation = ({navigation}) => {
     setAPIfail(false);
     PostRequestApi('linkToCompany', params)
       .then((resp) => {
-        if (resp.status == 200) {
+        if (resp.status == 200 && resp.data.success == true) {
           setLoading(false);
           console.log('otp', resp.data);
           navigation.navigate('VerifyEmail', {
@@ -39,6 +42,7 @@ const EmailConfirmation = ({navigation}) => {
             deviceID: deviceId,
           });
         } else {
+          setCompanyFail(true);
           setLoading(false);
         }
       })
@@ -77,6 +81,22 @@ const EmailConfirmation = ({navigation}) => {
             color: 'red',
           }}>
           Sever Error: Please try again
+        </Text>
+      )}
+      {CompanyFail && (
+        <Text
+          style={{
+            fontWeight: '300',
+            letterSpacing: 0.2,
+            fontSize: 12,
+            marginTop: 12,
+            marginLeft: 62,
+            marginRight: 62,
+            textAlign: 'center',
+            // width: '60%',
+            color: 'red',
+          }}>
+          Sorry, your Componey does not exists
         </Text>
       )}
       <View
@@ -118,7 +138,8 @@ const EmailConfirmation = ({navigation}) => {
             style={{
               height: dynamicSize(50),
               width: dynamicSize(250),
-              backgroundColor: 'white',
+              // backgroundColor: 'white',
+              color: 'black',
               borderColor: 'transparent',
               borderWidth: 1,
               borderRadius: 10,

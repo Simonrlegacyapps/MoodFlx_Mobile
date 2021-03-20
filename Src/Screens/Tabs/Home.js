@@ -467,14 +467,13 @@ const App = () => {
     <Text style={{fontSize: 22, color: '#5947D0'}}>{'happiest'}</Text>
   );
 
-  const AddDataToFilter = () => {
+  const AddDataToFilter = async () => {
     const deviceId = DeviceInfo.getUniqueId();
     Fsteps.push(
       {age: DateOfBirth.age},
       {height: Height != null ? Height.value : 0},
       {weight: LatestWeight != null ? LatestWeight.value : 0},
       {DOB: DateOfBirth.value},
-      {device_id: deviceId},
     );
 
     console.log(`Fsteps at last`, Fsteps);
@@ -483,21 +482,46 @@ const App = () => {
     if (Fsteps.length > 5 && WalkTime.length > 5) {
       console.log('good to go for API');
       const data = {
+        device_id: 'cce143d2-f2bc-4694-8381-4bedd3606622',
         steps: Fsteps,
         moving_time: WalkTime,
-        workout_time: Workouts,
+        exercise_time: Workouts,
       };
-      // PostRequestApi('',data)
-      // .then((resp) => {
-      //   if (resp.status == 200) {
-      //     console.log('set division status========>>>>>>>>', resp.data);
-      //   } else {
-      //     // setLoading(false);
-      //   }
-      // })
-      // .catch((err) => {
-      //   console.log('err', err), setLoading(false), setAPIfail(true);
-      // });
+      console.log(`data`, data);
+
+      // PostRequestApi('updateStaffHealth', data)
+      //   .then((resp) => {
+      //     console.log(`resp`, resp);
+      //     if (resp.status == 200) {
+      //       console.log('set division status========>>>>>>>>', resp.data);
+      //     } else {
+      //       // setLoading(false);
+      //       console.log(`api is not passing status 200`);
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log('err', err);
+      //   });
+
+      async function postData(url = '', data = {}) {
+        // Default options are marked with *
+        const response = await fetch(url, {
+          method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          headers: {
+            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: JSON.stringify(data), // body data type must match "Content-Type" header
+        });
+        return response.json(); // parses JSON response into native JavaScript objects
+      }
+      console.log(`data check agagin`, data);
+
+      postData('http://admin.moodflo.com/api/updateStaffHealth', {data}).then(
+        (data) => {
+          console.log('here here', data); // JSON data parsed by `data.json()` call
+        },
+      );
     }
   };
   return (
