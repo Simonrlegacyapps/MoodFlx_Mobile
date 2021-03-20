@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -11,12 +11,12 @@ import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import Constants from '../../Constants';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import PostRequestApi from '../../apirequest/PostRequestApi';
-import { useDispatch } from 'react-redux';
-import { OTP_Verify } from '../../redux/actions/actions';
-import { useRoute } from '@react-navigation/native';
-import { dynamicSize } from '../../Constants/sizeChoose';
+import {useDispatch} from 'react-redux';
+import {OTP_Verify} from '../../redux/actions/actions';
+import {useRoute} from '@react-navigation/native';
+import {dynamicSize} from '../../Constants/sizeChoose';
 
-const VerifyEmail = ({ navigation }) => {
+const VerifyEmail = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
   const [Code, setCode] = useState(0);
   const [Loading, setLoading] = useState(false);
@@ -25,33 +25,34 @@ const VerifyEmail = ({ navigation }) => {
   const dispatch = useDispatch();
   const route = useRoute();
 
-  const { code } = route.params;
+  const {code, mail, deviceID} = route.params;
   // console.log('code ye hai ', code);
   const onLink = () => {
     const params = {
-      email: 'test.chapter247@gmail.com',
+      email: mail,
       otp: Code,
+      device_id: deviceID,
     };
     setLoading(true);
     {
       Code == code
         ? PostRequestApi('verifyOTP', params).then((resp) => {
-          if (resp.status == 200) {
-            setLoading(false);
-            console.log('Sucess');
-            dispatch(OTP_Verify(resp.data));
-            navigation.navigate('Linktocompany');
-          }
-        })
+            if (resp.status == 200) {
+              setLoading(false);
+              console.log('Sucess');
+              dispatch(OTP_Verify(resp.data));
+              navigation.navigate('Linktocompany', {email: mail});
+            }
+          })
         : (setShowWarning(true), setLoading(false));
     }
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <AnonymousHeader backGround />
-      <View style={{ flex: 1, alignItems: 'center', marginTop: 100 }}>
-        <Text style={{ fontWeight: '500', fontSize: 24 }}>Verify your email</Text>
+      <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
+        <Text style={{fontWeight: '500', fontSize: 24}}>Verify your email</Text>
         <Text
           numberOfLines={2}
           style={{
@@ -98,7 +99,7 @@ const VerifyEmail = ({ navigation }) => {
           Temporary for now, Code : {code}
         </Text>
         <OTPInputView
-          style={{ width: '67%', height: 100 }}
+          style={{width: '67%', height: 100}}
           pinCount={4}
           // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
           // onCodeChanged = {code => { this.setState({code})}}
@@ -111,7 +112,7 @@ const VerifyEmail = ({ navigation }) => {
             width: dynamicSize(56),
             fontSize: dynamicSize(18),
           }}
-          codeInputHighlightStyle={{ color: 'black' }}
+          codeInputHighlightStyle={{color: 'black'}}
           // onCodeFilled={(code) => {
           //   setCode(code);
           //   console.log(`Code is ${code}, you are good to go!`);
@@ -166,7 +167,7 @@ const VerifyEmail = ({ navigation }) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
+            <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
               Continue
             </Text>
           </View>

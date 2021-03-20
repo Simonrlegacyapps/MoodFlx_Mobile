@@ -1,100 +1,132 @@
-import React, {Component} from 'react';
-
-import Svg, {Line} from 'react-native-svg';
-
+import React, { Component } from "react";
 import {
+  StatusBar,
+  AppRegistry,
   StyleSheet,
-  View,
-  Platform,
   Text,
+  View,
   PanResponder,
-  Image,
+  TouchableOpacity,
   Dimensions,
-} from 'react-native';
+} from "react-native";
 
-var width = Dimensions.get('window').width;
-var height = Dimensions.get('window').height;
+const { width, height } = Dimensions.get("window");
 
-export default class App extends Component {
-  constructor() {
-    super();
-    //initialize state
-    this.panResponder;
-    this.state = {
-      startTouchX: 0,
-      startTouchY: 0,
+const getDirectionAndColor = ( { moveX, moveY, dx, dy, y0, x0 }) => {
 
-      endTouchX: 0,
-      endTouchY: 0,
-    };
+  console.log('moveX, moveY, dx, dy, ',moveY, moveX, dx, dy, y0, x0 )
+  const draggedDown = dy > 30;
+  const draggedUp = dy < -30;
+  const draggedLeft = dx < -30;
+  const draggedRight = dx > 30;
+  const isRed = moveY < 90 && moveY > 40 && moveX > 0 && moveX < width;
+  const isBlue = moveY > height - 50 && moveX > 0 && moveX < width;
+  let dragDirection = "";
 
-    //panResponder initialization
-    this.panResponder = PanResponder.create({
+  if (draggedDown || draggedUp) {
+    if (draggedDown) dragDirection += "dragged down ";
+    if (draggedUp) dragDirection += "dragged up ";
+  }
+
+  if (draggedLeft || draggedRight) {
+    if (draggedLeft) dragDirection += "dragged left ";
+    if (draggedRight) dragDirection += "dragged right ";
+  }
+
+  if (isRed) return `red ${dragDirection}`;
+  if (isBlue) return `blue ${dragDirection}`;
+  if (dragDirection) return dragDirection;
+};
+
+export default class MoodEmotionDetectorTouch extends Component {
+  state = {
+    zone: "Still Touchable",
+  };
+  componentWillMount() {
+    this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (event, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (event, gestureState) => {
-        this.setState({
-          startTouchX: event.nativeEvent.locationX.toFixed(2),
-          startTouchY: event.nativeEvent.locationY.toFixed(2),
-        });
-      },
-      onMoveShouldSetPanResponder: (event, gestureState) => false,
-      onMoveShouldSetPanResponderCapture: (event, gestureState) => false,
-      onPanResponderGrant: (event, gestureState) => false,
-      onPanResponderMove: (event, gestureState) => {},
-      onPanResponderRelease: (event, gestureState) => {
-        this.setState({
-          endTouchX: event.nativeEvent.locationX.toFixed(2),
-          endTouchY: event.nativeEvent.locationY.toFixed(2),
-        });
-      },
-    });
-    this.setState({
-      startTouchX: 0,
-      startTouchY: 0,
-
-      endTouchX: 0,
-      endTouchY: 0,
+    onStartShouldSetPanResponderCapture: (event, gestureState) => true,
+    onMoveShouldSetPanResponder: (event, gestureState) => {
+      console.log('compare compare compare ===========>>>>>>>>>> ', gestureState);
+      !!getDirectionAndColor(gestureState)
+    },
+    onPanResponderStart: (evt, gestureState) => {
+      console.log('check check check ================>>>>>>>>>>>>.',evt, gestureState.y0, gestureState.x0)
+    },
+    onMoveShouldSetPanResponderCapture: (event, gestureState) => true,
+    onPanResponderGrant: (event, gestureState) => true,
+    onPanResponderMove: (event, gestureState) => {
+      const drag = getDirectionAndColor(gestureState);
+      // setLabel(drag)
+      // Animated.event([
+      //   null,
+      //   {
+      //     dx: pan.x,
+      //     dy: pan.y,
+      //   },
+      // ]);
+      // {
+      //   forceUpdate;
+      // }
+      // Location.push({
+      //   x: event.nativeEvent.locationX,
+      //   y: event.nativeEvent.locationY,
+      // });
+      // console.log('event.nativeEvent.locationX', event.nativeEvent.locationX);
+      // console.log('event.nativeEvent.locationY', event.nativeEvent.locationY);
+      // setMoving(true);
+    },
+    onPanResponderRelease: (event, gestureState) => true,
     });
   }
+
+
+
+  onPress = () => {
+    this.setState({
+      zone: "I got touched with a parent pan responder",
+    });
+  };
+
   render() {
     return (
-      <View style={styles.MainContainer}>
-        <View style={styles.childView}>
-          <Svg height={height} width={width} position="absolute">
-            <Line
-              x1={this.state.startTouchX}
-              y1={this.state.startTouchY}
-              x2={this.state.endTouchX}
-              y2={this.state.endTouchY}
-              stroke="red"
-              strokeWidth="8"
-            />
-          </Svg>
-          <View
-            style={{flex: 1, backgroundColor: 'transparent'}}
-            {...this.panResponder.panHandlers}
-          />
+      <View style={styles.container} {...this._panResponder.panHandlers}>
+        <StatusBar hidden />
+        <View style={styles.zone1} />
+        <View style={styles.center}>
+          <TouchableOpacity onPress={this.onPress}>
+            <Text>{this.state.zone}</Text>
+          </TouchableOpacity>
         </View>
+        <View style={styles.zone2} />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  MainContainer: {
+  container: {
     flex: 1,
   },
-
-  childView: {
+  center: {
     flex: 1,
-    overflow: 'hidden',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  point: {
-    height: 22,
-    width: 22,
-    marginTop: 5,
-    position: 'absolute',
-    borderRadius: 14,
-    backgroundColor: '#afeeee',
+  zone1: {
+    top: 40,
+    left: 0,
+    right: 0,
+    height: 50,
+    position: "absolute",
+    backgroundColor: "red",
+  },
+  zone2: {
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 50,
+    position: "absolute",
+    backgroundColor: "blue",
   },
 });

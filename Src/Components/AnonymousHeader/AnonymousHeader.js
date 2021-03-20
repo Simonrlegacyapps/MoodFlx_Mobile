@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, Image } from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, Image} from 'react-native';
 import Constants from '../../Constants';
 import ToggleSwitch from 'toggle-switch-react-native';
 import AnonymousIcon from '../../../assets/commonicons/AnonymousIcon';
+import {RubikLight, RubikMedium} from '../../Constants/fonts/Fonts';
 
-
-const AnonymousHeader = ({ backGround }) => {
+const AnonymousHeader = ({backGround}) => {
   const [Anonymous, setAnonymous] = useState(false);
 
   return backGround ? (
@@ -42,19 +42,31 @@ const AnonymousHeader = ({ backGround }) => {
             <AnonymousIcon />
           </View>
         </View>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: '500', marginBottom: 5 }}>
+        <View style={{flex: 1}}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: '500',
+              marginBottom: 5,
+              fontFamily: RubikMedium,
+            }}>
             Anonymous
           </Text>
-          <Text style={{ fontSize: 13, fontWeight: '400', color: 'grey' }}>
+          <Text
+            style={{
+              fontSize: 13,
+              fontWeight: '400',
+              color: 'grey',
+              fontFamily: RubikLight,
+            }}>
             Your data is private
           </Text>
         </View>
-        <View style={{ marginHorizontal: 16 }}>
+        <View style={{marginHorizontal: 16}}>
           <ToggleSwitch
             isOn={Anonymous}
             onColor="#7FE3F0"
-            labelStyle={{ color: 'black', fontWeight: '900' }}
+            labelStyle={{color: 'black', fontWeight: '900'}}
             size="large"
             onToggle={(isOn) => {
               console.log('changed to : ', isOn), setAnonymous(isOn);
@@ -90,19 +102,19 @@ const AnonymousHeader = ({ backGround }) => {
           <AnonymousIcon />
         </View>
       </View>
-      <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 16, fontWeight: '500', marginBottom: 5 }}>
+      <View style={{flex: 1}}>
+        <Text style={{fontSize: 16, fontWeight: '500', marginBottom: 5}}>
           Anonymous
         </Text>
-        <Text style={{ fontSize: 13, fontWeight: '400', color: 'grey' }}>
+        <Text style={{fontSize: 13, fontWeight: '400', color: 'grey'}}>
           Your data is private
         </Text>
       </View>
-      <View style={{ marginHorizontal: 16 }}>
+      <View style={{marginHorizontal: 16}}>
         <ToggleSwitch
           isOn={Anonymous}
           onColor="#7FE3F0"
-          labelStyle={{ color: 'black', fontWeight: '900' }}
+          labelStyle={{color: 'black', fontWeight: '900'}}
           size="large"
           onToggle={(isOn) => {
             console.log('changed to : ', isOn), setAnonymous(isOn);
