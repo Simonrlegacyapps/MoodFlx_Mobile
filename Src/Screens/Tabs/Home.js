@@ -480,48 +480,42 @@ const App = () => {
     console.log(`walkTime at last`, WalkTime);
     console.log(`Workouts at last`, Workouts);
     if (Fsteps.length > 5 && WalkTime.length > 5) {
-      console.log('good to go for API');
-      const data = {
-        device_id: 'cce143d2-f2bc-4694-8381-4bedd3606622',
-        steps: Fsteps,
-        moving_time: WalkTime,
+      // console.log('good to go for API');
+      // const data = {
+      //   device_id: deviceId,
+      //   steps: Fsteps,
+      //   moving_time: WalkTime,
+      //   exercise_time: Workouts,
+      // };
+      var axios = require('axios');
+      var data = JSON.stringify({
+        device_id: deviceId,
         exercise_time: Workouts,
-      };
+        moving_time: WalkTime,
+        steps: Fsteps,
+      });
       console.log(`data`, data);
 
-      // PostRequestApi('updateStaffHealth', data)
-      //   .then((resp) => {
-      //     console.log(`resp`, resp);
-      //     if (resp.status == 200) {
-      //       console.log('set division status========>>>>>>>>', resp.data);
-      //     } else {
-      //       // setLoading(false);
-      //       console.log(`api is not passing status 200`);
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log('err', err);
-      //   });
-
-      async function postData(url = '', data = {}) {
-        // Default options are marked with *
-        const response = await fetch(url, {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-          headers: {
-            'Content-Type': 'application/json',
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: JSON.stringify(data), // body data type must match "Content-Type" header
-        });
-        return response.json(); // parses JSON response into native JavaScript objects
-      }
-      console.log(`data check agagin`, data);
-
-      postData('http://admin.moodflo.com/api/updateStaffHealth', {data}).then(
-        (data) => {
-          console.log('here here', data); // JSON data parsed by `data.json()` call
+      var config = {
+        method: 'post',
+        url: 'http://admin.moodflo.com/api/updateStaffHealth',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
         },
-      );
+        data: data,
+      };
+
+      axios(config)
+        .then(function (response) {
+          console.log(
+            'Success message for health data',
+            JSON.stringify(response.data),
+          );
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     }
   };
   return (

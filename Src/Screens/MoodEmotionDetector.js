@@ -112,7 +112,7 @@ const MoodEmotionDetector = ({navigation}) => {
       .then((resp) => {
         if (resp.status == 200) {
           // setLoading(false);
-          console.log('OTP of respose mood', resp.data);
+          console.log('Success Message of respose mood', resp.data);
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,

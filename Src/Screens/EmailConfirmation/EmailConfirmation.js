@@ -135,13 +135,16 @@ const EmailConfirmation = ({navigation}) => {
             autoCapitalize={false}
             autoCompleteType={false}
             placeholder={'example@work-mail.com'}
+            placeholderTextColor={'#8A8BAB'}
             style={{
               height: dynamicSize(50),
               width: dynamicSize(250),
-              // backgroundColor: 'white',
-              color: 'black',
-              borderColor: 'transparent',
-              borderWidth: 1,
+              backgroundColor: 'white',
+              // color: 'blue',
+              // borderColor: 'transparent',
+              // fontWeight: '700',
+
+              // borderWidth: 1,
               borderRadius: 10,
               paddingLeft: 15,
             }}
