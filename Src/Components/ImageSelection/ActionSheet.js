@@ -1,0 +1,137 @@
+import React, {Component} from 'react';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import Modal from 'react-native-modal';
+import {RubikRegular} from '../../Constants/fonts/Fonts';
+type props = {
+  modalVisible: Boolean,
+  dismissModalHandler: Object,
+  selectedValue: Object,
+};
+
+const ActionSheet = ({
+  modalVisible,
+  dismissModalHandler,
+  selectedValue,
+}: props) => {
+  console.log(
+    `modalView, dismissModalHandler, selectedValue`,
+    modalVisible,
+    dismissModalHandler,
+    selectedValue,
+  );
+  return (
+    <Modal
+      style={styles.modalView}
+      testID={'modal'}
+      onSwipeComplete={dismissModalHandler}
+      useNativeDriverForBackdrop
+      swipeDirection={['down']}
+      isVisible={modalVisible}
+      customBackdrop={
+        <TouchableWithoutFeedback onPress={dismissModalHandler}>
+          <View style={{flex: 1, backgroundColor: '#000000'}} />
+        </TouchableWithoutFeedback>
+      }>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.upperContainer}>
+          {/* <View style={styles.upperHandel} /> */}
+          <TouchableOpacity
+            onPress={() => selectedValue(1)}
+            activeOpacity={0.9}
+            style={styles.buttonsStyle}>
+            <Text style={styles.textStyles}>Camera</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectedValue(2)}
+            activeOpacity={0.9}
+            style={styles.buttonsStyle}>
+            <Text style={styles.textStyles}>Photo Library</Text>
+          </TouchableOpacity>
+        </View>
+        {/* <TouchableOpacity
+          onPress={dismissModalHandler}
+          activeOpacity={0.9}
+          style={styles.cancelButtonStyle}>
+          <Text style={styles.textStyles}>Cancel</Text>
+        </TouchableOpacity> */}
+      </SafeAreaView>
+    </Modal>
+  );
+};
+
+export default ActionSheet;
+
+const styles = StyleSheet.create({
+  container: {
+    // height: 400,
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderRadius: 20,
+    // padding:20,
+  },
+  modalView: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
+  upperContainer: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginHorizontal: 10,
+    minWidth: '75%',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  upperHandel: {
+    height: 7,
+    width: 70,
+    borderRadius: 10,
+    alignSelf: 'center',
+    backgroundColor: '#ebebeb',
+    marginTop: 10,
+  },
+  upperDetailStyle: {
+    height: 60,
+    width: '95%',
+    alignSelf: 'center',
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonsStyle: {
+    height: 55,
+    width: '100%',
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // borderTopColor: '#ebebeb',
+    // borderTopWidth: 1,
+  },
+  cancelButtonStyle: {
+    height: 55,
+    width: '95%',
+    backgroundColor: 'red',
+    alignSelf: 'center',
+    borderRadius: 20,
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textStyles: {
+    fontSize: 18,
+    color: '#000',
+    fontWeight: '500',
+    fontFamily: RubikRegular,
+  },
+});

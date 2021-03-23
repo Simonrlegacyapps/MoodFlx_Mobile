@@ -22,6 +22,7 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {
   RubikBlack,
   RubikBold,
+  RubikExtraBold,
   RubikLight,
   RubikMedium,
   RubikRegular,
@@ -39,7 +40,7 @@ import {
 import GraphicChart from '../../Components/GraphicChart/GraphicChat';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 
-export const {width: SIZE} = Dimensions.get('window');
+export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
 export const data = [
   {x: 1453075200, y: 1.47},
@@ -85,6 +86,7 @@ const App = () => {
   const [MovingTime, setMovingTime] = useState(false);
   const [Workouts, setWorkouts] = useState(false);
   const [Perm, setPerm] = useState('');
+  const [PermWeather, setPermWeather] = useState(false);
 
   const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
@@ -105,21 +107,34 @@ const App = () => {
   };
 
   useEffect(() => {
-    const checkStorage = async () => {
-      let p = await AsyncStorage.getItem('GiveHealthPerm');
-      let welcome = await JSON.parse(p);
-      await setPerm(welcome);
-      console.log('welcome', welcome);
-      if (welcome != null) {
-        console.log('good to go for API');
-      }
-    };
-
+    CheckForWeather();
     checkStorage();
-  }, []);
+  }, [10]);
+
+  const checkStorage = async () => {
+    let p = await AsyncStorage.getItem('GiveHealthPerm');
+    let welcome = await JSON.parse(p);
+    await setPerm(welcome);
+    console.log('welcome', welcome);
+    if (welcome != null) {
+      console.log('good to go for API in async');
+      await OnAutoSync();
+      console.log(`auto sync function called`);
+      filterDates();
+      filterSteps();
+      AddDataToFilter();
+    }
+  };
+  // useEffect(() => {
+  //   OnAutoSync();
+  //   setTimeout(() => {
+  //     filterDates();
+  //     filterSteps();
+  //     AddDataToFilter();
+  //   }, 1000);
+  // }, [10]);
 
   const OnAutoSync = async () => {
-    await AsyncStorage.setItem('GiveHealthPerm', 'true');
     const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
     console.log('moment() month', new Date(a).toISOString());
@@ -151,6 +166,7 @@ const App = () => {
             PERMS.FlightsClimbed,
             PERMS.DistanceCycling,
             PERMS.Workout,
+            PERMS.StandHours,
           ],
         },
       };
@@ -169,7 +185,7 @@ const App = () => {
           console.log('error', code, message);
         });
 
-      AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
+      return AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
         if (err) {
           console.log('error initializing Healthkit: ', err);
           return;
@@ -308,7 +324,7 @@ const App = () => {
             }
             await setMovingTime(results);
             // console.log(
-            //   '<<<<<<<<============== Time ==============>>>>>>>>>',
+            //   '<<<<<<<<============== Time walking ==============>>>>>>>>>',
             //   results,
             // );
           },
@@ -335,14 +351,6 @@ const App = () => {
     }
 
     CheckForWeather();
-    setTimeout(() => {
-      // findTime();
-      // while (Fsteps.length == 0 || WalkTime.length == 0) {
-      filterDates();
-      filterSteps();
-      AddDataToFilter();
-      // }
-    }, 1000);
   };
 
   const dates = [];
@@ -459,22 +467,14 @@ const App = () => {
       )
       .then((response) => {
         setWeather(response.data);
+        console.log(`response.data for weather`, response.data);
       })
       .catch(function (error) {});
   };
 
-  const happiest = (
-    <Text style={{fontSize: 22, color: '#5947D0'}}>{'happiest'}</Text>
-  );
-
   const AddDataToFilter = async () => {
     const deviceId = DeviceInfo.getUniqueId();
-    Fsteps.push(
-      {age: DateOfBirth.age},
-      {height: Height != null ? Height.value : 0},
-      {weight: LatestWeight != null ? LatestWeight.value : 0},
-      {DOB: DateOfBirth.value},
-    );
+    Fsteps.push();
 
     console.log(`Fsteps at last`, Fsteps);
     console.log(`walkTime at last`, WalkTime);
@@ -493,6 +493,10 @@ const App = () => {
         exercise_time: Workouts,
         moving_time: WalkTime,
         steps: Fsteps,
+        height: Height != null ? Height.value : 0,
+        DOB: DateOfBirth.value,
+        weight: LatestWeight != null ? LatestWeight.value : 0,
+        age: DateOfBirth.age,
       });
       console.log(`data`, data);
 
@@ -509,202 +513,516 @@ const App = () => {
       axios(config)
         .then(function (response) {
           console.log(
-            'Success message for health data',
+            '✅ ✅ ✅ ✅ Success message for health data ✅ ✅ ✅ ✅',
             JSON.stringify(response.data),
           );
         })
         .catch(function (error) {
-          console.log(error);
+          console.log('❌ ❌ ❌ ❌ error for health data ❌ ❌ ❌ ❌', error);
         });
     }
   };
-  return (
-    <View>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={{backgroundColor: 'white'}}>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <View style={styles.HeaderView}>
-            <TouchableOpacity
-              onPress={() => {
-                OnAutoSync();
-              }}
-              style={{
-                flexDirection: 'row',
-              }}>
-              <View style={styles.syncButtonView}>
-                <Image
-                  style={{height: 20, width: 20}}
-                  source={Constants.Images.Sync}
-                />
-              </View>
-              <View style={{alignContent: 'center', paddingHorizontal: 15}}>
-                <Text style={styles.lightText}>Sync your</Text>
-                <Text style={styles.normalText}>Fitness data</Text>
-              </View>
-            </TouchableOpacity>
-            <View style={styles.ColoredView}>
-              <Text style={styles.ColoredText}>Anonymous</Text>
-            </View>
-          </View>
-          <View style={styles.ProgressBarView}>
-            <ProgressBar
-              progress={66.66}
-              height={10}
-              backgroundColor="#CB9866"
-            />
-            <View style={{flexDirection: 'row'}}>
-              <Text style={[styles.SmallThinText, {flex: 1}]}>
-                Try add 3 moods per day
-              </Text>
-              <Text style={styles.SmallThinText}>2/3</Text>
-            </View>
-          </View>
 
-          <Swiper
-            style={styles.wrapper}
-            showsButtons={true}
-            dotStyle={{height: 0, width: 0}}
-            activeDotStyle={{height: 0, width: 0}}>
+  return (
+    <View style={{flex: 1}}>
+      <Swiper
+        buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
+        dotStyle={{height: 0, width: 0}}
+        activeDotStyle={{height: 0, width: 0}}
+        style={{backgroundColor: 'white'}}
+        showsButtons={true}>
+        <View>
+          <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            style={styles.scrollView}>
+            <View style={styles.HeaderView}>
+              <TouchableOpacity
+                onPress={async () => {
+                  await AsyncStorage.setItem('GiveHealthPerm', 'true');
+                  checkStorage();
+                  // OnAutoSync();
+                  // filterDates();
+                  // filterSteps();
+                  // AddDataToFilter();
+                }}
+                style={{
+                  flexDirection: 'row',
+                }}>
+                <View style={styles.syncButtonView}>
+                  <Image
+                    style={{height: 20, width: 20}}
+                    source={Constants.Images.Sync}
+                  />
+                </View>
+                <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+                  <Text style={styles.lightText}>Sync your</Text>
+                  <Text style={styles.normalText}>Fitness data</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={styles.ColoredView}>
+                <Text style={styles.ColoredText}>Anonymous</Text>
+              </View>
+            </View>
+            <View style={styles.ProgressBarView}>
+              <ProgressBar
+                progress={66.66}
+                height={10}
+                backgroundColor="#CB9866"
+              />
+              <View style={{flexDirection: 'row'}}>
+                <Text style={[styles.SmallThinText, {flex: 1}]}>
+                  Try add 3 moods per day
+                </Text>
+                <Text
+                  style={
+                    (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
+                  }>
+                  2/3
+                </Text>
+              </View>
+            </View>
             <View
               style={{
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Text style={styles.SmallThinText}>Hello Swiper</Text>
+              <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+                Activity
+              </Text>
               <Text style={styles.swiperText}>
                 You are the <Text style={{color: '#5947D0'}}>happiest</Text>{' '}
                 when you walk over <Text style={{color: '#5947D0'}}>5000</Text>{' '}
                 steps before <Text style={{color: '#5947D0'}}>2PM</Text>
               </Text>
             </View>
-          </Swiper>
-          <View style={styles.forCircle}>
-            <AnimatedCircularProgress
-              style={styles.CircularProgressStyle}
-              arcSweepAngle={270}
-              size={180}
-              width={13}
-              fill={70}
-              rotation={-135}
-              tintColor="#9889F9"
-              lineCap={'round'}
-              onAnimationComplete={() => console.log('onAnimationComplete')}
-              backgroundColor="#E2E4EA"></AnimatedCircularProgress>
-            <View style={styles.absolute}>
-              <ImageBackground
-                resizeMode={'contain'}
-                style={styles.BigCircleBackgroundImage}
-                source={Constants.Images.RunningBackground}>
-                <Image
-                  source={Constants.Images.RunningMan}
-                  style={{height: 30, width: 30, marginTop: 25}}
+            <View style={[styles.forCircle, {marginTop: 30}]}>
+              <AnimatedCircularProgress
+                style={styles.CircularProgressStyle}
+                arcSweepAngle={270}
+                size={180}
+                width={13}
+                fill={70}
+                rotation={-135}
+                tintColor="#9889F9"
+                lineCap={'round'}
+                onAnimationComplete={() => console.log('onAnimationComplete')}
+                backgroundColor="#E2E4EA"></AnimatedCircularProgress>
+              <View style={styles.absolute}>
+                <ImageBackground
+                  resizeMode={'contain'}
+                  style={styles.BigCircleBackgroundImage}
+                  source={Constants.Images.RunningBackground}>
+                  <Image
+                    source={Constants.Images.RunningMan}
+                    style={{height: 30, width: 30, marginTop: 25}}
+                  />
+                  <Text
+                    style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
+                    7,300
+                  </Text>
+                  <Text
+                    style={[
+                      styles.SmallThinText,
+                      {paddingVertical: 0, color: '#3B456D'},
+                    ]}>
+                    steps
+                  </Text>
+                </ImageBackground>
+              </View>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                width: '80%',
+                alignSelf: 'center',
+                marginTop: 10,
+                marginBottom: 40,
+              }}>
+              <View style={styles.forCircle}>
+                <AnimatedCircularProgress
+                  style={styles.CircularProgressStyle}
+                  arcSweepAngle={360}
+                  size={70}
+                  width={10}
+                  fill={80}
+                  rotation={0}
+                  tintColor="#30C3D6"
+                  lineCap={'round'}
+                  onAnimationComplete={() => console.log('onAnimationComplete')}
+                  backgroundColor="#E0F8FB"
                 />
+                <View style={styles.absolute}>
+                  <Image
+                    source={Constants.Images.Calories}
+                    style={{height: 25, width: 25, marginTop: -25}}
+                  />
+                </View>
+                <View style={{marginTop: 10}}>
+                  <Text style={[styles.SmallThinBlackText]}>2345 kcal</Text>
+                </View>
+              </View>
+              <View style={styles.forCircle}>
+                <AnimatedCircularProgress
+                  style={styles.CircularProgressStyle}
+                  arcSweepAngle={360}
+                  size={70}
+                  width={10}
+                  fill={80}
+                  rotation={0}
+                  tintColor="#F43085"
+                  lineCap={'round'}
+                  onAnimationComplete={() => console.log('onAnimationComplete')}
+                  backgroundColor="#FDE2EF"
+                />
+                <View style={styles.absolute}>
+                  <Image
+                    source={Constants.Images.Distance}
+                    style={{height: 25, width: 25, marginTop: -25}}
+                  />
+                </View>
+                <View style={{marginTop: 10}}>
+                  <Text style={[styles.SmallThinBlackText]}>2 km</Text>
+                </View>
+              </View>
+              <View style={styles.forCircle}>
+                <AnimatedCircularProgress
+                  style={styles.CircularProgressStyle}
+                  arcSweepAngle={360}
+                  size={70}
+                  width={10}
+                  fill={80}
+                  rotation={0}
+                  tintColor="#37DD67"
+                  lineCap={'round'}
+                  onAnimationComplete={() => console.log('onAnimationComplete')}
+                  backgroundColor="#C6F9E8"
+                />
+                <View style={styles.absolute}>
+                  <Image
+                    source={Constants.Images.Time}
+                    style={{height: 25, width: 25, marginTop: -25}}
+                  />
+                </View>
+                <View style={{marginTop: 10}}>
+                  <Text style={[styles.SmallThinBlackText]}>23 min</Text>
+                </View>
+              </View>
+            </View>
+            <GraphicChart />
+          </ScrollView>
+          {!Perm && (
+            <View
+              style={{
+                // backgroundColor: 'blue',
+                position: 'absolute',
+                // flex: 1,
+
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+                zIndex: -234234,
+              }}>
+              <Text
+                style={{
+                  marginTop: -160,
+                  fontWeight: '700',
+                  fontFamily: RubikExtraBold,
+                  fontSize: 120,
+                  color: '#E0DDED',
+                  transform: [{rotate: '-15deg'}],
+                }}>
+                Demo
+              </Text>
+            </View>
+          )}
+        </View>
+        <View>
+          <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            style={styles.scrollView}>
+            <View style={styles.HeaderView}>
+              <TouchableOpacity
+                onPress={async () => {
+                  // await AsyncStorage.setItem('GiveHealthPerm', 'true');
+                  // checkStorage();
+                  CheckForWeather();
+                  // OnAutoSync();
+                  // filterDates();
+                  // filterSteps();
+                  // AddDataToFilter();
+                }}
+                style={{
+                  flexDirection: 'row',
+                }}>
+                <View style={styles.syncButtonView}>
+                  <Image
+                    style={{height: 20, width: 20}}
+                    source={Constants.Images.Sync}
+                  />
+                </View>
+                <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+                  <Text style={styles.lightText}>Sync your</Text>
+                  <Text style={styles.normalText}>Weather data</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={styles.ColoredView}>
+                <Text style={styles.ColoredText}>Anonymous</Text>
+              </View>
+            </View>
+            <View style={styles.ProgressBarView}>
+              <ProgressBar
+                progress={66.66}
+                height={10}
+                backgroundColor="#CB9866"
+              />
+              <View style={{flexDirection: 'row'}}>
+                <Text style={[styles.SmallThinText, {flex: 1}]}>
+                  Try add 3 moods per day
+                </Text>
                 <Text
-                  style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
-                  7,300
+                  style={
+                    (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
+                  }>
+                  2/3
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+                Activity
+              </Text>
+              <Text style={styles.swiperText}>
+                You are more <Text style={{color: '#5947D0'}}>energetic</Text>{' '}
+                when the temperature is below{' '}
+                <Text style={{color: '#5947D0'}}>20ª</Text> and it{' '}
+                <Text style={{color: '#5947D0'}}>rains</Text> around{' '}
+                <Text style={{color: '#5947D0'}}>2hrs</Text>
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                // justifyContent: 'space-around',
+                // flex: 1,
+                width: 320,
+                alignSelf: 'center',
+                marginTop: 10,
+                marginBottom: 40,
+                backgroundColor: '#F1F4F9',
+                borderRadius: 18,
+                paddingVertical: 20,
+              }}>
+              <View
+                style={{
+                  // flex: 1,
+                  width: 320,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  alignContent: 'center',
+                  paddingBottom: 8,
+                }}>
+                <Text
+                  style={[
+                    styles.SmallThinText,
+                    {paddingVertical: 0, paddingBottom: 4},
+                  ]}>
+                  Today's Weather
                 </Text>
                 <Text
                   style={[
                     styles.SmallThinText,
-                    {paddingVertical: 0, color: '#3B456D'},
+                    {
+                      paddingVertical: 0,
+                      color: '#3B456D',
+                      fontSize: 18,
+                      fontFamily: RubikRegular,
+                    },
                   ]}>
-                  steps
+                  {Weather ? Weather?.name : 'Loading ...'}
                 </Text>
-              </ImageBackground>
+                <View>
+                  <View
+                    style={{
+                      width: 260,
+                      backgroundColor: 'white',
+                      margin: 10,
+                      borderRadius: 15,
+                      marginHorizontal: 20,
+                    }}>
+                    <View style={{flexDirection: 'row', padding: 15}}>
+                      <Image
+                        resizeMode={'contain'}
+                        source={Constants.Images.Rain}
+                        style={{margin: 10, marginHorizontal: 20}}
+                      />
+                      <View>
+                        <Text
+                          style={[
+                            ,
+                            {
+                              fontFamily: RubikLight,
+                              fontWeight: '300',
+                              color: '#8A8BAB',
+                              fontSize: 16,
+                              marginTop: 10,
+                            },
+                          ]}>
+                          {Weather.weather[0].description}
+                        </Text>
+                        <Text
+                          style={[, {fontFamily: RubikMedium, fontSize: 36}]}>
+                          {Math.round(Weather.main.temp)}ºC
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <View
+                      style={{
+                        width: 120,
+                        backgroundColor: 'white',
+                        // margin: 5,
+                        borderRadius: 15,
+                        marginRight: 15,
+                        // marginHorizontal: 10,
+                      }}>
+                      <View style={{flexDirection: 'row', padding: 15}}>
+                        <Image
+                          resizeMode={'contain'}
+                          source={Constants.Images.Rain}
+                          style={{
+                            margin: 5,
+                            // marginHorizontal: 10,
+                            height: 20,
+                            width: 20,
+                          }}
+                        />
+                        <View>
+                          <Text
+                            style={[
+                              {
+                                fontFamily: RubikLight,
+                                fontWeight: '300',
+                                color: '#8A8BAB',
+                                fontSize: 16,
+                                marginBottom: 5,
+                              },
+                            ]}>
+                            Rainfall
+                          </Text>
+                          <Text
+                            style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
+                            1hr
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        width: 120,
+                        backgroundColor: 'white',
+                        // margin: 5,
+                        borderRadius: 15,
+                        // marginHorizontal: 10,
+                      }}>
+                      <View style={{flexDirection: 'row', padding: 15}}>
+                        <Image
+                          resizeMode={'contain'}
+                          source={Constants.Images.Rain}
+                          style={{
+                            margin: 5,
+                            // marginHorizontal: 10,
+                            height: 20,
+                            width: 20,
+                          }}
+                        />
+                        <View>
+                          <Text
+                            style={[
+                              ,
+                              {
+                                fontFamily: RubikLight,
+                                fontWeight: '300',
+                                color: '#8A8BAB',
+                                fontSize: 16,
+                                marginBottom: 5,
+                              },
+                            ]}>
+                            Pollen
+                          </Text>
+                          <Text
+                            style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
+                            Low
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
             </View>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              width: '80%',
-              alignSelf: 'center',
-              marginTop: 10,
-              marginBottom: 40,
-            }}>
-            <View style={styles.forCircle}>
-              <AnimatedCircularProgress
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={80}
-                width={10}
-                fill={80}
-                rotation={0}
-                tintColor="#30C3D6"
-                lineCap={'round'}
-                onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#E0F8FB"
-              />
-              <View style={styles.absolute}>
-                <Image
-                  source={Constants.Images.Calories}
-                  style={{height: 30, width: 30, marginTop: -25}}
-                />
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text style={[styles.SmallThinBlackText]}>2345 kcal</Text>
-              </View>
+            <GraphicChart />
+          </ScrollView>
+          {!PermWeather && (
+            <View
+              style={{
+                // backgroundColor: 'blue',
+                position: 'absolute',
+                // flex: 1,
+
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+                zIndex: -234234,
+              }}>
+              <Text
+                style={{
+                  marginTop: -160,
+                  fontWeight: '700',
+                  fontFamily: RubikExtraBold,
+                  fontSize: 120,
+                  color: '#E0DDED',
+                  transform: [{rotate: '-15deg'}],
+                }}>
+                Demo
+              </Text>
             </View>
-            <View style={styles.forCircle}>
-              <AnimatedCircularProgress
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={80}
-                width={10}
-                fill={80}
-                rotation={0}
-                tintColor="#F43085"
-                lineCap={'round'}
-                onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#FDE2EF"
-              />
-              <View style={styles.absolute}>
-                <Image
-                  source={Constants.Images.Distance}
-                  style={{height: 30, width: 30, marginTop: -25}}
-                />
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text style={[styles.SmallThinBlackText]}>2 km</Text>
-              </View>
-            </View>
-            <View style={styles.forCircle}>
-              <AnimatedCircularProgress
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={80}
-                width={10}
-                fill={80}
-                rotation={0}
-                tintColor="#37DD67"
-                lineCap={'round'}
-                onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#C6F9E8"
-              />
-              <View style={styles.absolute}>
-                <Image
-                  source={Constants.Images.Time}
-                  style={{height: 30, width: 30, marginTop: -25}}
-                />
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text style={[styles.SmallThinBlackText]}>23 min</Text>
-              </View>
-            </View>
-          </View>
-          {/* <View style={{backgroundColor: 'green', marginBottom: 100}}>
-            <ChartPathProvider data={{points, smoothingStrategy: 'bezier'}}>
-              <ChartPath height={SIZE / 2} stroke="yellow" width={SIZE} />
-              <ChartDot style={{backgroundColor: 'blue'}} />
-            </ChartPathProvider>
-          </View> */}
-          <GraphicChart />
-        </ScrollView>
-      </SafeAreaView>
+          )}
+        </View>
+
+        <View style={styles.slide3}>
+          <Text style={styles.text}>And simple</Text>
+        </View>
+      </Swiper>
     </View>
+    // <View>
+    //   <StatusBar barStyle="dark-content" />
+    //   <SafeAreaView style={{backgroundColor: 'white'}}>
+    // <ScrollView
+    //   contentInsetAdjustmentBehavior="automatic"
+    //   style={styles.scrollView}>
+    //
+
+    //     </ScrollView>
+
+    //   </SafeAreaView>
+    // </View>
   );
   // }
 };
@@ -749,7 +1067,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   HeaderView: {
-    height: 100,
+    height: 80,
     paddingTop: 18,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -800,17 +1118,19 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
   },
   wrapper: {
-    height: 210,
+    height: 200,
     // backgroundColor: 'lightgreen',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 7,
   },
   swiperText: {
-    fontSize: 30,
+    fontSize: SIZE / 14,
     fontWeight: '500',
     width: '75%',
     textAlign: 'center',
     fontFamily: RubikMedium,
+    color: '#222432',
   },
   forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
   BigCircleBackgroundImage: {

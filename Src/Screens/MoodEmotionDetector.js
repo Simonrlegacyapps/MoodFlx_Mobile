@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Dimensions,
   NativeModules,
+  StatusBar,
 } from 'react-native';
 import AnonymousHeader from '../Components/AnonymousHeader/AnonymousHeader';
 import {getUniqueId} from 'react-native-device-info';
@@ -44,8 +45,8 @@ function useForceUpdate() {
 const {width, height} = Dimensions.get('screen');
 
 const MoodEmotionDetector = ({navigation}) => {
-  console.log(`width and height`, width, height);
-  console.log(`statusBarHeight`, statusBarHeight);
+  // console.log(`width and height`, width, height);
+  // console.log(`statusBarHeight`, statusBarHeight);
   const [locationX, setLocationX] = useState(240);
   const [locationY, setLocationY] = useState(330);
   const [ShowDraggable, setShowDraggable] = useState(true);
@@ -86,12 +87,12 @@ const MoodEmotionDetector = ({navigation}) => {
       .then((data) => data.json())
       .then(async (res) => {
         await setGetMoods(res.data);
-        console.log('response of division', res.data);
+        // console.log('response of division', res.data);
 
         // setSelectedDivisionId(res.data[0].id);
       });
   }, []);
-  console.log(`GetMoods`, GetMoods);
+  // console.log(`GetMoods`, GetMoods);
 
   const FindId = () => {
     const Id = GetMoods.find(({name}) => {
@@ -112,7 +113,7 @@ const MoodEmotionDetector = ({navigation}) => {
       .then((resp) => {
         if (resp.status == 200) {
           // setLoading(false);
-          console.log('Success Message of respose mood', resp.data);
+          console.log('Success Message of respose mood ✅ ✅ ✅ ✅', resp.data);
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,
@@ -122,7 +123,8 @@ const MoodEmotionDetector = ({navigation}) => {
         }
       })
       .catch((err) => {
-        console.log('err of response mood', err);
+        console.log(`params for err of mood`, params);
+        console.log('err of response mood❌ ❌ ❌ ❌', err);
       });
     navigation.replace('HomeScreen');
   };
@@ -217,7 +219,7 @@ const MoodEmotionDetector = ({navigation}) => {
     // console.log(`Svg`, Svg);
   };
 
-  console.log('SB', StatusVertical);
+  // console.log('SB', StatusVertical);
   let statusHeight = StatusVertical + 110;
   const halfHeight = height / 2;
   let fourthHeight = (halfHeight - statusHeight) / 2;
@@ -943,6 +945,7 @@ const MoodEmotionDetector = ({navigation}) => {
 
   return (
     <View style={{flex: 1}}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
         {/* <Text style={styles.titleStyle}>
           React Native Get Clicked Location of Touchscreen Using PanResponder
@@ -1027,7 +1030,7 @@ const MoodEmotionDetector = ({navigation}) => {
                 borderRadius: 8,
                 overflow: 'hidden',
               }}>
-              {console.log(`Label`, Label.length)}
+              {/* {console.log(`Label`, Label.length)} */}
               <Text style={{paddingHorizontal: 7}}>
                 {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
                 {/* X: {locationX}, Y: {locationY} */}
