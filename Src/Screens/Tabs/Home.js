@@ -39,35 +39,46 @@ import {
 } from '@rainbow-me/animated-charts';
 import GraphicChart from '../../Components/GraphicChart/GraphicChat';
 import PostRequestApi from '../../apirequest/PostRequestApi';
+import ProgressBarCustom from '../../Components/ProgressBar/ProgressBarCustom';
+import BarGraph from '../../Components/BarChart/BarGraph';
+import {LineChart} from 'react-native-chart-kit';
+import {dynamicSize} from '../../Constants/sizeChoose';
+import BezierGraphAuto from '../../Components/BezierGraphAuto/BezierGraphAuto';
+import HomeHeader from '../../Components/HomeHeader/HomeHeader';
+import {useRoute} from '@react-navigation/native';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
-export const data = [
-  {x: 1453075200, y: 1.47},
-  {x: 1453161600, y: 1.37},
-  {x: 1453248000, y: 1.53},
-  {x: 1453334400, y: 1.54},
-  {x: 1453420800, y: 1.52},
-  {x: 1453507200, y: 2.03},
-  {x: 1453593600, y: 2.1},
-  {x: 1453680000, y: 2.5},
-  {x: 1453766400, y: 2.3},
-  {x: 1453852800, y: 2.42},
-  {x: 1453939200, y: 2.55},
-  {x: 1454025600, y: 2.41},
-  {x: 1454112000, y: 2.43},
-  {x: 1454198400, y: 2.2},
+const data = [
+  {x: 1, y: 1.2},
+  {x: 2, y: 2.3},
+  {x: 3, y: 2.42},
+  {x: 4, y: 1.1},
+  {x: 5, y: 2.41},
+  {x: 6, y: 2.43},
+  {x: 7, y: 2.2},
 ];
 
-const points = monotoneCubicInterpolation({data, range: 40});
+const dataLow = [
+  {x: 1, y: 10},
+  {x: 2, y: 20},
+  {x: 3, y: 29},
+  {x: 4, y: 18},
+  {x: 5, y: 22},
+  {x: 6, y: 20},
+  {x: 7, y: 23},
+];
+
+// const points = monotoneCubicInterpolation({data, range: 30});
+// const pointsLow = monotoneCubicInterpolation({dataLow, range: 30});
 
 const PERMS = AppleHealthKit.Constants.Permissions;
 
-const App = () => {
+const App = (props) => {
   const [Weight, setWeight] = useState(false);
   const [Weather, setWeather] = useState(false);
-  const [lng, setlng] = useState(false);
-  const [lat, setlat] = useState(false);
+  // const [lng, setlng] = useState(false);
+  // const [lat, setlat] = useState(false);
   const [BP, setBP] = useState(false);
   const [allHeights, setallHeights] = useState(false);
   const [steps, setsteps] = useState(false);
@@ -87,6 +98,10 @@ const App = () => {
   const [Workouts, setWorkouts] = useState(false);
   const [Perm, setPerm] = useState('');
   const [PermWeather, setPermWeather] = useState(false);
+
+  const route = useRoute();
+  const {lat, long} = route.params.cord;
+  console.log(`paramsss`, props.route);
 
   const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
@@ -108,8 +123,8 @@ const App = () => {
 
   useEffect(() => {
     CheckForWeather();
-    checkStorage();
-  }, [10]);
+    console.log(`Weather`, Weather);
+  }, []);
 
   const checkStorage = async () => {
     let p = await AsyncStorage.getItem('GiveHealthPerm');
@@ -171,21 +186,7 @@ const App = () => {
         },
       };
 
-      GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 15000,
-      })
-        .then((location) => {
-          //   console.log('Success', location);
-          setlat(location.latitude);
-          setlng(location.longitude);
-        })
-        .catch((error) => {
-          const {code, message} = error;
-          console.log('error', code, message);
-        });
-
-      return AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
+      AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
         if (err) {
           console.log('error initializing Healthkit: ', err);
           return;
@@ -461,15 +462,20 @@ const App = () => {
   };
 
   const CheckForWeather = () => {
+    console.log(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+    );
     axios
       .get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
-      .then((response) => {
-        setWeather(response.data);
-        console.log(`response.data for weather`, response.data);
+      .then(async (response) => {
+        await setWeather(response.data);
+        await console.log(`response.data for weather`, response.data);
       })
-      .catch(function (error) {});
+      .catch(function (error) {
+        console.log(`error for weather`, error);
+      });
   };
 
   const AddDataToFilter = async () => {
@@ -530,7 +536,8 @@ const App = () => {
         dotStyle={{height: 0, width: 0}}
         activeDotStyle={{height: 0, width: 0}}
         style={{backgroundColor: 'white'}}
-        showsButtons={true}>
+        showsButtons={false}
+        loop={false}>
         <View>
           <ScrollView
             contentInsetAdjustmentBehavior="automatic"
@@ -746,13 +753,7 @@ const App = () => {
             <View style={styles.HeaderView}>
               <TouchableOpacity
                 onPress={async () => {
-                  // await AsyncStorage.setItem('GiveHealthPerm', 'true');
-                  // checkStorage();
                   CheckForWeather();
-                  // OnAutoSync();
-                  // filterDates();
-                  // filterSteps();
-                  // AddDataToFilter();
                 }}
                 style={{
                   flexDirection: 'row',
@@ -815,7 +816,7 @@ const App = () => {
                 // flex: 1,
                 width: 320,
                 alignSelf: 'center',
-                marginTop: 10,
+                marginTop: 40,
                 marginBottom: 40,
                 backgroundColor: '#F1F4F9',
                 borderRadius: 18,
@@ -876,11 +877,11 @@ const App = () => {
                               marginTop: 10,
                             },
                           ]}>
-                          {Weather.weather[0].description}
+                          {Weather ? Weather.weather[0].description : 'Low'}
                         </Text>
                         <Text
                           style={[, {fontFamily: RubikMedium, fontSize: 36}]}>
-                          {Math.round(Weather.main.temp)}ºC
+                          {Math.round(Weather ? Weather.main.temp : '0')}ºC
                         </Text>
                       </View>
                     </View>
@@ -976,34 +977,92 @@ const App = () => {
                 </View>
               </View>
             </View>
-            <GraphicChart />
-          </ScrollView>
-          {!PermWeather && (
-            <View
-              style={{
-                // backgroundColor: 'blue',
-                position: 'absolute',
-                // flex: 1,
-
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                width: '100%',
-                zIndex: -234234,
-              }}>
-              <Text
+            {/* <ProgressBarCustom /> */}
+            <HomeHeader />
+            <View style={{marginBottom: 50}}>
+              <BarGraph />
+              <View
                 style={{
-                  marginTop: -160,
-                  fontWeight: '700',
-                  fontFamily: RubikExtraBold,
-                  fontSize: 120,
-                  color: '#E0DDED',
-                  transform: [{rotate: '-15deg'}],
+                  position: 'absolute',
+                  alignSelf: 'center',
+                  marginTop: 30,
                 }}>
-                Demo
-              </Text>
+                <View>
+                  <View>
+                    <BezierGraphAuto data={data} color={'#F4227E'} />
+                  </View>
+                  <View style={{marginTop: 20}}>
+                    <BezierGraphAuto data={dataLow} color={'#70DEEC'} />
+                  </View>
+                </View>
+              </View>
+              <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+                <View style={styles.indicatorHelperView}>
+                  <View
+                    style={[
+                      styles.indicatorHelper,
+                      {backgroundColor: '#7FE3F0'},
+                    ]}
+                  />
+                  <Text style={styles.indicatorText}>Min ºC</Text>
+                </View>
+                <View style={styles.indicatorHelperView}>
+                  <View
+                    style={[
+                      styles.indicatorHelper,
+                      {backgroundColor: '#FC4190'},
+                    ]}
+                  />
+                  <Text style={styles.indicatorText}>Max ºC</Text>
+                </View>
+                <View style={styles.indicatorHelperView}>
+                  <View
+                    style={[
+                      styles.indicatorHelper,
+                      {backgroundColor: '#7265E3'},
+                    ]}
+                  />
+                  <Text style={styles.indicatorText}>Rainfall</Text>
+                </View>
+                <View style={styles.indicatorHelperView}>
+                  <View
+                    style={[
+                      styles.indicatorHelper,
+                      {backgroundColor: '#0DDE7A'},
+                    ]}
+                  />
+                  <Text style={styles.indicatorText}>Pollen</Text>
+                </View>
+              </View>
             </View>
-          )}
+            <GraphicChart />
+            {!PermWeather && (
+              <View
+                style={{
+                  // backgroundColor: 'blue',
+                  position: 'absolute',
+                  // flex: 1,
+                  top: 420,
+                  alignItems: 'center',
+                  // justifyContent: 'center',
+                  height: '100%',
+                  width: '100%',
+                  zIndex: -234234,
+                }}>
+                <Text
+                  style={{
+                    marginTop: -160,
+                    fontWeight: '700',
+                    fontFamily: RubikExtraBold,
+                    fontSize: 120,
+                    color: '#E0DDED',
+                    transform: [{rotate: '-15deg'}],
+                  }}>
+                  Demo
+                </Text>
+              </View>
+            )}
+          </ScrollView>
         </View>
 
         <View style={styles.slide3}>
@@ -1144,196 +1203,17 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
+  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelperView: {
+    flexDirection: 'row',
+    marginHorizontal: 3,
+    marginTop: 10,
+  },
+  indicatorText: {
+    marginHorizontal: 10,
+    color: '#4C5980',
+    fontFamily: RubikRegular,
+  },
 });
 
 export default App;
-
-// {Platform.OS === 'ios' && (
-//   <View style={styles.body}>
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>Weather Info</Text>
-//       {Weather && (
-//         <View>
-//           <Text style={styles.sectionDescription}>
-//             Current Temp: {Weather.main.temp} ºC{' '}
-//           </Text>
-//           <Text>
-//             Sunrise Time:{' '}
-//             {moment(Weather.sys.sunrise).format('HH:MM')}
-//           </Text>
-//           <Text>
-//             Sunset Time: {moment(Weather.sys.sunset).format('HH:MM')}
-//           </Text>
-
-//           <Text
-//             style={[styles.sectionDescription, {textAlign: 'left'}]}>
-//             Min Temp: {Weather.main.temp_min} ºC{' '}
-//           </Text>
-//           <Text
-//             style={[styles.sectionDescription, {textAlign: 'left'}]}>
-//             Max Temp: {Weather.main.temp_max} ºC{' '}
-//           </Text>
-//         </View>
-//       )}
-//       <Text style={[styles.sectionTitle, {marginTop: 22}]}>
-//         Weight
-//       </Text>
-
-//       {Weight &&
-//         Weight.length > 0 &&
-//         Weight?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {Math.round(i.value)} {'Pound'}
-//             </Text>
-//           );
-//         })}
-//       {!Weight && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Weight to Health App!
-//         </Text>
-//       )}
-//     </View>
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>Age</Text>
-//       {DateOfBirth && (
-//         <Text style={styles.sectionDescription}>
-//           {DateOfBirth.age}
-//         </Text>
-//       )}
-//       {!DateOfBirth && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Birthday to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>Height</Text>
-//       {allHeights &&
-//         allHeights.length > 0 &&
-//         allHeights?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {Math.round(i.value)} {'Inches'}
-//             </Text>
-//           );
-//         })}
-//       {!allHeights && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Height to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>BMI</Text>
-//       {BMI && (
-//         <Text style={styles.sectionDescription}>{BMI.value}</Text>
-//       )}
-//       {!BMI && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Birthday to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>BodyFatPerc</Text>
-//       {BodyFatPerc &&
-//         BodyFatPerc.length > 0 &&
-//         BodyFatPerc?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {i.value}
-//               {'%'}
-//             </Text>
-//           );
-//         })}
-//       {!BodyFatPerc && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Birthday to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>BP</Text>
-//       {BP &&
-//         BP.length > 0 &&
-//         BP?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {i.bloodPressureSystolicValue}
-//               {'/'}
-//               {i.bloodPressureDiastolicValue}
-//             </Text>
-//           );
-//         })}
-//       {!BP && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your BP to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     {/* <View style={styles.sectionContainer}>
-//         <Text style={styles.sectionTitle}>StepCount</Text>
-//         {StepCount && (
-//           <Text style={styles.sectionDescription}>
-//             {StepCount.value}
-//           </Text>
-//         )}
-//         {!StepCount && (
-//           <Text style={styles.sectionDescriptionError}>
-//             Add your StepCount to Health App!
-//           </Text>
-//         )}
-//       </View> */}
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>Body Temp</Text>
-//       {temp &&
-//         temp.length > 0 &&
-//         temp?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {Math.round(i.value)} {'ºc'}
-//             </Text>
-//           );
-//         })}
-//       {!temp && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Temp to Health App!
-//         </Text>
-//       )}
-//     </View>
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>
-//         Steps which is different
-//       </Text>
-//       {/* {filterFunction()} */}
-//       {steps &&
-//         steps.length > 0 &&
-//         steps?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {i.value} {'Steps'}
-//             </Text>
-//           );
-//         })}
-//       {!steps && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your steps to Health App!
-//         </Text>
-//       )}
-//     </View>
-//   </View>
-// )}
-// {Platform.OS === 'android' && <GoogleFit />}

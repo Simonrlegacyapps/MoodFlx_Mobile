@@ -19,7 +19,8 @@ import MoodEmotionDetector from './MoodEmotionDetector';
 const Tab = createBottomTabNavigator();
 const WIDTH = Dimensions.get('screen').width;
 
-const HomeScreen = ({navigation, routes}) => {
+const HomeScreen = ({navigation, route}) => {
+  console.log(`route`, route);
   return (
     <View style={{flex: 1}}>
       <Tab.Navigator
@@ -68,7 +69,11 @@ const HomeScreen = ({navigation, routes}) => {
             // height: 100,
           },
         }}>
-        <Tab.Screen name={'Home'} component={Home} />
+        <Tab.Screen
+          name={'Home'}
+          component={Home}
+          initialParams={{cord: route.params}}
+        />
         <Tab.Screen name={'MicScreen'} component={MicScreen} />
         <Tab.Screen
           name={'LogoTab'}

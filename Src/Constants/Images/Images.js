@@ -12,5 +12,6 @@ export default {
   Distance: require('../../../assets/newImage/Distance/place.png'),
   Time: require('../../../assets/newImage/Time/time.png'),
   DropDown: require('../../../assets/newImage/DropDown/Down.png'),
+  DropDownFill: require('../../../assets/newImage/DropDownFill/Shape.png'),
   Rain: require('../../../assets/newImage/Weather/Rain.png'),
 };

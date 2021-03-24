@@ -25,6 +25,9 @@ import moment from 'moment';
 import GetLocation from 'react-native-get-location';
 import PostRequestApi from '../apirequest/PostRequestApi';
 import DeviceInfo from 'react-native-device-info';
+import Modal from 'react-native-modal';
+import VideoModal from '../Components/VideoModal/VideoModal';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const {StatusBarManager, statusBarHeight} = NativeModules;
 
@@ -61,8 +64,29 @@ const MoodEmotionDetector = ({navigation}) => {
   const [Svgs, setSvgs] = useState('');
   const [lng, setlng] = useState(false);
   const [lat, setlat] = useState(false);
+  const [Email, setEmail] = useState(null);
+
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  // const toggleModal = () => {
+  //   setModalVisible(!isModalVisible);
+  // };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const checkStorage = async () => {
+    let p = await AsyncStorage.getItem('Email');
+    console.log(`check check check`);
+    let e = await JSON.parse(p);
+    await setEmail(e);
+    console.log('Email', e);
+  };
 
   useEffect(() => {
+    checkStorage();
+
     GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 15000,
@@ -92,7 +116,7 @@ const MoodEmotionDetector = ({navigation}) => {
         // setSelectedDivisionId(res.data[0].id);
       });
   }, []);
-  // console.log(`GetMoods`, GetMoods);
+  console.log(`GetMoods`, GetMoods);
 
   const FindId = () => {
     const Id = GetMoods.find(({name}) => {
@@ -108,6 +132,7 @@ const MoodEmotionDetector = ({navigation}) => {
       device_id: deviceId,
       lat: lat,
       long: lng,
+      email: Email,
     };
     PostRequestApi('moodUpdate', params)
       .then((resp) => {
@@ -126,7 +151,7 @@ const MoodEmotionDetector = ({navigation}) => {
         console.log(`params for err of mood`, params);
         console.log('err of response mood❌ ❌ ❌ ❌', err);
       });
-    navigation.replace('HomeScreen');
+    navigation.replace('HomeScreen', {lat: lat, long: lng});
   };
 
   const FindSvg = ({moveY, moveX, dx, dy, y0, x0}) => {
@@ -1113,7 +1138,7 @@ const MoodEmotionDetector = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              // FindId();
+              setModalVisible(true);
             }}>
             <View
               style={{
@@ -1141,6 +1166,10 @@ const MoodEmotionDetector = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </View>
+      <VideoModal
+        ModalVisible={isModalVisible}
+        dismissModalHandler={closeModal}
+      />
     </View>
   );
 };
