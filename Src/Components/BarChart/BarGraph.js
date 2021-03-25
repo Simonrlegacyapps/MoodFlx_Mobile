@@ -4,7 +4,7 @@ import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import CustomProgressBar from '../ProgressBar/ProgressBarCustom';
 
-const BarGraph = () => {
+const BarGraph = ({ShowPollen}) => {
   const [Pollen, setPollen] = useState('Low');
 
   const lines = [
@@ -213,28 +213,30 @@ const BarGraph = () => {
                       }}>
                       {item.label}
                     </Text>
-                    <View
-                      style={{
-                        flex: 1,
-                        // alignSelf: 'flex-end',
-                        position: 'absolute',
-                        // justifyContent: 'flex-end',
-                        // textAlignVertical: 'bottom',
-                        bottom: -140,
-                        right: 0,
-                        height: 10,
-                        borderWidth: 1,
-                        borderRadius: 10,
-                        borderColor: '#0DDE7A',
-                        width: 10,
-                        backgroundColor:
-                          item.pollen === 'Normal'
-                            ? '#0DDE7A'
-                            : item.pollen === 'Low'
-                            ? '#fff'
-                            : '#CDF8E3',
-                      }}
-                    />
+                    {ShowPollen && (
+                      <View
+                        style={{
+                          flex: 1,
+                          // alignSelf: 'flex-end',
+                          position: 'absolute',
+                          // justifyContent: 'flex-end',
+                          // textAlignVertical: 'bottom',
+                          bottom: -140,
+                          right: 0,
+                          height: 10,
+                          borderWidth: 1,
+                          borderRadius: 10,
+                          borderColor: '#0DDE7A',
+                          width: 10,
+                          backgroundColor:
+                            item.pollen === 'Normal'
+                              ? '#0DDE7A'
+                              : item.pollen === 'Low'
+                              ? '#fff'
+                              : '#CDF8E3',
+                        }}
+                      />
+                    )}
                   </View>
                 </View>
               );

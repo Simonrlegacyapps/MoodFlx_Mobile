@@ -19,6 +19,7 @@ import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
 import {RubikBlack, RubikRegular} from '../../Constants/fonts/Fonts';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useRoute} from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const Linktocompany = ({navigation}) => {
   const {OTPVerified, setDivision, getDivision} = useSelector(
@@ -42,14 +43,17 @@ const Linktocompany = ({navigation}) => {
   console.log('route', route);
   //
 
+  const UserData = useSelector((state) => state.First);
+  console.log(`UserData.UserEmail in`, UserData.UserEmail);
+
   useEffect(() => {
-    fetch('http://admin.moodflo.com/api/getDivision')
+    fetch('https://admin.moodflo.com/api/getDivision')
       .then((data) => data.json())
       .then(async (res) => {
         await dispatch(getDivisions(res.data));
         setDivisions(res.data);
         console.log('response of division', res.data[0].id);
-        setSelectedDivisionId(res.data[0].id);
+        // setSelectedDivisionId(res.data[0].id);
       });
   }, []);
 
@@ -71,12 +75,16 @@ const Linktocompany = ({navigation}) => {
     setModalVisible(false);
     // setLinked(type);
     PostRequestApi('updateStaffDivision', params)
-      .then((resp) => {
+      .then(async (resp) => {
         if (resp.status == 200) {
           setLoading(false);
           dispatch(Division(selectedDivisionId));
           console.log('set division status========>>>>>>>>', resp.data);
           setSelectedDivision(resp.data.divisionName);
+          await AsyncStorage.setItem(
+            'Division',
+            JSON.stringify(resp.data.divisionName),
+          );
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,
@@ -142,7 +150,8 @@ const Linktocompany = ({navigation}) => {
                   console.log(`item`, item);
                   return (
                     <TouchableOpacity
-                      onPress={() => {
+                      onPress={async () => {
+                        setSelectedDivisionId(item.id);
                         setLabelShow(item);
                         setModalVisible(false);
                       }}

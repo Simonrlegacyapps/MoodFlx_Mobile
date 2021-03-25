@@ -28,6 +28,8 @@ import DeviceInfo from 'react-native-device-info';
 import Modal from 'react-native-modal';
 import VideoModal from '../Components/VideoModal/VideoModal';
 import AsyncStorage from '@react-native-community/async-storage';
+import {useDispatch, useSelector} from 'react-redux';
+import {UserDivision, UserEmail} from '../redux/actions/actions';
 
 const {StatusBarManager, statusBarHeight} = NativeModules;
 
@@ -72,18 +74,30 @@ const MoodEmotionDetector = ({navigation}) => {
   //   setModalVisible(!isModalVisible);
   // };
 
+  const dispatch = useDispatch();
+
   const closeModal = () => {
     setModalVisible(false);
   };
 
   const checkStorage = async () => {
     let p = await AsyncStorage.getItem('Email');
-    console.log(`check check check`);
+    let d = await AsyncStorage.getItem('Division');
+    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
+    let division = await JSON.parse(d);
+    console.log(`e`, e);
+    console.log(`division`, division);
     await setEmail(e);
-    console.log('Email', e);
-  };
+    dispatch(UserEmail(e));
+    dispatch(UserDivision(division));
 
+    return e;
+    // console.log('Email', e);
+  };
+  const UserData = useSelector((state) => state.First);
+
+  console.log(`useEmail`, UserData.UserDivision);
   useEffect(() => {
     checkStorage();
 
@@ -107,7 +121,7 @@ const MoodEmotionDetector = ({navigation}) => {
   }, []);
 
   useEffect(() => {
-    fetch('http://admin.moodflo.com/api/getMood')
+    fetch('https://admin.moodflo.com/api/getMood')
       .then((data) => data.json())
       .then(async (res) => {
         await setGetMoods(res.data);
@@ -1066,7 +1080,7 @@ const MoodEmotionDetector = ({navigation}) => {
                 // viewBox="0 0 24 24"
                 fill="none"
                 uri={
-                  'http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg'
+                  'https://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg'
                 }
                 // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
               />
@@ -1127,7 +1141,9 @@ const MoodEmotionDetector = ({navigation}) => {
           }}>
           <TouchableOpacity
             style={{marginLeft: 12}}
-            onPress={() => navigation.navigate('HomeScreen')}>
+            onPress={() =>
+              navigation.replace('HomeScreen', {lat: lat, long: lng})
+            }>
             <View
               style={{
                 justifyContent: 'center',

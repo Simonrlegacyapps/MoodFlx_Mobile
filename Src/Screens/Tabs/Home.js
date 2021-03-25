@@ -37,7 +37,7 @@ import {
   ChartPathProvider,
   monotoneCubicInterpolation,
 } from '@rainbow-me/animated-charts';
-import GraphicChart from '../../Components/GraphicChart/GraphicChat';
+import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import ProgressBarCustom from '../../Components/ProgressBar/ProgressBarCustom';
 import BarGraph from '../../Components/BarChart/BarGraph';
@@ -46,6 +46,11 @@ import {dynamicSize} from '../../Constants/sizeChoose';
 import BezierGraphAuto from '../../Components/BezierGraphAuto/BezierGraphAuto';
 import HomeHeader from '../../Components/HomeHeader/HomeHeader';
 import {useRoute} from '@react-navigation/native';
+import FitnessData from '../Home/FitnessData';
+import WeatherData from '../Home/WeatherData/WeatherData';
+import ScreenData from '../Home/screenData/screenData';
+import SleepData from '../Home/SleepData/SleepData';
+import {useSelector} from 'react-redux';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -98,10 +103,12 @@ const App = (props) => {
   const [Workouts, setWorkouts] = useState(false);
   const [Perm, setPerm] = useState('');
   const [PermWeather, setPermWeather] = useState(false);
+  const [PermScreenTime, setPermScreenTime] = useState(false);
 
   const route = useRoute();
+  const UserData = useSelector((state) => state.First);
   const {lat, long} = route.params.cord;
-  console.log(`paramsss`, props.route);
+  // console.log(`UserData.UserEmail`, UserData.UserEmail);
 
   const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
@@ -139,6 +146,10 @@ const App = (props) => {
       filterSteps();
       AddDataToFilter();
     }
+  };
+
+  const CheckForScreenData = () => {
+    console.log(`Implement screen data`);
   };
   // useEffect(() => {
   //   OnAutoSync();
@@ -463,11 +474,11 @@ const App = (props) => {
 
   const CheckForWeather = () => {
     console.log(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
     );
     axios
       .get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
         await setWeather(response.data);
@@ -482,9 +493,9 @@ const App = (props) => {
     const deviceId = DeviceInfo.getUniqueId();
     Fsteps.push();
 
-    console.log(`Fsteps at last`, Fsteps);
-    console.log(`walkTime at last`, WalkTime);
-    console.log(`Workouts at last`, Workouts);
+    // console.log(`Fsteps at last`, Fsteps);
+    // console.log(`walkTime at last`, WalkTime);
+    // console.log(`Workouts at last`, Workouts);
     if (Fsteps.length > 5 && WalkTime.length > 5) {
       // console.log('good to go for API');
       // const data = {
@@ -503,12 +514,13 @@ const App = (props) => {
         DOB: DateOfBirth.value,
         weight: LatestWeight != null ? LatestWeight.value : 0,
         age: DateOfBirth.age,
+        email: UserData.UserEmail,
       });
       console.log(`data`, data);
 
       var config = {
         method: 'post',
-        url: 'http://admin.moodflo.com/api/updateStaffHealth',
+        url: 'https://admin.moodflo.com/api/updateStaffHealth',
         headers: {
           'Content-Type': 'application/json',
           Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
@@ -539,534 +551,35 @@ const App = (props) => {
         showsButtons={false}
         loop={false}>
         <View>
-          <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.scrollView}>
-            <View style={styles.HeaderView}>
-              <TouchableOpacity
-                onPress={async () => {
-                  await AsyncStorage.setItem('GiveHealthPerm', 'true');
-                  checkStorage();
-                  // OnAutoSync();
-                  // filterDates();
-                  // filterSteps();
-                  // AddDataToFilter();
-                }}
-                style={{
-                  flexDirection: 'row',
-                }}>
-                <View style={styles.syncButtonView}>
-                  <Image
-                    style={{height: 20, width: 20}}
-                    source={Constants.Images.Sync}
-                  />
-                </View>
-                <View style={{alignContent: 'center', paddingHorizontal: 15}}>
-                  <Text style={styles.lightText}>Sync your</Text>
-                  <Text style={styles.normalText}>Fitness data</Text>
-                </View>
-              </TouchableOpacity>
-              <View style={styles.ColoredView}>
-                <Text style={styles.ColoredText}>Anonymous</Text>
-              </View>
-            </View>
-            <View style={styles.ProgressBarView}>
-              <ProgressBar
-                progress={66.66}
-                height={10}
-                backgroundColor="#CB9866"
-              />
-              <View style={{flexDirection: 'row'}}>
-                <Text style={[styles.SmallThinText, {flex: 1}]}>
-                  Try add 3 moods per day
-                </Text>
-                <Text
-                  style={
-                    (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
-                  }>
-                  2/3
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
-                Activity
-              </Text>
-              <Text style={styles.swiperText}>
-                You are the <Text style={{color: '#5947D0'}}>happiest</Text>{' '}
-                when you walk over <Text style={{color: '#5947D0'}}>5000</Text>{' '}
-                steps before <Text style={{color: '#5947D0'}}>2PM</Text>
-              </Text>
-            </View>
-            <View style={[styles.forCircle, {marginTop: 30}]}>
-              <AnimatedCircularProgress
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={270}
-                size={180}
-                width={13}
-                fill={70}
-                rotation={-135}
-                tintColor="#9889F9"
-                lineCap={'round'}
-                onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#E2E4EA"></AnimatedCircularProgress>
-              <View style={styles.absolute}>
-                <ImageBackground
-                  resizeMode={'contain'}
-                  style={styles.BigCircleBackgroundImage}
-                  source={Constants.Images.RunningBackground}>
-                  <Image
-                    source={Constants.Images.RunningMan}
-                    style={{height: 30, width: 30, marginTop: 25}}
-                  />
-                  <Text
-                    style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
-                    7,300
-                  </Text>
-                  <Text
-                    style={[
-                      styles.SmallThinText,
-                      {paddingVertical: 0, color: '#3B456D'},
-                    ]}>
-                    steps
-                  </Text>
-                </ImageBackground>
-              </View>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                width: '80%',
-                alignSelf: 'center',
-                marginTop: 10,
-                marginBottom: 40,
-              }}>
-              <View style={styles.forCircle}>
-                <AnimatedCircularProgress
-                  style={styles.CircularProgressStyle}
-                  arcSweepAngle={360}
-                  size={70}
-                  width={10}
-                  fill={80}
-                  rotation={0}
-                  tintColor="#30C3D6"
-                  lineCap={'round'}
-                  onAnimationComplete={() => console.log('onAnimationComplete')}
-                  backgroundColor="#E0F8FB"
-                />
-                <View style={styles.absolute}>
-                  <Image
-                    source={Constants.Images.Calories}
-                    style={{height: 25, width: 25, marginTop: -25}}
-                  />
-                </View>
-                <View style={{marginTop: 10}}>
-                  <Text style={[styles.SmallThinBlackText]}>2345 kcal</Text>
-                </View>
-              </View>
-              <View style={styles.forCircle}>
-                <AnimatedCircularProgress
-                  style={styles.CircularProgressStyle}
-                  arcSweepAngle={360}
-                  size={70}
-                  width={10}
-                  fill={80}
-                  rotation={0}
-                  tintColor="#F43085"
-                  lineCap={'round'}
-                  onAnimationComplete={() => console.log('onAnimationComplete')}
-                  backgroundColor="#FDE2EF"
-                />
-                <View style={styles.absolute}>
-                  <Image
-                    source={Constants.Images.Distance}
-                    style={{height: 25, width: 25, marginTop: -25}}
-                  />
-                </View>
-                <View style={{marginTop: 10}}>
-                  <Text style={[styles.SmallThinBlackText]}>2 km</Text>
-                </View>
-              </View>
-              <View style={styles.forCircle}>
-                <AnimatedCircularProgress
-                  style={styles.CircularProgressStyle}
-                  arcSweepAngle={360}
-                  size={70}
-                  width={10}
-                  fill={80}
-                  rotation={0}
-                  tintColor="#37DD67"
-                  lineCap={'round'}
-                  onAnimationComplete={() => console.log('onAnimationComplete')}
-                  backgroundColor="#C6F9E8"
-                />
-                <View style={styles.absolute}>
-                  <Image
-                    source={Constants.Images.Time}
-                    style={{height: 25, width: 25, marginTop: -25}}
-                  />
-                </View>
-                <View style={{marginTop: 10}}>
-                  <Text style={[styles.SmallThinBlackText]}>23 min</Text>
-                </View>
-              </View>
-            </View>
-            <GraphicChart />
-          </ScrollView>
-          {!Perm && (
-            <View
-              style={{
-                // backgroundColor: 'blue',
-                position: 'absolute',
-                // flex: 1,
-
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                width: '100%',
-                zIndex: -234234,
-              }}>
-              <Text
-                style={{
-                  marginTop: -160,
-                  fontWeight: '700',
-                  fontFamily: RubikExtraBold,
-                  fontSize: 120,
-                  color: '#E0DDED',
-                  transform: [{rotate: '-15deg'}],
-                }}>
-                Demo
-              </Text>
-            </View>
-          )}
+          <FitnessData Perm={Perm} checkStorage={checkStorage} />
         </View>
         <View>
-          <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.scrollView}>
-            <View style={styles.HeaderView}>
-              <TouchableOpacity
-                onPress={async () => {
-                  CheckForWeather();
-                }}
-                style={{
-                  flexDirection: 'row',
-                }}>
-                <View style={styles.syncButtonView}>
-                  <Image
-                    style={{height: 20, width: 20}}
-                    source={Constants.Images.Sync}
-                  />
-                </View>
-                <View style={{alignContent: 'center', paddingHorizontal: 15}}>
-                  <Text style={styles.lightText}>Sync your</Text>
-                  <Text style={styles.normalText}>Weather data</Text>
-                </View>
-              </TouchableOpacity>
-              <View style={styles.ColoredView}>
-                <Text style={styles.ColoredText}>Anonymous</Text>
-              </View>
-            </View>
-            <View style={styles.ProgressBarView}>
-              <ProgressBar
-                progress={66.66}
-                height={10}
-                backgroundColor="#CB9866"
-              />
-              <View style={{flexDirection: 'row'}}>
-                <Text style={[styles.SmallThinText, {flex: 1}]}>
-                  Try add 3 moods per day
-                </Text>
-                <Text
-                  style={
-                    (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
-                  }>
-                  2/3
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
-                Activity
-              </Text>
-              <Text style={styles.swiperText}>
-                You are more <Text style={{color: '#5947D0'}}>energetic</Text>{' '}
-                when the temperature is below{' '}
-                <Text style={{color: '#5947D0'}}>20ª</Text> and it{' '}
-                <Text style={{color: '#5947D0'}}>rains</Text> around{' '}
-                <Text style={{color: '#5947D0'}}>2hrs</Text>
-              </Text>
-            </View>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                // justifyContent: 'space-around',
-                // flex: 1,
-                width: 320,
-                alignSelf: 'center',
-                marginTop: 40,
-                marginBottom: 40,
-                backgroundColor: '#F1F4F9',
-                borderRadius: 18,
-                paddingVertical: 20,
-              }}>
-              <View
-                style={{
-                  // flex: 1,
-                  width: 320,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  alignContent: 'center',
-                  paddingBottom: 8,
-                }}>
-                <Text
-                  style={[
-                    styles.SmallThinText,
-                    {paddingVertical: 0, paddingBottom: 4},
-                  ]}>
-                  Today's Weather
-                </Text>
-                <Text
-                  style={[
-                    styles.SmallThinText,
-                    {
-                      paddingVertical: 0,
-                      color: '#3B456D',
-                      fontSize: 18,
-                      fontFamily: RubikRegular,
-                    },
-                  ]}>
-                  {Weather ? Weather?.name : 'Loading ...'}
-                </Text>
-                <View>
-                  <View
-                    style={{
-                      width: 260,
-                      backgroundColor: 'white',
-                      margin: 10,
-                      borderRadius: 15,
-                      marginHorizontal: 20,
-                    }}>
-                    <View style={{flexDirection: 'row', padding: 15}}>
-                      <Image
-                        resizeMode={'contain'}
-                        source={Constants.Images.Rain}
-                        style={{margin: 10, marginHorizontal: 20}}
-                      />
-                      <View>
-                        <Text
-                          style={[
-                            ,
-                            {
-                              fontFamily: RubikLight,
-                              fontWeight: '300',
-                              color: '#8A8BAB',
-                              fontSize: 16,
-                              marginTop: 10,
-                            },
-                          ]}>
-                          {Weather ? Weather.weather[0].description : 'Low'}
-                        </Text>
-                        <Text
-                          style={[, {fontFamily: RubikMedium, fontSize: 36}]}>
-                          {Math.round(Weather ? Weather.main.temp : '0')}ºC
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignContent: 'center',
-                      alignItems: 'center',
-                    }}>
-                    <View
-                      style={{
-                        width: 120,
-                        backgroundColor: 'white',
-                        // margin: 5,
-                        borderRadius: 15,
-                        marginRight: 15,
-                        // marginHorizontal: 10,
-                      }}>
-                      <View style={{flexDirection: 'row', padding: 15}}>
-                        <Image
-                          resizeMode={'contain'}
-                          source={Constants.Images.Rain}
-                          style={{
-                            margin: 5,
-                            // marginHorizontal: 10,
-                            height: 20,
-                            width: 20,
-                          }}
-                        />
-                        <View>
-                          <Text
-                            style={[
-                              {
-                                fontFamily: RubikLight,
-                                fontWeight: '300',
-                                color: '#8A8BAB',
-                                fontSize: 16,
-                                marginBottom: 5,
-                              },
-                            ]}>
-                            Rainfall
-                          </Text>
-                          <Text
-                            style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
-                            1hr
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        width: 120,
-                        backgroundColor: 'white',
-                        // margin: 5,
-                        borderRadius: 15,
-                        // marginHorizontal: 10,
-                      }}>
-                      <View style={{flexDirection: 'row', padding: 15}}>
-                        <Image
-                          resizeMode={'contain'}
-                          source={Constants.Images.Rain}
-                          style={{
-                            margin: 5,
-                            // marginHorizontal: 10,
-                            height: 20,
-                            width: 20,
-                          }}
-                        />
-                        <View>
-                          <Text
-                            style={[
-                              ,
-                              {
-                                fontFamily: RubikLight,
-                                fontWeight: '300',
-                                color: '#8A8BAB',
-                                fontSize: 16,
-                                marginBottom: 5,
-                              },
-                            ]}>
-                            Pollen
-                          </Text>
-                          <Text
-                            style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
-                            Low
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-            {/* <ProgressBarCustom /> */}
-            <HomeHeader />
-            <View style={{marginBottom: 50}}>
-              <BarGraph />
-              <View
-                style={{
-                  position: 'absolute',
-                  alignSelf: 'center',
-                  marginTop: 30,
-                }}>
-                <View>
-                  <View>
-                    <BezierGraphAuto data={data} color={'#F4227E'} />
-                  </View>
-                  <View style={{marginTop: 20}}>
-                    <BezierGraphAuto data={dataLow} color={'#70DEEC'} />
-                  </View>
-                </View>
-              </View>
-              <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                <View style={styles.indicatorHelperView}>
-                  <View
-                    style={[
-                      styles.indicatorHelper,
-                      {backgroundColor: '#7FE3F0'},
-                    ]}
-                  />
-                  <Text style={styles.indicatorText}>Min ºC</Text>
-                </View>
-                <View style={styles.indicatorHelperView}>
-                  <View
-                    style={[
-                      styles.indicatorHelper,
-                      {backgroundColor: '#FC4190'},
-                    ]}
-                  />
-                  <Text style={styles.indicatorText}>Max ºC</Text>
-                </View>
-                <View style={styles.indicatorHelperView}>
-                  <View
-                    style={[
-                      styles.indicatorHelper,
-                      {backgroundColor: '#7265E3'},
-                    ]}
-                  />
-                  <Text style={styles.indicatorText}>Rainfall</Text>
-                </View>
-                <View style={styles.indicatorHelperView}>
-                  <View
-                    style={[
-                      styles.indicatorHelper,
-                      {backgroundColor: '#0DDE7A'},
-                    ]}
-                  />
-                  <Text style={styles.indicatorText}>Pollen</Text>
-                </View>
-              </View>
-            </View>
-            <GraphicChart />
-            {!PermWeather && (
-              <View
-                style={{
-                  // backgroundColor: 'blue',
-                  position: 'absolute',
-                  // flex: 1,
-                  top: 420,
-                  alignItems: 'center',
-                  // justifyContent: 'center',
-                  height: '100%',
-                  width: '100%',
-                  zIndex: -234234,
-                }}>
-                <Text
-                  style={{
-                    marginTop: -160,
-                    fontWeight: '700',
-                    fontFamily: RubikExtraBold,
-                    fontSize: 120,
-                    color: '#E0DDED',
-                    transform: [{rotate: '-15deg'}],
-                  }}>
-                  Demo
-                </Text>
-              </View>
-            )}
-          </ScrollView>
+          <WeatherData
+            data={data}
+            dataLow={dataLow}
+            Weather={Weather}
+            PermWeather={PermWeather}
+            CheckForWeather={CheckForWeather}
+          />
         </View>
 
         <View style={styles.slide3}>
-          <Text style={styles.text}>And simple</Text>
+          <ScreenData
+            data={data}
+            dataLow={dataLow}
+            Weather={Weather}
+            PermScreenTime={PermScreenTime}
+            CheckForScreenData={CheckForScreenData}
+          />
+        </View>
+        <View style={styles.slide3}>
+          <SleepData
+            data={data}
+            dataLow={dataLow}
+            Weather={Weather}
+            PermScreenTime={PermScreenTime}
+            CheckForWeather={CheckForScreenData}
+          />
         </View>
       </Swiper>
     </View>

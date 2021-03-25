@@ -12,7 +12,7 @@ import Constants from '../../Constants';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useDispatch} from 'react-redux';
-import {OTP_Verify} from '../../redux/actions/actions';
+import {OTP_Verify, UserEmail} from '../../redux/actions/actions';
 import {useRoute} from '@react-navigation/native';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -47,7 +47,8 @@ const VerifyEmail = ({navigation}) => {
                 );
                 dispatch(OTP_Verify(resp.data));
                 navigation.navigate('Linktocompany', {email: mail});
-                await AsyncStorage.setItem('Email', mail);
+                await AsyncStorage.setItem('Email', JSON.stringify(mail));
+                dispatch(UserEmail(mail));
               } else {
                 console.log(`Api Failed`, params);
               }
