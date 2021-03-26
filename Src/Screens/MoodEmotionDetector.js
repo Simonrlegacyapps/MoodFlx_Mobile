@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Dimensions,
   NativeModules,
+  StatusBar,
 } from 'react-native';
 import AnonymousHeader from '../Components/AnonymousHeader/AnonymousHeader';
 import {getUniqueId} from 'react-native-device-info';
@@ -24,6 +25,11 @@ import moment from 'moment';
 import GetLocation from 'react-native-get-location';
 import PostRequestApi from '../apirequest/PostRequestApi';
 import DeviceInfo from 'react-native-device-info';
+import Modal from 'react-native-modal';
+import VideoModal from '../Components/VideoModal/VideoModal';
+import AsyncStorage from '@react-native-community/async-storage';
+import {useDispatch, useSelector} from 'react-redux';
+import {UserDivision, UserEmail} from '../redux/actions/actions';
 
 const {StatusBarManager, statusBarHeight} = NativeModules;
 
@@ -44,15 +50,15 @@ function useForceUpdate() {
 const {width, height} = Dimensions.get('screen');
 
 const MoodEmotionDetector = ({navigation}) => {
-  console.log(`width and height`, width, height);
-  console.log(`statusBarHeight`, statusBarHeight);
+  // console.log(`width and height`, width, height);
+  // console.log(`statusBarHeight`, statusBarHeight);
   const [locationX, setLocationX] = useState(240);
   const [locationY, setLocationY] = useState(330);
   const [ShowDraggable, setShowDraggable] = useState(true);
   const [Location, setLocation] = useState([]);
   const [Moving, setMoving] = useState(false);
   const [Anonymous, setAnonymous] = useState(false);
-  const [Label, setLabel] = useState('Mood');
+  const [Label, setLabel] = useState('Excited');
   const [startTime, setstartTime] = useState(0);
   const [EndTime, setEndTime] = useState(0);
   const [StatusVertical, setStatusVertical] = useState(0);
@@ -60,8 +66,42 @@ const MoodEmotionDetector = ({navigation}) => {
   const [Svgs, setSvgs] = useState('');
   const [lng, setlng] = useState(false);
   const [lat, setlat] = useState(false);
+  const [Email, setEmail] = useState(null);
 
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  // const toggleModal = () => {
+  //   setModalVisible(!isModalVisible);
+  // };
+
+  const dispatch = useDispatch();
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const UserData = useSelector((state) => state.First);
+
+  const checkStorage = async () => {
+    let p = await AsyncStorage.getItem('Email');
+    let d = await AsyncStorage.getItem('Division');
+    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
+    let e = await JSON.parse(p);
+    let division = await JSON.parse(d);
+    console.log(`e`, e);
+    console.log(`division`, division);
+    await setEmail(e);
+    dispatch(UserEmail(e));
+    dispatch(UserDivision(division));
+
+    return e;
+    // console.log('Email', e);
+  };
+
+  console.log(`user division`, UserData.UserDivision);
   useEffect(() => {
+    checkStorage();
+
     GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 15000,
@@ -82,21 +122,21 @@ const MoodEmotionDetector = ({navigation}) => {
   }, []);
 
   useEffect(() => {
-    fetch('http://admin.moodflo.com/api/getMood')
+    fetch('https://admin.moodflo.com/api/getMood')
       .then((data) => data.json())
       .then(async (res) => {
         await setGetMoods(res.data);
-        console.log('response of division', res.data);
+        // console.log('response of division', res.data);
 
         // setSelectedDivisionId(res.data[0].id);
       });
   }, []);
-  console.log(`GetMoods`, GetMoods);
+  // console.log(`GetMoods`, GetMoods);
 
   const FindId = () => {
     const Id = GetMoods.find(({name}) => {
       console.log(`name`, name);
-      return name === 'Chilled';
+      return name === Label;
     });
     console.log(`Id`, Id.id);
     console.log(`lat, lng`, lat, lng);
@@ -107,12 +147,13 @@ const MoodEmotionDetector = ({navigation}) => {
       device_id: deviceId,
       lat: lat,
       long: lng,
+      email: Email,
     };
     PostRequestApi('moodUpdate', params)
       .then((resp) => {
         if (resp.status == 200) {
           // setLoading(false);
-          console.log('OTP of respose mood', resp.data);
+          console.log('Success Message of respose mood ✅ ✅ ✅ ✅', resp.data);
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,
@@ -122,9 +163,10 @@ const MoodEmotionDetector = ({navigation}) => {
         }
       })
       .catch((err) => {
-        console.log('err of response mood', err);
+        console.log(`params for err of mood`, params);
+        console.log('err of response mood❌ ❌ ❌ ❌', err);
       });
-    navigation.replace('HomeScreen');
+    navigation.replace('HomeScreen', {lat: lat, long: lng});
   };
 
   const FindSvg = ({moveY, moveX, dx, dy, y0, x0}) => {
@@ -217,7 +259,7 @@ const MoodEmotionDetector = ({navigation}) => {
     // console.log(`Svg`, Svg);
   };
 
-  console.log('SB', StatusVertical);
+  // console.log('SB', StatusVertical);
   let statusHeight = StatusVertical + 110;
   const halfHeight = height / 2;
   let fourthHeight = (halfHeight - statusHeight) / 2;
@@ -943,6 +985,7 @@ const MoodEmotionDetector = ({navigation}) => {
 
   return (
     <View style={{flex: 1}}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
         {/* <Text style={styles.titleStyle}>
           React Native Get Clicked Location of Touchscreen Using PanResponder
@@ -1027,7 +1070,7 @@ const MoodEmotionDetector = ({navigation}) => {
                 borderRadius: 8,
                 overflow: 'hidden',
               }}>
-              {console.log(`Label`, Label.length)}
+              {/* {console.log(`Label`, Label.length)} */}
               <Text style={{paddingHorizontal: 7}}>
                 {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
                 {/* X: {locationX}, Y: {locationY} */}
@@ -1038,7 +1081,7 @@ const MoodEmotionDetector = ({navigation}) => {
                 // viewBox="0 0 24 24"
                 fill="none"
                 uri={
-                  'http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg'
+                  'https://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg'
                 }
                 // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
               />
@@ -1099,7 +1142,9 @@ const MoodEmotionDetector = ({navigation}) => {
           }}>
           <TouchableOpacity
             style={{marginLeft: 12}}
-            onPress={() => navigation.navigate('HomeScreen')}>
+            onPress={() =>
+              navigation.replace('HomeScreen', {lat: lat, long: lng})
+            }>
             <View
               style={{
                 justifyContent: 'center',
@@ -1110,7 +1155,7 @@ const MoodEmotionDetector = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              // FindId();
+              setModalVisible(true);
             }}>
             <View
               style={{
@@ -1124,6 +1169,7 @@ const MoodEmotionDetector = ({navigation}) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={GetMoods ? false : true}
             onPress={() => FindId()}
             style={{
               height: dynamicSize(52),
@@ -1138,6 +1184,10 @@ const MoodEmotionDetector = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </View>
+      <VideoModal
+        ModalVisible={isModalVisible}
+        dismissModalHandler={closeModal}
+      />
     </View>
   );
 };

@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   Image,
+  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,17 +13,26 @@ import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import {Picker} from '@react-native-picker/picker';
 import Constants from '../../Constants';
 import {useDispatch, useSelector} from 'react-redux';
-import {Division, getDivisions, OTP_Verify} from '../../redux/actions/actions';
+import {
+  Division,
+  getDivisions,
+  OTP_Verify,
+  UserDivision,
+  UserEmail,
+} from '../../redux/actions/actions';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
-import {RubikBlack} from '../../Constants/fonts/Fonts';
+import {RubikBlack, RubikRegular} from '../../Constants/fonts/Fonts';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useRoute} from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const Linktocompany = ({navigation}) => {
   const {OTPVerified, setDivision, getDivision} = useSelector(
     (state) => state.First,
   );
+
+  const {width, height} = Dimensions.get('window');
 
   const [Linked, setLinked] = useState('Link');
   const [selectedDivisionId, setSelectedDivisionId] = useState('');
@@ -29,6 +40,8 @@ const Linktocompany = ({navigation}) => {
   const [Divisions, setDivisions] = useState(null);
   const [Loading, setLoading] = useState(false);
   const [APIfail, setAPIfail] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [labelShow, setLabelShow] = useState('');
 
   const dispatch = useDispatch();
   const route = useRoute();
@@ -36,14 +49,21 @@ const Linktocompany = ({navigation}) => {
   console.log('route', route);
   //
 
+  const UserData = useSelector((state) => state.First);
+  console.log(
+    `UserData in link company`,
+    UserData.UserEmail,
+    UserData.UserDivision,
+  );
+
   useEffect(() => {
-    fetch('http://admin.moodflo.com/api/getDivision')
+    fetch('https://admin.moodflo.com/api/getDivision')
       .then((data) => data.json())
       .then(async (res) => {
         await dispatch(getDivisions(res.data));
         setDivisions(res.data);
-        console.log('response of division', res.data[0].id);
-        setSelectedDivisionId(res.data[0].id);
+        // console.log('response of division', res.data[0].id);
+        // setSelectedDivisionId(res.data[0].id);
       });
   }, []);
 
@@ -56,20 +76,26 @@ const Linktocompany = ({navigation}) => {
   const onDone = (type) => {
     const {email} = route.params;
     const params = {
-      division_id: selectedDivisionId,
+      division_id: labelShow.id,
       email: email,
     };
-    console.log('run');
+    console.log('run', params);
     setLoading(true);
     setAPIfail(false);
+    setModalVisible(false);
     // setLinked(type);
     PostRequestApi('updateStaffDivision', params)
-      .then((resp) => {
+      .then(async (resp) => {
         if (resp.status == 200) {
           setLoading(false);
           dispatch(Division(selectedDivisionId));
           console.log('set division status========>>>>>>>>', resp.data);
           setSelectedDivision(resp.data.divisionName);
+          await AsyncStorage.setItem(
+            'Division',
+            JSON.stringify(resp.data.divisionName),
+          );
+          dispatch(UserDivision(resp.data.divisionName));
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,
@@ -83,19 +109,99 @@ const Linktocompany = ({navigation}) => {
         console.log('err', err), setLoading(false), setAPIfail(true);
       });
   };
+  console.log(`UserData.UserDivision`, UserData.UserDivision);
 
-  const onUnlink = (type) => {
+  const onUnlink = async (type) => {
     console.log('run');
     // setLinked(type);
     dispatch(OTP_Verify(false));
     dispatch(Division(null));
+    await AsyncStorage.setItem('Division', '');
+    await AsyncStorage.setItem('Email', '');
+    dispatch(UserDivision(null));
+    dispatch(UserEmail(null));
   };
 
   return (
     <View style={{flex: 1}}>
       {/* {console.log('REDUX DATA ==============>', getDivision[0].id)} */}
+      <View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setModalVisible(false)}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 200,
+            }}>
+            <View
+              style={{
+                backgroundColor: 'white',
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5,
+                width: '80%',
+                minHeight: 100,
+                borderRadius: 15,
+                paddingTop: 14,
+                paddingBottom: 14,
+              }}>
+              {Divisions &&
+                Divisions.length > 0 &&
+                Divisions.map((item, index) => {
+                  // console.log(`item`, item);
+                  return (
+                    <TouchableOpacity
+                      onPress={async () => {
+                        setSelectedDivisionId(item.id);
+                        setLabelShow(item);
+                        setModalVisible(false);
+                      }}
+                      key={index}>
+                      <Text
+                        style={{
+                          textAlign: 'center',
+                          marginVertical: 10,
+                          fontSize: 18,
+                          fontFamily: RubikRegular,
+                        }}>
+                        {item.name}
+                      </Text>
+                      {index != Divisions.length - 1 && (
+                        <View
+                          style={{
+                            alignSelf: 'center',
+                            width: '90%',
+                            borderBottomColor: '#ebebeb',
+                            borderBottomWidth: 1,
+                            height: 1,
+                          }}
+                        />
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      </View>
+
       <AnonymousHeader backGround />
-      {!OTPVerified.success && (
+      {!UserData.UserDivision && !UserData.UserEmail && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
           <Text style={{fontWeight: '500', fontSize: 26}}>Link a company</Text>
           <Text
@@ -137,7 +243,7 @@ const Linktocompany = ({navigation}) => {
           </TouchableOpacity>
         </View>
       )}
-      {OTPVerified.success && setDivision === null && (
+      {UserData.UserEmail && UserData.UserDivision === null && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
           {APIfail && (
             <Text
@@ -173,8 +279,36 @@ const Linktocompany = ({navigation}) => {
             This, and which region you are located, are the only things AIA will
             know about you
           </Text>
-          <View style={{width: 200}}>
-            <Picker
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={{
+              marginTop: 20,
+              height: 50,
+              width: 300,
+              backgroundColor: 'white',
+              borderRadius: 16,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'row',
+            }}>
+            <Text
+              style={{
+                fontWeight: '300',
+                flex: 1,
+                fontSize: 16,
+                // textAlign: 'center',
+                width: 270,
+                marginHorizontal: 18,
+              }}>
+              {labelShow ? labelShow.name : 'Select division'}
+            </Text>
+            <Image
+              resizeMode={'contain'}
+              style={{marginHorizontal: 18, height: 15, width: 15}}
+              source={Constants.Images.DropDown}
+            />
+
+            {/* <Picker
               style={{}}
               selectedValue={selectedDivisionId}
               onValueChange={(itemValue, itemIndex) => {
@@ -198,10 +332,23 @@ const Linktocompany = ({navigation}) => {
                     />
                   );
                 })}
-            </Picker>
-          </View>
+            </Picker> */}
+          </TouchableOpacity>
           {console.log('selectedLanguage', selectedDivisionId)}
           {console.log('selectedLanguage', selectedDivision)}
+          <Text
+            style={{
+              lineHeight: 28,
+              fontWeight: '300',
+              fontSize: 14,
+              marginTop: 12,
+              marginLeft: 62,
+              marginRight: 62,
+              textAlign: 'center',
+              width: 270,
+            }}>
+            E.g. Anonymous in Melbourne is Excited
+          </Text>
           <TouchableOpacity
             disabled={selectedDivisionId ? false : true}
             onPress={() => onDone('Done')}>
@@ -220,22 +367,9 @@ const Linktocompany = ({navigation}) => {
               </Text>
             </View>
           </TouchableOpacity>
-          <Text
-            style={{
-              lineHeight: 28,
-              fontWeight: '300',
-              fontSize: 14,
-              marginTop: 12,
-              marginLeft: 62,
-              marginRight: 62,
-              textAlign: 'center',
-              width: 270,
-            }}>
-            E.g. Anonymous in Melbourne is Excited
-          </Text>
         </View>
       )}
-      {OTPVerified.success && setDivision !== null && (
+      {UserData.UserDivision !== null && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
@@ -267,7 +401,7 @@ const Linktocompany = ({navigation}) => {
               marginBottom: 42,
               width: 270,
             }}>
-            {selectedDivision}
+            {UserData.UserDivision}
           </Text>
           <TouchableOpacity
             // disabled={selectedLanguage ? false : true}
@@ -368,67 +502,3 @@ export default Linktocompany;
 //
 
 // <View style={styles.centeredView}>
-{
-  /* <Modal
-animationType="slide"
-transparent={true}
-visible={modalVisible}
-onRequestClose={() => {
-  Alert.alert('Modal has been closed.');
-  setModalVisible(!modalVisible);
-}}>
-<View
-  style={{
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 200,
-  }}>
-  <View
-    style={{
-      backgroundColor: 'white',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-      width: '80%',
-      minHeight: 100,
-      borderRadius: 15,
-      paddingTop: 14,
-      paddingBottom: 14,
-    }}>
-    {Divisions &&
-      Divisions.length > 0 &&
-      Divisions.map((item, index) => {
-        return (
-          <TouchableOpacity onPress={()=>{}} key={index}>
-            <Text
-              style={{
-                textAlign: 'center',
-                marginVertical: 10,
-                fontSize: 18,
-                fontFamily: RubikRegular,
-              }}>
-              Hello World!
-            </Text>
-            <View
-              style={{
-                alignSelf: 'center',
-                width: '90%',
-                borderBottomColor: '#ebebeb',
-                borderBottomWidth: 1,
-                height: 1,
-              }}
-            />
-          </TouchableOpacity>
-        );
-      })}
-  </View>
-</View>
-</Modal>
-</View> */
-}

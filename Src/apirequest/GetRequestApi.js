@@ -3,7 +3,7 @@ import React from 'react';
 
 const GetRequestApi = async (url, params) => {
   return await axios
-    .get('http://admin.moodflo.com/api/getDivision')
+    .get('https://admin.moodflo.com/api/getDivision')
     .then((resp) => {
       return resp;
     });

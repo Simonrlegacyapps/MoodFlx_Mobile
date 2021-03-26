@@ -12,9 +12,10 @@ import Constants from '../../Constants';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useDispatch} from 'react-redux';
-import {OTP_Verify} from '../../redux/actions/actions';
+import {OTP_Verify, UserEmail} from '../../redux/actions/actions';
 import {useRoute} from '@react-navigation/native';
 import {dynamicSize} from '../../Constants/sizeChoose';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const VerifyEmail = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
@@ -36,14 +37,29 @@ const VerifyEmail = ({navigation}) => {
     setLoading(true);
     {
       Code == code
-        ? PostRequestApi('verifyOTP', params).then((resp) => {
-            if (resp.status == 200) {
-              setLoading(false);
-              console.log('Sucess');
-              dispatch(OTP_Verify(resp.data));
-              navigation.navigate('Linktocompany', {email: mail});
-            }
-          })
+        ? PostRequestApi('verifyOTP', params)
+            .then(async (resp) => {
+              if (resp.status == 200) {
+                setLoading(false);
+                console.log(
+                  ' ✅ ✅ ✅ ✅ Sucess for verify✅ ✅ ✅ ✅',
+                  resp.data,
+                );
+                dispatch(OTP_Verify(resp.data));
+                navigation.navigate('Linktocompany', {email: mail});
+                await AsyncStorage.setItem('Email', JSON.stringify(mail));
+                dispatch(UserEmail(mail));
+              } else {
+                console.log(`Api Failed`, params);
+              }
+            })
+            .catch((err) =>
+              console.log(
+                `❌ ❌ ❌ ❌err for verify Email❌ ❌ ❌ ❌`,
+                err,
+                params,
+              ),
+            )
         : (setShowWarning(true), setLoading(false));
     }
   };

@@ -22,6 +22,7 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {
   RubikBlack,
   RubikBold,
+  RubikExtraBold,
   RubikLight,
   RubikMedium,
   RubikRegular,
@@ -36,37 +37,53 @@ import {
   ChartPathProvider,
   monotoneCubicInterpolation,
 } from '@rainbow-me/animated-charts';
-import GraphicChart from '../../Components/GraphicChart/GraphicChat';
+import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import PostRequestApi from '../../apirequest/PostRequestApi';
+import ProgressBarCustom from '../../Components/ProgressBar/ProgressBarCustom';
+import BarGraph from '../../Components/BarChart/BarGraph';
+import {LineChart} from 'react-native-chart-kit';
+import {dynamicSize} from '../../Constants/sizeChoose';
+import BezierGraphAuto from '../../Components/BezierGraphAuto/BezierGraphAuto';
+import HomeHeader from '../../Components/HomeHeader/HomeHeader';
+import {useRoute} from '@react-navigation/native';
+import FitnessData from '../Home/FitnessData';
+import WeatherData from '../Home/WeatherData/WeatherData';
+import ScreenData from '../Home/screenData/screenData';
+import SleepData from '../Home/SleepData/SleepData';
+import {useSelector} from 'react-redux';
 
-export const {width: SIZE} = Dimensions.get('window');
+export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
-export const data = [
-  {x: 1453075200, y: 1.47},
-  {x: 1453161600, y: 1.37},
-  {x: 1453248000, y: 1.53},
-  {x: 1453334400, y: 1.54},
-  {x: 1453420800, y: 1.52},
-  {x: 1453507200, y: 2.03},
-  {x: 1453593600, y: 2.1},
-  {x: 1453680000, y: 2.5},
-  {x: 1453766400, y: 2.3},
-  {x: 1453852800, y: 2.42},
-  {x: 1453939200, y: 2.55},
-  {x: 1454025600, y: 2.41},
-  {x: 1454112000, y: 2.43},
-  {x: 1454198400, y: 2.2},
+const data = [
+  {x: 1, y: 1.2},
+  {x: 2, y: 2.3},
+  {x: 3, y: 2.42},
+  {x: 4, y: 1.1},
+  {x: 5, y: 2.41},
+  {x: 6, y: 2.43},
+  {x: 7, y: 2.2},
 ];
 
-const points = monotoneCubicInterpolation({data, range: 40});
+const dataLow = [
+  {x: 1, y: 10},
+  {x: 2, y: 20},
+  {x: 3, y: 29},
+  {x: 4, y: 18},
+  {x: 5, y: 22},
+  {x: 6, y: 20},
+  {x: 7, y: 23},
+];
+
+// const points = monotoneCubicInterpolation({data, range: 30});
+// const pointsLow = monotoneCubicInterpolation({dataLow, range: 30});
 
 const PERMS = AppleHealthKit.Constants.Permissions;
 
-const App = () => {
+const App = (props) => {
   const [Weight, setWeight] = useState(false);
   const [Weather, setWeather] = useState(false);
-  const [lng, setlng] = useState(false);
-  const [lat, setlat] = useState(false);
+  // const [lng, setlng] = useState(false);
+  // const [lat, setlat] = useState(false);
   const [BP, setBP] = useState(false);
   const [allHeights, setallHeights] = useState(false);
   const [steps, setsteps] = useState(false);
@@ -85,6 +102,13 @@ const App = () => {
   const [MovingTime, setMovingTime] = useState(false);
   const [Workouts, setWorkouts] = useState(false);
   const [Perm, setPerm] = useState('');
+  const [PermWeather, setPermWeather] = useState(false);
+  const [PermScreenTime, setPermScreenTime] = useState(false);
+
+  const route = useRoute();
+  const UserData = useSelector((state) => state.First);
+  const {lat, long} = route.params.cord;
+  // console.log(`UserData.UserEmail`, UserData.UserEmail);
 
   const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
@@ -105,21 +129,38 @@ const App = () => {
   };
 
   useEffect(() => {
-    const checkStorage = async () => {
-      let p = await AsyncStorage.getItem('GiveHealthPerm');
-      let welcome = await JSON.parse(p);
-      await setPerm(welcome);
-      console.log('welcome', welcome);
-      if (welcome != null) {
-        console.log('good to go for API');
-      }
-    };
-
-    checkStorage();
+    CheckForWeather();
+    console.log(`Weather`, Weather);
   }, []);
 
+  const checkStorage = async () => {
+    let p = await AsyncStorage.getItem('GiveHealthPerm');
+    let welcome = await JSON.parse(p);
+    await setPerm(welcome);
+    console.log('welcome', welcome);
+    if (welcome != null) {
+      console.log('good to go for API in async');
+      await OnAutoSync();
+      console.log(`auto sync function called`);
+      filterDates();
+      filterSteps();
+      AddDataToFilter();
+    }
+  };
+
+  const CheckForScreenData = () => {
+    console.log(`Implement screen data`);
+  };
+  // useEffect(() => {
+  //   OnAutoSync();
+  //   setTimeout(() => {
+  //     filterDates();
+  //     filterSteps();
+  //     AddDataToFilter();
+  //   }, 1000);
+  // }, [10]);
+
   const OnAutoSync = async () => {
-    await AsyncStorage.setItem('GiveHealthPerm', 'true');
     const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
     console.log('moment() month', new Date(a).toISOString());
@@ -151,23 +192,10 @@ const App = () => {
             PERMS.FlightsClimbed,
             PERMS.DistanceCycling,
             PERMS.Workout,
+            PERMS.StandHours,
           ],
         },
       };
-
-      GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 15000,
-      })
-        .then((location) => {
-          //   console.log('Success', location);
-          setlat(location.latitude);
-          setlng(location.longitude);
-        })
-        .catch((error) => {
-          const {code, message} = error;
-          console.log('error', code, message);
-        });
 
       AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
         if (err) {
@@ -288,7 +316,7 @@ const App = () => {
           stepsCount,
           async (err: Object, results: Array<Object>) => {
             await setSleep(results);
-            // console.log('Sleep Analysis', results);
+            console.log('Sleep Analysis +++++++++======>>>>', results);
           },
         );
 
@@ -308,7 +336,7 @@ const App = () => {
             }
             await setMovingTime(results);
             // console.log(
-            //   '<<<<<<<<============== Time ==============>>>>>>>>>',
+            //   '<<<<<<<<============== Time walking ==============>>>>>>>>>',
             //   results,
             // );
           },
@@ -335,14 +363,6 @@ const App = () => {
     }
 
     CheckForWeather();
-    setTimeout(() => {
-      // findTime();
-      // while (Fsteps.length == 0 || WalkTime.length == 0) {
-      filterDates();
-      filterSteps();
-      AddDataToFilter();
-      // }
-    }, 1000);
   };
 
   const dates = [];
@@ -453,266 +473,118 @@ const App = () => {
   };
 
   const CheckForWeather = () => {
+    console.log(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+    );
     axios
       .get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
-      .then((response) => {
-        setWeather(response.data);
+      .then(async (response) => {
+        await setWeather(response.data);
+        await console.log(`response.data for weather`, response.data);
       })
-      .catch(function (error) {});
+      .catch(function (error) {
+        console.log(`error for weather`, error);
+      });
   };
-
-  const happiest = (
-    <Text style={{fontSize: 22, color: '#5947D0'}}>{'happiest'}</Text>
-  );
 
   const AddDataToFilter = async () => {
     const deviceId = DeviceInfo.getUniqueId();
-    Fsteps.push(
-      {age: DateOfBirth.age},
-      {height: Height != null ? Height.value : 0},
-      {weight: LatestWeight != null ? LatestWeight.value : 0},
-      {DOB: DateOfBirth.value},
-    );
+    Fsteps.push();
 
-    console.log(`Fsteps at last`, Fsteps);
-    console.log(`walkTime at last`, WalkTime);
-    console.log(`Workouts at last`, Workouts);
+    // console.log(`Fsteps at last`, Fsteps);
+    // console.log(`walkTime at last`, WalkTime);
+    // console.log(`Workouts at last`, Workouts);
     if (Fsteps.length > 5 && WalkTime.length > 5) {
-      console.log('good to go for API');
-      const data = {
-        device_id: 'cce143d2-f2bc-4694-8381-4bedd3606622',
-        steps: Fsteps,
-        moving_time: WalkTime,
+      // console.log('good to go for API');
+      // const data = {
+      //   device_id: deviceId,
+      //   steps: Fsteps,
+      //   moving_time: WalkTime,
+      //   exercise_time: Workouts,
+      // };
+      var axios = require('axios');
+      var data = JSON.stringify({
+        device_id: deviceId,
         exercise_time: Workouts,
-      };
+        moving_time: WalkTime,
+        steps: Fsteps,
+        height: Height != null ? Height.value : 0,
+        DOB: DateOfBirth.value,
+        weight: LatestWeight != null ? LatestWeight.value : 0,
+        age: DateOfBirth.age,
+        email: UserData.UserEmail,
+      });
       console.log(`data`, data);
 
-      // PostRequestApi('updateStaffHealth', data)
-      //   .then((resp) => {
-      //     console.log(`resp`, resp);
-      //     if (resp.status == 200) {
-      //       console.log('set division status========>>>>>>>>', resp.data);
-      //     } else {
-      //       // setLoading(false);
-      //       console.log(`api is not passing status 200`);
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log('err', err);
-      //   });
-
-      async function postData(url = '', data = {}) {
-        // Default options are marked with *
-        const response = await fetch(url, {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-          headers: {
-            'Content-Type': 'application/json',
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: JSON.stringify(data), // body data type must match "Content-Type" header
-        });
-        return response.json(); // parses JSON response into native JavaScript objects
-      }
-      console.log(`data check agagin`, data);
-
-      postData('http://admin.moodflo.com/api/updateStaffHealth', {data}).then(
-        (data) => {
-          console.log('here here', data); // JSON data parsed by `data.json()` call
+      var config = {
+        method: 'post',
+        url: 'https://admin.moodflo.com/api/updateStaffHealth',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
         },
-      );
+        data: data,
+      };
+
+      axios(config)
+        .then(function (response) {
+          console.log(
+            '✅ ✅ ✅ ✅ Success message for health data ✅ ✅ ✅ ✅',
+            JSON.stringify(response.data),
+          );
+        })
+        .catch(function (error) {
+          console.log('❌ ❌ ❌ ❌ error for health data ❌ ❌ ❌ ❌', error);
+        });
     }
   };
-  return (
-    <View>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={{backgroundColor: 'white'}}>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <View style={styles.HeaderView}>
-            <TouchableOpacity
-              onPress={() => {
-                OnAutoSync();
-              }}
-              style={{
-                flexDirection: 'row',
-              }}>
-              <View style={styles.syncButtonView}>
-                <Image
-                  style={{height: 20, width: 20}}
-                  source={Constants.Images.Sync}
-                />
-              </View>
-              <View style={{alignContent: 'center', paddingHorizontal: 15}}>
-                <Text style={styles.lightText}>Sync your</Text>
-                <Text style={styles.normalText}>Fitness data</Text>
-              </View>
-            </TouchableOpacity>
-            <View style={styles.ColoredView}>
-              <Text style={styles.ColoredText}>Anonymous</Text>
-            </View>
-          </View>
-          <View style={styles.ProgressBarView}>
-            <ProgressBar
-              progress={66.66}
-              height={10}
-              backgroundColor="#CB9866"
-            />
-            <View style={{flexDirection: 'row'}}>
-              <Text style={[styles.SmallThinText, {flex: 1}]}>
-                Try add 3 moods per day
-              </Text>
-              <Text style={styles.SmallThinText}>2/3</Text>
-            </View>
-          </View>
 
-          <Swiper
-            style={styles.wrapper}
-            showsButtons={true}
-            dotStyle={{height: 0, width: 0}}
-            activeDotStyle={{height: 0, width: 0}}>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text style={styles.SmallThinText}>Hello Swiper</Text>
-              <Text style={styles.swiperText}>
-                You are the <Text style={{color: '#5947D0'}}>happiest</Text>{' '}
-                when you walk over <Text style={{color: '#5947D0'}}>5000</Text>{' '}
-                steps before <Text style={{color: '#5947D0'}}>2PM</Text>
-              </Text>
-            </View>
-          </Swiper>
-          <View style={styles.forCircle}>
-            <AnimatedCircularProgress
-              style={styles.CircularProgressStyle}
-              arcSweepAngle={270}
-              size={180}
-              width={13}
-              fill={70}
-              rotation={-135}
-              tintColor="#9889F9"
-              lineCap={'round'}
-              onAnimationComplete={() => console.log('onAnimationComplete')}
-              backgroundColor="#E2E4EA"></AnimatedCircularProgress>
-            <View style={styles.absolute}>
-              <ImageBackground
-                resizeMode={'contain'}
-                style={styles.BigCircleBackgroundImage}
-                source={Constants.Images.RunningBackground}>
-                <Image
-                  source={Constants.Images.RunningMan}
-                  style={{height: 30, width: 30, marginTop: 25}}
-                />
-                <Text
-                  style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
-                  7,300
-                </Text>
-                <Text
-                  style={[
-                    styles.SmallThinText,
-                    {paddingVertical: 0, color: '#3B456D'},
-                  ]}>
-                  steps
-                </Text>
-              </ImageBackground>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              width: '80%',
-              alignSelf: 'center',
-              marginTop: 10,
-              marginBottom: 40,
-            }}>
-            <View style={styles.forCircle}>
-              <AnimatedCircularProgress
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={80}
-                width={10}
-                fill={80}
-                rotation={0}
-                tintColor="#30C3D6"
-                lineCap={'round'}
-                onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#E0F8FB"
-              />
-              <View style={styles.absolute}>
-                <Image
-                  source={Constants.Images.Calories}
-                  style={{height: 30, width: 30, marginTop: -25}}
-                />
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text style={[styles.SmallThinBlackText]}>2345 kcal</Text>
-              </View>
-            </View>
-            <View style={styles.forCircle}>
-              <AnimatedCircularProgress
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={80}
-                width={10}
-                fill={80}
-                rotation={0}
-                tintColor="#F43085"
-                lineCap={'round'}
-                onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#FDE2EF"
-              />
-              <View style={styles.absolute}>
-                <Image
-                  source={Constants.Images.Distance}
-                  style={{height: 30, width: 30, marginTop: -25}}
-                />
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text style={[styles.SmallThinBlackText]}>2 km</Text>
-              </View>
-            </View>
-            <View style={styles.forCircle}>
-              <AnimatedCircularProgress
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={80}
-                width={10}
-                fill={80}
-                rotation={0}
-                tintColor="#37DD67"
-                lineCap={'round'}
-                onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#C6F9E8"
-              />
-              <View style={styles.absolute}>
-                <Image
-                  source={Constants.Images.Time}
-                  style={{height: 30, width: 30, marginTop: -25}}
-                />
-              </View>
-              <View style={{marginTop: 10}}>
-                <Text style={[styles.SmallThinBlackText]}>23 min</Text>
-              </View>
-            </View>
-          </View>
-          {/* <View style={{backgroundColor: 'green', marginBottom: 100}}>
-            <ChartPathProvider data={{points, smoothingStrategy: 'bezier'}}>
-              <ChartPath height={SIZE / 2} stroke="yellow" width={SIZE} />
-              <ChartDot style={{backgroundColor: 'blue'}} />
-            </ChartPathProvider>
-          </View> */}
-          <GraphicChart />
-        </ScrollView>
-      </SafeAreaView>
+  return (
+    <View style={{flex: 1}}>
+      <StatusBar barStyle="dark-content" />
+      <Swiper
+        // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
+        dotStyle={{height: 0, width: 0}}
+        activeDotStyle={{height: 0, width: 0}}
+        style={{backgroundColor: 'white'}}
+        showsButtons={true}
+        loop={false}>
+        <View>
+          <FitnessData Perm={Perm} checkStorage={checkStorage} />
+        </View>
+        <View>
+          <WeatherData
+            data={data}
+            dataLow={dataLow}
+            Weather={Weather}
+            PermWeather={PermWeather}
+            CheckForWeather={CheckForWeather}
+          />
+        </View>
+
+        <View style={styles.slide3}>
+          <ScreenData
+            data={data}
+            dataLow={dataLow}
+            Weather={Weather}
+            PermScreenTime={PermScreenTime}
+            CheckForScreenData={CheckForScreenData}
+          />
+        </View>
+        <View style={styles.slide3}>
+          <SleepData
+            data={data}
+            dataLow={dataLow}
+            Weather={Weather}
+            PermScreenTime={PermScreenTime}
+            CheckForWeather={CheckForScreenData}
+          />
+        </View>
+      </Swiper>
     </View>
   );
-  // }
 };
 
 const styles = StyleSheet.create({
@@ -755,7 +627,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   HeaderView: {
-    height: 100,
+    height: 80,
     paddingTop: 18,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -806,17 +678,19 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
   },
   wrapper: {
-    height: 210,
+    height: 200,
     // backgroundColor: 'lightgreen',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 7,
   },
   swiperText: {
-    fontSize: 30,
+    fontSize: SIZE / 14,
     fontWeight: '500',
     width: '75%',
     textAlign: 'center',
     fontFamily: RubikMedium,
+    color: '#222432',
   },
   forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
   BigCircleBackgroundImage: {
@@ -830,196 +704,17 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
+  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelperView: {
+    flexDirection: 'row',
+    marginHorizontal: 3,
+    marginTop: 10,
+  },
+  indicatorText: {
+    marginHorizontal: 10,
+    color: '#4C5980',
+    fontFamily: RubikRegular,
+  },
 });
 
 export default App;
-
-// {Platform.OS === 'ios' && (
-//   <View style={styles.body}>
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>Weather Info</Text>
-//       {Weather && (
-//         <View>
-//           <Text style={styles.sectionDescription}>
-//             Current Temp: {Weather.main.temp} ºC{' '}
-//           </Text>
-//           <Text>
-//             Sunrise Time:{' '}
-//             {moment(Weather.sys.sunrise).format('HH:MM')}
-//           </Text>
-//           <Text>
-//             Sunset Time: {moment(Weather.sys.sunset).format('HH:MM')}
-//           </Text>
-
-//           <Text
-//             style={[styles.sectionDescription, {textAlign: 'left'}]}>
-//             Min Temp: {Weather.main.temp_min} ºC{' '}
-//           </Text>
-//           <Text
-//             style={[styles.sectionDescription, {textAlign: 'left'}]}>
-//             Max Temp: {Weather.main.temp_max} ºC{' '}
-//           </Text>
-//         </View>
-//       )}
-//       <Text style={[styles.sectionTitle, {marginTop: 22}]}>
-//         Weight
-//       </Text>
-
-//       {Weight &&
-//         Weight.length > 0 &&
-//         Weight?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {Math.round(i.value)} {'Pound'}
-//             </Text>
-//           );
-//         })}
-//       {!Weight && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Weight to Health App!
-//         </Text>
-//       )}
-//     </View>
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>Age</Text>
-//       {DateOfBirth && (
-//         <Text style={styles.sectionDescription}>
-//           {DateOfBirth.age}
-//         </Text>
-//       )}
-//       {!DateOfBirth && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Birthday to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>Height</Text>
-//       {allHeights &&
-//         allHeights.length > 0 &&
-//         allHeights?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {Math.round(i.value)} {'Inches'}
-//             </Text>
-//           );
-//         })}
-//       {!allHeights && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Height to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>BMI</Text>
-//       {BMI && (
-//         <Text style={styles.sectionDescription}>{BMI.value}</Text>
-//       )}
-//       {!BMI && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Birthday to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>BodyFatPerc</Text>
-//       {BodyFatPerc &&
-//         BodyFatPerc.length > 0 &&
-//         BodyFatPerc?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {i.value}
-//               {'%'}
-//             </Text>
-//           );
-//         })}
-//       {!BodyFatPerc && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Birthday to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>BP</Text>
-//       {BP &&
-//         BP.length > 0 &&
-//         BP?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {i.bloodPressureSystolicValue}
-//               {'/'}
-//               {i.bloodPressureDiastolicValue}
-//             </Text>
-//           );
-//         })}
-//       {!BP && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your BP to Health App!
-//         </Text>
-//       )}
-//     </View>
-
-//     {/* <View style={styles.sectionContainer}>
-//         <Text style={styles.sectionTitle}>StepCount</Text>
-//         {StepCount && (
-//           <Text style={styles.sectionDescription}>
-//             {StepCount.value}
-//           </Text>
-//         )}
-//         {!StepCount && (
-//           <Text style={styles.sectionDescriptionError}>
-//             Add your StepCount to Health App!
-//           </Text>
-//         )}
-//       </View> */}
-
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>Body Temp</Text>
-//       {temp &&
-//         temp.length > 0 &&
-//         temp?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {Math.round(i.value)} {'ºc'}
-//             </Text>
-//           );
-//         })}
-//       {!temp && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your Temp to Health App!
-//         </Text>
-//       )}
-//     </View>
-//     <View style={styles.sectionContainer}>
-//       <Text style={styles.sectionTitle}>
-//         Steps which is different
-//       </Text>
-//       {/* {filterFunction()} */}
-//       {steps &&
-//         steps.length > 0 &&
-//         steps?.map((i, k) => {
-//           return (
-//             <Text style={styles.sectionDescription} key={k}>
-//               {moment(i.startDate).format('DD MMM YYYY')} {'->'}{' '}
-//               {i.value} {'Steps'}
-//             </Text>
-//           );
-//         })}
-//       {!steps && (
-//         <Text style={styles.sectionDescriptionError}>
-//           Add your steps to Health App!
-//         </Text>
-//       )}
-//     </View>
-//   </View>
-// )}
-// {Platform.OS === 'android' && <GoogleFit />}

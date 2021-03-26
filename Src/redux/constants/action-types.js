@@ -2,3 +2,5 @@ export const FIRST_ACTION_TYPE = 'FIRST_ACTION_TYPE';
 export const OTP_VERIFIED = 'OTP_VERIFIED';
 export const SET_DIVISION = 'SET_DIVISION';
 export const GET_DIVISION = 'GET_DIVISION';
+export const GET_EMAIL = 'GET_EMAIL';
+export const GET_USER_DIVISION = 'GET_USER_DIVISION';

@@ -3,6 +3,8 @@ import {
   GET_DIVISION,
   OTP_VERIFIED,
   SET_DIVISION,
+  GET_EMAIL,
+  GET_USER_DIVISION,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -26,6 +28,18 @@ export const Division = (data) => {
 export const getDivisions = (data) => {
   return {
     type: GET_DIVISION,
+    payload: data,
+  };
+};
+export const UserEmail = (data) => {
+  return {
+    type: GET_EMAIL,
+    payload: data,
+  };
+};
+export const UserDivision = (data) => {
+  return {
+    type: GET_USER_DIVISION,
     payload: data,
   };
 };

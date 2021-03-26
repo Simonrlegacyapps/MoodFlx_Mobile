@@ -1,0 +1,59 @@
+Arrows are chagnes from library
+
+
+
+
+-->
+workout permission is added directly from the lib.
+
+
+-->
+graphs line width is chagned
+
+-->
+
+## replace this with progressbar index file (library) ==>lines(95-130)
+
+ const styles = StyleSheet.create({
+    container: {
+      width: "100%",
+      height,
+      overflow: "hidden",
+      borderRadius: 4
+    },
+    progressBar: {
+      flex: 1,
+      borderRadius: height / 2
+    },
+    linearGradient: {
+      flex: 1,
+      borderRadius: 5
+    },
+  });
+
+  return (
+    <View>
+      <Animated.View style={[styles.container, { backgroundColor: "#F1F4F9" }]}>
+        <Animated.View
+          style={[
+            styles.progressBar,
+            {
+              backgroundColor,
+              ...styleAnimation()
+            }
+          ]}
+        >
+          <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#69AF97', '#B46F98', '#CC9567', "#80B072"]} style={styles.linearGradient}>
+        </LinearGradient>
+        </Animated.View>
+        </Animated.View>
+    </View>
+  );
+};
+
+
+--> 
+
+## if you have just downloaded the repo and there is cahgne in swiper please replace the /src->index.js/ of that library
+
+you can find the file with the name of swiper outside..
