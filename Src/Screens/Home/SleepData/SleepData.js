@@ -21,6 +21,7 @@ import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
+import StarProgress from '../../../Components/StarProgress/StarProgress';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -108,6 +109,7 @@ const SleepData = ({
         {/* <HomeHeader /> */}
         <View style={{marginBottom: 50}}>
           {/* <BarGraph /> */}
+          <StarProgress />
           <View
             style={{
               position: 'absolute',

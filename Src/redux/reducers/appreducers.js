@@ -32,7 +32,6 @@ export const First = (state = intializedState, action) => {
         getDivision: action.payload,
       });
     case GET_EMAIL:
-      console.log(`action.payload`, action.payload);
       return Object.assign({}, state, {
         UserEmail: action.payload,
       });

@@ -8,6 +8,7 @@ import {
   ImageBackground,
   StyleSheet,
   Dimensions,
+  StatusBar,
 } from 'react-native';
 import ProgressBar from 'react-native-animated-progress';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
@@ -26,6 +27,7 @@ export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 const FitnessData = ({Perm, checkStorage}) => {
   return (
     <View>
+      <StatusBar barStyle="dark-content" />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"

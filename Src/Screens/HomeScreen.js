@@ -34,7 +34,7 @@ const HomeScreen = ({navigation, route}) => {
             } else if (route.name === 'LogoTab') {
               iconName = focused ? (
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('MoodEmotionDetector')}>
+                  onPress={() => navigation.replace('MoodEmotionDetector')}>
                   <Image
                     resizeMode={'contain'}
                     style={{marginBottom: 70, height: 80}}
@@ -42,10 +42,14 @@ const HomeScreen = ({navigation, route}) => {
                   />
                 </TouchableOpacity>
               ) : (
-                <Image
-                  style={{marginBottom: 70}}
-                  source={require('../../assets/tabicons/logo.png')}
-                />
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => navigation.navigate('MoodEmotionDetector')}>
+                  <Image
+                    style={{marginBottom: 70}}
+                    source={require('../../assets/tabicons/logo.png')}
+                  />
+                </TouchableOpacity>
               );
             } else if (route.name === 'Linktocompany') {
               iconName = focused ? <LinkActive /> : <LinkIcon />;

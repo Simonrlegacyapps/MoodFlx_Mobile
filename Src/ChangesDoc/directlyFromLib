@@ -50,3 +50,10 @@ graphs line width is chagned
     </View>
   );
 };
+
+
+--> 
+
+## if you have just downloaded the repo and there is cahgne in swiper please replace the /src->index.js/ of that library
+
+you can find the file with the name of swiper outside..

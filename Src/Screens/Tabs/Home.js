@@ -316,7 +316,7 @@ const App = (props) => {
           stepsCount,
           async (err: Object, results: Array<Object>) => {
             await setSleep(results);
-            // console.log('Sleep Analysis', results);
+            console.log('Sleep Analysis +++++++++======>>>>', results);
           },
         );
 
@@ -543,12 +543,13 @@ const App = (props) => {
 
   return (
     <View style={{flex: 1}}>
+      <StatusBar barStyle="dark-content" />
       <Swiper
-        buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
+        // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
         dotStyle={{height: 0, width: 0}}
         activeDotStyle={{height: 0, width: 0}}
         style={{backgroundColor: 'white'}}
-        showsButtons={false}
+        showsButtons={true}
         loop={false}>
         <View>
           <FitnessData Perm={Perm} checkStorage={checkStorage} />
@@ -583,20 +584,7 @@ const App = (props) => {
         </View>
       </Swiper>
     </View>
-    // <View>
-    //   <StatusBar barStyle="dark-content" />
-    //   <SafeAreaView style={{backgroundColor: 'white'}}>
-    // <ScrollView
-    //   contentInsetAdjustmentBehavior="automatic"
-    //   style={styles.scrollView}>
-    //
-
-    //     </ScrollView>
-
-    //   </SafeAreaView>
-    // </View>
   );
-  // }
 };
 
 const styles = StyleSheet.create({

@@ -13,7 +13,13 @@ import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import {Picker} from '@react-native-picker/picker';
 import Constants from '../../Constants';
 import {useDispatch, useSelector} from 'react-redux';
-import {Division, getDivisions, OTP_Verify} from '../../redux/actions/actions';
+import {
+  Division,
+  getDivisions,
+  OTP_Verify,
+  UserDivision,
+  UserEmail,
+} from '../../redux/actions/actions';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
 import {RubikBlack, RubikRegular} from '../../Constants/fonts/Fonts';
@@ -44,7 +50,11 @@ const Linktocompany = ({navigation}) => {
   //
 
   const UserData = useSelector((state) => state.First);
-  console.log(`UserData.UserEmail in`, UserData.UserEmail);
+  console.log(
+    `UserData in link company`,
+    UserData.UserEmail,
+    UserData.UserDivision,
+  );
 
   useEffect(() => {
     fetch('https://admin.moodflo.com/api/getDivision')
@@ -52,7 +62,7 @@ const Linktocompany = ({navigation}) => {
       .then(async (res) => {
         await dispatch(getDivisions(res.data));
         setDivisions(res.data);
-        console.log('response of division', res.data[0].id);
+        // console.log('response of division', res.data[0].id);
         // setSelectedDivisionId(res.data[0].id);
       });
   }, []);
@@ -85,6 +95,7 @@ const Linktocompany = ({navigation}) => {
             'Division',
             JSON.stringify(resp.data.divisionName),
           );
+          dispatch(UserDivision(resp.data.divisionName));
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,
@@ -98,12 +109,17 @@ const Linktocompany = ({navigation}) => {
         console.log('err', err), setLoading(false), setAPIfail(true);
       });
   };
+  console.log(`UserData.UserDivision`, UserData.UserDivision);
 
-  const onUnlink = (type) => {
+  const onUnlink = async (type) => {
     console.log('run');
     // setLinked(type);
     dispatch(OTP_Verify(false));
     dispatch(Division(null));
+    await AsyncStorage.setItem('Division', '');
+    await AsyncStorage.setItem('Email', '');
+    dispatch(UserDivision(null));
+    dispatch(UserEmail(null));
   };
 
   return (
@@ -147,7 +163,7 @@ const Linktocompany = ({navigation}) => {
               {Divisions &&
                 Divisions.length > 0 &&
                 Divisions.map((item, index) => {
-                  console.log(`item`, item);
+                  // console.log(`item`, item);
                   return (
                     <TouchableOpacity
                       onPress={async () => {
@@ -185,7 +201,7 @@ const Linktocompany = ({navigation}) => {
       </View>
 
       <AnonymousHeader backGround />
-      {!OTPVerified.success && (
+      {!UserData.UserDivision && !UserData.UserEmail && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
           <Text style={{fontWeight: '500', fontSize: 26}}>Link a company</Text>
           <Text
@@ -227,7 +243,7 @@ const Linktocompany = ({navigation}) => {
           </TouchableOpacity>
         </View>
       )}
-      {OTPVerified.success && setDivision === null && (
+      {UserData.UserEmail && UserData.UserDivision === null && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
           {APIfail && (
             <Text
@@ -353,7 +369,7 @@ const Linktocompany = ({navigation}) => {
           </TouchableOpacity>
         </View>
       )}
-      {OTPVerified.success && setDivision !== null && (
+      {UserData.UserDivision !== null && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
@@ -385,7 +401,7 @@ const Linktocompany = ({navigation}) => {
               marginBottom: 42,
               width: 270,
             }}>
-            {selectedDivision}
+            {UserData.UserDivision}
           </Text>
           <TouchableOpacity
             // disabled={selectedLanguage ? false : true}

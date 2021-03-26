@@ -14,4 +14,10 @@ export default {
   DropDown: require('../../../assets/newImage/DropDown/Down.png'),
   DropDownFill: require('../../../assets/newImage/DropDownFill/Shape.png'),
   Rain: require('../../../assets/newImage/Weather/Rain.png'),
+  Star: require('../../../assets/newImage/Star/Star.png'),
+  Pointer: require('../../../assets/newImage/Pointer/Oval.png'),
+  ColoredStar: require('../../../assets/newImage/Star/ColoredStar.png'),
+  Arrow: require('../../../assets/newImage/SliderArrow/Arrow.png'),
+  Circles: require('../../../assets/newImage/Circles/circles.png'),
+  GirlImage: require('../../../assets/newImage/GirlImage/img.png'),
 };

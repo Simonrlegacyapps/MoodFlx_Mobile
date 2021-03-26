@@ -58,7 +58,7 @@ const MoodEmotionDetector = ({navigation}) => {
   const [Location, setLocation] = useState([]);
   const [Moving, setMoving] = useState(false);
   const [Anonymous, setAnonymous] = useState(false);
-  const [Label, setLabel] = useState('Mood');
+  const [Label, setLabel] = useState('Excited');
   const [startTime, setstartTime] = useState(0);
   const [EndTime, setEndTime] = useState(0);
   const [StatusVertical, setStatusVertical] = useState(0);
@@ -80,6 +80,8 @@ const MoodEmotionDetector = ({navigation}) => {
     setModalVisible(false);
   };
 
+  const UserData = useSelector((state) => state.First);
+
   const checkStorage = async () => {
     let p = await AsyncStorage.getItem('Email');
     let d = await AsyncStorage.getItem('Division');
@@ -95,9 +97,8 @@ const MoodEmotionDetector = ({navigation}) => {
     return e;
     // console.log('Email', e);
   };
-  const UserData = useSelector((state) => state.First);
 
-  console.log(`useEmail`, UserData.UserDivision);
+  console.log(`user division`, UserData.UserDivision);
   useEffect(() => {
     checkStorage();
 
@@ -130,12 +131,12 @@ const MoodEmotionDetector = ({navigation}) => {
         // setSelectedDivisionId(res.data[0].id);
       });
   }, []);
-  console.log(`GetMoods`, GetMoods);
+  // console.log(`GetMoods`, GetMoods);
 
   const FindId = () => {
     const Id = GetMoods.find(({name}) => {
       console.log(`name`, name);
-      return name === 'Chilled';
+      return name === Label;
     });
     console.log(`Id`, Id.id);
     console.log(`lat, lng`, lat, lng);
@@ -1168,6 +1169,7 @@ const MoodEmotionDetector = ({navigation}) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={GetMoods ? false : true}
             onPress={() => FindId()}
             style={{
               height: dynamicSize(52),
