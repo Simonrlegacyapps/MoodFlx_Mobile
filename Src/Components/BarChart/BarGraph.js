@@ -3,6 +3,7 @@ import {View, Text} from 'react-native';
 import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import CustomProgressBar from '../ProgressBar/ProgressBarCustom';
+import moment from 'moment';
 
 const BarGraph = ({ShowPollen}) => {
   const [Pollen, setPollen] = useState('Low');
@@ -15,14 +16,23 @@ const BarGraph = ({ShowPollen}) => {
     {value: -5, hours: 0},
   ];
 
+  const a = moment().subtract(0, 'days').startOf('day').format('dddd');
+  const b = moment().subtract(1, 'days').startOf('day').format('dddd');
+  const c = moment().subtract(2, 'days').startOf('day').format('dddd');
+  const d = moment().subtract(3, 'days').startOf('day').format('dddd');
+  const e = moment().subtract(4, 'days').startOf('day').format('dddd');
+  const f = moment().subtract(5, 'days').startOf('day').format('dddd');
+  const g = moment().subtract(6, 'days').startOf('day').format('dddd');
+  // console.log(`a`, a);
+
   const bars = [
-    {label: 'Mo', value: 6, pollen: 'Low'},
-    {label: 'Tu', value: 8, pollen: 'Normal'},
-    {label: 'We', value: 7, pollen: 'High'},
-    {label: 'Th', value: 12, pollen: 'Normal'},
-    {label: 'Fr', value: 5, pollen: 'Low'},
-    {label: 'Sa', value: 6, pollen: 'Low'},
-    {label: 'Su', value: 7, pollen: 'High'},
+    {label: a.substr(0, 2), value: 6, pollen: 'Low'},
+    {label: b.substr(0, 2), value: 8, pollen: 'Normal'},
+    {label: c.substr(0, 2), value: 7, pollen: 'High'},
+    {label: d.substr(0, 2), value: 12, pollen: 'Normal'},
+    {label: e.substr(0, 2), value: 5, pollen: 'Low'},
+    {label: f.substr(0, 2), value: 6, pollen: 'Low'},
+    {label: g.substr(0, 2), value: 7, pollen: 'High'},
   ];
 
   const totalValue = 12;

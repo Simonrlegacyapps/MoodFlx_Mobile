@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -24,7 +24,38 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
-const FitnessData = ({Perm, checkStorage}) => {
+const FitnessData = ({
+  Perm,
+  checkStorage,
+  TodayStep,
+  TodayCalories,
+  TodayDistance,
+  MoveTime,
+  zero,
+  ones,
+  twos,
+  threes,
+  fours,
+  fives,
+}) => {
+  useEffect(() => {
+    checkThis();
+  }, [TodayStep]);
+  const checkThis = () => {
+    return (
+      <AnimatedCircularProgress
+        style={styles.CircularProgressStyle}
+        arcSweepAngle={270}
+        size={180}
+        width={13}
+        fill={TodayStep + 5}
+        rotation={-135}
+        tintColor="#9889F9"
+        lineCap={'round'}
+        onAnimationComplete={() => console.log('onAnimationComplete')}
+        backgroundColor="#E2E4EA"></AnimatedCircularProgress>
+    );
+  };
   return (
     <View>
       <StatusBar barStyle="dark-content" />
@@ -90,17 +121,7 @@ const FitnessData = ({Perm, checkStorage}) => {
           </Text>
         </View>
         <View style={[styles.forCircle, {marginTop: 30}]}>
-          <AnimatedCircularProgress
-            style={styles.CircularProgressStyle}
-            arcSweepAngle={270}
-            size={180}
-            width={13}
-            fill={70}
-            rotation={-135}
-            tintColor="#9889F9"
-            lineCap={'round'}
-            onAnimationComplete={() => console.log('onAnimationComplete')}
-            backgroundColor="#E2E4EA"></AnimatedCircularProgress>
+          {checkThis()}
           <View style={styles.absolute}>
             <ImageBackground
               resizeMode={'contain'}
@@ -111,7 +132,7 @@ const FitnessData = ({Perm, checkStorage}) => {
                 style={{height: 30, width: 30, marginTop: 25}}
               />
               <Text style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
-                7,300
+                {(TodayStep * 100).toFixed(0)}
               </Text>
               <Text
                 style={[
@@ -138,7 +159,7 @@ const FitnessData = ({Perm, checkStorage}) => {
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={80}
+              fill={TodayCalories}
               rotation={0}
               tintColor="#30C3D6"
               lineCap={'round'}
@@ -152,7 +173,9 @@ const FitnessData = ({Perm, checkStorage}) => {
               />
             </View>
             <View style={{marginTop: 10}}>
-              <Text style={[styles.SmallThinBlackText]}>2345 kcal</Text>
+              <Text style={[styles.SmallThinBlackText]}>
+                {(TodayCalories * 10).toFixed(0)} kcal
+              </Text>
             </View>
           </View>
           <View style={styles.forCircle}>
@@ -161,7 +184,7 @@ const FitnessData = ({Perm, checkStorage}) => {
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={80}
+              fill={TodayDistance}
               rotation={0}
               tintColor="#F43085"
               lineCap={'round'}
@@ -175,7 +198,9 @@ const FitnessData = ({Perm, checkStorage}) => {
               />
             </View>
             <View style={{marginTop: 10}}>
-              <Text style={[styles.SmallThinBlackText]}>2 km</Text>
+              <Text style={[styles.SmallThinBlackText]}>
+                {((TodayDistance * 5) / 100).toFixed(1)} km
+              </Text>
             </View>
           </View>
           <View style={styles.forCircle}>
@@ -184,7 +209,7 @@ const FitnessData = ({Perm, checkStorage}) => {
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={80}
+              fill={MoveTime}
               rotation={0}
               tintColor="#37DD67"
               lineCap={'round'}
@@ -198,11 +223,21 @@ const FitnessData = ({Perm, checkStorage}) => {
               />
             </View>
             <View style={{marginTop: 10}}>
-              <Text style={[styles.SmallThinBlackText]}>23 min</Text>
+              <Text style={[styles.SmallThinBlackText]}>
+                {Math.ceil(MoveTime * 1.2)} min
+              </Text>
             </View>
           </View>
         </View>
-        <GraphicChart />
+        <GraphicChart
+          day
+          zero={zero}
+          ones={ones}
+          twos={twos}
+          threes={threes}
+          fours={fours}
+          fives={fives}
+        />
         {!Perm && (
           <View
             style={{

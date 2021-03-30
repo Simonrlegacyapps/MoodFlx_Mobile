@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,8 @@ import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
+import moment from 'moment';
+import axios from 'axios';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -37,9 +39,133 @@ const WeatherData = ({
   CheckForWeather,
   PermWeather,
   Weather,
-  data,
-  dataLow,
+  // data,
+  // dataLow,
+  lat,
+  long,
 }) => {
+  const [temp, settemp] = useState([]);
+  const [One, setOne] = useState(null);
+  const [Two, setTwo] = useState(null);
+  const [Three, setThree] = useState(null);
+  const [Four, setFour] = useState(null);
+  const [Five, setFive] = useState(null);
+
+  const a = moment().subtract(0, 'days').startOf('day').toString();
+  const b = moment().subtract(1, 'days').startOf('day').toString();
+  const c = moment().subtract(2, 'days').startOf('day').toString();
+  const d = moment().subtract(3, 'days').startOf('day').toString();
+  const e = moment().subtract(4, 'days').startOf('day').toString();
+  // console.log(`b`, Date.parse(b));
+
+  const oneDay = () => {
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+          Date.parse(a) / 1000
+        }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      )
+      .then(async (response) => {
+        // console.log(`response`, response.data);
+        return await setOne(response.data);
+      })
+      .catch(function (error) {
+        console.log(`error for weather here`, error);
+      });
+  };
+  const TwoDay = () => {
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+          Date.parse(b) / 1000
+        }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      )
+      .then(async (response) => {
+        // console.log(`response`, response.data);
+        return await setTwo(response.data);
+      })
+      .catch(function (error) {
+        console.log(`error for weather here`, error);
+      });
+  };
+  const ThreeDay = () => {
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+          Date.parse(c) / 1000
+        }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      )
+      .then(async (response) => {
+        // console.log(`response`, response.data);
+        return await setThree(response.data);
+      })
+      .catch(function (error) {
+        console.log(`error for weather here`, error);
+      });
+  };
+  const FourDay = () => {
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+          Date.parse(d) / 1000
+        }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      )
+      .then(async (response) => {
+        // console.log(`response`, response.data);
+        return await setFour(response.data);
+      })
+      .catch(function (error) {
+        console.log(`error for weather here`, error);
+      });
+  };
+  const FiveDay = () => {
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+          Date.parse(e) / 1000
+        }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      )
+      .then(async (response) => {
+        // console.log(`response`, response.data);
+        return await setFive(response.data);
+      })
+      .catch(function (error) {
+        console.log(`error for weather here`, error);
+      });
+  };
+
+  useEffect(() => {
+    oneDay();
+    TwoDay();
+    ThreeDay();
+    FourDay();
+    FiveDay();
+  }, []);
+
+  // console.log(`oneDay`, One != null ? One.current.temp : 0);
+
+  const data = [
+    {x: 1, y: One ? One?.current?.temp : 0},
+    {x: 2, y: Two ? Two?.current?.temp : 0},
+    {x: 3, y: Three ? Three?.current?.temp : 0},
+    {x: 4, y: Four ? Four?.current?.temp : 0},
+    {x: 5, y: Five ? Five?.current?.temp : 0},
+    {x: 6, y: 2.43},
+    {x: 7, y: 2.2},
+  ];
+
+  // console.log(`data`, data);
+
+  const dataLow = [
+    {x: 1, y: 10},
+    {x: 2, y: 20},
+    {x: 3, y: 29},
+    {x: 4, y: 18},
+    {x: 5, y: 22},
+    {x: 6, y: 20},
+    {x: 7, y: 23},
+  ];
+
   return (
     <View>
       <ScrollView
