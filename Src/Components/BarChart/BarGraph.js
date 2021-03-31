@@ -93,6 +93,7 @@ const BarGraph = ({ShowPollen}) => {
             lines.map((item, index) => {
               return (
                 <View
+                  key={index}
                   style={{
                     flex: 1,
                     flexDirection: 'row',
@@ -189,6 +190,7 @@ const BarGraph = ({ShowPollen}) => {
             bars.map((item, index) => {
               return (
                 <View
+                  key={index}
                   style={{
                     flex: 1,
                     justifyContent: 'flex-end',

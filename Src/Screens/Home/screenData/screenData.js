@@ -39,6 +39,7 @@ const ScreenData = ({
   Weather,
   data,
   dataLow,
+  MoodCount,
 }) => {
   return (
     <View>
@@ -71,7 +72,13 @@ const ScreenData = ({
           </View>
         </View>
         <View style={styles.ProgressBarView}>
-          <ProgressBar progress={66.66} height={10} backgroundColor="#CB9866" />
+          <ProgressBar
+            progress={
+              (JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3 / 3) * 100
+            }
+            height={10}
+            backgroundColor="#CB9866"
+          />
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.SmallThinText, {flex: 1}]}>
               Try add 3 moods per day
@@ -80,7 +87,7 @@ const ScreenData = ({
               style={
                 (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
               }>
-              2/3
+              {JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3}/3
             </Text>
           </View>
         </View>
@@ -113,22 +120,7 @@ const ScreenData = ({
               position: 'absolute',
               alignSelf: 'center',
               marginTop: 30,
-            }}>
-            {/* <View>
-              <View>
-                <BezierGraphAuto data={data} color={'#F4227E'} />
-              </View>
-              <View style={{marginTop: 20}}>
-                <BezierGraphAuto data={dataLow} color={'#70DEEC'} />
-              </View>
-            </View> */}
-          </View>
-          {/* <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-            <IndicatorHelper color={'#7FE3F0'} text={'Min ºC'} />
-            <IndicatorHelper color={'#FC4190'} text={'Max ºC'} />
-            <IndicatorHelper color={'#7265E3'} text={'Rainfall'} />
-            <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
-          </View> */}
+            }}></View>
         </View>
         <GraphicChart />
         {!PermScreenTime && (
@@ -146,7 +138,7 @@ const ScreenData = ({
                 marginTop: -160,
                 fontWeight: '700',
                 fontFamily: RubikExtraBold,
-                fontSize: 120,
+                fontSize: SIZE / 3.5,
                 color: '#E0DDED',
                 transform: [{rotate: '-15deg'}],
               }}>
@@ -161,35 +153,9 @@ const ScreenData = ({
 
 const styles = StyleSheet.create({
   scrollView: {
-    // backgroundColor: '#FFF',
     height: '100%',
     paddingBottom: 400,
   },
-  //   body: {
-  //     // backgroundColor: '#FFF',
-  //   },
-  //   sectionContainer: {
-  //     marginTop: 32,
-  //     paddingHorizontal: 24,
-  //   },
-  //   sectionTitle: {
-  //     fontSize: 24,
-  //     fontWeight: '600',
-  //     color: '#000',
-  //   },
-  //   sectionDescription: {
-  //     marginTop: 8,
-  //     fontSize: 18,
-  //     fontWeight: '400',
-  //     color: '#555',
-  //   },
-  //   sectionDescriptionError: {
-  //     marginTop: 8,
-  //     fontSize: 18,
-  //     fontWeight: '400',
-  //     color: '#A00000',
-  //   },
-
   WeatherCardMain: {
     flexDirection: 'row',
     width: 320,
@@ -290,28 +256,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
   },
-  //   CircularProgressStyle: {
-  //     justifyContent: 'center',
-  //     alignItems: 'center',
-  //     alignSelf: 'center',
-  //   },
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
     color: '#747690',
   },
-  //   SmallThinBlackText: {
-  //     fontFamily: RubikLight,
-  //     // color: '#3B456D',
-  //     fontSize: 12.5,
-  //   },
-  //   wrapper: {
-  //     height: 200,
-  //     // backgroundColor: 'lightgreen',
-  //     justifyContent: 'center',
-  //     alignItems: 'center',
-  //     marginBottom: 7,
-  //   },
   swiperText: {
     fontSize: SIZE / 14,
     fontWeight: '500',
@@ -320,18 +269,6 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  //   forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
-  //   BigCircleBackgroundImage: {
-  //     height: 140,
-  //     width: 130,
-  //     marginBottom: 16,
-  //     alignItems: 'center',
-  //     justifyContent: 'center',
-  //   },
-  //   absolute: {
-  //     flex: 1,
-  //     position: 'absolute',
-  //   },
   indicatorHelper: {height: 18, width: 18, borderRadius: 5},
   indicatorHelperView: {
     flexDirection: 'row',

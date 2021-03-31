@@ -11,6 +11,7 @@ import {
   Image,
   ImageBackground,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import moment from 'moment';
 import axios from 'axios';
@@ -50,7 +51,14 @@ import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
 import ScreenData from '../Home/screenData/screenData';
 import SleepData from '../Home/SleepData/SleepData';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  UserCalories,
+  UserDistance,
+  UserMoodCount,
+  UserMoveTime,
+  UserSteps,
+} from '../../redux/actions/actions';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -108,6 +116,14 @@ const App = (props) => {
   const [TodayCalories, setTodayCalories] = useState(0);
   const [TodayDistance, setTodayDistance] = useState(0);
   const [MoveTime, setMoveTime] = useState(0);
+  const [Ones, setOnes] = useState(0);
+  const [Twos, setTwos] = useState(0);
+  const [Threes, setThrees] = useState(0);
+  const [Fours, setFours] = useState(0);
+  const [Fives, setFives] = useState(0);
+  const [Sixes, setSixes] = useState(0);
+  const [MoodCount, setMoodCount] = useState(0);
+  const [Loading, setLoading] = useState(false);
 
   const route = useRoute();
   const UserData = useSelector((state) => state.First);
@@ -137,8 +153,13 @@ const App = (props) => {
     type: 'Workout', // one of: ['Walking', 'StairClimbing', 'Running', 'Cycling', 'Workout']
   };
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    tryNew();
+    setTimeout(() => {
+      checkStorage();
+    }, 150);
+    // tryNew();
   }, []);
   const tryNew = async () => {
     await OnAutoSync();
@@ -150,11 +171,16 @@ const App = (props) => {
   };
 
   const checkStorage = async () => {
-    let p = await AsyncStorage.getItem('GiveHealthPerm');
-    let welcome = await JSON.parse(p);
-    await setPerm(welcome);
-    console.log('welcome', welcome);
-    if (welcome != null) {
+    // let p = await AsyncStorage.getItem('GiveHealthPerm');
+    let MCount = await AsyncStorage.getItem('MoodCount');
+    let e = await JSON.parse(MCount);
+    setMoodCount(e);
+    dispatch(UserMoodCount(e));
+    console.log(`mood count again`, e);
+    // let welcome = await JSON.parse(p);
+    // await setPerm(welcome);
+    // console.log('welcome', welcome);
+    if (UserData.HealthPermission != null) {
       console.log('good to go for API in async');
       await OnAutoSync();
       console.log(`auto sync function called`);
@@ -217,6 +243,7 @@ const App = (props) => {
         },
       };
 
+      setLoading(true);
       AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
         if (err) {
           console.log('error initializing Healthkit: ', err);
@@ -225,7 +252,7 @@ const App = (props) => {
 
         // Date of Birth Example
         AppleHealthKit.getDateOfBirth(null, async (err, results) => {
-          await setDateOfBirth(results);
+          setDateOfBirth(results);
           //  console.log('age', results);
         });
 
@@ -233,7 +260,7 @@ const App = (props) => {
         AppleHealthKit.getLatestWeight(
           null,
           async (err: string, results: Object) => {
-            await setLatestWeight(results);
+            setLatestWeight(results);
             //  console.log('weight', results);
           },
         );
@@ -241,7 +268,7 @@ const App = (props) => {
         AppleHealthKit.getHeightSamples(
           stepsCount,
           async (err: string, results: Object) => {
-            await setallHeights(results);
+            setallHeights(results);
             // console.log('All height', results);
           },
         );
@@ -251,7 +278,7 @@ const App = (props) => {
           async (err: string, results: Object) => {
             // console.log('height', results);
 
-            await setHeight(results);
+            setHeight(results);
           },
         );
 
@@ -260,13 +287,13 @@ const App = (props) => {
           async (err: string, results: Object) => {
             // console.log('BMI', results);
 
-            await setBMI(results);
+            setBMI(results);
           },
         );
         AppleHealthKit.getBodyTemperatureSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await settemp(results);
+            settemp(results);
 
             // console.log('All body temp', results);
           },
@@ -275,15 +302,19 @@ const App = (props) => {
         AppleHealthKit.getDailyStepCountSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await setsteps(results);
-
-            console.log('All steps ++++', results);
+            let total = 0;
+            setsteps(results);
+            for (let i in results) {
+              total = total + results[i].value;
+            }
+            dispatch(UserSteps(total));
+            // console.log('All steps ++++', results, total);
           },
         );
         AppleHealthKit.getStepCount(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await setsteps(results);
+            setsteps(results);
 
             // console.log('Today steps ++++', results);
           },
@@ -292,7 +323,7 @@ const App = (props) => {
         AppleHealthKit.getBodyFatPercentageSamples(
           stepsCount,
           async (err: string, results: Object) => {
-            await setBodyFatPerc(results);
+            setBodyFatPerc(results);
 
             // console.log(' All Body Fat % ', results);
           },
@@ -301,7 +332,7 @@ const App = (props) => {
         AppleHealthKit.getWeightSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await setWeight(results);
+            setWeight(results);
 
             // console.log(' All Body Weight ', results);
           },
@@ -310,7 +341,7 @@ const App = (props) => {
         AppleHealthKit.getBloodPressureSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await setBP(results);
+            setBP(results);
 
             // console.log('All BP', results);
           },
@@ -319,7 +350,12 @@ const App = (props) => {
         AppleHealthKit.getActiveEnergyBurned(
           stepsCount,
           async (err: Object, results: Object) => {
-            await setCalories(results);
+            let total = 0;
+            setCalories(results);
+            for (let i in results) {
+              total = total + results[i].value;
+            }
+            dispatch(UserCalories(total));
             // console.log('Active energy count', results);
           },
         );
@@ -327,15 +363,20 @@ const App = (props) => {
         AppleHealthKit.getDailyDistanceWalkingRunningSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await setDistance(results);
-            // console.log('Distance in KMS', results);
+            let total = 0;
+            setDistance(results);
+            for (let i in results) {
+              total = total + results[i].value;
+            }
+            dispatch(UserDistance(total));
+            // console.log('Distance in KMS', results, total);
           },
         );
 
         AppleHealthKit.getHeartRateSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await setHeartRate(results);
+            setHeartRate(results);
             // console.log('Heart Samples', results);
           },
         );
@@ -343,7 +384,7 @@ const App = (props) => {
         AppleHealthKit.getSleepSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await setSleep(results);
+            setSleep(results);
             // console.log('Sleep Analysis +++++++++======>>>>', results);
           },
         );
@@ -351,21 +392,32 @@ const App = (props) => {
         AppleHealthKit.getDateOfBirth(
           null,
           async (err: Object, results: Object) => {
-            await setDOB(results);
+            setDOB(results);
             // console.log('DOB', results);
           },
         );
 
         AppleHealthKit.getSamples(
-          TimeCount,
+          stepsCount,
           async (err: Object, results: Array<Object>) => {
+            let totalWalkTime = 0;
             if (err) {
               return;
             }
-            await setMovingTime(results);
+            setMovingTime(results);
+            for (let r in results) {
+              const startTime = moment(results[r].start);
+              const EndTime = moment(results[r].end);
+              const diff = EndTime.diff(startTime);
+              const diffDuration = moment.duration(diff).asMinutes();
+              totalWalkTime = totalWalkTime + diffDuration;
+              // }
+            }
+            dispatch(UserMoveTime(totalWalkTime));
             // console.log(
             //   '<<<<<<<<============== Time walking ==============>>>>>>>>>',
             //   results,
+            //   totalWalkTime,
             // );
           },
         );
@@ -376,11 +428,12 @@ const App = (props) => {
             if (err) {
               return console.log(`errola`, err);
             }
-            await setWorkouts(results);
+            setWorkouts(results);
             // console.log(
             //   '<<<<<<<<============== Workout Time ==============>>>>>>>>>',
             //   results,
             // );
+            setLoading(false);
           },
         );
         // console.log(
@@ -458,6 +511,7 @@ const App = (props) => {
         ) {
           console.log(`0`);
           zero = zero + steps[j].value;
+          setOnes(zero);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(4) <
             moment(steps[j].startDate) &&
@@ -466,6 +520,7 @@ const App = (props) => {
         ) {
           console.log(`2`, steps[j].value);
           ones = ones + steps[j].value;
+          setTwos(ones);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(8) <=
             moment(steps[j].startDate) &&
@@ -474,6 +529,7 @@ const App = (props) => {
         ) {
           twos = twos + steps[j].value;
           console.log(`3`, twos);
+          setThrees(twos);
           //add setzeros to this.
         } else if (
           moment(steps[j].startDate).startOf('day').hours(12) <=
@@ -483,6 +539,7 @@ const App = (props) => {
         ) {
           threes = threes + steps[j].value;
           console.log(`4`, threes);
+          setFours(threes);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(16) <
             moment(steps[j].startDate) &&
@@ -491,9 +548,11 @@ const App = (props) => {
         ) {
           fours = fours + steps[j].value;
           console.log(`5`, steps[j].value);
+          setFives(fours);
         } else {
           fives = fives + steps[j].value;
           console.log(`6`, steps[j].value);
+          setSixes(fives);
         }
       }
       for (let k in Distance) {
@@ -636,15 +695,17 @@ const App = (props) => {
   //   return <FitnessData Perm={Perm} checkStorage={checkStorage} />;
   // };
 
-  console.log(
-    `zero, ones, twos, threes, fours, fives`,
-    zero,
-    ones,
-    twos,
-    threes,
-    fours,
-    fives,
-  );
+  // console.log(
+  //   `zero, ones, twos, threes, fours, fives`,
+  //   Ones,
+  //   Twos,
+  //   Threes,
+  //   Fours,
+  //   Fives,
+  //   Sixes,
+  // );
+
+  // console.log(`loading`, Loading);
 
   return (
     <View style={{flex: 1}}>
@@ -664,12 +725,13 @@ const App = (props) => {
             MoveTime={MoveTime}
             Perm={Perm}
             checkStorage={checkStorage}
-            zero={zero}
-            ones={ones}
-            twos={twos}
-            threes={threes}
-            fours={fours}
-            fives={fives}
+            zero={Ones}
+            ones={Twos}
+            twos={Threes}
+            threes={Fours}
+            fours={Fives}
+            fives={Sixes}
+            MoodCount={MoodCount}
           />
         </View>
         <View>
@@ -681,6 +743,7 @@ const App = (props) => {
             CheckForWeather={CheckForWeather}
             lat={lat}
             long={long}
+            MoodCount={MoodCount}
           />
         </View>
 
@@ -691,6 +754,7 @@ const App = (props) => {
             Weather={Weather}
             PermScreenTime={PermScreenTime}
             CheckForScreenData={CheckForScreenData}
+            MoodCount={MoodCount}
           />
         </View>
         <View style={styles.slide3}>
@@ -700,9 +764,25 @@ const App = (props) => {
             Weather={Weather}
             PermScreenTime={PermScreenTime}
             CheckForWeather={CheckForScreenData}
+            MoodCount={MoodCount}
           />
         </View>
       </Swiper>
+      {Loading && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'black',
+            opacity: 0.2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" />
+          {/* <Text style={{color: 'black', fontSize: 20, alignSelf:'center'}}>Loading your data</Text> */}
+        </View>
+      )}
     </View>
   );
 };

@@ -40,6 +40,7 @@ const SleepData = ({
   Weather,
   data,
   dataLow,
+  MoodCount,
 }) => {
   return (
     <View>
@@ -72,7 +73,13 @@ const SleepData = ({
           </View>
         </View>
         <View style={styles.ProgressBarView}>
-          <ProgressBar progress={66.66} height={10} backgroundColor="#CB9866" />
+          <ProgressBar
+            progress={
+              (JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3 / 3) * 100
+            }
+            height={10}
+            backgroundColor="#CB9866"
+          />
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.SmallThinText, {flex: 1}]}>
               Try add 3 moods per day
@@ -81,7 +88,7 @@ const SleepData = ({
               style={
                 (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
               }>
-              2/3
+              {JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3}/3
             </Text>
           </View>
         </View>

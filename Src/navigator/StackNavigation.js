@@ -5,6 +5,7 @@ import MoodEmotionDetector from '../Screens/MoodEmotionDetector';
 import MoodEmotionDetectorTouch from '../Screens/MoodEmotionDetectorTouch';
 import EmailConfirmation from '../Screens/EmailConfirmation/EmailConfirmation';
 import VerifyEmail from '../Screens/VerifyEmail/VerifyEmail';
+import {Animated, Easing} from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -19,7 +20,11 @@ const StackNavigation = () => {
       <Stack.Screen
         name="MoodEmotionDetector"
         component={MoodEmotionDetector}
-        options={{header: () => null}}
+        options={{
+          header: () => null,
+          animationEnabled: false,
+          gestureEnabled: false,
+        }}
       />
       <Stack.Screen
         name="HomeScreen"

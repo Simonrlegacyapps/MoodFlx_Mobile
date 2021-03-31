@@ -43,6 +43,7 @@ const WeatherData = ({
   // dataLow,
   lat,
   long,
+  MoodCount,
 }) => {
   const [temp, settemp] = useState([]);
   const [One, setOne] = useState(null);
@@ -50,6 +51,8 @@ const WeatherData = ({
   const [Three, setThree] = useState(null);
   const [Four, setFour] = useState(null);
   const [Five, setFive] = useState(null);
+  const [WeatherDay, setWeatherDay] = useState(null);
+  const [hours, sethours] = useState(0);
 
   const a = moment().subtract(0, 'days').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
@@ -58,7 +61,13 @@ const WeatherData = ({
   const e = moment().subtract(4, 'days').startOf('day').toString();
   // console.log(`b`, Date.parse(b));
 
-  const oneDay = () => {
+  const WeatherDayData = () => {
+    let value = 0;
+    console.log(
+      `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+        Date.parse(a) / 1000
+      }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+    );
     axios
       .get(
         `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
@@ -66,80 +75,126 @@ const WeatherData = ({
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
-        // console.log(`response`, response.data);
-        return await setOne(response.data);
+        // console.log(`response of weather data`, response.data);
+        // await setWeatherDay(response.data);
+        if (Weather) {
+          for (let i in response.data.hourly) {
+            if (
+              Weather.weather[0].description ===
+              response.data.hourly[i].weather[0].description
+            ) {
+              value = value + 1;
+              sethours(value);
+              console.log(
+                `value`,
+                value,
+                i,
+                Weather.weather[0].description,
+                response.data.hourly[i].weather[0].description,
+              );
+            } else {
+              break;
+            }
+          }
+        }
       })
       .catch(function (error) {
         console.log(`error for weather here`, error);
       });
   };
-  const TwoDay = () => {
-    axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
-          Date.parse(b) / 1000
-        }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-      )
-      .then(async (response) => {
-        // console.log(`response`, response.data);
-        return await setTwo(response.data);
-      })
-      .catch(function (error) {
-        console.log(`error for weather here`, error);
-      });
-  };
-  const ThreeDay = () => {
-    axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
-          Date.parse(c) / 1000
-        }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-      )
-      .then(async (response) => {
-        // console.log(`response`, response.data);
-        return await setThree(response.data);
-      })
-      .catch(function (error) {
-        console.log(`error for weather here`, error);
-      });
-  };
-  const FourDay = () => {
-    axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
-          Date.parse(d) / 1000
-        }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-      )
-      .then(async (response) => {
-        // console.log(`response`, response.data);
-        return await setFour(response.data);
-      })
-      .catch(function (error) {
-        console.log(`error for weather here`, error);
-      });
-  };
-  const FiveDay = () => {
-    axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
-          Date.parse(e) / 1000
-        }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-      )
-      .then(async (response) => {
-        // console.log(`response`, response.data);
-        return await setFive(response.data);
-      })
-      .catch(function (error) {
-        console.log(`error for weather here`, error);
-      });
+  // const TwoDay = () => {
+  //   axios
+  //     .get(
+  //       `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+  //         Date.parse(b) / 1000
+  //       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+  //     )
+  //     .then(async (response) => {
+  //       // console.log(`response`, response.data);
+  //       return await setTwo(response.data);
+  //     })
+  //     .catch(function (error) {
+  //       console.log(`error for weather here`, error);
+  //     });
+  // };
+  // const ThreeDay = () => {
+  //   axios
+  //     .get(
+  //       `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+  //         Date.parse(c) / 1000
+  //       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+  //     )
+  //     .then(async (response) => {
+  //       // console.log(`response`, response.data);
+  //       return await setThree(response.data);
+  //     })
+  //     .catch(function (error) {
+  //       console.log(`error for weather here`, error);
+  //     });
+  // };
+  // const FourDay = () => {
+  //   axios
+  //     .get(
+  //       `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+  //         Date.parse(d) / 1000
+  //       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+  //     )
+  //     .then(async (response) => {
+  //       // console.log(`response`, response.data);
+  //       return await setFour(response.data);
+  //     })
+  //     .catch(function (error) {
+  //       console.log(`error for weather here`, error);
+  //     });
+  // };
+  // const FiveDay = () => {
+  //   axios
+  //     .get(
+  //       `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+  //         Date.parse(e) / 1000
+  //       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+  //     )
+  //     .then(async (response) => {
+  //       // console.log(`response`, response.data);
+  //       return await setFive(response.data);
+  //     })
+  //     .catch(function (error) {
+  //       console.log(`error for weather here`, error);
+  //     });
+  // };
+  // console.log(
+  //   `WeatherDay`,
+  //   WeatherDay ? WeatherDay.hourly[0].weather[0].description : null,
+  // );
+  const CheckLatestWeatherHour = () => {
+    let value = 0;
+    console.log(
+      `WeatherDay`,
+      WeatherDay ? WeatherDay.hourly[0].weather.description : null,
+    );
+    // for (let i in WeatherDay.hourly) {
+    //   if (
+    //     Weather
+    //       ? Weather.weather[0].description
+    //       : 'Low' == WeatherDay.hourly[0].weather[0].description
+    //   ) {
+    //     value = value + 1;
+    //     sethours(value);
+    //   }
+    // }
   };
 
+  const th = async () => {
+    await WeatherDayData();
+  };
   useEffect(() => {
-    oneDay();
-    TwoDay();
-    ThreeDay();
-    FourDay();
-    FiveDay();
+    th();
+    CheckLatestWeatherHour();
+    // oneDay();
+    // TwoDay();
+    // ThreeDay();
+    // FourDay();
+    // FiveDay();
   }, []);
 
   // console.log(`oneDay`, One != null ? One.current.temp : 0);
@@ -197,7 +252,13 @@ const WeatherData = ({
           </View>
         </View>
         <View style={styles.ProgressBarView}>
-          <ProgressBar progress={66.66} height={10} backgroundColor="#CB9866" />
+          <ProgressBar
+            progress={
+              (JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3 / 3) * 100
+            }
+            height={10}
+            backgroundColor="#CB9866"
+          />
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.SmallThinText, {flex: 1}]}>
               Try add 3 moods per day
@@ -206,7 +267,8 @@ const WeatherData = ({
               style={
                 (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
               }>
-              2/3
+              {JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3}
+              /3
             </Text>
           </View>
         </View>
@@ -276,9 +338,11 @@ const WeatherData = ({
                       style={styles.SmallCardImage}
                     />
                     <View>
-                      <Text style={[styles.smallCardText]}>Rainfall</Text>
+                      <Text style={[styles.smallCardText]}>
+                        {Weather ? Weather.weather[0].description : 'Low'}
+                      </Text>
                       <Text style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
-                        1hr
+                        {hours ? hours : 1}hr
                       </Text>
                     </View>
                   </View>
@@ -349,7 +413,7 @@ const WeatherData = ({
                 marginTop: -160,
                 fontWeight: '700',
                 fontFamily: RubikExtraBold,
-                fontSize: 120,
+                fontSize: SIZE / 3.5,
                 color: '#E0DDED',
                 transform: [{rotate: '-15deg'}],
               }}>

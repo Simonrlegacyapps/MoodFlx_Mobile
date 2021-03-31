@@ -27,25 +27,16 @@ export const {width: SIZE} = Dimensions.get('window');
 // ];
 
 const BasicExample = ({day, zero, ones, twos, threes, fours, fives}) => {
-  const [Duration, setDuration] = useState('Week');
-  // console.log(
-  //   `zero, ones, twos, threes, fours, fives`,
-  //   zero,
-  //   ones,
-  //   twos,
-  //   threes,
-  //   fours,
-  //   fives,
-  // );
+  const [Duration, setDuration] = useState('Daily');
 
   const data = [
-    {x: 1, y: zero},
-    {x: 2, y: ones},
-    {x: 3, y: twos},
-    {x: 4, y: threes},
-    {x: 5, y: fours},
-    {x: 6, y: fives},
-    {x: 7, y: 7},
+    {x: 1, y: 0},
+    {x: 2, y: zero ? zero : 0},
+    {x: 3, y: ones ? ones : 1},
+    {x: 4, y: twos ? twos : 0},
+    {x: 5, y: threes ? threes : 0},
+    {x: 6, y: fours ? fours : 0},
+    {x: 7, y: fives ? fives : 0},
   ];
 
   const points = monotoneCubicInterpolation({data, range: 40});
@@ -128,43 +119,57 @@ const BasicExample = ({day, zero, ones, twos, threes, fours, fives}) => {
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>{day ? '12am' : 'Mo'}</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '0' : 'Mo'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>{day ? '4' : 'Tu'}</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '4' : 'Tu'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>{day ? '8' : 'We'}</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '8' : 'We'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>{day ? '12pm' : 'Th'}</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '12' : 'Th'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>{day ? '4' : 'Fr'}</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '16' : 'Fr'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>{day ? '8' : 'Sa'}</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '20' : 'Sa'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>{day ? '12' : 'Sa'}</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '24' : 'Sa'}
+              </Text>
             </View>
             {/* <Text style={{width: (SIZE - 70) / 7}}>Tu</Text>
             <Text style={{width: (SIZE - 70) / 7}}>We</Text>

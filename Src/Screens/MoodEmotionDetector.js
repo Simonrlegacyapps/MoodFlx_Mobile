@@ -12,6 +12,7 @@ import {
   Dimensions,
   NativeModules,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import AnonymousHeader from '../Components/AnonymousHeader/AnonymousHeader';
 import {getUniqueId} from 'react-native-device-info';
@@ -29,7 +30,7 @@ import Modal from 'react-native-modal';
 import VideoModal from '../Components/VideoModal/VideoModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
-import {UserDivision, UserEmail} from '../redux/actions/actions';
+import {HealthPerm, UserDivision, UserEmail} from '../redux/actions/actions';
 
 const {StatusBarManager, statusBarHeight} = NativeModules;
 
@@ -67,6 +68,7 @@ const MoodEmotionDetector = ({navigation}) => {
   const [lng, setlng] = useState(false);
   const [lat, setlat] = useState(false);
   const [Email, setEmail] = useState(null);
+  const [Loading, setLoading] = useState(false);
 
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -85,15 +87,18 @@ const MoodEmotionDetector = ({navigation}) => {
   const checkStorage = async () => {
     let p = await AsyncStorage.getItem('Email');
     let d = await AsyncStorage.getItem('Division');
+    let Hp = await AsyncStorage.getItem('GiveHealthPerm');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
     let division = await JSON.parse(d);
+    let HealthP = await JSON.parse(Hp);
     console.log(`e`, e);
     console.log(`division`, division);
+    console.log(`HealthPerm`, HealthP);
     await setEmail(e);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
-
+    dispatch(HealthPerm(HealthP));
     return e;
     // console.log('Email', e);
   };
@@ -133,7 +138,12 @@ const MoodEmotionDetector = ({navigation}) => {
   }, []);
   // console.log(`GetMoods`, GetMoods);
 
-  const FindId = () => {
+  const FindId = async () => {
+    let p = await AsyncStorage.getItem('MoodCount');
+    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
+    let e = await JSON.parse(p);
+    console.log(`mood count`, e);
+
     const Id = GetMoods.find(({name}) => {
       console.log(`name`, name);
       return name === Label;
@@ -141,7 +151,7 @@ const MoodEmotionDetector = ({navigation}) => {
     console.log(`Id`, Id.id);
     console.log(`lat, lng`, lat, lng);
     const deviceId = DeviceInfo.getUniqueId();
-
+    setLoading(true);
     const params = {
       mood_id: Id.id,
       device_id: deviceId,
@@ -152,21 +162,23 @@ const MoodEmotionDetector = ({navigation}) => {
     PostRequestApi('moodUpdate', params)
       .then((resp) => {
         if (resp.status == 200) {
-          // setLoading(false);
+          AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
           console.log('Success Message of respose mood ✅ ✅ ✅ ✅', resp.data);
+          setLoading(false);
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,
           //   deviceID: deviceId,
           // });
+          navigation.replace('HomeScreen', {lat: lat, long: lng});
           console.log(`params`, params);
         }
       })
       .catch((err) => {
         console.log(`params for err of mood`, params);
         console.log('err of response mood❌ ❌ ❌ ❌', err);
+        setLoading(false);
       });
-    navigation.replace('HomeScreen', {lat: lat, long: lng});
   };
 
   const FindSvg = ({moveY, moveX, dx, dy, y0, x0}) => {
@@ -291,7 +303,7 @@ const MoodEmotionDetector = ({navigation}) => {
         locationX < fourthWidth &&
         2 * fourthHeight + statusHeight < locationY &&
         locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Wierd')
+      ? (word = 'Wired')
       : 0 < locationX &&
         locationX < fourthWidth &&
         3 * fourthHeight + statusHeight < locationY &&
@@ -389,7 +401,7 @@ const MoodEmotionDetector = ({navigation}) => {
         locationX < fourthWidth &&
         2 * fourthHeight + statusHeight < locationY &&
         locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Wierd')
+      ? (word = 'Wired')
       : 0 < locationX &&
         locationX < fourthWidth &&
         3 * fourthHeight + statusHeight < locationY &&
@@ -1188,6 +1200,21 @@ const MoodEmotionDetector = ({navigation}) => {
         ModalVisible={isModalVisible}
         dismissModalHandler={closeModal}
       />
+
+      {Loading && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'black',
+            opacity: 0.2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
     </View>
   );
 };

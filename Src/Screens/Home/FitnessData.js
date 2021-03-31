@@ -21,6 +21,7 @@ import {
 } from '../../Constants/fonts/Fonts';
 import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import AsyncStorage from '@react-native-community/async-storage';
+import {useSelector} from 'react-redux';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -37,18 +38,32 @@ const FitnessData = ({
   threes,
   fours,
   fives,
+  MoodCount,
 }) => {
   useEffect(() => {
     checkThis();
   }, [TodayStep]);
+
+  const UserData = useSelector((state) => state.First);
+
+  // console.log(`UserData`, UserData);
+
+  const {
+    UserMoodCount,
+    UserSteps,
+    UserCalories,
+    UserDistance,
+    UserMoveTime,
+  } = UserData;
   const checkThis = () => {
     return (
       <AnimatedCircularProgress
+        duration={900}
         style={styles.CircularProgressStyle}
         arcSweepAngle={270}
         size={180}
         width={13}
-        fill={TodayStep + 5}
+        fill={(UserSteps / 10000) * 100}
         rotation={-135}
         tintColor="#9889F9"
         lineCap={'round'}
@@ -56,6 +71,7 @@ const FitnessData = ({
         backgroundColor="#E2E4EA"></AnimatedCircularProgress>
     );
   };
+
   return (
     <View>
       <StatusBar barStyle="dark-content" />
@@ -92,7 +108,13 @@ const FitnessData = ({
           </View>
         </View>
         <View style={styles.ProgressBarView}>
-          <ProgressBar progress={66.66} height={10} backgroundColor="#CB9866" />
+          <ProgressBar
+            progress={
+              (JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3 / 3) * 100
+            }
+            height={10}
+            backgroundColor="#CB9866"
+          />
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.SmallThinText, {flex: 1}]}>
               Try add 3 moods per day
@@ -101,7 +123,7 @@ const FitnessData = ({
               style={
                 (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
               }>
-              2/3
+              {UserMoodCount < 3 ? UserMoodCount : 3}/3
             </Text>
           </View>
         </View>
@@ -132,7 +154,8 @@ const FitnessData = ({
                 style={{height: 30, width: 30, marginTop: 25}}
               />
               <Text style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
-                {(TodayStep * 100).toFixed(0)}
+                {/* {(TodayStep * 100).toFixed(0)} */}
+                {UserSteps}
               </Text>
               <Text
                 style={[
@@ -155,11 +178,12 @@ const FitnessData = ({
           }}>
           <View style={styles.forCircle}>
             <AnimatedCircularProgress
+              duration={900}
               style={styles.CircularProgressStyle}
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={TodayCalories}
+              fill={(UserCalories / 1000) * 100}
               rotation={0}
               tintColor="#30C3D6"
               lineCap={'round'}
@@ -174,17 +198,18 @@ const FitnessData = ({
             </View>
             <View style={{marginTop: 10}}>
               <Text style={[styles.SmallThinBlackText]}>
-                {(TodayCalories * 10).toFixed(0)} kcal
+                {UserCalories} kcal
               </Text>
             </View>
           </View>
           <View style={styles.forCircle}>
             <AnimatedCircularProgress
+              duration={900}
               style={styles.CircularProgressStyle}
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={TodayDistance}
+              fill={(UserDistance / 5000) * 100}
               rotation={0}
               tintColor="#F43085"
               lineCap={'round'}
@@ -199,17 +224,18 @@ const FitnessData = ({
             </View>
             <View style={{marginTop: 10}}>
               <Text style={[styles.SmallThinBlackText]}>
-                {((TodayDistance * 5) / 100).toFixed(1)} km
+                {((UserDistance / 5000) * 50).toFixed(0)} km
               </Text>
             </View>
           </View>
           <View style={styles.forCircle}>
             <AnimatedCircularProgress
+              duration={900}
               style={styles.CircularProgressStyle}
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={MoveTime}
+              fill={(UserMoveTime / 120) * 100}
               rotation={0}
               tintColor="#37DD67"
               lineCap={'round'}
@@ -224,7 +250,7 @@ const FitnessData = ({
             </View>
             <View style={{marginTop: 10}}>
               <Text style={[styles.SmallThinBlackText]}>
-                {Math.ceil(MoveTime * 1.2)} min
+                {UserMoveTime.toFixed(0)} min
               </Text>
             </View>
           </View>
@@ -238,7 +264,7 @@ const FitnessData = ({
           fours={fours}
           fives={fives}
         />
-        {!Perm && (
+        {!UserData.HealthPermission && (
           <View
             style={{
               // backgroundColor: 'blue',
@@ -256,7 +282,7 @@ const FitnessData = ({
                 marginTop: -160,
                 fontWeight: '700',
                 fontFamily: RubikExtraBold,
-                fontSize: 120,
+                fontSize: SIZE / 3.5,
                 color: '#E0DDED',
                 transform: [{rotate: '-15deg'}],
               }}>
