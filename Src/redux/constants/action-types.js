@@ -10,3 +10,6 @@ export const GET_USER_CALORIES = 'GET_USER_CALORIES';
 export const GET_USER_DISTANCE = 'GET_USER_DISTANCE';
 export const GET_USER_MOVE_TIME = 'GET_USER_MOVE_TIME';
 export const GET_HEALTH_PERM = 'GET_HEALTH_PERM';
+export const GET_ALL_MOODS = 'GET_ALL_MOODS';
+export const GET_LAT = 'GET_LAT';
+export const GET_LONG = 'GET_LONG';

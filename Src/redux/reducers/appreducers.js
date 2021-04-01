@@ -1,8 +1,11 @@
 import {
   FIRST_ACTION_TYPE,
+  GET_ALL_MOODS,
   GET_DIVISION,
   GET_EMAIL,
   GET_HEALTH_PERM,
+  GET_LAT,
+  GET_LONG,
   GET_USER_CALORIES,
   GET_USER_DISTANCE,
   GET_USER_DIVISION,
@@ -25,6 +28,9 @@ const intializedState = {
   UserDistance: 0,
   UserMoveTime: 0,
   HealthPermission: false,
+  AllMoods: null,
+  lat: null,
+  lon: null,
 };
 
 export const First = (state = intializedState, action) => {
@@ -74,6 +80,18 @@ export const First = (state = intializedState, action) => {
     case GET_HEALTH_PERM:
       return Object.assign({}, state, {
         HealthPermission: action.payload,
+      });
+    case GET_ALL_MOODS:
+      return Object.assign({}, state, {
+        AllMoods: action.payload,
+      });
+    case GET_LAT:
+      return Object.assign({}, state, {
+        lat: action.payload,
+      });
+    case GET_LONG:
+      return Object.assign({}, state, {
+        lon: action.payload,
       });
     default:
       return state;

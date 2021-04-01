@@ -93,6 +93,7 @@ const styles = {
     paddingHorizontal: 10,
     paddingVertical: 10,
     justifyContent: 'space-between',
+    
     // alignItems: 'center'
   },
 
@@ -748,8 +749,10 @@ export default class extends Component {
         style={[
           styles.buttonWrapper,
           {
+            alignSelf:'center',
             width: this.state.width,
-            height: this.state.height
+            // height: this.state.height
+            height: 40
           },
           this.props.buttonWrapperStyle
         ]}

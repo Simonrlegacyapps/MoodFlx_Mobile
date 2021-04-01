@@ -23,6 +23,7 @@ import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import moment from 'moment';
 import axios from 'axios';
+import {useSelector} from 'react-redux';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -61,16 +62,22 @@ const WeatherData = ({
   const e = moment().subtract(4, 'days').startOf('day').toString();
   // console.log(`b`, Date.parse(b));
 
+  const UserData = useSelector((state) => state.First);
+
   const WeatherDayData = () => {
     let value = 0;
     console.log(
-      `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+      `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${
+        UserData.lat
+      }&lon=${UserData.lon}&dt=${
         Date.parse(a) / 1000
       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
     );
     axios
       .get(
-        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${
+          UserData.lat
+        }&lon=${UserData.lon}&dt=${
           Date.parse(a) / 1000
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
@@ -254,7 +261,8 @@ const WeatherData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              (JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3 / 3) * 100
+              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
+              100
             }
             height={10}
             backgroundColor="#CB9866"

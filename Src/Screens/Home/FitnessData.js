@@ -39,6 +39,7 @@ const FitnessData = ({
   fours,
   fives,
   MoodCount,
+  Loading,
 }) => {
   useEffect(() => {
     checkThis();
@@ -63,7 +64,7 @@ const FitnessData = ({
         arcSweepAngle={270}
         size={180}
         width={13}
-        fill={(UserSteps / 10000) * 100}
+        fill={!Loading ? (UserSteps / 10000) * 100 : 0}
         rotation={-135}
         tintColor="#9889F9"
         lineCap={'round'}
@@ -71,6 +72,8 @@ const FitnessData = ({
         backgroundColor="#E2E4EA"></AnimatedCircularProgress>
     );
   };
+
+  console.log(`Loading`, Loading);
 
   return (
     <View>
@@ -110,7 +113,11 @@ const FitnessData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              (JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3 / 3) * 100
+              !Loading
+                ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
+                    3) *
+                  100
+                : 0
             }
             height={10}
             backgroundColor="#CB9866"
@@ -224,7 +231,7 @@ const FitnessData = ({
             </View>
             <View style={{marginTop: 10}}>
               <Text style={[styles.SmallThinBlackText]}>
-                {((UserDistance / 5000) * 50).toFixed(0)} km
+                {((UserDistance / 5000) * 5).toFixed(1)} km
               </Text>
             </View>
           </View>

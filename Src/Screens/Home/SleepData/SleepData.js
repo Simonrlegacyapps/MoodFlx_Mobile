@@ -75,7 +75,8 @@ const SleepData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              (JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3 / 3) * 100
+              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
+              100
             }
             height={10}
             backgroundColor="#CB9866"

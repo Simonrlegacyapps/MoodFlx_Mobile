@@ -53,6 +53,7 @@ import ScreenData from '../Home/screenData/screenData';
 import SleepData from '../Home/SleepData/SleepData';
 import {useDispatch, useSelector} from 'react-redux';
 import {
+  HealthPerm,
   UserCalories,
   UserDistance,
   UserMoodCount,
@@ -171,16 +172,17 @@ const App = (props) => {
   };
 
   const checkStorage = async () => {
-    // let p = await AsyncStorage.getItem('GiveHealthPerm');
+    let p = await AsyncStorage.getItem('GiveHealthPerm');
     let MCount = await AsyncStorage.getItem('MoodCount');
     let e = await JSON.parse(MCount);
     setMoodCount(e);
     dispatch(UserMoodCount(e));
     console.log(`mood count again`, e);
-    // let welcome = await JSON.parse(p);
+    let HealthP = await JSON.parse(p);
+    dispatch(HealthPerm(HealthP));
     // await setPerm(welcome);
     // console.log('welcome', welcome);
-    if (UserData.HealthPermission != null) {
+    if (HealthP != null) {
       console.log('good to go for API in async');
       await OnAutoSync();
       console.log(`auto sync function called`);
@@ -265,13 +267,13 @@ const App = (props) => {
           },
         );
 
-        AppleHealthKit.getHeightSamples(
-          stepsCount,
-          async (err: string, results: Object) => {
-            setallHeights(results);
-            // console.log('All height', results);
-          },
-        );
+        // AppleHealthKit.getHeightSamples(
+        //   stepsCount,
+        //   async (err: string, results: Object) => {
+        //     setallHeights(results);
+        //     // console.log('All height', results);
+        //   },
+        // );
 
         AppleHealthKit.getLatestHeight(
           null,
@@ -282,22 +284,23 @@ const App = (props) => {
           },
         );
 
-        AppleHealthKit.getLatestBmi(
-          null,
-          async (err: string, results: Object) => {
-            // console.log('BMI', results);
+        // AppleHealthKit.getLatestBmi(
+        //   null,
+        //   async (err: string, results: Object) => {
+        //     // console.log('BMI', results);
 
-            setBMI(results);
-          },
-        );
-        AppleHealthKit.getBodyTemperatureSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            settemp(results);
+        //     setBMI(results);
+        //   },
+        // );
 
-            // console.log('All body temp', results);
-          },
-        );
+        // AppleHealthKit.getBodyTemperatureSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     settemp(results);
+
+        //     // console.log('All body temp', results);
+        //   },
+        // );
 
         AppleHealthKit.getDailyStepCountSamples(
           stepsCount,
@@ -311,41 +314,41 @@ const App = (props) => {
             // console.log('All steps ++++', results, total);
           },
         );
-        AppleHealthKit.getStepCount(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            setsteps(results);
+        // AppleHealthKit.getStepCount(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setsteps(results);
 
-            // console.log('Today steps ++++', results);
-          },
-        );
+        //     // console.log('Today steps ++++', results);
+        //   },
+        // );
 
-        AppleHealthKit.getBodyFatPercentageSamples(
-          stepsCount,
-          async (err: string, results: Object) => {
-            setBodyFatPerc(results);
+        // AppleHealthKit.getBodyFatPercentageSamples(
+        //   stepsCount,
+        //   async (err: string, results: Object) => {
+        //     setBodyFatPerc(results);
 
-            // console.log(' All Body Fat % ', results);
-          },
-        );
+        //     // console.log(' All Body Fat % ', results);
+        //   },
+        // );
 
-        AppleHealthKit.getWeightSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            setWeight(results);
+        // AppleHealthKit.getWeightSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setWeight(results);
 
-            // console.log(' All Body Weight ', results);
-          },
-        );
+        //     // console.log(' All Body Weight ', results);
+        //   },
+        // );
 
-        AppleHealthKit.getBloodPressureSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            setBP(results);
+        // AppleHealthKit.getBloodPressureSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setBP(results);
 
-            // console.log('All BP', results);
-          },
-        );
+        //     // console.log('All BP', results);
+        //   },
+        // );
         // Need to check from here for data ================================================================>>>>>>>>>>>>>>>>>>>>
         AppleHealthKit.getActiveEnergyBurned(
           stepsCount,
@@ -373,21 +376,21 @@ const App = (props) => {
           },
         );
 
-        AppleHealthKit.getHeartRateSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            setHeartRate(results);
-            // console.log('Heart Samples', results);
-          },
-        );
+        // AppleHealthKit.getHeartRateSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setHeartRate(results);
+        //     // console.log('Heart Samples', results);
+        //   },
+        // );
 
-        AppleHealthKit.getSleepSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            setSleep(results);
-            // console.log('Sleep Analysis +++++++++======>>>>', results);
-          },
-        );
+        // AppleHealthKit.getSleepSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setSleep(results);
+        //     // console.log('Sleep Analysis +++++++++======>>>>', results);
+        //   },
+        // );
 
         AppleHealthKit.getDateOfBirth(
           null,
@@ -567,19 +570,19 @@ const App = (props) => {
           totalCalories = totalCalories + Calories[l].value;
         }
       }
-      for (let m in HeartRate) {
-        let iteratedate = moment(HeartRate[m].startDate).format('DD-MMM-YYYY');
-        if (dates[i] === iteratedate) {
-          totalHeartRate = totalHeartRate + HeartRate[m].value;
-        }
-      }
-      for (let n in BP) {
-        let iteratedate = moment(BP[n].startDate).format('DD-MMM-YYYY');
-        if (dates[i] === iteratedate) {
-          highBp = highBp + BP[n].bloodPressureSystolicValue;
-          lowBp = lowBp + BP[n].bloodPressureDiastolicValue;
-        }
-      }
+      // for (let m in HeartRate) {
+      //   let iteratedate = moment(HeartRate[m].startDate).format('DD-MMM-YYYY');
+      //   if (dates[i] === iteratedate) {
+      //     totalHeartRate = totalHeartRate + HeartRate[m].value;
+      //   }
+      // }
+      // for (let n in BP) {
+      //   let iteratedate = moment(BP[n].startDate).format('DD-MMM-YYYY');
+      //   if (dates[i] === iteratedate) {
+      //     highBp = highBp + BP[n].bloodPressureSystolicValue;
+      //     lowBp = lowBp + BP[n].bloodPressureDiastolicValue;
+      //   }
+      // }
       for (let r in MovingTime) {
         let iteratedate = moment(MovingTime[r].start).format('DD-MMM-YYYY');
         // console.log(`startTime`, startTime, EndTime);
@@ -732,6 +735,7 @@ const App = (props) => {
             fours={Fives}
             fives={Sixes}
             MoodCount={MoodCount}
+            Loading={Loading}
           />
         </View>
         <View>

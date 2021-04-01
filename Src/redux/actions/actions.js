@@ -11,6 +11,9 @@ import {
   GET_USER_DISTANCE,
   GET_USER_MOVE_TIME,
   GET_HEALTH_PERM,
+  GET_ALL_MOODS,
+  GET_LAT,
+  GET_LONG,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -82,6 +85,24 @@ export const UserMoveTime = (data) => {
 export const HealthPerm = (data) => {
   return {
     type: GET_HEALTH_PERM,
+    payload: data,
+  };
+};
+export const Moods = (data) => {
+  return {
+    type: GET_ALL_MOODS,
+    payload: data,
+  };
+};
+export const Lat = (data) => {
+  return {
+    type: GET_LAT,
+    payload: data,
+  };
+};
+export const Long = (data) => {
+  return {
+    type: GET_LONG,
     payload: data,
   };
 };

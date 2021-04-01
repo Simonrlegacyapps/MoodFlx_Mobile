@@ -30,7 +30,15 @@ import Modal from 'react-native-modal';
 import VideoModal from '../Components/VideoModal/VideoModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
-import {HealthPerm, UserDivision, UserEmail} from '../redux/actions/actions';
+import {
+  HealthPerm,
+  Lat,
+  Long,
+  Moods,
+  UserDivision,
+  UserEmail,
+} from '../redux/actions/actions';
+import {useRoute} from '@react-navigation/native';
 
 const {StatusBarManager, statusBarHeight} = NativeModules;
 
@@ -77,6 +85,9 @@ const MoodEmotionDetector = ({navigation}) => {
   // };
 
   const dispatch = useDispatch();
+  const route = useRoute();
+  // const {question} = route.params;
+  console.log(`route`, route?.params?.question);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -99,42 +110,48 @@ const MoodEmotionDetector = ({navigation}) => {
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));
-    return e;
-    // console.log('Email', e);
   };
 
-  console.log(`user division`, UserData.UserDivision);
+  console.log(`user division`, UserData.lat, UserData.lon);
   useEffect(() => {
-    checkStorage();
+    setTimeout(() => {
+      checkStorage();
 
-    GetLocation.getCurrentPosition({
-      enableHighAccuracy: true,
-      timeout: 15000,
-    })
-      .then((location) => {
-        //   console.log('Success', location);
-        setlat(location.latitude);
-        setlng(location.longitude);
-      })
-      .catch((error) => {
-        const {code, message} = error;
-        console.log('error', code, message);
+      {
+        (UserData.lat == null || UserData.lon == null) &&
+          GetLocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 15000,
+          })
+            .then((location) => {
+              //   console.log('Success', location);
+              setlat(location.latitude);
+              dispatch(Lat(location.latitude));
+              setlng(location.longitude);
+              dispatch(Long(location.longitude));
+            })
+            .catch((error) => {
+              const {code, message} = error;
+              console.log('error', code, message);
+            });
+      }
+
+      StatusBarManager.getHeight((statusBarHeight) => {
+        setStatusVertical(statusBarHeight.height);
       });
-
-    StatusBarManager.getHeight((statusBarHeight) => {
-      setStatusVertical(statusBarHeight.height);
-    });
+    }, 150);
   }, []);
 
   useEffect(() => {
-    fetch('https://admin.moodflo.com/api/getMood')
-      .then((data) => data.json())
-      .then(async (res) => {
-        await setGetMoods(res.data);
-        // console.log('response of division', res.data);
-
-        // setSelectedDivisionId(res.data[0].id);
-      });
+    {
+      UserData.AllMoods == null &&
+        fetch('https://admin.moodflo.com/api/getMood')
+          .then((data) => data.json())
+          .then(async (res) => {
+            await setGetMoods(res.data);
+            await dispatch(Moods(res.data));
+          });
+    }
   }, []);
   // console.log(`GetMoods`, GetMoods);
 
@@ -144,19 +161,19 @@ const MoodEmotionDetector = ({navigation}) => {
     let e = await JSON.parse(p);
     console.log(`mood count`, e);
 
-    const Id = GetMoods.find(({name}) => {
+    const Id = UserData.AllMoods.find(({name}) => {
       console.log(`name`, name);
       return name === Label;
     });
     console.log(`Id`, Id.id);
-    console.log(`lat, lng`, lat, lng);
+    console.log(`lat, lng`, UserData.lat, UserData.lon);
     const deviceId = DeviceInfo.getUniqueId();
     setLoading(true);
     const params = {
       mood_id: Id.id,
       device_id: deviceId,
-      lat: lat,
-      long: lng,
+      lat: UserData.lat,
+      long: UserData.lon,
       email: Email,
     };
     PostRequestApi('moodUpdate', params)
@@ -170,7 +187,12 @@ const MoodEmotionDetector = ({navigation}) => {
           //   mail: value,
           //   deviceID: deviceId,
           // });
-          navigation.replace('HomeScreen', {lat: lat, long: lng});
+          {
+            route?.params?.question != undefined
+              ? navigation.navigate('MicScreen')
+              : navigation.replace('HomeScreen', {lat: lat, long: lng});
+          }
+          // navigation.replace('HomeScreen', {lat: lat, long: lng});
           console.log(`params`, params);
         }
       })
@@ -1155,7 +1177,10 @@ const MoodEmotionDetector = ({navigation}) => {
           <TouchableOpacity
             style={{marginLeft: 12}}
             onPress={() =>
-              navigation.replace('HomeScreen', {lat: lat, long: lng})
+              navigation.replace('HomeScreen', {
+                lat: UserData.lat,
+                long: UserData.lon,
+              })
             }>
             <View
               style={{
@@ -1181,7 +1206,7 @@ const MoodEmotionDetector = ({navigation}) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            disabled={GetMoods ? false : true}
+            disabled={UserData.AllMoods ? false : true}
             onPress={() => FindId()}
             style={{
               height: dynamicSize(52),
