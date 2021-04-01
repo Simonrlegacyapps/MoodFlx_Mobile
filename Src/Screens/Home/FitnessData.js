@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -41,9 +41,10 @@ const FitnessData = ({
   MoodCount,
   Loading,
 }) => {
-  useEffect(() => {
-    checkThis();
-  }, [TodayStep]);
+  // useEffect(() => {
+  //   checkThis();
+  // }, [TodayStep]);
+  // const [anime, setanime] = useState(false)
 
   const UserData = useSelector((state) => state.First);
 
@@ -56,24 +57,11 @@ const FitnessData = ({
     UserDistance,
     UserMoveTime,
   } = UserData;
-  const checkThis = () => {
-    return (
-      <AnimatedCircularProgress
-        duration={900}
-        style={styles.CircularProgressStyle}
-        arcSweepAngle={270}
-        size={180}
-        width={13}
-        fill={!Loading ? (UserSteps / 10000) * 100 : 0}
-        rotation={-135}
-        tintColor="#9889F9"
-        lineCap={'round'}
-        onAnimationComplete={() => console.log('onAnimationComplete')}
-        backgroundColor="#E2E4EA"></AnimatedCircularProgress>
-    );
-  };
-
-  console.log(`Loading`, Loading);
+  // const checkThis = () => {
+  //   return (
+  //     // </AnimatedCircularProgress>
+  //   );
+  // };
 
   return (
     <View>
@@ -149,8 +137,34 @@ const FitnessData = ({
             before <Text style={{color: '#5947D0'}}>2PM</Text>
           </Text>
         </View>
+        {/* {UserData.TodayAllSteps !== null &&
+          !Loading &&
+          UserData.UserMoodCount !== null &&
+          UserData.UserSteps !== null &&
+          UserData.UserCalories !== null &&
+          UserData.UserDistance !== null &&
+          UserData.UserMoveTime !== null && ( */}
         <View style={[styles.forCircle, {marginTop: 30}]}>
-          {checkThis()}
+          {/* {setTimeout(() => {
+                
+              }, timeout)} */}
+          {/* {checkThis()} */}
+          <AnimatedCircularProgress
+            duration={3000}
+            style={styles.CircularProgressStyle}
+            arcSweepAngle={270}
+            size={180}
+            width={13}
+            fill={!Loading ? (UserSteps / 10000) * 100 : 0}
+            // fill={!Loading ? 50 : 0}
+            prefill={1}
+            rotation={-135}
+            tintColor="#9889F9"
+            lineCap={'round'}
+            // onAnimationComplete={() => console.log('onAnimationComplete')}
+            backgroundColor="#E2E4EA"
+          />
+
           <View style={styles.absolute}>
             <ImageBackground
               resizeMode={'contain'}
@@ -174,6 +188,7 @@ const FitnessData = ({
             </ImageBackground>
           </View>
         </View>
+        {/* )} */}
         <View
           style={{
             flexDirection: 'row',
@@ -185,16 +200,17 @@ const FitnessData = ({
           }}>
           <View style={styles.forCircle}>
             <AnimatedCircularProgress
-              duration={900}
+              duration={1500}
               style={styles.CircularProgressStyle}
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={(UserCalories / 1000) * 100}
+              fill={!Loading ? (UserCalories / 1000) * 100 : 0}
+              // fill={0}
               rotation={0}
               tintColor="#30C3D6"
               lineCap={'round'}
-              onAnimationComplete={() => console.log('onAnimationComplete')}
+              // // onAnimationComplete={() => console.log('onAnimationComplete')}
               backgroundColor="#E0F8FB"
             />
             <View style={styles.absolute}>
@@ -211,16 +227,17 @@ const FitnessData = ({
           </View>
           <View style={styles.forCircle}>
             <AnimatedCircularProgress
-              duration={900}
+              duration={1500}
               style={styles.CircularProgressStyle}
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={(UserDistance / 5000) * 100}
+              fill={!Loading ? (UserDistance / 5000) * 100 : 0}
+              // fill={50}
               rotation={0}
               tintColor="#F43085"
               lineCap={'round'}
-              onAnimationComplete={() => console.log('onAnimationComplete')}
+              // // onAnimationComplete={() => console.log('onAnimationComplete')}
               backgroundColor="#FDE2EF"
             />
             <View style={styles.absolute}>
@@ -242,11 +259,12 @@ const FitnessData = ({
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={(UserMoveTime / 120) * 100}
+              fill={!Loading ? (UserMoveTime / 120) * 100 : 0}
+              // fill={25}
               rotation={0}
               tintColor="#37DD67"
               lineCap={'round'}
-              onAnimationComplete={() => console.log('onAnimationComplete')}
+              // // onAnimationComplete={() => console.log('onAnimationComplete')}
               backgroundColor="#C6F9E8"
             />
             <View style={styles.absolute}>

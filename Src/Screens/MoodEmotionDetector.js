@@ -187,12 +187,17 @@ const MoodEmotionDetector = ({navigation}) => {
           //   mail: value,
           //   deviceID: deviceId,
           // });
-          {
-            route?.params?.question != undefined
-              ? navigation.navigate('MicScreen')
-              : navigation.replace('HomeScreen', {lat: lat, long: lng});
-          }
-          // navigation.replace('HomeScreen', {lat: lat, long: lng});
+          // {
+          //   route?.params?.question != undefined
+          //     ? navigation.navigate('MicScreen')
+          //     : navigation.replace('HomeScreen', {lat: lat, long: lng});
+          // }
+
+          navigation.replace('HomeScreen', {
+            lat: UserData.lat,
+            long: UserData.lon,
+          });
+
           console.log(`params`, params);
         }
       })
@@ -1176,11 +1181,12 @@ const MoodEmotionDetector = ({navigation}) => {
           }}>
           <TouchableOpacity
             style={{marginLeft: 12}}
-            onPress={() =>
-              navigation.replace('HomeScreen', {
-                lat: UserData.lat,
-                long: UserData.lon,
-              })
+            onPress={
+              () => navigation.navigate('HomeScreen', {lat: lat, long: lng})
+              // navigation.replace('HomeScreen', {
+              //   lat: UserData.lat,
+              //   long: UserData.lon,
+              // })
             }>
             <View
               style={{

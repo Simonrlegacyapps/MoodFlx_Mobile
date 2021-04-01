@@ -13,6 +13,7 @@ import {
   monotoneCubicInterpolation,
 } from '@rainbow-me/animated-charts';
 import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
+import {useSelector} from 'react-redux';
 
 export const {width: SIZE} = Dimensions.get('window');
 
@@ -29,14 +30,64 @@ export const {width: SIZE} = Dimensions.get('window');
 const BasicExample = ({day, zero, ones, twos, threes, fours, fives}) => {
   const [Duration, setDuration] = useState('Daily');
 
+  const UserData = useSelector((state) => state.First);
+
   const data = [
     {x: 1, y: 0},
-    {x: 2, y: zero ? zero : 0},
-    {x: 3, y: ones ? ones : 1},
-    {x: 4, y: twos ? twos : 0},
-    {x: 5, y: threes ? threes : 0},
-    {x: 6, y: fours ? fours : 0},
-    {x: 7, y: fives ? fives : 0},
+    {
+      x: 2,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? 1 + UserData.TodayAllSteps[0].two
+            : 0
+          : 0,
+    },
+    {
+      x: 3,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].three
+            : 1
+          : 1,
+    },
+    {
+      x: 4,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].four
+            : 0
+          : 0,
+    },
+    {
+      x: 5,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].five
+            : 0
+          : 0,
+    },
+    {
+      x: 6,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].six
+            : 0
+          : 0,
+    },
+    {
+      x: 7,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].seven
+            : 0
+          : 0,
+    },
   ];
 
   const points = monotoneCubicInterpolation({data, range: 40});

@@ -92,13 +92,6 @@ const WeatherData = ({
             ) {
               value = value + 1;
               sethours(value);
-              console.log(
-                `value`,
-                value,
-                i,
-                Weather.weather[0].description,
-                response.data.hourly[i].weather[0].description,
-              );
             } else {
               break;
             }

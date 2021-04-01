@@ -12,6 +12,7 @@ import {
   ImageBackground,
   Dimensions,
   ActivityIndicator,
+  InteractionManager,
 } from 'react-native';
 import moment from 'moment';
 import axios from 'axios';
@@ -53,6 +54,7 @@ import ScreenData from '../Home/screenData/screenData';
 import SleepData from '../Home/SleepData/SleepData';
 import {useDispatch, useSelector} from 'react-redux';
 import {
+  DaySteps,
   HealthPerm,
   UserCalories,
   UserDistance,
@@ -124,12 +126,11 @@ const App = (props) => {
   const [Fives, setFives] = useState(0);
   const [Sixes, setSixes] = useState(0);
   const [MoodCount, setMoodCount] = useState(0);
-  const [Loading, setLoading] = useState(false);
+  const [Loading, setLoading] = useState(true);
 
   const route = useRoute();
   const UserData = useSelector((state) => state.First);
   const {lat, long} = route.params.cord;
-  // console.log(`UserData.UserEmail`, UserData.UserEmail);
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
   // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
@@ -158,7 +159,10 @@ const App = (props) => {
 
   useEffect(() => {
     setTimeout(() => {
+      // InteractionManager.runAfterInteractions(() => {
+      //   console.log(`Hiiiiiiii Loooooooooo`);
       checkStorage();
+      // });
     }, 150);
     // tryNew();
   }, []);
@@ -185,7 +189,7 @@ const App = (props) => {
     if (HealthP != null) {
       console.log('good to go for API in async');
       await OnAutoSync();
-      console.log(`auto sync function called`);
+
       filterDates();
       filterSteps();
       AddDataToFilter();
@@ -209,6 +213,7 @@ const App = (props) => {
   // }, [])
 
   const OnAutoSync = async () => {
+    console.log(`auto sync function called`);
     const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
     console.log('moment() month', new Date(a).toISOString());
@@ -306,10 +311,79 @@ const App = (props) => {
           stepsCount,
           async (err: Object, results: Array<Object>) => {
             let total = 0;
+            let zero = 0;
+            let ones = 0;
+            let twos = 0;
+            let threes = 0;
+            let fours = 0;
+            let fives = 0;
+            let all = [];
             setsteps(results);
-            for (let i in results) {
-              total = total + results[i].value;
+            for (let j in results) {
+              total = total + results[j].value;
+              if (
+                moment(results[j].startDate).startOf('day') <
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <
+                  moment(results[j].startDate).startOf('day').hours(4)
+              ) {
+                console.log(`0`);
+                zero = zero + results[j].value;
+                setOnes(zero);
+              } else if (
+                moment(results[j].startDate).startOf('day').hours(4) <
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <
+                  moment(results[j].startDate).startOf('day').hours(8)
+              ) {
+                console.log(`2`, results[j].value);
+                ones = ones + results[j].value;
+                setTwos(ones);
+              } else if (
+                moment(results[j].startDate).startOf('day').hours(8) <=
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <=
+                  moment(results[j].startDate).startOf('day').hours(12)
+              ) {
+                twos = twos + results[j].value;
+                console.log(`3`, twos);
+                setThrees(twos);
+                //add setzeros to this.
+              } else if (
+                moment(results[j].startDate).startOf('day').hours(12) <=
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <=
+                  moment(results[j].startDate).startOf('day').hours(16)
+              ) {
+                threes = threes + results[j].value;
+                console.log(`4`, threes);
+                setFours(threes);
+              } else if (
+                moment(results[j].startDate).startOf('day').hours(16) <
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <
+                  moment(results[j].startDate).startOf('day').hours(20)
+              ) {
+                fours = fours + results[j].value;
+                console.log(`5`, results[j].value);
+                setFives(fours);
+              } else {
+                fives = fives + results[j].value;
+                console.log(`6`, results[j].value);
+                setSixes(fives);
+              }
             }
+            all.push({
+              two: zero,
+              three: ones,
+              four: twos,
+              five: threes,
+              six: fours,
+              seven: fives,
+            });
+
+            console.log(`all ====++++>>>>>>`, all);
+            dispatch(DaySteps(all));
             dispatch(UserSteps(total));
             // console.log('All steps ++++', results, total);
           },
@@ -436,7 +510,6 @@ const App = (props) => {
             //   '<<<<<<<<============== Workout Time ==============>>>>>>>>>',
             //   results,
             // );
-            setLoading(false);
           },
         );
         // console.log(
@@ -498,14 +571,6 @@ const App = (props) => {
         if (dates[i] === iteratedate) {
           totalSteps = totalSteps + steps[j].value;
         }
-        console.log(
-          `check`,
-          moment(steps[j].startDate).startOf('day') <
-            moment(steps[j].startDate) &&
-            moment(steps[j].startDate) <
-              moment(steps[j].startDate).startOf('day').hours(4),
-        );
-
         if (
           moment(steps[j].startDate).startOf('day') <
             moment(steps[j].startDate) &&
@@ -641,6 +706,7 @@ const App = (props) => {
   const AddDataToFilter = async () => {
     const deviceId = DeviceInfo.getUniqueId();
     Fsteps.push();
+    setLoading(false);
 
     // console.log(`Fsteps at last`, Fsteps);
     // console.log(`walkTime at last`, WalkTime);
@@ -714,13 +780,29 @@ const App = (props) => {
     <View style={{flex: 1}}>
       <StatusBar barStyle="dark-content" />
       <Swiper
+        focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
         dotStyle={{height: 0, width: 0}}
         activeDotStyle={{height: 0, width: 0}}
         style={{backgroundColor: 'white'}}
         showsButtons={true}
-        loop={false}>
+        loop={false}
+        pagingEnabled={true}>
         <View>
+          {/* {!Loading &&
+          !UserData.UserMoodCount &&
+          !UserData.UserSteps &&
+          !UserData.UserCalories &&
+          !UserData.UserDistance &&
+          !UserData.UserMoveTime ? (
+            <View>
+              <Text>Hi</Text>
+            </View>
+          ) : (
+            <View>
+              <Text>Loading your data</Text>
+            </View>
+          )} */}
           <FitnessData
             TodayStep={TodayStep}
             TodayCalories={TodayCalories}

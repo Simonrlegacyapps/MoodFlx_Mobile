@@ -1,6 +1,7 @@
 import {
   FIRST_ACTION_TYPE,
   GET_ALL_MOODS,
+  GET_DAY_STEPS,
   GET_DIVISION,
   GET_EMAIL,
   GET_HEALTH_PERM,
@@ -31,6 +32,7 @@ const intializedState = {
   AllMoods: null,
   lat: null,
   lon: null,
+  TodayAllSteps: null,
 };
 
 export const First = (state = intializedState, action) => {
@@ -92,6 +94,10 @@ export const First = (state = intializedState, action) => {
     case GET_LONG:
       return Object.assign({}, state, {
         lon: action.payload,
+      });
+    case GET_DAY_STEPS:
+      return Object.assign({}, state, {
+        TodayAllSteps: action.payload,
       });
     default:
       return state;
