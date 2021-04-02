@@ -11,6 +11,8 @@ import {
   Image,
   ImageBackground,
   Dimensions,
+  ActivityIndicator,
+  InteractionManager,
 } from 'react-native';
 import moment from 'moment';
 import axios from 'axios';
@@ -50,7 +52,16 @@ import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
 import ScreenData from '../Home/screenData/screenData';
 import SleepData from '../Home/SleepData/SleepData';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  DaySteps,
+  HealthPerm,
+  UserCalories,
+  UserDistance,
+  UserMoodCount,
+  UserMoveTime,
+  UserSteps,
+} from '../../redux/actions/actions';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -104,13 +115,29 @@ const App = (props) => {
   const [Perm, setPerm] = useState('');
   const [PermWeather, setPermWeather] = useState(false);
   const [PermScreenTime, setPermScreenTime] = useState(false);
+  const [TodayStep, setTodayStep] = useState(0);
+  const [TodayCalories, setTodayCalories] = useState(0);
+  const [TodayDistance, setTodayDistance] = useState(0);
+  const [MoveTime, setMoveTime] = useState(0);
+  const [Ones, setOnes] = useState(0);
+  const [Twos, setTwos] = useState(0);
+  const [Threes, setThrees] = useState(0);
+  const [Fours, setFours] = useState(0);
+  const [Fives, setFives] = useState(0);
+  const [Sixes, setSixes] = useState(0);
+  const [MoodCount, setMoodCount] = useState(0);
+  const [Loading, setLoading] = useState(true);
 
   const route = useRoute();
   const UserData = useSelector((state) => state.First);
   const {lat, long} = route.params.cord;
-  // console.log(`UserData.UserEmail`, UserData.UserEmail);
 
-  const a = moment().subtract(1, 'months').format('DD MMM YYYY');
+  // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
+  // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
+  // const a = moment(); //today
+  const a = moment().subtract(1, 'days').endOf('day').toString();
+  const b = moment().subtract(0, 'days').startOf('day').toString();
+  // console.log(`b`, Date.parse(b));
 
   const stepsCount = {
     startDate: new Date(a).toISOString(), // required
@@ -128,20 +155,41 @@ const App = (props) => {
     type: 'Workout', // one of: ['Walking', 'StairClimbing', 'Running', 'Cycling', 'Workout']
   };
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    CheckForWeather();
-    console.log(`Weather`, Weather);
+    setTimeout(() => {
+      // InteractionManager.runAfterInteractions(() => {
+      //   console.log(`Hiiiiiiii Loooooooooo`);
+      checkStorage();
+      // });
+    }, 150);
+    // tryNew();
   }, []);
+  const tryNew = async () => {
+    await OnAutoSync();
+    CheckForWeather();
+    // console.log(`Weather`, Weather);
+    filterDates();
+    filterSteps();
+    AddDataToFilter();
+  };
 
   const checkStorage = async () => {
     let p = await AsyncStorage.getItem('GiveHealthPerm');
-    let welcome = await JSON.parse(p);
-    await setPerm(welcome);
-    console.log('welcome', welcome);
-    if (welcome != null) {
+    let MCount = await AsyncStorage.getItem('MoodCount');
+    let e = await JSON.parse(MCount);
+    setMoodCount(e);
+    dispatch(UserMoodCount(e));
+    console.log(`mood count again`, e);
+    let HealthP = await JSON.parse(p);
+    dispatch(HealthPerm(HealthP));
+    // await setPerm(welcome);
+    // console.log('welcome', welcome);
+    if (HealthP != null) {
       console.log('good to go for API in async');
       await OnAutoSync();
-      console.log(`auto sync function called`);
+
       filterDates();
       filterSteps();
       AddDataToFilter();
@@ -160,7 +208,12 @@ const App = (props) => {
   //   }, 1000);
   // }, [10]);
 
+  // useEffect(() => {
+  //   FitnessData()
+  // }, [])
+
   const OnAutoSync = async () => {
+    console.log(`auto sync function called`);
     const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
     console.log('moment() month', new Date(a).toISOString());
@@ -197,6 +250,7 @@ const App = (props) => {
         },
       };
 
+      setLoading(true);
       AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
         if (err) {
           console.log('error initializing Healthkit: ', err);
@@ -205,7 +259,7 @@ const App = (props) => {
 
         // Date of Birth Example
         AppleHealthKit.getDateOfBirth(null, async (err, results) => {
-          await setDateOfBirth(results);
+          setDateOfBirth(results);
           //  console.log('age', results);
         });
 
@@ -213,85 +267,172 @@ const App = (props) => {
         AppleHealthKit.getLatestWeight(
           null,
           async (err: string, results: Object) => {
-            await setLatestWeight(results);
+            setLatestWeight(results);
             //  console.log('weight', results);
           },
         );
 
-        AppleHealthKit.getHeightSamples(
-          stepsCount,
-          async (err: string, results: Object) => {
-            await setallHeights(results);
-            // console.log('All height', results);
-          },
-        );
+        // AppleHealthKit.getHeightSamples(
+        //   stepsCount,
+        //   async (err: string, results: Object) => {
+        //     setallHeights(results);
+        //     // console.log('All height', results);
+        //   },
+        // );
 
         AppleHealthKit.getLatestHeight(
           null,
           async (err: string, results: Object) => {
             // console.log('height', results);
 
-            await setHeight(results);
+            setHeight(results);
           },
         );
 
-        AppleHealthKit.getLatestBmi(
-          null,
-          async (err: string, results: Object) => {
-            // console.log('BMI', results);
+        // AppleHealthKit.getLatestBmi(
+        //   null,
+        //   async (err: string, results: Object) => {
+        //     // console.log('BMI', results);
 
-            await setBMI(results);
-          },
-        );
-        AppleHealthKit.getBodyTemperatureSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            await settemp(results);
+        //     setBMI(results);
+        //   },
+        // );
 
-            // console.log('All body temp', results);
-          },
-        );
+        // AppleHealthKit.getBodyTemperatureSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     settemp(results);
+
+        //     // console.log('All body temp', results);
+        //   },
+        // );
 
         AppleHealthKit.getDailyStepCountSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await setsteps(results);
+            let total = 0;
+            let zero = 0;
+            let ones = 0;
+            let twos = 0;
+            let threes = 0;
+            let fours = 0;
+            let fives = 0;
+            let all = [];
+            setsteps(results);
+            for (let j in results) {
+              total = total + results[j].value;
+              if (
+                moment(results[j].startDate).startOf('day') <
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <
+                  moment(results[j].startDate).startOf('day').hours(4)
+              ) {
+                console.log(`0`);
+                zero = zero + results[j].value;
+                setOnes(zero);
+              } else if (
+                moment(results[j].startDate).startOf('day').hours(4) <
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <
+                  moment(results[j].startDate).startOf('day').hours(8)
+              ) {
+                console.log(`2`, results[j].value);
+                ones = ones + results[j].value;
+                setTwos(ones);
+              } else if (
+                moment(results[j].startDate).startOf('day').hours(8) <=
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <=
+                  moment(results[j].startDate).startOf('day').hours(12)
+              ) {
+                twos = twos + results[j].value;
+                console.log(`3`, twos);
+                setThrees(twos);
+                //add setzeros to this.
+              } else if (
+                moment(results[j].startDate).startOf('day').hours(12) <=
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <=
+                  moment(results[j].startDate).startOf('day').hours(16)
+              ) {
+                threes = threes + results[j].value;
+                console.log(`4`, threes);
+                setFours(threes);
+              } else if (
+                moment(results[j].startDate).startOf('day').hours(16) <
+                  moment(results[j].startDate) &&
+                moment(results[j].startDate) <
+                  moment(results[j].startDate).startOf('day').hours(20)
+              ) {
+                fours = fours + results[j].value;
+                console.log(`5`, results[j].value);
+                setFives(fours);
+              } else {
+                fives = fives + results[j].value;
+                console.log(`6`, results[j].value);
+                setSixes(fives);
+              }
+            }
+            all.push({
+              two: zero,
+              three: ones,
+              four: twos,
+              five: threes,
+              six: fours,
+              seven: fives,
+            });
 
-            // console.log('All steps', results);
+            console.log(`all ====++++>>>>>>`, all);
+            dispatch(DaySteps(all));
+            dispatch(UserSteps(total));
+            // console.log('All steps ++++', results, total);
           },
         );
+        // AppleHealthKit.getStepCount(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setsteps(results);
 
-        AppleHealthKit.getBodyFatPercentageSamples(
-          stepsCount,
-          async (err: string, results: Object) => {
-            await setBodyFatPerc(results);
+        //     // console.log('Today steps ++++', results);
+        //   },
+        // );
 
-            // console.log(' All Body Fat % ', results);
-          },
-        );
+        // AppleHealthKit.getBodyFatPercentageSamples(
+        //   stepsCount,
+        //   async (err: string, results: Object) => {
+        //     setBodyFatPerc(results);
 
-        AppleHealthKit.getWeightSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            await setWeight(results);
+        //     // console.log(' All Body Fat % ', results);
+        //   },
+        // );
 
-            // console.log(' All Body Weight ', results);
-          },
-        );
+        // AppleHealthKit.getWeightSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setWeight(results);
 
-        AppleHealthKit.getBloodPressureSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            await setBP(results);
+        //     // console.log(' All Body Weight ', results);
+        //   },
+        // );
 
-            // console.log('All BP', results);
-          },
-        );
+        // AppleHealthKit.getBloodPressureSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setBP(results);
+
+        //     // console.log('All BP', results);
+        //   },
+        // );
         // Need to check from here for data ================================================================>>>>>>>>>>>>>>>>>>>>
         AppleHealthKit.getActiveEnergyBurned(
           stepsCount,
           async (err: Object, results: Object) => {
-            await setCalories(results);
+            let total = 0;
+            setCalories(results);
+            for (let i in results) {
+              total = total + results[i].value;
+            }
+            dispatch(UserCalories(total));
             // console.log('Active energy count', results);
           },
         );
@@ -299,45 +440,61 @@ const App = (props) => {
         AppleHealthKit.getDailyDistanceWalkingRunningSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            await setDistance(results);
-            // console.log('Distance in KMS', results);
+            let total = 0;
+            setDistance(results);
+            for (let i in results) {
+              total = total + results[i].value;
+            }
+            dispatch(UserDistance(total));
+            // console.log('Distance in KMS', results, total);
           },
         );
 
-        AppleHealthKit.getHeartRateSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            await setHeartRate(results);
-            // console.log('Heart Samples', results);
-          },
-        );
+        // AppleHealthKit.getHeartRateSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setHeartRate(results);
+        //     // console.log('Heart Samples', results);
+        //   },
+        // );
 
-        AppleHealthKit.getSleepSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            await setSleep(results);
-            console.log('Sleep Analysis +++++++++======>>>>', results);
-          },
-        );
+        // AppleHealthKit.getSleepSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     setSleep(results);
+        //     // console.log('Sleep Analysis +++++++++======>>>>', results);
+        //   },
+        // );
 
         AppleHealthKit.getDateOfBirth(
           null,
           async (err: Object, results: Object) => {
-            await setDOB(results);
+            setDOB(results);
             // console.log('DOB', results);
           },
         );
 
         AppleHealthKit.getSamples(
-          TimeCount,
+          stepsCount,
           async (err: Object, results: Array<Object>) => {
+            let totalWalkTime = 0;
             if (err) {
               return;
             }
-            await setMovingTime(results);
+            setMovingTime(results);
+            for (let r in results) {
+              const startTime = moment(results[r].start);
+              const EndTime = moment(results[r].end);
+              const diff = EndTime.diff(startTime);
+              const diffDuration = moment.duration(diff).asMinutes();
+              totalWalkTime = totalWalkTime + diffDuration;
+              // }
+            }
+            dispatch(UserMoveTime(totalWalkTime));
             // console.log(
             //   '<<<<<<<<============== Time walking ==============>>>>>>>>>',
             //   results,
+            //   totalWalkTime,
             // );
           },
         );
@@ -348,7 +505,7 @@ const App = (props) => {
             if (err) {
               return console.log(`errola`, err);
             }
-            await setWorkouts(results);
+            setWorkouts(results);
             // console.log(
             //   '<<<<<<<<============== Workout Time ==============>>>>>>>>>',
             //   results,
@@ -368,7 +525,7 @@ const App = (props) => {
   const dates = [];
 
   const filterDates = () => {
-    console.log(`------------steps in filterdates----------`, steps);
+    // console.log(`------------steps in filterdates----------`, steps);
 
     steps &&
       steps.map((i) => {
@@ -389,6 +546,12 @@ const App = (props) => {
   let highBp = 0;
   let lowBp = 0;
   let totalWalkTime = 0;
+  let zero = 0;
+  let ones = 0;
+  let twos = 0;
+  let threes = 0;
+  let fours = 0;
+  let fives = 0;
 
   // const findTime = () => {
   //   for (let r in MovingTime) {
@@ -408,6 +571,57 @@ const App = (props) => {
         if (dates[i] === iteratedate) {
           totalSteps = totalSteps + steps[j].value;
         }
+        if (
+          moment(steps[j].startDate).startOf('day') <
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <
+            moment(steps[j].startDate).startOf('day').hours(4)
+        ) {
+          console.log(`0`);
+          zero = zero + steps[j].value;
+          setOnes(zero);
+        } else if (
+          moment(steps[j].startDate).startOf('day').hours(4) <
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <
+            moment(steps[j].startDate).startOf('day').hours(8)
+        ) {
+          console.log(`2`, steps[j].value);
+          ones = ones + steps[j].value;
+          setTwos(ones);
+        } else if (
+          moment(steps[j].startDate).startOf('day').hours(8) <=
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <=
+            moment(steps[j].startDate).startOf('day').hours(12)
+        ) {
+          twos = twos + steps[j].value;
+          console.log(`3`, twos);
+          setThrees(twos);
+          //add setzeros to this.
+        } else if (
+          moment(steps[j].startDate).startOf('day').hours(12) <=
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <=
+            moment(steps[j].startDate).startOf('day').hours(16)
+        ) {
+          threes = threes + steps[j].value;
+          console.log(`4`, threes);
+          setFours(threes);
+        } else if (
+          moment(steps[j].startDate).startOf('day').hours(16) <
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <
+            moment(steps[j].startDate).startOf('day').hours(20)
+        ) {
+          fours = fours + steps[j].value;
+          console.log(`5`, steps[j].value);
+          setFives(fours);
+        } else {
+          fives = fives + steps[j].value;
+          console.log(`6`, steps[j].value);
+          setSixes(fives);
+        }
       }
       for (let k in Distance) {
         let iteratedate = moment(Distance[k].startDate).format('DD-MMM-YYYY');
@@ -421,19 +635,19 @@ const App = (props) => {
           totalCalories = totalCalories + Calories[l].value;
         }
       }
-      for (let m in HeartRate) {
-        let iteratedate = moment(HeartRate[m].startDate).format('DD-MMM-YYYY');
-        if (dates[i] === iteratedate) {
-          totalHeartRate = totalHeartRate + HeartRate[m].value;
-        }
-      }
-      for (let n in BP) {
-        let iteratedate = moment(BP[n].startDate).format('DD-MMM-YYYY');
-        if (dates[i] === iteratedate) {
-          highBp = highBp + BP[n].bloodPressureSystolicValue;
-          lowBp = lowBp + BP[n].bloodPressureDiastolicValue;
-        }
-      }
+      // for (let m in HeartRate) {
+      //   let iteratedate = moment(HeartRate[m].startDate).format('DD-MMM-YYYY');
+      //   if (dates[i] === iteratedate) {
+      //     totalHeartRate = totalHeartRate + HeartRate[m].value;
+      //   }
+      // }
+      // for (let n in BP) {
+      //   let iteratedate = moment(BP[n].startDate).format('DD-MMM-YYYY');
+      //   if (dates[i] === iteratedate) {
+      //     highBp = highBp + BP[n].bloodPressureSystolicValue;
+      //     lowBp = lowBp + BP[n].bloodPressureDiastolicValue;
+      //   }
+      // }
       for (let r in MovingTime) {
         let iteratedate = moment(MovingTime[r].start).format('DD-MMM-YYYY');
         // console.log(`startTime`, startTime, EndTime);
@@ -467,22 +681,22 @@ const App = (props) => {
       lowBp = 0;
       totalWalkTime = 0;
     }
-    console.log('Fsteps', Fsteps);
-    console.log(`walkTime |||||||||||| ppppppp =========`, WalkTime);
-    console.log(`Workouts |||||||||||| ppppppp =========`, Workouts);
+    // console.log('Fsteps', Fsteps);
+    // console.log(`walkTime |||||||||||| ppppppp =========`, WalkTime);
+    // console.log(`Workouts |||||||||||| ppppppp =========`, Workouts);
   };
 
   const CheckForWeather = () => {
-    console.log(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-    );
+    // console.log(
+    //   `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+    // );
     axios
       .get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
         await setWeather(response.data);
-        await console.log(`response.data for weather`, response.data);
+        // await console.log(`response.data for weather`, response.data);
       })
       .catch(function (error) {
         console.log(`error for weather`, error);
@@ -492,11 +706,12 @@ const App = (props) => {
   const AddDataToFilter = async () => {
     const deviceId = DeviceInfo.getUniqueId();
     Fsteps.push();
+    setLoading(false);
 
     // console.log(`Fsteps at last`, Fsteps);
     // console.log(`walkTime at last`, WalkTime);
     // console.log(`Workouts at last`, Workouts);
-    if (Fsteps.length > 5 && WalkTime.length > 5) {
+    if (Fsteps.length > 0 && WalkTime.length > 0) {
       // console.log('good to go for API');
       // const data = {
       //   device_id: deviceId,
@@ -539,20 +754,71 @@ const App = (props) => {
           console.log('❌ ❌ ❌ ❌ error for health data ❌ ❌ ❌ ❌', error);
         });
     }
+    setTodayStep(Fsteps.length > 0 ? (Fsteps[0].steps / 10000) * 100 : 0);
+    setTodayDistance(Fsteps.length > 0 ? (Fsteps[0].distance / 5000) * 100 : 0);
+    setTodayCalories(Fsteps.length > 0 ? (Fsteps[0].calories / 1000) * 100 : 0);
+    setMoveTime(WalkTime.length > 0 ? (WalkTime[0].walkTime / 120) * 100 : 0);
   };
+
+  // const FitnessData = () => {
+  //   return <FitnessData Perm={Perm} checkStorage={checkStorage} />;
+  // };
+
+  // console.log(
+  //   `zero, ones, twos, threes, fours, fives`,
+  //   Ones,
+  //   Twos,
+  //   Threes,
+  //   Fours,
+  //   Fives,
+  //   Sixes,
+  // );
+
+  // console.log(`loading`, Loading);
 
   return (
     <View style={{flex: 1}}>
       <StatusBar barStyle="dark-content" />
       <Swiper
+        focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
         dotStyle={{height: 0, width: 0}}
         activeDotStyle={{height: 0, width: 0}}
         style={{backgroundColor: 'white'}}
         showsButtons={true}
-        loop={false}>
+        loop={false}
+        pagingEnabled={true}>
         <View>
-          <FitnessData Perm={Perm} checkStorage={checkStorage} />
+          {/* {!Loading &&
+          !UserData.UserMoodCount &&
+          !UserData.UserSteps &&
+          !UserData.UserCalories &&
+          !UserData.UserDistance &&
+          !UserData.UserMoveTime ? (
+            <View>
+              <Text>Hi</Text>
+            </View>
+          ) : (
+            <View>
+              <Text>Loading your data</Text>
+            </View>
+          )} */}
+          <FitnessData
+            TodayStep={TodayStep}
+            TodayCalories={TodayCalories}
+            TodayDistance={TodayDistance}
+            MoveTime={MoveTime}
+            Perm={Perm}
+            checkStorage={checkStorage}
+            zero={Ones}
+            ones={Twos}
+            twos={Threes}
+            threes={Fours}
+            fours={Fives}
+            fives={Sixes}
+            MoodCount={MoodCount}
+            Loading={Loading}
+          />
         </View>
         <View>
           <WeatherData
@@ -561,6 +827,9 @@ const App = (props) => {
             Weather={Weather}
             PermWeather={PermWeather}
             CheckForWeather={CheckForWeather}
+            lat={lat}
+            long={long}
+            MoodCount={MoodCount}
           />
         </View>
 
@@ -571,6 +840,7 @@ const App = (props) => {
             Weather={Weather}
             PermScreenTime={PermScreenTime}
             CheckForScreenData={CheckForScreenData}
+            MoodCount={MoodCount}
           />
         </View>
         <View style={styles.slide3}>
@@ -580,9 +850,25 @@ const App = (props) => {
             Weather={Weather}
             PermScreenTime={PermScreenTime}
             CheckForWeather={CheckForScreenData}
+            MoodCount={MoodCount}
           />
         </View>
       </Swiper>
+      {Loading && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'black',
+            opacity: 0.2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" />
+          {/* <Text style={{color: 'black', fontSize: 20, alignSelf:'center'}}>Loading your data</Text> */}
+        </View>
+      )}
     </View>
   );
 };

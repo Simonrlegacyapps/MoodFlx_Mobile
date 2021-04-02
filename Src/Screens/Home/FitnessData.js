@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -21,10 +21,48 @@ import {
 } from '../../Constants/fonts/Fonts';
 import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import AsyncStorage from '@react-native-community/async-storage';
+import {useSelector} from 'react-redux';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
-const FitnessData = ({Perm, checkStorage}) => {
+const FitnessData = ({
+  Perm,
+  checkStorage,
+  TodayStep,
+  TodayCalories,
+  TodayDistance,
+  MoveTime,
+  zero,
+  ones,
+  twos,
+  threes,
+  fours,
+  fives,
+  MoodCount,
+  Loading,
+}) => {
+  // useEffect(() => {
+  //   checkThis();
+  // }, [TodayStep]);
+  // const [anime, setanime] = useState(false)
+
+  const UserData = useSelector((state) => state.First);
+
+  // console.log(`UserData`, UserData);
+
+  const {
+    UserMoodCount,
+    UserSteps,
+    UserCalories,
+    UserDistance,
+    UserMoveTime,
+  } = UserData;
+  // const checkThis = () => {
+  //   return (
+  //     // </AnimatedCircularProgress>
+  //   );
+  // };
+
   return (
     <View>
       <StatusBar barStyle="dark-content" />
@@ -61,7 +99,17 @@ const FitnessData = ({Perm, checkStorage}) => {
           </View>
         </View>
         <View style={styles.ProgressBarView}>
-          <ProgressBar progress={66.66} height={10} backgroundColor="#CB9866" />
+          <ProgressBar
+            progress={
+              !Loading
+                ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
+                    3) *
+                  100
+                : 0
+            }
+            height={10}
+            backgroundColor="#CB9866"
+          />
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.SmallThinText, {flex: 1}]}>
               Try add 3 moods per day
@@ -70,7 +118,7 @@ const FitnessData = ({Perm, checkStorage}) => {
               style={
                 (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
               }>
-              2/3
+              {UserMoodCount < 3 ? UserMoodCount : 3}/3
             </Text>
           </View>
         </View>
@@ -89,18 +137,34 @@ const FitnessData = ({Perm, checkStorage}) => {
             before <Text style={{color: '#5947D0'}}>2PM</Text>
           </Text>
         </View>
+        {/* {UserData.TodayAllSteps !== null &&
+          !Loading &&
+          UserData.UserMoodCount !== null &&
+          UserData.UserSteps !== null &&
+          UserData.UserCalories !== null &&
+          UserData.UserDistance !== null &&
+          UserData.UserMoveTime !== null && ( */}
         <View style={[styles.forCircle, {marginTop: 30}]}>
+          {/* {setTimeout(() => {
+                
+              }, timeout)} */}
+          {/* {checkThis()} */}
           <AnimatedCircularProgress
+            duration={3000}
             style={styles.CircularProgressStyle}
             arcSweepAngle={270}
             size={180}
             width={13}
-            fill={70}
+            fill={!Loading ? (UserSteps / 10000) * 100 : 0}
+            // fill={!Loading ? 50 : 0}
+            prefill={1}
             rotation={-135}
             tintColor="#9889F9"
             lineCap={'round'}
-            onAnimationComplete={() => console.log('onAnimationComplete')}
-            backgroundColor="#E2E4EA"></AnimatedCircularProgress>
+            // onAnimationComplete={() => console.log('onAnimationComplete')}
+            backgroundColor="#E2E4EA"
+          />
+
           <View style={styles.absolute}>
             <ImageBackground
               resizeMode={'contain'}
@@ -111,7 +175,8 @@ const FitnessData = ({Perm, checkStorage}) => {
                 style={{height: 30, width: 30, marginTop: 25}}
               />
               <Text style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
-                7,300
+                {/* {(TodayStep * 100).toFixed(0)} */}
+                {UserSteps}
               </Text>
               <Text
                 style={[
@@ -123,6 +188,7 @@ const FitnessData = ({Perm, checkStorage}) => {
             </ImageBackground>
           </View>
         </View>
+        {/* )} */}
         <View
           style={{
             flexDirection: 'row',
@@ -134,15 +200,17 @@ const FitnessData = ({Perm, checkStorage}) => {
           }}>
           <View style={styles.forCircle}>
             <AnimatedCircularProgress
+              duration={1500}
               style={styles.CircularProgressStyle}
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={80}
+              fill={!Loading ? (UserCalories / 1000) * 100 : 0}
+              // fill={0}
               rotation={0}
               tintColor="#30C3D6"
               lineCap={'round'}
-              onAnimationComplete={() => console.log('onAnimationComplete')}
+              // // onAnimationComplete={() => console.log('onAnimationComplete')}
               backgroundColor="#E0F8FB"
             />
             <View style={styles.absolute}>
@@ -152,20 +220,24 @@ const FitnessData = ({Perm, checkStorage}) => {
               />
             </View>
             <View style={{marginTop: 10}}>
-              <Text style={[styles.SmallThinBlackText]}>2345 kcal</Text>
+              <Text style={[styles.SmallThinBlackText]}>
+                {UserCalories} kcal
+              </Text>
             </View>
           </View>
           <View style={styles.forCircle}>
             <AnimatedCircularProgress
+              duration={1500}
               style={styles.CircularProgressStyle}
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={80}
+              fill={!Loading ? (UserDistance / 5000) * 100 : 0}
+              // fill={50}
               rotation={0}
               tintColor="#F43085"
               lineCap={'round'}
-              onAnimationComplete={() => console.log('onAnimationComplete')}
+              // // onAnimationComplete={() => console.log('onAnimationComplete')}
               backgroundColor="#FDE2EF"
             />
             <View style={styles.absolute}>
@@ -175,20 +247,24 @@ const FitnessData = ({Perm, checkStorage}) => {
               />
             </View>
             <View style={{marginTop: 10}}>
-              <Text style={[styles.SmallThinBlackText]}>2 km</Text>
+              <Text style={[styles.SmallThinBlackText]}>
+                {((UserDistance / 5000) * 5).toFixed(1)} km
+              </Text>
             </View>
           </View>
           <View style={styles.forCircle}>
             <AnimatedCircularProgress
+              duration={900}
               style={styles.CircularProgressStyle}
               arcSweepAngle={360}
               size={70}
               width={10}
-              fill={80}
+              fill={!Loading ? (UserMoveTime / 120) * 100 : 0}
+              // fill={25}
               rotation={0}
               tintColor="#37DD67"
               lineCap={'round'}
-              onAnimationComplete={() => console.log('onAnimationComplete')}
+              // // onAnimationComplete={() => console.log('onAnimationComplete')}
               backgroundColor="#C6F9E8"
             />
             <View style={styles.absolute}>
@@ -198,12 +274,22 @@ const FitnessData = ({Perm, checkStorage}) => {
               />
             </View>
             <View style={{marginTop: 10}}>
-              <Text style={[styles.SmallThinBlackText]}>23 min</Text>
+              <Text style={[styles.SmallThinBlackText]}>
+                {UserMoveTime.toFixed(0)} min
+              </Text>
             </View>
           </View>
         </View>
-        <GraphicChart />
-        {!Perm && (
+        <GraphicChart
+          day
+          zero={zero}
+          ones={ones}
+          twos={twos}
+          threes={threes}
+          fours={fours}
+          fives={fives}
+        />
+        {!UserData.HealthPermission && (
           <View
             style={{
               // backgroundColor: 'blue',
@@ -221,7 +307,7 @@ const FitnessData = ({Perm, checkStorage}) => {
                 marginTop: -160,
                 fontWeight: '700',
                 fontFamily: RubikExtraBold,
-                fontSize: 120,
+                fontSize: SIZE / 3.5,
                 color: '#E0DDED',
                 transform: [{rotate: '-15deg'}],
               }}>

@@ -20,7 +20,7 @@ const Tab = createBottomTabNavigator();
 const WIDTH = Dimensions.get('screen').width;
 
 const HomeScreen = ({navigation, route}) => {
-  console.log(`route`, route);
+  // console.log(`route`, route);
   return (
     <View style={{flex: 1}}>
       <Tab.Navigator

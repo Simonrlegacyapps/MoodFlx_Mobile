@@ -5,6 +5,16 @@ import {
   SET_DIVISION,
   GET_EMAIL,
   GET_USER_DIVISION,
+  GET_USER_MOOD_COUNT,
+  GET_USER_STEPS,
+  GET_USER_CALORIES,
+  GET_USER_DISTANCE,
+  GET_USER_MOVE_TIME,
+  GET_HEALTH_PERM,
+  GET_ALL_MOODS,
+  GET_LAT,
+  GET_LONG,
+  GET_DAY_STEPS,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -40,6 +50,66 @@ export const UserEmail = (data) => {
 export const UserDivision = (data) => {
   return {
     type: GET_USER_DIVISION,
+    payload: data,
+  };
+};
+export const UserMoodCount = (data) => {
+  return {
+    type: GET_USER_MOOD_COUNT,
+    payload: data,
+  };
+};
+export const UserSteps = (data) => {
+  return {
+    type: GET_USER_STEPS,
+    payload: data,
+  };
+};
+export const UserCalories = (data) => {
+  return {
+    type: GET_USER_CALORIES,
+    payload: data,
+  };
+};
+export const UserDistance = (data) => {
+  return {
+    type: GET_USER_DISTANCE,
+    payload: data,
+  };
+};
+export const UserMoveTime = (data) => {
+  return {
+    type: GET_USER_MOVE_TIME,
+    payload: data,
+  };
+};
+export const HealthPerm = (data) => {
+  return {
+    type: GET_HEALTH_PERM,
+    payload: data,
+  };
+};
+export const Moods = (data) => {
+  return {
+    type: GET_ALL_MOODS,
+    payload: data,
+  };
+};
+export const Lat = (data) => {
+  return {
+    type: GET_LAT,
+    payload: data,
+  };
+};
+export const Long = (data) => {
+  return {
+    type: GET_LONG,
+    payload: data,
+  };
+};
+export const DaySteps = (data) => {
+  return {
+    type: GET_DAY_STEPS,
     payload: data,
   };
 };

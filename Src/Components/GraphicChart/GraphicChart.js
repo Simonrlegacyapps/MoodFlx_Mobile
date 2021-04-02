@@ -13,23 +13,84 @@ import {
   monotoneCubicInterpolation,
 } from '@rainbow-me/animated-charts';
 import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
+import {useSelector} from 'react-redux';
 
 export const {width: SIZE} = Dimensions.get('window');
 
-export const data = [
-  {x: 1, y: 1},
-  {x: 2, y: 12},
-  {x: 3, y: 3},
-  {x: 4, y: 4},
-  {x: 5, y: 10},
-  {x: 6, y: 6},
-  {x: 7, y: 7},
-];
+// export const data = [
+//   {x: 1, y: 1},
+//   {x: 2, y: 12},
+//   {x: 3, y: 3},
+//   {x: 4, y: 4},
+//   {x: 5, y: 10},
+//   {x: 6, y: 6},
+//   {x: 7, y: 7},
+// ];
 
-const points = monotoneCubicInterpolation({data, range: 40});
+const BasicExample = ({day, zero, ones, twos, threes, fours, fives}) => {
+  const [Duration, setDuration] = useState('Daily');
 
-const BasicExample = () => {
-  const [Duration, setDuration] = useState('Week');
+  const UserData = useSelector((state) => state.First);
+
+  const data = [
+    {x: 1, y: 0},
+    {
+      x: 2,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? 1 + UserData.TodayAllSteps[0].two
+            : 0
+          : 0,
+    },
+    {
+      x: 3,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].three
+            : 1
+          : 1,
+    },
+    {
+      x: 4,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].four
+            : 0
+          : 0,
+    },
+    {
+      x: 5,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].five
+            : 0
+          : 0,
+    },
+    {
+      x: 6,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].six
+            : 0
+          : 0,
+    },
+    {
+      x: 7,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].seven
+            : 0
+          : 0,
+    },
+  ];
+
+  const points = monotoneCubicInterpolation({data, range: 40});
   return (
     <View
       style={{
@@ -109,43 +170,57 @@ const BasicExample = () => {
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>Mo</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '0' : 'Mo'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>Tu</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '4' : 'Tu'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>We</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '8' : 'We'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>Th</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '12' : 'Th'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>Fr</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '16' : 'Fr'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>Sa</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '20' : 'Sa'}
+              </Text>
             </View>
             <View>
               <View style={styles.lineParent}>
                 <View style={styles.LineParentView} />
               </View>
-              <Text style={styles.DayText}>Su</Text>
+              <Text style={styles.DayText}>
+                {Duration == 'Daily' ? '24' : 'Sa'}
+              </Text>
             </View>
             {/* <Text style={{width: (SIZE - 70) / 7}}>Tu</Text>
             <Text style={{width: (SIZE - 70) / 7}}>We</Text>

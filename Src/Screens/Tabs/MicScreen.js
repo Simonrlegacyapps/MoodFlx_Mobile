@@ -70,7 +70,9 @@ const MicScreen = ({navigation}) => {
               return (
                 <TouchableOpacity
                   disabled={item.showAns ? true : false}
-                  onPress={() => navigation.replace('MoodEmotionDetector')}>
+                  onPress={() =>
+                    navigation.replace('MoodEmotionDetector', {question: true})
+                  }>
                   <View style={{flexDirection: 'row'}}>
                     <Text style={[styles.questionText, {marginHorizontal: 6}]}>
                       {index + 1}.{' '}
