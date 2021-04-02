@@ -24,6 +24,7 @@ import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import moment from 'moment';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
+import Geocoder from 'react-native-geocoding';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -38,13 +39,14 @@ const IndicatorHelper = ({color, text}) => {
 
 const WeatherData = ({
   CheckForWeather,
-  PermWeather,
+  // PermWeather,
   Weather,
   // data,
   // dataLow,
-  lat,
-  long,
+  // lat,
+  // long,
   MoodCount,
+  swiperIndex,
 }) => {
   const [temp, settemp] = useState([]);
   const [One, setOne] = useState(null);
@@ -66,13 +68,6 @@ const WeatherData = ({
 
   const WeatherDayData = () => {
     let value = 0;
-    console.log(
-      `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${
-        UserData.lat
-      }&lon=${UserData.lon}&dt=${
-        Date.parse(a) / 1000
-      }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-    );
     axios
       .get(
         `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${
@@ -102,102 +97,25 @@ const WeatherData = ({
         console.log(`error for weather here`, error);
       });
   };
-  // const TwoDay = () => {
-  //   axios
-  //     .get(
-  //       `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
-  //         Date.parse(b) / 1000
-  //       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-  //     )
-  //     .then(async (response) => {
-  //       // console.log(`response`, response.data);
-  //       return await setTwo(response.data);
-  //     })
-  //     .catch(function (error) {
-  //       console.log(`error for weather here`, error);
-  //     });
-  // };
-  // const ThreeDay = () => {
-  //   axios
-  //     .get(
-  //       `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
-  //         Date.parse(c) / 1000
-  //       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-  //     )
-  //     .then(async (response) => {
-  //       // console.log(`response`, response.data);
-  //       return await setThree(response.data);
-  //     })
-  //     .catch(function (error) {
-  //       console.log(`error for weather here`, error);
-  //     });
-  // };
-  // const FourDay = () => {
-  //   axios
-  //     .get(
-  //       `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
-  //         Date.parse(d) / 1000
-  //       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-  //     )
-  //     .then(async (response) => {
-  //       // console.log(`response`, response.data);
-  //       return await setFour(response.data);
-  //     })
-  //     .catch(function (error) {
-  //       console.log(`error for weather here`, error);
-  //     });
-  // };
-  // const FiveDay = () => {
-  //   axios
-  //     .get(
-  //       `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${long}&dt=${
-  //         Date.parse(e) / 1000
-  //       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-  //     )
-  //     .then(async (response) => {
-  //       // console.log(`response`, response.data);
-  //       return await setFive(response.data);
-  //     })
-  //     .catch(function (error) {
-  //       console.log(`error for weather here`, error);
-  //     });
-  // };
-  // console.log(
-  //   `WeatherDay`,
-  //   WeatherDay ? WeatherDay.hourly[0].weather[0].description : null,
-  // );
-  const CheckLatestWeatherHour = () => {
-    let value = 0;
-    console.log(
-      `WeatherDay`,
-      WeatherDay ? WeatherDay.hourly[0].weather.description : null,
-    );
-    // for (let i in WeatherDay.hourly) {
-    //   if (
-    //     Weather
-    //       ? Weather.weather[0].description
-    //       : 'Low' == WeatherDay.hourly[0].weather[0].description
-    //   ) {
-    //     value = value + 1;
-    //     sethours(value);
-    //   }
-    // }
-  };
 
   const th = async () => {
     await WeatherDayData();
+    console.log(`can you please check`);
+    // Geocoder.init('AIzaSyC-tC-W2SwDLpQoY4RjJ2qIYXbk53Huyig');
+    // Geocoder.from({
+    //   lat: UserData.lat,
+    //   lng: UserData.lon,
+    // }).then((data) => {
+    //   console.log(`data==------->`, data);
+    // });
   };
   useEffect(() => {
     th();
-    CheckLatestWeatherHour();
-    // oneDay();
-    // TwoDay();
-    // ThreeDay();
-    // FourDay();
-    // FiveDay();
   }, []);
 
-  // console.log(`oneDay`, One != null ? One.current.temp : 0);
+  useEffect(() => {
+    data;
+  }, [One, Two, Three, Four, Five]);
 
   const data = [
     {x: 1, y: One ? One?.current?.temp : 0},
@@ -205,11 +123,9 @@ const WeatherData = ({
     {x: 3, y: Three ? Three?.current?.temp : 0},
     {x: 4, y: Four ? Four?.current?.temp : 0},
     {x: 5, y: Five ? Five?.current?.temp : 0},
-    {x: 6, y: 2.43},
-    {x: 7, y: 2.2},
+    {x: 6, y: 2},
+    {x: 7, y: 2},
   ];
-
-  // console.log(`data`, data);
 
   const dataLow = [
     {x: 1, y: 10},
@@ -217,12 +133,13 @@ const WeatherData = ({
     {x: 3, y: 29},
     {x: 4, y: 18},
     {x: 5, y: 22},
-    {x: 6, y: 20},
+    {x: 6, y: 2},
     {x: 7, y: 23},
   ];
 
   return (
     <View>
+      {/* {console.log(`data`, data)} */}
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -252,14 +169,16 @@ const WeatherData = ({
           </View>
         </View>
         <View style={styles.ProgressBarView}>
-          <ProgressBar
-            progress={
-              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
-              100
-            }
-            height={10}
-            backgroundColor="#CB9866"
-          />
+          {swiperIndex == 1 && (
+            <ProgressBar
+              progress={
+                ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
+                100
+              }
+              height={10}
+              backgroundColor="#CB9866"
+            />
+          )}
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.SmallThinText, {flex: 1}]}>
               Try add 3 moods per day
@@ -290,106 +209,109 @@ const WeatherData = ({
           </Text>
         </View>
 
-        <View style={styles.WeatherCardMain}>
-          <View style={styles.WeatherCard}>
-            <Text
-              style={[
-                styles.SmallThinText,
-                {paddingVertical: 0, paddingBottom: 4},
-              ]}>
-              Today's Weather
-            </Text>
-            <Text style={[styles.SmallThinText, styles.city]}>
-              {Weather ? Weather?.name : 'Loading ...'}
-              {/* {'Loading ...'} */}
-            </Text>
-            <View>
-              <View
-                style={{
-                  width: 260,
-                  backgroundColor: 'white',
-                  margin: 10,
-                  borderRadius: 15,
-                  marginHorizontal: 20,
-                }}>
-                <View style={{flexDirection: 'row', padding: 15}}>
-                  <Image
-                    resizeMode={'contain'}
-                    source={Constants.Images.Rain}
-                    style={{margin: 10, marginHorizontal: 20}}
-                  />
-                  <View>
-                    <Text style={[styles.Card1Text]}>
-                      {Weather ? Weather.weather[0].description : 'Low'}
-                      {/* {'Low'} */}
-                    </Text>
-                    <Text style={[, {fontFamily: RubikMedium, fontSize: 36}]}>
-                      {Math.round(Weather ? Weather.main.temp : '0')}ºC
-                      {/* {'0'}ºC */}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-              <View style={styles.CardsView}>
-                <View style={styles.card2View}>
-                  <View style={{flexDirection: 'row', padding: 15}}>
-                    <Image
-                      resizeMode={'contain'}
-                      source={Constants.Images.Rain}
-                      style={styles.SmallCardImage}
-                    />
-                    <View>
-                      <Text style={[styles.smallCardText]}>
-                        {Weather ? Weather.weather[0].description : 'Low'}
-                      </Text>
-                      <Text style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
-                        {hours ? hours : 1}hr
-                      </Text>
-                    </View>
-                  </View>
-                </View>
+        {swiperIndex == 1 && (
+          <View style={styles.WeatherCardMain}>
+            <View style={styles.WeatherCard}>
+              <Text
+                style={[
+                  styles.SmallThinText,
+                  {paddingVertical: 0, paddingBottom: 4},
+                ]}>
+                Today's Weather
+              </Text>
+              <Text style={[styles.SmallThinText, styles.city]}>
+                {Weather ? Weather?.name : 'Loading ...'}
+              </Text>
+              <View>
                 <View
                   style={{
-                    width: 120,
+                    width: 260,
                     backgroundColor: 'white',
+                    margin: 10,
                     borderRadius: 15,
+                    marginHorizontal: 20,
                   }}>
                   <View style={{flexDirection: 'row', padding: 15}}>
                     <Image
                       resizeMode={'contain'}
                       source={Constants.Images.Rain}
-                      style={styles.SmallCardImage}
+                      style={{margin: 10, marginHorizontal: 20}}
                     />
                     <View>
-                      <Text style={[, styles.smallCardText]}>Pollen</Text>
-                      <Text style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
-                        Low
+                      <Text style={[styles.Card1Text]}>
+                        {Weather ? Weather.weather[0].description : 'Low'}
                       </Text>
+                      <Text style={[, {fontFamily: RubikMedium, fontSize: 36}]}>
+                        {Math.round(Weather ? Weather.main.temp : '0')}ºC
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.CardsView}>
+                  <View style={styles.card2View}>
+                    <View style={{flexDirection: 'row', padding: 15}}>
+                      <Image
+                        resizeMode={'contain'}
+                        source={Constants.Images.Rain}
+                        style={styles.SmallCardImage}
+                      />
+                      <View>
+                        <Text style={[styles.smallCardText]}>
+                          {Weather ? Weather.weather[0].description : 'Low'}
+                        </Text>
+                        <Text
+                          style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
+                          {hours ? hours : 1}hr
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      width: 120,
+                      backgroundColor: 'white',
+                      borderRadius: 15,
+                    }}>
+                    <View style={{flexDirection: 'row', padding: 15}}>
+                      <Image
+                        resizeMode={'contain'}
+                        source={Constants.Images.Rain}
+                        style={styles.SmallCardImage}
+                      />
+                      <View>
+                        <Text style={[, styles.smallCardText]}>Pollen</Text>
+                        <Text
+                          style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
+                          Low
+                        </Text>
+                      </View>
                     </View>
                   </View>
                 </View>
               </View>
             </View>
           </View>
-        </View>
+        )}
         {/* <ProgressBarCustom /> */}
         <HomeHeader />
         <View style={{marginBottom: 50}}>
-          <BarGraph ShowPollen={true} />
+          {swiperIndex == 1 && <BarGraph ShowPollen={true} />}
           <View
             style={{
               position: 'absolute',
               alignSelf: 'center',
               marginTop: 30,
             }}>
-            <View>
+            {swiperIndex == 1 && (
               <View>
-                <BezierGraphAuto data={data} color={'#F4227E'} />
+                <View>
+                  <BezierGraphAuto data={data} color={'#F4227E'} />
+                </View>
+                <View style={{marginTop: 20}}>
+                  <BezierGraphAuto data={dataLow} color={'#70DEEC'} />
+                </View>
               </View>
-              <View style={{marginTop: 20}}>
-                <BezierGraphAuto data={dataLow} color={'#70DEEC'} />
-              </View>
-            </View>
+            )}
           </View>
           <View style={{flexDirection: 'row', alignSelf: 'center'}}>
             <IndicatorHelper color={'#7FE3F0'} text={'Min ºC'} />
@@ -398,8 +320,8 @@ const WeatherData = ({
             <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
           </View>
         </View>
-        <GraphicChart />
-        {!PermWeather && (
+        {swiperIndex == 1 && <GraphicChart />}
+        {!false && (
           <View
             style={{
               position: 'absolute',

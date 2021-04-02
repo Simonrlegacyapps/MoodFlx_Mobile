@@ -7,12 +7,15 @@ import {
   Image,
   ActivityIndicator,
   Keyboard,
+  Dimensions,
 } from 'react-native';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import Constants from '../../Constants';
 import DeviceInfo from 'react-native-device-info';
 import {dynamicSize} from '../../Constants/sizeChoose';
+
+const {width: width} = Dimensions.get('window');
 
 const EmailConfirmation = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
@@ -77,7 +80,6 @@ const EmailConfirmation = ({navigation}) => {
             marginLeft: 62,
             marginRight: 62,
             textAlign: 'center',
-            // width: '60%',
             color: 'red',
           }}>
           Sever Error: Please try again
@@ -88,15 +90,14 @@ const EmailConfirmation = ({navigation}) => {
           style={{
             fontWeight: '300',
             letterSpacing: 0.2,
-            fontSize: 12,
+            fontSize: width / 29,
             marginTop: 12,
             marginLeft: 62,
             marginRight: 62,
             textAlign: 'center',
-            // width: '60%',
             color: 'red',
           }}>
-          Sorry, your Componey does not exists
+          Sorry, your company hasn't joined Moodflo yet
         </Text>
       )}
       <View
@@ -131,6 +132,7 @@ const EmailConfirmation = ({navigation}) => {
             source={Constants.Images.mail}
           />
           <TextInput
+            returnKeyType={'done'}
             autoCorrect={false}
             autoCapitalize={false}
             autoCompleteType={false}

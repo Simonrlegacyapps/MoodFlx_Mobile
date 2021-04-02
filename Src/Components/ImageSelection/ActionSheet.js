@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ const ActionSheet = ({
   dismissModalHandler,
   selectedValue,
 }: props) => {
+  const [color, setcolor] = useState('black');
   console.log(
     `modalView, dismissModalHandler, selectedValue`,
     modalVisible,
@@ -34,12 +35,26 @@ const ActionSheet = ({
       useNativeDriverForBackdrop
       swipeDirection={['down']}
       isVisible={modalVisible}
+      onSwipeMove={() => {
+        setcolor('transparent');
+      }}
       customBackdrop={
         <TouchableWithoutFeedback onPress={dismissModalHandler}>
           <View style={{flex: 1, backgroundColor: '#000000'}} />
         </TouchableWithoutFeedback>
       }>
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          onPress={dismissModalHandler}
+          style={{
+            height: '100%',
+            width: '100%',
+            backgroundColor: color,
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: 0.2,
+            position: 'absolute',
+          }}></TouchableOpacity>
         <View style={styles.upperContainer}>
           {/* <View style={styles.upperHandel} /> */}
           <TouchableOpacity
@@ -61,7 +76,7 @@ const ActionSheet = ({
           style={styles.cancelButtonStyle}>
           <Text style={styles.textStyles}>Cancel</Text>
         </TouchableOpacity> */}
-      </SafeAreaView>
+      </View>
     </Modal>
   );
 };

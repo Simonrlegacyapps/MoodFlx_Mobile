@@ -14,6 +14,7 @@ import MicIcon from '../../assets/tabicons/MicIcon';
 import MicActiveIcon from '../../assets/tabicons/MicActiveIcon';
 import LinkActive from '../../assets/tabicons/LinkActive';
 import LinkIcon from '../../assets/tabicons/LinkIcon';
+import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation';
 import MoodEmotionDetector from './MoodEmotionDetector';
 
 const Tab = createBottomTabNavigator();
@@ -37,7 +38,7 @@ const HomeScreen = ({navigation, route}) => {
                   onPress={() => navigation.replace('MoodEmotionDetector')}>
                   <Image
                     resizeMode={'contain'}
-                    style={{marginBottom: 70, height: 80}}
+                    style={{marginBottom: 75, width: 65, height: 65}}
                     source={require('../../assets/tabicons/logo.png')}
                   />
                 </TouchableOpacity>
@@ -46,12 +47,17 @@ const HomeScreen = ({navigation, route}) => {
                   activeOpacity={1}
                   onPress={() => navigation.navigate('MoodEmotionDetector')}>
                   <Image
-                    style={{marginBottom: 70}}
+                    style={{
+                      marginBottom: 75,
+                      width: 65,
+                      height: 65,
+                      resizeMode: 'contain',
+                    }}
                     source={require('../../assets/tabicons/logo.png')}
                   />
                 </TouchableOpacity>
               );
-            } else if (route.name === 'Linktocompany') {
+            } else if (route.name === 'LinkCompanyStackNavigation') {
               iconName = focused ? <LinkActive /> : <LinkIcon />;
             } else if (route.name === 'ProfileTab') {
               iconName = focused ? <ProfileActive /> : <Profile />;
@@ -84,7 +90,10 @@ const HomeScreen = ({navigation, route}) => {
           component={LogoTab}
           //   options={{tabBarVisible: false}}
         />
-        <Tab.Screen name={'Linktocompany'} component={Linktocompany} />
+        <Tab.Screen
+          name={'LinkCompanyStackNavigation'}
+          component={LinkCompanyStackNavigation}
+        />
         <Tab.Screen name={'ProfileTab'} component={ProfileTab} />
       </Tab.Navigator>
       <View

@@ -91,6 +91,8 @@ const dataLow = [
 const PERMS = AppleHealthKit.Constants.Permissions;
 
 const App = (props) => {
+  const UserData = useSelector((state) => state.First);
+
   const [Weight, setWeight] = useState(false);
   const [Weather, setWeather] = useState(false);
   // const [lng, setlng] = useState(false);
@@ -126,10 +128,13 @@ const App = (props) => {
   const [Fives, setFives] = useState(0);
   const [Sixes, setSixes] = useState(0);
   const [MoodCount, setMoodCount] = useState(0);
-  const [Loading, setLoading] = useState(true);
+  const [Loading, setLoading] = useState(
+    UserData.HealthPermission ? true : false,
+  );
+  const [swiperIndex, setSwiperIndex] = useState(0);
 
   const route = useRoute();
-  const UserData = useSelector((state) => state.First);
+
   const {lat, long} = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
@@ -160,22 +165,14 @@ const App = (props) => {
   useEffect(() => {
     setTimeout(() => {
       // InteractionManager.runAfterInteractions(() => {
-      //   console.log(`Hiiiiiiii Loooooooooo`);
+      console.log(`Hiiiiiiii Loooooooooo`);
       checkStorage();
       // });
-    }, 150);
-    // tryNew();
+    }, 200);
   }, []);
-  const tryNew = async () => {
-    await OnAutoSync();
-    CheckForWeather();
-    // console.log(`Weather`, Weather);
-    filterDates();
-    filterSteps();
-    AddDataToFilter();
-  };
 
   const checkStorage = async () => {
+    setLoading(UserData.HealthPermission ? true : false);
     let p = await AsyncStorage.getItem('GiveHealthPerm');
     let MCount = await AsyncStorage.getItem('MoodCount');
     let e = await JSON.parse(MCount);
@@ -184,15 +181,13 @@ const App = (props) => {
     console.log(`mood count again`, e);
     let HealthP = await JSON.parse(p);
     dispatch(HealthPerm(HealthP));
-    // await setPerm(welcome);
-    // console.log('welcome', welcome);
     if (HealthP != null) {
       console.log('good to go for API in async');
       await OnAutoSync();
-
       filterDates();
       filterSteps();
       AddDataToFilter();
+      setLoading(false);
     }
   };
 
@@ -229,29 +224,30 @@ const App = (props) => {
             PERMS.Weight,
             PERMS.Height,
             PERMS.BodyMassIndex,
-            PERMS.LeanBodyMass,
-            PERMS.BodyFatPercentage,
+            // PERMS.LeanBodyMass,
+            // PERMS.BodyFatPercentage,
             PERMS.StepCount,
             PERMS.Steps,
-            PERMS.BodyTemperature,
-            PERMS.BloodPressureDiastolic,
-            PERMS.BloodPressureSystolic,
+            // PERMS.BodyTemperature,
+            // PERMS.BloodPressureDiastolic,
+            // PERMS.BloodPressureSystolic,
             PERMS.ActiveEnergyBurned, //
             PERMS.BasalEnergyBurned, //
             PERMS.DistanceWalkingRunning, //
             PERMS.HeartRate,
             PERMS.SleepAnalysis,
             PERMS.DateOfBirth,
-            PERMS.FlightsClimbed,
+            // PERMS.FlightsClimbed,
             PERMS.DistanceCycling,
             PERMS.Workout,
-            PERMS.StandHours,
+            // PERMS.StandHours,
           ],
         },
       };
 
-      setLoading(true);
+      // console.log(`-------------qwertyuiopasdfghjklzxcvbnm-----------------,`);
       AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
+        // setLoading(true);
         if (err) {
           console.log('error initializing Healthkit: ', err);
           return;
@@ -506,21 +502,16 @@ const App = (props) => {
               return console.log(`errola`, err);
             }
             setWorkouts(results);
-            // console.log(
-            //   '<<<<<<<<============== Workout Time ==============>>>>>>>>>',
-            //   results,
-            // );
           },
         );
-        // console.log(
-        //   `bhal bhal bhal bhal blah blaj>>>>>>>>>>28684628643464646436546543265423654235643`,
-        //   Workouts,
-        // );
       });
+      // setLoading(false);
     }
 
     CheckForWeather();
   };
+
+  console.log(`Loading`, Loading);
 
   const dates = [];
 
@@ -687,9 +678,6 @@ const App = (props) => {
   };
 
   const CheckForWeather = () => {
-    // console.log(
-    //   `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-    // );
     axios
       .get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
@@ -706,7 +694,6 @@ const App = (props) => {
   const AddDataToFilter = async () => {
     const deviceId = DeviceInfo.getUniqueId();
     Fsteps.push();
-    setLoading(false);
 
     // console.log(`Fsteps at last`, Fsteps);
     // console.log(`walkTime at last`, WalkTime);
@@ -731,7 +718,7 @@ const App = (props) => {
         age: DateOfBirth.age,
         email: UserData.UserEmail,
       });
-      console.log(`data`, data);
+      // console.log(`data`, data);
 
       var config = {
         method: 'post',
@@ -775,6 +762,22 @@ const App = (props) => {
   // );
 
   // console.log(`loading`, Loading);
+  const WeatherD = () => {
+    InteractionManager.setDeadline(() => {
+      return (
+        <WeatherData
+          data={data}
+          dataLow={dataLow}
+          Weather={Weather}
+          PermWeather={PermWeather}
+          CheckForWeather={CheckForWeather}
+          lat={lat}
+          long={long}
+          MoodCount={MoodCount}
+        />
+      );
+    }, 500);
+  };
 
   return (
     <View style={{flex: 1}}>
@@ -786,6 +789,7 @@ const App = (props) => {
         activeDotStyle={{height: 0, width: 0}}
         style={{backgroundColor: 'white'}}
         showsButtons={true}
+        onIndexChanged={(index) => setSwiperIndex(index)}
         loop={false}
         pagingEnabled={true}>
         <View>
@@ -820,20 +824,31 @@ const App = (props) => {
             Loading={Loading}
           />
         </View>
+
         <View>
+          {/* {swiperIndex == 1 ? ( */}
           <WeatherData
-            data={data}
-            dataLow={dataLow}
+            swiperIndex={swiperIndex}
             Weather={Weather}
             PermWeather={PermWeather}
             CheckForWeather={CheckForWeather}
-            lat={lat}
-            long={long}
+            // lat={lat}
+            // long={long}
             MoodCount={MoodCount}
           />
+          {/* ) : (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+              }}>
+              <Text> Your Data is updating</Text>
+            </View>
+          )} */}
         </View>
 
-        <View style={styles.slide3}>
+        {/* <View style={styles.slide3}>
           <ScreenData
             data={data}
             dataLow={dataLow}
@@ -852,7 +867,7 @@ const App = (props) => {
             CheckForWeather={CheckForScreenData}
             MoodCount={MoodCount}
           />
-        </View>
+        </View> */}
       </Swiper>
       {Loading && (
         <View
@@ -866,7 +881,6 @@ const App = (props) => {
             alignItems: 'center',
           }}>
           <ActivityIndicator size="large" />
-          {/* <Text style={{color: 'black', fontSize: 20, alignSelf:'center'}}>Loading your data</Text> */}
         </View>
       )}
     </View>

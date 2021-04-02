@@ -101,11 +101,8 @@ const FitnessData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              !Loading
-                ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
-                    3) *
-                  100
-                : 0
+              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
+              100
             }
             height={10}
             backgroundColor="#CB9866"
@@ -150,7 +147,7 @@ const FitnessData = ({
               }, timeout)} */}
           {/* {checkThis()} */}
           <AnimatedCircularProgress
-            duration={3000}
+            duration={1500}
             style={styles.CircularProgressStyle}
             arcSweepAngle={270}
             size={180}
