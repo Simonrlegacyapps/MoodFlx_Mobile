@@ -25,6 +25,7 @@ import moment from 'moment';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
 import Geocoder from 'react-native-geocoding';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -169,7 +170,7 @@ const WeatherData = ({
           </View>
         </View>
         <View style={styles.ProgressBarView}>
-          {swiperIndex == 1 && (
+          {swiperIndex == 1 ? (
             <ProgressBar
               progress={
                 ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
@@ -177,6 +178,15 @@ const WeatherData = ({
               }
               height={10}
               backgroundColor="#CB9866"
+            />
+          ) : (
+            <View
+              style={{
+                height: 10,
+                width: '100%',
+                borderRadius: 10,
+                backgroundColor: '#ebebeb',
+              }}
             />
           )}
           <View style={{flexDirection: 'row'}}>
@@ -209,7 +219,7 @@ const WeatherData = ({
           </Text>
         </View>
 
-        {swiperIndex == 1 && (
+        {swiperIndex == 1 ? (
           <View style={styles.WeatherCardMain}>
             <View style={styles.WeatherCard}>
               <Text
@@ -290,6 +300,65 @@ const WeatherData = ({
                 </View>
               </View>
             </View>
+          </View>
+        ) : (
+          <View
+            style={{
+              backgroundColor: '#F4F6FA',
+              // width: '90%',
+              alignSelf: 'center',
+              minHeight: 300,
+              marginTop: 50,
+              padding: 20,
+              borderRadius: 20,
+            }}>
+            <SkeletonPlaceholder>
+              <SkeletonPlaceholder.Item
+                alignSelf={'center'}
+                width={SIZE / 1.5}
+                height={100}
+                marginTop={40}
+                borderRadius={10}></SkeletonPlaceholder.Item>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                <SkeletonPlaceholder.Item
+                  alignSelf={'center'}
+                  width={SIZE / 3.4}
+                  height={80}
+                  marginTop={40}
+                  borderRadius={10}
+                />
+                <SkeletonPlaceholder.Item
+                  alignSelf={'center'}
+                  width={SIZE / 3.4}
+                  height={80}
+                  marginTop={40}
+                  borderRadius={10}
+                />
+              </View>
+              {/* <SkeletonPlaceholder.Item alignItems="center">
+              <SkeletonPlaceholder.Item marginLeft={20} height={100}>
+                <SkeletonPlaceholder.Item
+                  width={'80%'}
+                  height={100}
+                  borderRadius={4}
+                />
+              </SkeletonPlaceholder.Item>
+            </SkeletonPlaceholder.Item>
+            <SkeletonPlaceholder.Item flexDirection={'row'}>
+              <SkeletonPlaceholder.Item
+                width={60}
+                height={60}
+                // borderRadius={50}
+              />
+              <SkeletonPlaceholder.Item
+                marginTop={6}
+                width={80}
+                height={20}
+                borderRadius={4}
+              />
+            </SkeletonPlaceholder.Item> */}
+            </SkeletonPlaceholder>
           </View>
         )}
         {/* <ProgressBarCustom /> */}

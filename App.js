@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import thunk from 'redux-thunk';
-import {Provider} from 'react-redux';
+import {Provider, useDispatch, useSelector} from 'react-redux';
 import {createStore, applyMiddleware} from 'redux';
 import allReducers from './Src/redux/reducers';
 import ImageOne from './assets/OnBoarding/ImageOne';
@@ -25,8 +25,9 @@ import FastImage from 'react-native-fast-image';
 import Carousel from 'react-native-snap-carousel';
 import One from './assets/OnBoarding/ImageOne.svg';
 import {SvgCssUri, SvgUri, SvgXml} from 'react-native-svg';
+import {Moods} from './Src/redux/actions/actions';
 
-const store = createStore(allReducers, applyMiddleware(thunk));
+// const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
 
 const slides = [
@@ -73,6 +74,9 @@ const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState('');
 
+  const UserData = useSelector((state) => state.First);
+  const dispatch = useDispatch();
+
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
     let welcome = await JSON.parse(p);
@@ -103,6 +107,18 @@ const App: () => React$Node = () => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 2000);
+  }, []);
+
+  useEffect(() => {
+    {
+      UserData.AllMoods == null &&
+        fetch('https://admin.moodflo.com/api/getMood')
+          .then((data) => data.json())
+          .then(async (res) => {
+            // await setGetMoods(res.data);
+            await dispatch(Moods(res.data));
+          });
+    }
   }, []);
 
   const renderItems = ({item, index}, parallaxProps) => {
@@ -136,24 +152,24 @@ const App: () => React$Node = () => {
   return (
     <>
       {/* {console.log('ShowWelcome--', ShowWelcome)} */}
-      <Provider store={store}>
-        {ShowWelcome === false ? (
-          <NavigationContainer>
-            <SafeAreaView style={{flex: 1}}>
-              <View style={styles.container}>
-                <StackNavigation />
-              </View>
-            </SafeAreaView>
-          </NavigationContainer>
-        ) : (
-          <AppIntroSlider
-            renderItem={renderItems}
-            data={Images}
-            onDone={_onDone}
-            showSkipButton={true}
-          />
-        )}
-      </Provider>
+      {/* <Provider store={store}> */}
+      {ShowWelcome === false ? (
+        <NavigationContainer>
+          <SafeAreaView style={{flex: 1}}>
+            <View style={styles.container}>
+              <StackNavigation />
+            </View>
+          </SafeAreaView>
+        </NavigationContainer>
+      ) : (
+        <AppIntroSlider
+          renderItem={renderItems}
+          data={Images}
+          onDone={_onDone}
+          showSkipButton={true}
+        />
+      )}
+      {/* </Provider> */}
     </>
   );
 };

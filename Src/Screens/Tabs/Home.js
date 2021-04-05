@@ -511,8 +511,6 @@ const App = (props) => {
     CheckForWeather();
   };
 
-  console.log(`Loading`, Loading);
-
   const dates = [];
 
   const filterDates = () => {

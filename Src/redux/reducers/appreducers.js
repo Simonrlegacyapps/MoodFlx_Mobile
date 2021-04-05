@@ -13,6 +13,7 @@ import {
   GET_USER_MOOD_COUNT,
   GET_USER_MOVE_TIME,
   GET_USER_STEPS,
+  GET_WEATHER_HOUR,
   OTP_VERIFIED,
   SET_DIVISION,
 } from '../constants/action-types';
@@ -33,6 +34,7 @@ const intializedState = {
   lat: null,
   lon: null,
   TodayAllSteps: null,
+  WeatherHours: 0,
 };
 
 export const First = (state = intializedState, action) => {
@@ -98,6 +100,10 @@ export const First = (state = intializedState, action) => {
     case GET_DAY_STEPS:
       return Object.assign({}, state, {
         TodayAllSteps: action.payload,
+      });
+    case GET_WEATHER_HOUR:
+      return Object.assign({}, state, {
+        WeatherHours: action.payload,
       });
     default:
       return state;

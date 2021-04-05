@@ -14,3 +14,4 @@ export const GET_ALL_MOODS = 'GET_ALL_MOODS';
 export const GET_LAT = 'GET_LAT';
 export const GET_LONG = 'GET_LONG';
 export const GET_DAY_STEPS = 'GET_DAY_STEPS';
+export const GET_WEATHER_HOUR = 'GET_WEATHER_HOUR';

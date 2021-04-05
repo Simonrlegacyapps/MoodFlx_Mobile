@@ -15,6 +15,7 @@ import {
   GET_LAT,
   GET_LONG,
   GET_DAY_STEPS,
+  GET_WEATHER_HOUR,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -110,6 +111,12 @@ export const Long = (data) => {
 export const DaySteps = (data) => {
   return {
     type: GET_DAY_STEPS,
+    payload: data,
+  };
+};
+export const WeatherTypehours = (data) => {
+  return {
+    type: GET_WEATHER_HOUR,
     payload: data,
   };
 };
