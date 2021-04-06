@@ -55,12 +55,20 @@ import SleepData from '../Home/SleepData/SleepData';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   DaySteps,
+  DayTemp,
+  GetCalories,
+  GetDistance,
+  GetDOB,
+  GetMovingTime,
+  GetSteps,
+  GetWorkouts,
   HealthPerm,
   UserCalories,
   UserDistance,
   UserMoodCount,
   UserMoveTime,
   UserSteps,
+  WeatherPerm,
 } from '../../redux/actions/actions';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
@@ -184,9 +192,13 @@ const App = (props) => {
     if (HealthP != null) {
       console.log('good to go for API in async');
       await OnAutoSync();
-      filterDates();
-      filterSteps();
-      AddDataToFilter();
+      await UserData.MainSteps;
+      if (UserData.MainSteps !== null) {
+        console.log(`UserData.MainSteps`, UserData.MainSteps);
+        filterDates();
+        filterSteps();
+        AddDataToFilter();
+      }
       setLoading(false);
     }
   };
@@ -306,6 +318,7 @@ const App = (props) => {
         AppleHealthKit.getDailyStepCountSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
+            dispatch(GetSteps(results));
             let total = 0;
             let zero = 0;
             let ones = 0;
@@ -423,6 +436,7 @@ const App = (props) => {
         AppleHealthKit.getActiveEnergyBurned(
           stepsCount,
           async (err: Object, results: Object) => {
+            dispatch(GetCalories(results));
             let total = 0;
             setCalories(results);
             for (let i in results) {
@@ -436,6 +450,7 @@ const App = (props) => {
         AppleHealthKit.getDailyDistanceWalkingRunningSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
+            dispatch(GetDistance(results));
             let total = 0;
             setDistance(results);
             for (let i in results) {
@@ -465,6 +480,7 @@ const App = (props) => {
         AppleHealthKit.getDateOfBirth(
           null,
           async (err: Object, results: Object) => {
+            dispatch(GetDOB(results));
             setDOB(results);
             // console.log('DOB', results);
           },
@@ -473,6 +489,7 @@ const App = (props) => {
         AppleHealthKit.getSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
+            dispatch(GetMovingTime(results));
             let totalWalkTime = 0;
             if (err) {
               return;
@@ -498,6 +515,7 @@ const App = (props) => {
         AppleHealthKit.getSamples(
           WorkoutTimeCount,
           async (err: Object, results: Array<Object>) => {
+            dispatch(GetWorkouts(results));
             if (err) {
               return console.log(`errola`, err);
             }
@@ -555,73 +573,79 @@ const App = (props) => {
 
   const filterSteps = () => {
     for (let i in dates) {
-      for (let j in steps) {
-        let iteratedate = moment(steps[j].startDate).format('DD-MMM-YYYY');
+      for (let j in UserData.MainSteps) {
+        let iteratedate = moment(UserData.MainSteps[j].startDate).format(
+          'DD-MMM-YYYY',
+        );
         if (dates[i] === iteratedate) {
-          totalSteps = totalSteps + steps[j].value;
+          totalSteps = totalSteps + UserData.MainSteps[j].value;
         }
         if (
-          moment(steps[j].startDate).startOf('day') <
-            moment(steps[j].startDate) &&
-          moment(steps[j].startDate) <
-            moment(steps[j].startDate).startOf('day').hours(4)
+          moment(UserData.MainSteps[j].startDate).startOf('day') <
+            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) <
+            moment(UserData.MainSteps[j].startDate).startOf('day').hours(4)
         ) {
           console.log(`0`);
-          zero = zero + steps[j].value;
+          zero = zero + UserData.MainSteps[j].value;
           setOnes(zero);
         } else if (
-          moment(steps[j].startDate).startOf('day').hours(4) <
-            moment(steps[j].startDate) &&
-          moment(steps[j].startDate) <
-            moment(steps[j].startDate).startOf('day').hours(8)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(4) <
+            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) <
+            moment(UserData.MainSteps[j].startDate).startOf('day').hours(8)
         ) {
-          console.log(`2`, steps[j].value);
-          ones = ones + steps[j].value;
+          console.log(`2`, UserData.MainSteps[j].value);
+          ones = ones + UserData.MainSteps[j].value;
           setTwos(ones);
         } else if (
-          moment(steps[j].startDate).startOf('day').hours(8) <=
-            moment(steps[j].startDate) &&
-          moment(steps[j].startDate) <=
-            moment(steps[j].startDate).startOf('day').hours(12)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(8) <=
+            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) <=
+            moment(UserData.MainSteps[j].startDate).startOf('day').hours(12)
         ) {
-          twos = twos + steps[j].value;
+          twos = twos + UserData.MainSteps[j].value;
           console.log(`3`, twos);
           setThrees(twos);
           //add setzeros to this.
         } else if (
-          moment(steps[j].startDate).startOf('day').hours(12) <=
-            moment(steps[j].startDate) &&
-          moment(steps[j].startDate) <=
-            moment(steps[j].startDate).startOf('day').hours(16)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(12) <=
+            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) <=
+            moment(UserData.MainSteps[j].startDate).startOf('day').hours(16)
         ) {
-          threes = threes + steps[j].value;
+          threes = threes + UserData.MainSteps[j].value;
           console.log(`4`, threes);
           setFours(threes);
         } else if (
-          moment(steps[j].startDate).startOf('day').hours(16) <
-            moment(steps[j].startDate) &&
-          moment(steps[j].startDate) <
-            moment(steps[j].startDate).startOf('day').hours(20)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(16) <
+            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) <
+            moment(UserData.MainSteps[j].startDate).startOf('day').hours(20)
         ) {
-          fours = fours + steps[j].value;
-          console.log(`5`, steps[j].value);
+          fours = fours + UserData.MainSteps[j].value;
+          console.log(`5`, UserData.MainSteps[j].value);
           setFives(fours);
         } else {
-          fives = fives + steps[j].value;
-          console.log(`6`, steps[j].value);
+          fives = fives + UserData.MainSteps[j].value;
+          console.log(`6`, UserData.MainSteps[j].value);
           setSixes(fives);
         }
       }
-      for (let k in Distance) {
-        let iteratedate = moment(Distance[k].startDate).format('DD-MMM-YYYY');
+      for (let k in UserData.MainDistance) {
+        let iteratedate = moment(UserData.MainDistance[k].startDate).format(
+          'DD-MMM-YYYY',
+        );
         if (dates[i] === iteratedate) {
-          totalDistance = totalDistance + Distance[k].value;
+          totalDistance = totalDistance + UserData.MainDistance[k].value;
         }
       }
-      for (let l in Calories) {
-        let iteratedate = moment(Calories[l].startDate).format('DD-MMM-YYYY');
+      for (let l in UserData.MainCalories) {
+        let iteratedate = moment(UserData.MainCalories[l].startDate).format(
+          'DD-MMM-YYYY',
+        );
         if (dates[i] === iteratedate) {
-          totalCalories = totalCalories + Calories[l].value;
+          totalCalories = totalCalories + UserData.MainCalories[l].value;
         }
       }
       // for (let m in HeartRate) {
@@ -637,13 +661,15 @@ const App = (props) => {
       //     lowBp = lowBp + BP[n].bloodPressureDiastolicValue;
       //   }
       // }
-      for (let r in MovingTime) {
-        let iteratedate = moment(MovingTime[r].start).format('DD-MMM-YYYY');
+      for (let r in UserData.MainMoving) {
+        let iteratedate = moment(UserData.MainMoving[r].start).format(
+          'DD-MMM-YYYY',
+        );
         // console.log(`startTime`, startTime, EndTime);
         // console.log(`end ========== >>>> ${diffDuration} `);
         if (dates[i] === iteratedate) {
-          const startTime = moment(MovingTime[r].start);
-          const EndTime = moment(MovingTime[r].end);
+          const startTime = moment(UserData.MainMoving[r].start);
+          const EndTime = moment(UserData.MainMoving[r].end);
           const diff = EndTime.diff(startTime);
           const diffDuration = moment.duration(diff).asMinutes();
           totalWalkTime = totalWalkTime + diffDuration;
@@ -675,13 +701,23 @@ const App = (props) => {
     // console.log(`Workouts |||||||||||| ppppppp =========`, Workouts);
   };
 
-  const CheckForWeather = () => {
+  const CheckForWeather = async () => {
+    console.log(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+    );
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    let WeatherP = await JSON.parse(Wp);
+    console.log(`WeatherP`, WeatherP);
+    dispatch(WeatherPerm(WeatherP));
+
     axios
       .get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
-        await setWeather(response.data);
+        console.log(`response`, response.data);
+        await dispatch(DayTemp(response.data));
+
         // await console.log(`response.data for weather`, response.data);
       })
       .catch(function (error) {
@@ -707,7 +743,7 @@ const App = (props) => {
       var axios = require('axios');
       var data = JSON.stringify({
         device_id: deviceId,
-        exercise_time: Workouts,
+        exercise_time: UserData.MainWorkout,
         moving_time: WalkTime,
         steps: Fsteps,
         height: Height != null ? Height.value : 0,
@@ -716,7 +752,7 @@ const App = (props) => {
         age: DateOfBirth.age,
         email: UserData.UserEmail,
       });
-      // console.log(`data`, data);
+      console.log(`data`, data);
 
       var config = {
         method: 'post',

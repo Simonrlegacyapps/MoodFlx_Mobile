@@ -132,6 +132,7 @@ const EmailConfirmation = ({navigation}) => {
             source={Constants.Images.mail}
           />
           <TextInput
+            keyboardType={'email-address'}
             returnKeyType={'done'}
             autoCorrect={false}
             autoCapitalize={false}

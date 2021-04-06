@@ -26,6 +26,8 @@ import axios from 'axios';
 import {useSelector} from 'react-redux';
 import Geocoder from 'react-native-geocoding';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import AsyncStorage from '@react-native-community/async-storage';
+import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -41,7 +43,7 @@ const IndicatorHelper = ({color, text}) => {
 const WeatherData = ({
   CheckForWeather,
   // PermWeather,
-  Weather,
+  // Weather,
   // data,
   // dataLow,
   // lat,
@@ -67,6 +69,10 @@ const WeatherData = ({
 
   const UserData = useSelector((state) => state.First);
 
+  let Weather = UserData.DayTemperature;
+
+  // console.log(`Weather`, UserData.DayTemperature);
+
   const WeatherDayData = () => {
     let value = 0;
     axios
@@ -80,7 +86,7 @@ const WeatherData = ({
       .then(async (response) => {
         // console.log(`response of weather data`, response.data);
         // await setWeatherDay(response.data);
-        if (Weather) {
+        if (UserData.DayTemperature) {
           for (let i in response.data.hourly) {
             if (
               Weather.weather[0].description ===
@@ -138,6 +144,29 @@ const WeatherData = ({
     {x: 7, y: 23},
   ];
 
+  let heightProp = SIZE / 4.3;
+  let widthProp = Math.round(SIZE - 138);
+
+  const max =
+    data &&
+    Math.max.apply(
+      Math,
+      data.map(function (o) {
+        return o.y;
+      }),
+    );
+
+  const Lowmax =
+    dataLow &&
+    Math.max.apply(
+      Math,
+      dataLow.map(function (o) {
+        return o.y;
+      }),
+    );
+
+  // console.log(`Lowmax`, Lowmax, dataLow);
+
   return (
     <View>
       {/* {console.log(`data`, data)} */}
@@ -149,6 +178,7 @@ const WeatherData = ({
         <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
+              await AsyncStorage.setItem('GiveWeatherPerm', 'true');
               CheckForWeather();
             }}
             style={{
@@ -219,8 +249,8 @@ const WeatherData = ({
           </Text>
         </View>
 
-        {swiperIndex == 1 ? (
-          <View style={styles.WeatherCardMain}>
+        <View style={styles.WeatherCardMain}>
+          {swiperIndex == 1 && (
             <View style={styles.WeatherCard}>
               <Text
                 style={[
@@ -300,84 +330,48 @@ const WeatherData = ({
                 </View>
               </View>
             </View>
-          </View>
-        ) : (
-          <View
-            style={{
-              backgroundColor: '#F4F6FA',
-              // width: '90%',
-              alignSelf: 'center',
-              minHeight: 300,
-              marginTop: 50,
-              padding: 20,
-              borderRadius: 20,
-            }}>
-            <SkeletonPlaceholder>
-              <SkeletonPlaceholder.Item
-                alignSelf={'center'}
-                width={SIZE / 1.5}
-                height={100}
-                marginTop={40}
-                borderRadius={10}></SkeletonPlaceholder.Item>
-              <View
-                style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                <SkeletonPlaceholder.Item
-                  alignSelf={'center'}
-                  width={SIZE / 3.4}
-                  height={80}
-                  marginTop={40}
-                  borderRadius={10}
-                />
-                <SkeletonPlaceholder.Item
-                  alignSelf={'center'}
-                  width={SIZE / 3.4}
-                  height={80}
-                  marginTop={40}
-                  borderRadius={10}
-                />
-              </View>
-              {/* <SkeletonPlaceholder.Item alignItems="center">
-              <SkeletonPlaceholder.Item marginLeft={20} height={100}>
-                <SkeletonPlaceholder.Item
-                  width={'80%'}
-                  height={100}
-                  borderRadius={4}
-                />
-              </SkeletonPlaceholder.Item>
-            </SkeletonPlaceholder.Item>
-            <SkeletonPlaceholder.Item flexDirection={'row'}>
-              <SkeletonPlaceholder.Item
-                width={60}
-                height={60}
-                // borderRadius={50}
-              />
-              <SkeletonPlaceholder.Item
-                marginTop={6}
-                width={80}
-                height={20}
-                borderRadius={4}
-              />
-            </SkeletonPlaceholder.Item> */}
-            </SkeletonPlaceholder>
-          </View>
-        )}
+          )}
+        </View>
+
         {/* <ProgressBarCustom /> */}
         <HomeHeader />
-        <View style={{marginBottom: 50}}>
+        <View style={{marginBottom: 50, alignItems: 'center'}}>
           {swiperIndex == 1 && <BarGraph ShowPollen={true} />}
           <View
             style={{
+              // flex: 1,
               position: 'absolute',
-              alignSelf: 'center',
+              left: SIZE / 6,
+              // alignSelf: 'center',
+              // alignItems: 'center',
+              // justifyContent: 'center',
               marginTop: 30,
             }}>
             {swiperIndex == 1 && (
               <View>
                 <View>
-                  <BezierGraphAuto data={data} color={'#F4227E'} />
+                  {/* <BezierGraphAuto data={data} color={'#F4227E'} /> */}
+
+                  <GraphBezierCustom
+                    // abs
+                    heightProp={heightProp}
+                    stroke="#F4227E"
+                    widthProp={widthProp}
+                    data={data}
+                    max={max}
+                    H={9}
+                  />
                 </View>
                 <View style={{marginTop: 20}}>
-                  <BezierGraphAuto data={dataLow} color={'#70DEEC'} />
+                  {/* <BezierGraphAuto data={dataLow} color={'#70DEEC'} /> */}
+                  <GraphBezierCustom
+                    heightProp={heightProp}
+                    stroke="#70DEEC"
+                    widthProp={widthProp}
+                    data={dataLow}
+                    max={Lowmax}
+                    H={4}
+                  />
                 </View>
               </View>
             )}
@@ -390,7 +384,7 @@ const WeatherData = ({
           </View>
         </View>
         {swiperIndex == 1 && <GraphicChart />}
-        {!false && (
+        {!UserData.WeatherPermission && (
           <View
             style={{
               position: 'absolute',
@@ -458,6 +452,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F4F9',
     borderRadius: 18,
     paddingVertical: 20,
+    minHeight: 250,
   },
   WeatherCard: {
     width: 320,
@@ -605,3 +600,44 @@ const styles = StyleSheet.create({
 });
 
 export default WeatherData;
+
+// skeleton placeholder
+
+// ) : (
+//   <View
+//     style={{
+//       backgroundColor: '#F4F6FA',
+//       // width: '90%',
+//       alignSelf: 'center',
+//       minHeight: 300,
+//       marginTop: 50,
+//       padding: 20,
+//       borderRadius: 20,
+//     }}>
+//     <SkeletonPlaceholder>
+//       <SkeletonPlaceholder.Item
+//         alignSelf={'center'}
+//         width={SIZE / 1.5}
+//         height={100}
+//         marginTop={40}
+//         borderRadius={10}></SkeletonPlaceholder.Item>
+//       <View
+//         style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+//         <SkeletonPlaceholder.Item
+//           alignSelf={'center'}
+//           width={SIZE / 3.4}
+//           height={80}
+//           marginTop={40}
+//           borderRadius={10}
+//         />
+//         <SkeletonPlaceholder.Item
+//           alignSelf={'center'}
+//           width={SIZE / 3.4}
+//           height={80}
+//           marginTop={40}
+//           borderRadius={10}
+//         />
+//       </View>
+//     </SkeletonPlaceholder>
+//   </View>
+// )}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import HappyIcon from '../../../assets/emotionsicons/HappyIcon';
@@ -9,8 +9,42 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import {dynamicSize} from '../../Constants/sizeChoose';
+import axios from 'axios';
+import DeviceInfo from 'react-native-device-info';
+import {useSelector} from 'react-redux';
 
 const MicScreen = ({navigation}) => {
+  const UserData = useSelector((state) => state.First);
+
+  const getQuestions = () => {
+    var axios = require('axios');
+    const deviceId = DeviceInfo.getUniqueId();
+    var data = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+    });
+    console.log(`data`, data);
+    var config = {
+      method: 'get',
+      url: 'https://admin.moodflo.com/api/getQuestions',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify('question here', response.data));
+      })
+      .catch(function (error) {
+        console.log('question err', error);
+      });
+  };
+
+  useEffect(() => {
+    getQuestions();
+  }, []);
   const Questions = [
     {
       question: 'What do you think of the CEO’s dress sense?',

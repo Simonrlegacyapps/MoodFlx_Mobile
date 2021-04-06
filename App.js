@@ -25,7 +25,7 @@ import FastImage from 'react-native-fast-image';
 import Carousel from 'react-native-snap-carousel';
 import One from './assets/OnBoarding/ImageOne.svg';
 import {SvgCssUri, SvgUri, SvgXml} from 'react-native-svg';
-import {Moods} from './Src/redux/actions/actions';
+import {GetUserId, Moods} from './Src/redux/actions/actions';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -109,6 +109,13 @@ const App: () => React$Node = () => {
     }, 2000);
   }, []);
 
+  const checkStorage = async () => {
+    let UserId = await AsyncStorage.getItem('UserId');
+    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
+    let e = await JSON.parse(UserId);
+    console.log(`userId`, e);
+    dispatch(GetUserId(e));
+  };
   useEffect(() => {
     {
       UserData.AllMoods == null &&
@@ -119,6 +126,7 @@ const App: () => React$Node = () => {
             await dispatch(Moods(res.data));
           });
     }
+    checkStorage();
   }, []);
 
   const renderItems = ({item, index}, parallaxProps) => {

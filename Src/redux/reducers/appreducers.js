@@ -2,6 +2,7 @@ import {
   FIRST_ACTION_TYPE,
   GET_ALL_MOODS,
   GET_DAY_STEPS,
+  GET_DAY_TEMP,
   GET_DIVISION,
   GET_EMAIL,
   GET_HEALTH_PERM,
@@ -14,8 +15,16 @@ import {
   GET_USER_MOVE_TIME,
   GET_USER_STEPS,
   GET_WEATHER_HOUR,
+  GET_WEATHER_PERM,
   OTP_VERIFIED,
+  SET_CALORIES,
+  SET_DISTANCE,
   SET_DIVISION,
+  SET_DOB,
+  SET_MOVING,
+  SET_STEPS,
+  SET_WORKOUT_TOTAL,
+  USER_ID,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -30,11 +39,20 @@ const intializedState = {
   UserDistance: 0,
   UserMoveTime: 0,
   HealthPermission: false,
+  WeatherPermission: false,
   AllMoods: null,
   lat: null,
   lon: null,
   TodayAllSteps: null,
   WeatherHours: 0,
+  DayTemperature: null,
+  MainSteps: null,
+  MainCalories: null,
+  MainDistance: null,
+  MainMoving: null,
+  MainWorkout: null,
+  MainDOB: null,
+  UserId: null,
 };
 
 export const First = (state = intializedState, action) => {
@@ -104,6 +122,42 @@ export const First = (state = intializedState, action) => {
     case GET_WEATHER_HOUR:
       return Object.assign({}, state, {
         WeatherHours: action.payload,
+      });
+    case GET_WEATHER_PERM:
+      return Object.assign({}, state, {
+        WeatherPermission: action.payload,
+      });
+    case GET_DAY_TEMP:
+      return Object.assign({}, state, {
+        DayTemperature: action.payload,
+      });
+    case SET_STEPS:
+      return Object.assign({}, state, {
+        MainSteps: action.payload,
+      });
+    case SET_CALORIES:
+      return Object.assign({}, state, {
+        MainCalories: action.payload,
+      });
+    case SET_DISTANCE:
+      return Object.assign({}, state, {
+        MainDistance: action.payload,
+      });
+    case SET_MOVING:
+      return Object.assign({}, state, {
+        MainMoving: action.payload,
+      });
+    case SET_WORKOUT_TOTAL:
+      return Object.assign({}, state, {
+        MainWorkout: action.payload,
+      });
+    case SET_DOB:
+      return Object.assign({}, state, {
+        MainDOB: action.payload,
+      });
+    case USER_ID:
+      return Object.assign({}, state, {
+        UserId: action.payload,
       });
     default:
       return state;

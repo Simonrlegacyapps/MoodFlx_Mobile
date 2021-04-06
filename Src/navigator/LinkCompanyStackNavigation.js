@@ -14,11 +14,6 @@ const Stack = createStackNavigator();
 const LinkComanyStackNavigation = () => {
   return (
     <Stack.Navigator>
-      {/* <Stack.Screen
-        name="MoodEmotionDetectorTouch"
-        component={MoodEmotionDetectorTouch}
-        options={{header: () => null}}
-      /> */}
       <Stack.Screen
         name="Linktocompany"
         component={Linktocompany}

@@ -173,7 +173,7 @@ const FitnessData = ({
               />
               <Text style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
                 {/* {(TodayStep * 100).toFixed(0)} */}
-                {UserSteps}
+                {UserSteps.toFixed(0)}
               </Text>
               <Text
                 style={[
@@ -218,7 +218,7 @@ const FitnessData = ({
             </View>
             <View style={{marginTop: 10}}>
               <Text style={[styles.SmallThinBlackText]}>
-                {UserCalories} kcal
+                {UserCalories.toFixed(0)} kcal
               </Text>
             </View>
           </View>
@@ -277,6 +277,7 @@ const FitnessData = ({
             </View>
           </View>
         </View>
+        {/* <GraphBezierCustom /> */}
         <GraphicChart
           day
           zero={zero}

@@ -37,6 +37,7 @@ import {
   Moods,
   UserDivision,
   UserEmail,
+  WeatherPerm,
 } from '../redux/actions/actions';
 import {useRoute} from '@react-navigation/native';
 
@@ -101,17 +102,21 @@ const MoodEmotionDetector = ({navigation}) => {
     let p = await AsyncStorage.getItem('Email');
     let d = await AsyncStorage.getItem('Division');
     let Hp = await AsyncStorage.getItem('GiveHealthPerm');
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
     let division = await JSON.parse(d);
     let HealthP = await JSON.parse(Hp);
+    let WeatherP = await JSON.parse(Wp);
     console.log(`e`, e);
     console.log(`division`, division);
     console.log(`HealthPerm`, HealthP);
+    console.log(`WeatherPerm`, WeatherP);
     await setEmail(e);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));
+    dispatch(WeatherPerm(WeatherP));
   };
 
   // console.log(`user division`, UserData.lat, UserData.lon);
@@ -205,8 +210,12 @@ const MoodEmotionDetector = ({navigation}) => {
             // });
             {
               route?.params?.question != undefined
-                ? navigation.navigate('MicScreen')
-                : navigation.replace('HomeScreen', {lat: lat, long: lng});
+                ? navigation.navigate('HomeScreen', {screen: 'MicScreen'})
+                : navigation.replace('HomeScreen', {
+                    lat: lat,
+                    long: lng,
+                    screen: 'Home',
+                  });
             }
 
             // navigation.replace('HomeScreen', {

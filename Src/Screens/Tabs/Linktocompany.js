@@ -46,7 +46,7 @@ const Linktocompany = ({navigation}) => {
   const dispatch = useDispatch();
   const route = useRoute();
 
-  console.log('route', route);
+  // console.log('route', route);
   //
 
   const UserData = useSelector((state) => state.First);
@@ -74,10 +74,10 @@ const Linktocompany = ({navigation}) => {
   };
 
   const onDone = (type) => {
-    const {email} = route.params;
+    // const {email} = route.params;
     const params = {
       division_id: labelShow.id,
-      email: email,
+      email: UserData.UserEmail,
     };
     console.log('run', params);
     setLoading(true);

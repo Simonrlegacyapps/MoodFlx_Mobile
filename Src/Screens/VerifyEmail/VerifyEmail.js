@@ -44,22 +44,29 @@ const VerifyEmail = ({navigation}) => {
                 console.log(
                   ' ✅ ✅ ✅ ✅ Sucess for verify✅ ✅ ✅ ✅',
                   resp.data,
+                  resp.data.user_id,
                 );
                 dispatch(OTP_Verify(resp.data));
                 navigation.navigate('Linktocompany', {email: mail});
                 await AsyncStorage.setItem('Email', JSON.stringify(mail));
+                await AsyncStorage.setItem(
+                  'UserId',
+                  JSON.stringify(resp.data.user_id),
+                );
                 dispatch(UserEmail(mail));
               } else {
                 console.log(`Api Failed`, params);
               }
             })
-            .catch((err) =>
+            .catch((err) => {
               console.log(
                 `❌ ❌ ❌ ❌err for verify Email❌ ❌ ❌ ❌`,
                 err,
                 params,
-              ),
-            )
+              );
+              setLoading(false);
+              setShowWarning(true);
+            })
         : (setShowWarning(true), setLoading(false));
     }
   };

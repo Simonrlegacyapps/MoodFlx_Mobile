@@ -16,6 +16,15 @@ import {
   GET_LONG,
   GET_DAY_STEPS,
   GET_WEATHER_HOUR,
+  GET_WEATHER_PERM,
+  GET_DAY_TEMP,
+  SET_STEPS,
+  SET_CALORIES,
+  SET_DISTANCE,
+  SET_MOVING,
+  SET_WORKOUT_TOTAL,
+  SET_DOB,
+  USER_ID,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -90,6 +99,12 @@ export const HealthPerm = (data) => {
     payload: data,
   };
 };
+export const WeatherPerm = (data) => {
+  return {
+    type: GET_WEATHER_PERM,
+    payload: data,
+  };
+};
 export const Moods = (data) => {
   return {
     type: GET_ALL_MOODS,
@@ -117,6 +132,54 @@ export const DaySteps = (data) => {
 export const WeatherTypehours = (data) => {
   return {
     type: GET_WEATHER_HOUR,
+    payload: data,
+  };
+};
+export const DayTemp = (data) => {
+  return {
+    type: GET_DAY_TEMP,
+    payload: data,
+  };
+};
+export const GetSteps = (data) => {
+  return {
+    type: SET_STEPS,
+    payload: data,
+  };
+};
+export const GetCalories = (data) => {
+  return {
+    type: SET_CALORIES,
+    payload: data,
+  };
+};
+export const GetDistance = (data) => {
+  return {
+    type: SET_DISTANCE,
+    payload: data,
+  };
+};
+export const GetMovingTime = (data) => {
+  return {
+    type: SET_MOVING,
+    payload: data,
+  };
+};
+export const GetWorkouts = (data) => {
+  return {
+    type: SET_WORKOUT_TOTAL,
+    payload: data,
+  };
+};
+export const GetDOB = (data) => {
+  return {
+    type: SET_DOB,
+    payload: data,
+  };
+};
+export const GetUserId = (data) => {
+  return {
+    type: USER_ID,
     payload: data,
   };
 };
