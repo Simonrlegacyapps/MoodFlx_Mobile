@@ -17,29 +17,56 @@ const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
 
   const getQuestions = () => {
-    var axios = require('axios');
-    const deviceId = DeviceInfo.getUniqueId();
-    var data = JSON.stringify({
+const deviceId = DeviceInfo.getUniqueId();
+        var raw = JSON.stringify({
       device_id: deviceId,
       email: UserData.UserEmail,
     });
-    console.log(`data`, data);
-    var config = {
-      method: 'get',
-      url: 'https://admin.moodflo.com/api/getQuestions',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data,
-    };
 
-    axios(config)
-      .then(function (response) {
-        console.log(JSON.stringify('question here', response.data));
-      })
-      .catch(function (error) {
-        console.log('question err', error);
-      });
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    
+    // var raw = JSON.stringify({
+    //   "device_id": "cce143d2-f2bc-4694-8381-4bedd3606622",
+    //   "email": "raunak.aggarwal@innoappstech.com"
+    // });
+    
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+    
+    fetch("https://admin.moodflo.com/api/getQuestions", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
+
+
+    // var axios = require('axios');
+    // const deviceId = DeviceInfo.getUniqueId();
+    // var data = JSON.stringify({
+    //   device_id: deviceId,
+    //   email: UserData.UserEmail,
+    // });
+    // console.log(`data`, data);
+    // var config = {
+    //   method: 'get',
+    //   url: 'https://admin.moodflo.com/api/getQuestions',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   data: data,
+    // };
+
+    // axios(config)
+    //   .then(function (response) {
+    //     console.log(JSON.stringify('question here', response.data));
+    //   })
+    //   .catch(function (error) {
+    //     console.log('question err', error);
+    //   });
   };
 
   useEffect(() => {

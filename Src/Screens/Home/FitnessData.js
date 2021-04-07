@@ -22,6 +22,7 @@ import {
 import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useSelector} from 'react-redux';
+import PopUp from '../../Components/PopUp/PopUp';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -45,6 +46,8 @@ const FitnessData = ({
   //   checkThis();
   // }, [TodayStep]);
   // const [anime, setanime] = useState(false)
+
+  const [openActionSheet, setOpenActionSheet] = useState(false);
 
   const UserData = useSelector((state) => state.First);
 
@@ -74,6 +77,7 @@ const FitnessData = ({
           <TouchableOpacity
             onPress={async () => {
               await AsyncStorage.setItem('GiveHealthPerm', 'true');
+              setOpenActionSheet(true)
               checkStorage();
               // OnAutoSync();
               // filterDates();
@@ -314,6 +318,10 @@ const FitnessData = ({
           </View>
         )}
       </ScrollView>
+
+      <PopUp modalVisible={openActionSheet}
+        dismissModalHandler={() => setOpenActionSheet(false)}
+        />
     </View>
   );
 };

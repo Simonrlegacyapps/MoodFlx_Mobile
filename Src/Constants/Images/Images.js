@@ -20,4 +20,5 @@ export default {
   Arrow: require('../../../assets/newImage/SliderArrow/Arrow.png'),
   Circles: require('../../../assets/newImage/Circles/circles.png'),
   GirlImage: require('../../../assets/newImage/GirlImage/img.png'),
+  FitnessPopUp : require('../../../assets/newImage/FitnessPopUp/FitnessPopUp.png')
 };

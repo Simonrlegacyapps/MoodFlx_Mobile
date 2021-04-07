@@ -4,6 +4,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -17,6 +18,7 @@ import FaqIcon from '../../../assets/profileicons/FaqIcon';
 import TermsIcon from '../../../assets/profileicons/TermsIcon';
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
+import { useSelector } from 'react-redux';
 
 const listData = [
   {name: 'Name', value: 'Annonymous'},
@@ -31,18 +33,43 @@ const bottomList = [
   {name: 'Privacy Policy', icon: <PrivacyIcon />},
 ];
 
-const ProfileTab = () => {
+const ProfileTab = ({navigation}) => {
   const [openActionSheet, setOpenActionSheet] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [value, onChangeText] = React.useState('');
+  const [edit, setedit] = useState(false)
+  // const [userData, setUserData] = useState(null);
+  const UserData  = useSelector(state => state.First)
 
   const renderList = ({item}) => {
     return (
       <View style={styles.flatlistViewStyle}>
         <View>
           <Text style={styles.nameTextStyle}>{item.name}</Text>
-          <Text style={styles.anonymousTextStyle}>{item.value}</Text>
+          {edit ? <Text style={styles.anonymousTextStyle}>{item.value}</Text> :
+
+          <TextInput
+            keyboardType={'email-address'}
+            returnKeyType={'done'}
+            autoCorrect={false}
+            autoCapitalize={false}
+            autoCompleteType={false}
+            placeholder={item.value}
+            placeholderTextColor={'black'}
+            style={[{
+              // height: dynamicSize(50),
+              // width: dynamicSize(250),
+              backgroundColor: 'white',
+              // borderRadius: 10,
+              borderBottomWidth:1
+              // paddingLeft: 15,
+            }, styles.anonymousTextStyle]}
+            onChangeText={(text) => {
+              onChangeText(text)
+            }}
+            value={value}
+          />}
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>{ UserData.UserEmail ? setedit(!edit): navigation.navigate("Linktocompany") }}>
           <AddButton />
         </TouchableOpacity>
       </View>
