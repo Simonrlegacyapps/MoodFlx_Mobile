@@ -16,9 +16,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   Division,
   getDivisions,
+  GetUserId,
+  HealthPerm,
+  IsAnonymous,
   OTP_Verify,
+  UserDetail,
   UserDivision,
   UserEmail,
+  WeatherPerm,
 } from '../../redux/actions/actions';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
@@ -116,10 +121,16 @@ const Linktocompany = ({navigation}) => {
     // setLinked(type);
     dispatch(OTP_Verify(false));
     dispatch(Division(null));
-    await AsyncStorage.setItem('Division', '');
-    await AsyncStorage.setItem('Email', '');
+    await AsyncStorage.removeItem('UserId');
+    await AsyncStorage.removeItem('Anonymous');
+    await AsyncStorage.removeItem('Email');
+    await AsyncStorage.removeItem('Division');
+    await AsyncStorage.removeItem('Email');
     dispatch(UserDivision(null));
     dispatch(UserEmail(null));
+    dispatch(GetUserId(null));
+    dispatch(IsAnonymous(true));
+    dispatch(UserDetail(null));
   };
 
   return (

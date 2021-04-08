@@ -41,6 +41,7 @@ import {
   WeatherPerm,
 } from '../redux/actions/actions';
 import {useRoute} from '@react-navigation/native';
+import SaveConfirmModal from '../Components/Modals/SaveConfirmModal/SaveConfirmModal';
 
 const {StatusBarManager, statusBarHeight} = NativeModules;
 
@@ -80,6 +81,8 @@ const MoodEmotionDetector = ({navigation}) => {
   const [Email, setEmail] = useState(null);
   const [Loading, setLoading] = useState(false);
   const [MoodFail, setMoodFail] = useState(false);
+  const [SaveConfirm, setSaveConfirm] = useState(false);
+  const [SaveName, setSaveName] = useState(null);
 
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -126,7 +129,7 @@ const MoodEmotionDetector = ({navigation}) => {
   //   UserData.AllMoods !== null ? UserData.AllMoods[0].name : 'nahi hai',
   // );
 
-  console.log(`called a get user`, UserData?.UserDetails);
+  // console.log(`called a get user`, UserData?.UserDetails);
   const getProfileUserData = () => {
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
@@ -1098,9 +1101,13 @@ const MoodEmotionDetector = ({navigation}) => {
     return colorCode;
   };
 
-  const onPressButton = () => {
+  const savingDataWithName = () => {
     // navigation.replace('HomeScreen');
-    FindId();
+
+    if (!UserData.Anonymous) {
+      setSaveConfirm(true);
+      // FindId();
+    }
   };
 
   const renderLine = (x, y) => {
@@ -1299,13 +1306,51 @@ const MoodEmotionDetector = ({navigation}) => {
               overflow: 'hidden',
             }}
           />
-          <View
+          <Text
+            style={{
+              position: 'absolute',
+              color: '#fff',
+              bottom: 8,
+              left: width / 2.4,
+            }}>
+            Passive/Calm
+          </Text>
+          <Text
+            style={{
+              position: 'absolute',
+              color: '#fff',
+              flex: 1,
+              justifyContent: 'center',
+              top: height / 3.1,
+              left: 6,
+            }}>
+            Negative
+          </Text>
+          <Text
+            style={{
+              position: 'absolute',
+              color: '#fff',
+              left: width / 2.56,
+              top: 8,
+            }}>
+            Active/Aroused
+          </Text>
+          <Text
+            style={{
+              position: 'absolute',
+              color: '#fff',
+              right: 6,
+              top: height / 3.1,
+            }}>
+            Positive
+          </Text>
+          {/* <View
             style={{
               flex: 1,
               backgroundColor: 'transparent',
             }}
             {...panResponder.panHandlers}
-          />
+          /> */}
         </View>
       </View>
 
@@ -1358,7 +1403,7 @@ const MoodEmotionDetector = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             disabled={UserData.AllMoods ? false : true}
-            onPress={() => FindId()}
+            onPress={() => savingDataWithName()}
             style={{
               height: dynamicSize(52),
               width: dynamicSize(197),
@@ -1378,6 +1423,14 @@ const MoodEmotionDetector = ({navigation}) => {
       <VideoModal
         ModalVisible={isModalVisible}
         dismissModalHandler={closeModal}
+      />
+
+      <SaveConfirmModal
+        value={SaveName}
+        onChangeText={setSaveName}
+        modalVisible={SaveConfirm}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={() => VerifyDone()}
       />
 
       {Loading && (

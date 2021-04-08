@@ -96,6 +96,9 @@ const App: () => React$Node = () => {
   };
 
   useEffect(() => {
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 4000);
     CheckScreen();
     if (ShowWelcome == null) {
       AsyncStorage.setItem('ShowWelcomeScreen', 'true');
@@ -115,9 +118,6 @@ const App: () => React$Node = () => {
     // } catch (e) {
     //   console.warn(e);
     // }
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 2000);
   }, []);
 
   const checkStorage = async () => {};
@@ -141,40 +141,40 @@ const App: () => React$Node = () => {
     console.log(`HealthPerm`, HealthP);
     console.log(`WeatherPerm`, WeatherP);
     console.log(`userId`, Id);
-    console.log(`Anonymous`, a);
+    console.log(`Anonymous`, a, a === null ? true : a);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));
     dispatch(WeatherPerm(WeatherP));
     dispatch(GetUserId(Id));
-    dispatch(IsAnonymous(a === null ? true : false));
+    dispatch(IsAnonymous(a == null ? true : a));
 
     // ---> calling api for get user details
     console.log(`called a get user`);
-    const deviceId = DeviceInfo.getUniqueId();
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
+    // const deviceId = DeviceInfo.getUniqueId();
+    // var myHeaders = new Headers();
+    // myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
-      device_id: deviceId,
-      email: e,
-      user_id: Id,
-    });
+    // var raw = JSON.stringify({
+    //   device_id: deviceId,
+    //   email: e,
+    //   user_id: Id,
+    // });
 
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow',
-    };
+    // var requestOptions = {
+    //   method: 'POST',
+    //   headers: myHeaders,
+    //   body: raw,
+    //   redirect: 'follow',
+    // };
 
-    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
-      .then((response) => response.json())
-      .then(async (result) => {
-        console.log('UserDetailsssssssssssssssss', await result?.userData);
-        await dispatch(UserDetail(result?.userData));
-      })
-      .catch((error) => console.log('error', error));
+    // fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+    //   .then((response) => response.json())
+    //   .then(async (result) => {
+    //     console.log('UserDetailsssssssssssssssss', await result?.userData);
+    //     await dispatch(UserDetail(result?.userData));
+    //   })
+    //   .catch((error) => console.log('error', error));
   };
 
   useEffect(() => {

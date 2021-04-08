@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
+  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -25,6 +26,20 @@ const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const wait = (timeout) => {
+    return new Promise((resolve) => setTimeout(resolve, timeout));
+  };
+
+  const onRefresh = React.useCallback(() => {
+    console.log(`refreshed here`);
+    getQuestions();
+    setRefreshing(true);
+    wait(500).then(() => setRefreshing(false));
+  }, []);
+
   const getQuestions = () => {
     const deviceId = DeviceInfo.getUniqueId();
     var data = JSON.stringify({
@@ -45,8 +60,8 @@ const MicScreen = ({navigation}) => {
     fetch('https://admin.moodflo.com/api/getQuestions', requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
-        // console.log('response of questions', result.questions),
-        await setquestions(result.questions);
+        console.log('response of questions', result),
+          await setquestions(result.questions);
         setLoading(false);
       })
       .catch((error) => console.log('error', error));
@@ -88,6 +103,9 @@ const MicScreen = ({navigation}) => {
         backgroundColor: 'white',
       }}>
       <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         style={{
           // alignItems: 'center',
           // justifyContent: 'center',
@@ -115,7 +133,7 @@ const MicScreen = ({navigation}) => {
             questions.map((item, index) => {
               return (
                 <TouchableOpacity
-                  disabled={item.name ? true : false}
+                  // disabled={item.name ? true : false}
                   onPress={() =>
                     navigation.replace('MoodEmotionDetector', {
                       question: item.id,
