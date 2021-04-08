@@ -4,10 +4,15 @@ import Constants from '../../Constants';
 import ToggleSwitch from 'toggle-switch-react-native';
 import AnonymousIcon from '../../../assets/commonicons/AnonymousIcon';
 import {RubikLight, RubikMedium} from '../../Constants/fonts/Fonts';
+import {useDispatch, useSelector} from 'react-redux';
+import {IsAnonymous} from '../../redux/actions/actions';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const AnonymousHeader = ({backGround}) => {
+  const UserData = useSelector((state) => state.First);
+  const dispatch = useDispatch();
   const [Anonymous, setAnonymous] = useState(false);
-
+  // console.log(`UserData.Anonymous`, UserData.Anonymous);
   return backGround ? (
     <View
       style={{
@@ -50,7 +55,11 @@ const AnonymousHeader = ({backGround}) => {
               marginBottom: 5,
               fontFamily: RubikMedium,
             }}>
-            Anonymous
+            {UserData.Anonymous
+              ? 'Anonymous'
+              : UserData?.UserDetails?.full_name
+              ? UserData?.UserDetails?.full_name
+              : 'Anonymous'}
           </Text>
           <Text
             style={{
@@ -64,12 +73,14 @@ const AnonymousHeader = ({backGround}) => {
         </View>
         <View style={{marginHorizontal: 16}}>
           <ToggleSwitch
-            isOn={Anonymous}
+            isOn={UserData.Anonymous}
             onColor="#7FE3F0"
             labelStyle={{color: 'black', fontWeight: '900'}}
             size="large"
-            onToggle={(isOn) => {
+            onToggle={async (isOn) => {
               console.log('changed to : ', isOn), setAnonymous(isOn);
+              dispatch(IsAnonymous(isOn));
+              await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
             }}
           />
         </View>
@@ -104,7 +115,11 @@ const AnonymousHeader = ({backGround}) => {
       </View>
       <View style={{flex: 1}}>
         <Text style={{fontSize: 16, fontWeight: '500', marginBottom: 5}}>
-          Anonymous
+          {UserData.Anonymous
+            ? 'Anonymous'
+            : UserData?.UserDetails?.full_name
+            ? UserData?.UserDetails?.full_name
+            : 'Anonymous'}
         </Text>
         <Text style={{fontSize: 13, fontWeight: '400', color: 'grey'}}>
           Your data is private
@@ -112,12 +127,14 @@ const AnonymousHeader = ({backGround}) => {
       </View>
       <View style={{marginHorizontal: 16}}>
         <ToggleSwitch
-          isOn={Anonymous}
+          isOn={UserData.Anonymous}
           onColor="#7FE3F0"
           labelStyle={{color: 'black', fontWeight: '900'}}
           size="large"
-          onToggle={(isOn) => {
+          onToggle={async (isOn) => {
             console.log('changed to : ', isOn), setAnonymous(isOn);
+            dispatch(IsAnonymous(isOn));
+            await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
           }}
         />
       </View>

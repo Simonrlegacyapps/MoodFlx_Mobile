@@ -35,8 +35,10 @@ import {
   Lat,
   Long,
   Moods,
+  UserDetail,
   UserDivision,
   UserEmail,
+  WeatherPerm,
 } from '../redux/actions/actions';
 import {useRoute} from '@react-navigation/native';
 
@@ -61,13 +63,13 @@ const {width, height} = Dimensions.get('screen');
 const MoodEmotionDetector = ({navigation}) => {
   // console.log(`width and height`, width, height);
   // console.log(`statusBarHeight`, statusBarHeight);
-  const [locationX, setLocationX] = useState(240);
-  const [locationY, setLocationY] = useState(330);
+  const [locationX, setLocationX] = useState(width / 2);
+  const [locationY, setLocationY] = useState(height / 2 + height / 80);
   const [ShowDraggable, setShowDraggable] = useState(true);
   const [Location, setLocation] = useState([]);
   const [Moving, setMoving] = useState(false);
   const [Anonymous, setAnonymous] = useState(false);
-  const [Label, setLabel] = useState('Excited');
+  const [Label, setLabel] = useState('Select Mood');
   const [startTime, setstartTime] = useState(0);
   const [EndTime, setEndTime] = useState(0);
   const [StatusVertical, setStatusVertical] = useState(0);
@@ -77,6 +79,7 @@ const MoodEmotionDetector = ({navigation}) => {
   const [lat, setlat] = useState(false);
   const [Email, setEmail] = useState(null);
   const [Loading, setLoading] = useState(false);
+  const [MoodFail, setMoodFail] = useState(false);
 
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -87,7 +90,7 @@ const MoodEmotionDetector = ({navigation}) => {
   const dispatch = useDispatch();
   const route = useRoute();
   // const {question} = route.params;
-  console.log(`route`, route?.params?.question);
+  // console.log(`route`, route?.params?.question);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -96,26 +99,64 @@ const MoodEmotionDetector = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
 
   const checkStorage = async () => {
+    // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
     let p = await AsyncStorage.getItem('Email');
     let d = await AsyncStorage.getItem('Division');
     let Hp = await AsyncStorage.getItem('GiveHealthPerm');
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
     let division = await JSON.parse(d);
     let HealthP = await JSON.parse(Hp);
+    let WeatherP = await JSON.parse(Wp);
     console.log(`e`, e);
     console.log(`division`, division);
     console.log(`HealthPerm`, HealthP);
+    console.log(`WeatherPerm`, WeatherP);
     await setEmail(e);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));
+    dispatch(WeatherPerm(WeatherP));
   };
 
-  console.log(`user division`, UserData.lat, UserData.lon);
+  // console.log(`user division`, UserData.lat, UserData.lon);
+  // console.log(
+  //   `UserData.AllMoods`,
+  //   UserData.AllMoods !== null ? UserData.AllMoods[0].name : 'nahi hai',
+  // );
+
+  console.log(`called a get user`, UserData?.UserDetails);
+  const getProfileUserData = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData?.UserEmail,
+      user_id: UserData?.UserId,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        console.log('UserDetailsssssssssssssssss here', await result);
+        await dispatch(UserDetail(result.userData));
+      })
+      .catch((error) => console.log('error', error));
+  };
   useEffect(() => {
     setTimeout(() => {
       checkStorage();
+      getProfileUserData();
 
       {
         (UserData.lat == null || UserData.lon == null) &&
@@ -142,19 +183,20 @@ const MoodEmotionDetector = ({navigation}) => {
     }, 150);
   }, []);
 
-  useEffect(() => {
-    {
-      UserData.AllMoods == null &&
-        fetch('https://admin.moodflo.com/api/getMood')
-          .then((data) => data.json())
-          .then(async (res) => {
-            await setGetMoods(res.data);
-            await dispatch(Moods(res.data));
-          });
-    }
-  }, []);
+  // useEffect(() => {
+  //   {
+  //     UserData.AllMoods == null &&
+  //       fetch('https://admin.moodflo.com/api/getMood')
+  //         .then((data) => data.json())
+  //         .then(async (res) => {
+  //           await setGetMoods(res.data);
+  //           await dispatch(Moods(res.data));
+  //         });
+  //   }
+  // }, []);
   // console.log(`GetMoods`, GetMoods);
 
+  // console.log(`route?.params?.question`, route?.params?.question);
   const FindId = async () => {
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
@@ -162,50 +204,101 @@ const MoodEmotionDetector = ({navigation}) => {
     console.log(`mood count`, e);
 
     const Id = UserData.AllMoods.find(({name}) => {
-      console.log(`name`, name);
+      // console.log(`name`, name);
       return name === Label;
     });
-    console.log(`Id`, Id.id);
+    console.log(`Id`, Id);
+
     console.log(`lat, lng`, UserData.lat, UserData.lon);
     const deviceId = DeviceInfo.getUniqueId();
-    setLoading(true);
-    const params = {
-      mood_id: Id.id,
-      device_id: deviceId,
-      lat: UserData.lat,
-      long: UserData.lon,
-      email: Email,
-    };
-    PostRequestApi('moodUpdate', params)
-      .then((resp) => {
-        if (resp.status == 200) {
-          AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
-          console.log('Success Message of respose mood ✅ ✅ ✅ ✅', resp.data);
-          setLoading(false);
-          // navigation.navigate('VerifyEmail', {
-          //   code: resp.data.otp,
-          //   mail: value,
-          //   deviceID: deviceId,
-          // });
-          // {
-          //   route?.params?.question != undefined
-          //     ? navigation.navigate('MicScreen')
-          //     : navigation.replace('HomeScreen', {lat: lat, long: lng});
-          // }
+    if (Id === undefined) {
+      console.log(`fail`);
+      setMoodFail(true);
+    } else {
+      setLoading(true);
+      console.log(`not fail`);
+      console.log(`Id`, Id.id);
+      const params = {
+        mood_id: Id.id,
+        device_id: deviceId,
+        lat: UserData.lat,
+        long: UserData.lon,
+        email: Email,
+      };
 
-          navigation.replace('HomeScreen', {
-            lat: UserData.lat,
-            long: UserData.lon,
+      if (route?.params?.question != undefined) {
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json');
+        myHeaders.append(
+          'Cookie',
+          '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
+        );
+
+        var raw = JSON.stringify({
+          device_id: deviceId,
+          email: UserData.UserEmail,
+          pulse_question_id: route?.params?.question,
+          mood_id: Id.id,
+          is_anonymous: 0,
+          user_id: UserData.UserId,
+        });
+
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow',
+        };
+
+        fetch('https://admin.moodflo.com/api/updateAnswer', requestOptions)
+          .then((response) => response.json())
+          .then((result) => {
+            console.log('quesstion updated', result), setLoading(false);
+            navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+          })
+          .catch((error) => {
+            console.log('error', error), setLoading(false);
           });
+      } else {
+        PostRequestApi('moodUpdate', params)
+          .then((resp) => {
+            if (resp.status == 200) {
+              AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
+              console.log(
+                'Success Message of respose mood ✅ ✅ ✅ ✅',
+                resp.data,
+              );
+              setLoading(false);
+              // navigation.navigate('VerifyEmail', {
+              //   code: resp.data.otp,
+              //   mail: value,
+              //   deviceID: deviceId,
+              // });
+              {
+                route?.params?.question != undefined
+                  ? navigation.navigate('HomeScreen', {screen: 'MicScreen'})
+                  : navigation.replace('HomeScreen', {
+                      lat: lat,
+                      long: lng,
+                      screen: 'Home',
+                    });
+              }
 
-          console.log(`params`, params);
-        }
-      })
-      .catch((err) => {
-        console.log(`params for err of mood`, params);
-        console.log('err of response mood❌ ❌ ❌ ❌', err);
-        setLoading(false);
-      });
+              // navigation.replace('HomeScreen', {
+              //   lat: UserData.lat,
+              //   long: UserData.lon,
+              // });
+
+              console.log(`params`, params);
+            }
+          })
+          .catch((err) => {
+            console.log(`params for err of mood`, params);
+            console.log('err of response mood❌ ❌ ❌ ❌', err);
+            setLoading(false);
+          });
+      }
+    }
   };
 
   const FindSvg = ({moveY, moveX, dx, dy, y0, x0}) => {
@@ -305,9 +398,10 @@ const MoodEmotionDetector = ({navigation}) => {
   let fourthWidth = width / 4;
 
   const getDirectionAndColor = ({moveY, moveX, dx, dy, y0, x0}) => {
-    console.log('moveX, moveY, dx, dy, move', moveY, moveX, dx, dy, y0, x0);
+    // console.log('moveX, moveY, dx, dy, move', moveY, moveX, dx, dy, y0, x0);
     // console.log('dx', dx)
     // console.log('dy', dy)
+    setMoodFail(false);
     let word = '';
 
     const locationX = moveX;
@@ -315,187 +409,189 @@ const MoodEmotionDetector = ({navigation}) => {
 
     setLocationX(moveX.toFixed(2));
     setLocationY(moveY.toFixed(2));
-
-    0 < locationX &&
-    locationX < fourthWidth &&
-    statusHeight < locationY &&
-    locationY < fourthHeight + statusHeight
-      ? (word = 'Angry')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (word = 'Furious')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Wired')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (word = 'Tired')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (word = 'Flat')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (word = 'Sad')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Spent')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (word = 'Anxious')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (word = 'Happy')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (word = 'Excited')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Chilled')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (word = 'Alert')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (word = 'Pumped')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (word = 'Stoked')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Sharp')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (word = 'Content')
-      : (word = 'Okay');
+    if (UserData.AllMoods !== null) {
+      0 < locationX &&
+      locationX < fourthWidth &&
+      statusHeight < locationY &&
+      locationY < fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[10].name)
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          fourthHeight < locationY &&
+          locationY < 2 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[2].name)
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[3].name)
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          3 * fourthHeight + statusHeight < locationY &&
+          locationY < 4 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[14].name)
+        : fourthWidth < locationX &&
+          locationX < 2 * fourthWidth &&
+          statusHeight < locationY &&
+          locationY < fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[1].name)
+        : fourthWidth < locationX &&
+          locationX < 2 * fourthWidth &&
+          fourthHeight < locationY &&
+          locationY < 2 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[9].name)
+        : fourthWidth < locationX &&
+          locationX < 2 * fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[4].name)
+        : fourthWidth < locationX &&
+          locationX < 2 * fourthWidth &&
+          3 * fourthHeight + statusHeight < locationY &&
+          locationY < 4 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[13].name)
+        : 2 * fourthWidth < locationX &&
+          locationX < 3 * fourthWidth &&
+          statusHeight < locationY &&
+          locationY < fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[0].name)
+        : 2 * fourthWidth < locationX &&
+          locationX < 3 * fourthWidth &&
+          fourthHeight < locationY &&
+          locationY < 2 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[12].name)
+        : 2 * fourthWidth < locationX &&
+          locationX < 3 * fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[6].name)
+        : 2 * fourthWidth < locationX &&
+          locationX < 3 * fourthWidth &&
+          3 * fourthHeight + statusHeight < locationY &&
+          locationY < 4 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[15].name)
+        : 3 * fourthWidth < locationX &&
+          locationX < 4 * fourthWidth &&
+          statusHeight < locationY &&
+          locationY < fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[7].name)
+        : 3 * fourthWidth < locationX &&
+          locationX < 4 * fourthWidth &&
+          fourthHeight < locationY &&
+          locationY < 2 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[8].name)
+        : 3 * fourthWidth < locationX &&
+          locationX < 4 * fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[5].name)
+        : 3 * fourthWidth < locationX &&
+          locationX < 4 * fourthWidth &&
+          3 * fourthHeight + statusHeight < locationY &&
+          locationY < 4 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[11].name)
+        : (word = 'Okay');
+    }
 
     // console.log('label', Label)
 
     return word;
   };
   const getDirectionAndColorOnClick = ({moveY, moveX, dx, dy, y0, x0}) => {
-    console.log('moveX, moveY, dx, dy, click', moveY, moveX, dx, dy, y0, x0);
+    console.log('clickX, clickY, dx, dy, click', moveY, moveX, dx, dy, y0, x0);
     console.log(`fourthHeight`, fourthHeight);
     // console.log('dx', dx)
     // console.log('dy', dy)
+    setMoodFail(false);
     let word = '';
     const locationX = x0;
     const locationY = y0;
 
     setLocationX(x0.toFixed(2));
     setLocationY(y0.toFixed(2));
-
-    0 < locationX &&
-    locationX < fourthWidth &&
-    statusHeight < locationY &&
-    locationY < fourthHeight + statusHeight
-      ? (word = 'Angry')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (word = 'Furious')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Wired')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (word = 'Tired')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (word = 'Flat')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (word = 'Sad')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Spent')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (word = 'Anxious')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (word = 'Happy')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (word = 'Excited')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Chilled')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (word = 'Alert')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (word = 'Pumped')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (word = 'Stoked')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (word = 'Sharp')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (word = 'Content')
-      : (word = 'Okay');
-
+    if (UserData.AllMoods !== null) {
+      0 < locationX &&
+      locationX < fourthWidth &&
+      statusHeight < locationY &&
+      locationY < fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[10].name)
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          fourthHeight < locationY &&
+          locationY < 2 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[2].name)
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[3].name)
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          3 * fourthHeight + statusHeight < locationY &&
+          locationY < 4 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[14].name)
+        : fourthWidth < locationX &&
+          locationX < 2 * fourthWidth &&
+          statusHeight < locationY &&
+          locationY < fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[1].name)
+        : fourthWidth < locationX &&
+          locationX < 2 * fourthWidth &&
+          fourthHeight < locationY &&
+          locationY < 2 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[9].name)
+        : fourthWidth < locationX &&
+          locationX < 2 * fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[4].name)
+        : fourthWidth < locationX &&
+          locationX < 2 * fourthWidth &&
+          3 * fourthHeight + statusHeight < locationY &&
+          locationY < 4 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[13].name)
+        : 2 * fourthWidth < locationX &&
+          locationX < 3 * fourthWidth &&
+          statusHeight < locationY &&
+          locationY < fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[0].name)
+        : 2 * fourthWidth < locationX &&
+          locationX < 3 * fourthWidth &&
+          fourthHeight < locationY &&
+          locationY < 2 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[12].name)
+        : 2 * fourthWidth < locationX &&
+          locationX < 3 * fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[6].name)
+        : 2 * fourthWidth < locationX &&
+          locationX < 3 * fourthWidth &&
+          3 * fourthHeight + statusHeight < locationY &&
+          locationY < 4 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[15].name)
+        : 3 * fourthWidth < locationX &&
+          locationX < 4 * fourthWidth &&
+          statusHeight < locationY &&
+          locationY < fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[7].name)
+        : 3 * fourthWidth < locationX &&
+          locationX < 4 * fourthWidth &&
+          fourthHeight < locationY &&
+          locationY < 2 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[8].name)
+        : 3 * fourthWidth < locationX &&
+          locationX < 4 * fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[5].name)
+        : 3 * fourthWidth < locationX &&
+          locationX < 4 * fourthWidth &&
+          3 * fourthHeight + statusHeight < locationY &&
+          locationY < 4 * fourthHeight + statusHeight
+        ? (word = UserData.AllMoods[11].name)
+        : (word = 'Okay');
+    }
     // 0 < locationX && locationX < 208 && -15 < locationY && locationY < 383
     //   ? (word = word + 'Sad')
     //   : 208 < locationX && locationX < 411 && -15 < locationY && locationY < 383
@@ -521,51 +617,54 @@ const MoodEmotionDetector = ({navigation}) => {
   });
   // console.log('Location', Location);
   //panResponder initialization
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: (event, gestureState) => {
-      !!getDirectionAndColorOnClick(gestureState);
-      setstartTime(Date.now());
-      console.log(`check check check`);
-    },
-    onStartShouldSetPanResponderCapture: (event, gestureState) => true,
-    onMoveShouldSetPanResponder: (event, gestureState) => {
-      !!getDirectionAndColor(gestureState);
-      !!FindSvg(gestureState);
-    },
-    onPanResponderStart: (evt, gestureState) => {
-      // console.log(
-      //   'check check check ================>>>>>>>>>>>>.',
-      //   evt,
-      //   gestureState.y0,
-      //   gestureState.x0,
-      // );
-      // setLocationX(gestureState.x0)
-      // setLocationY(gestureState.y0)
-      const click = getDirectionAndColorOnClick(gestureState);
-      setLabel(click);
-    },
-    onMoveShouldSetPanResponderCapture: (event, gestureState) => {
-      true;
-    },
-    onPanResponderGrant: (event, gestureState) => true,
-    onPanResponderMove: (event, gestureState) => {
-      const drag = getDirectionAndColor(gestureState);
-      const svg = FindSvg(gestureState);
-      setLabel(drag);
-      setSvgs(svg);
-    },
-    onPanResponderRelease: (event, gestureState) => {
-      setEndTime(Date.now());
-      let start = moment(startTime);
-      let end = moment(EndTime);
-      const diff = end.diff(start);
-      const diffDuration = moment.duration(diff).asSeconds();
-      // console.log(`diffDuration`, diffDuration);
-      // console.log(`EndTime`, EndTime);
-      // console.log(`startTime`, startTime);
-      // console.log(`difference in time`, Math.abs(EndTime - startTime));
-    },
-  });
+  const panResponder =
+    UserData.AllMoods !== null &&
+    PanResponder.create({
+      onStartShouldSetPanResponder: (event, gestureState) => {
+        UserData.AllMoods !== null &&
+          !!getDirectionAndColorOnClick(gestureState);
+        setstartTime(Date.now());
+        console.log(`check check check`);
+      },
+      onStartShouldSetPanResponderCapture: (event, gestureState) => true,
+      onMoveShouldSetPanResponder: (event, gestureState) => {
+        !!getDirectionAndColor(gestureState);
+        !!FindSvg(gestureState);
+      },
+      onPanResponderStart: (evt, gestureState) => {
+        // console.log(
+        //   'check check check ================>>>>>>>>>>>>.',
+        //   evt,
+        //   gestureState.y0,
+        //   gestureState.x0,
+        // );
+        // setLocationX(gestureState.x0)
+        // setLocationY(gestureState.y0)
+        const click = getDirectionAndColorOnClick(gestureState);
+        setLabel(click);
+      },
+      onMoveShouldSetPanResponderCapture: (event, gestureState) => {
+        true;
+      },
+      onPanResponderGrant: (event, gestureState) => true,
+      onPanResponderMove: (event, gestureState) => {
+        const drag = getDirectionAndColor(gestureState);
+        const svg = FindSvg(gestureState);
+        setLabel(drag);
+        setSvgs(svg);
+      },
+      onPanResponderRelease: (event, gestureState) => {
+        setEndTime(Date.now());
+        let start = moment(startTime);
+        let end = moment(EndTime);
+        const diff = end.diff(start);
+        const diffDuration = moment.duration(diff).asSeconds();
+        // console.log(`diffDuration`, diffDuration);
+        // console.log(`EndTime`, EndTime);
+        // console.log(`startTime`, startTime);
+        // console.log(`difference in time`, Math.abs(EndTime - startTime));
+      },
+    });
 
   const ColorFunctionB1 = () => {
     var colorCode = '';
@@ -1084,73 +1183,119 @@ const MoodEmotionDetector = ({navigation}) => {
           />
           {/* anxious */}
           {/*Text to show the screen location we get*/}
-          <View
-            style={[
-              {
-                alignItems: 'center',
-                position: 'absolute',
-                top: parseFloat(locationY - 220),
-                left:
-                  Label?.length >= 5 && Label?.length < 7
-                    ? parseFloat(locationX - 35)
-                    : Label?.length >= 7 && Label?.length <= 8
-                    ? parseFloat(locationX - 40)
-                    : Label?.length >= 8 && Label?.length < 11
-                    ? parseFloat(locationX - 51)
-                    : parseFloat(locationX - 25),
-              },
-            ]}>
+          {UserData.AllMoods !== null && (
             <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 5,
-                backgroundColor: 'white',
-                borderRadius: 8,
-                overflow: 'hidden',
-              }}>
-              {/* {console.log(`Label`, Label.length)} */}
-              <Text style={{paddingHorizontal: 7}}>
-                {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
-                {/* X: {locationX}, Y: {locationY} */}
-              </Text>
-              <SvgUri
-                width={20}
-                height={20}
-                // viewBox="0 0 24 24"
-                fill="none"
-                uri={
-                  'https://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg'
-                }
-                // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
-              />
-            </View>
+              style={[
+                {
+                  alignItems: 'center',
+                  position: 'absolute',
+                  top: parseFloat(locationY - 233),
+                  left:
+                    Label?.length >= 5 && Label?.length <= 6
+                      ? parseFloat(locationX - 44)
+                      : Label?.length > 6 && Label?.length <= 7
+                      ? parseFloat(locationX - 49)
+                      : Label?.length >= 7 && Label?.length <= 8
+                      ? parseFloat(locationX - 47)
+                      : Label?.length >= 8 && Label?.length <= 12
+                      ? parseFloat(locationX - 63)
+                      : parseFloat(locationX - 35),
+                },
+              ]}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  padding: 5,
+                  backgroundColor: 'white',
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                }}>
+                {/* {console.log(`Label`, Label.length)} */}
+                <Text style={{paddingHorizontal: 7}}>
+                  {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
+                  {/* X: {locationX}, Y: {locationY} */}
+                </Text>
+                <SvgUri
+                  width={20}
+                  height={20}
+                  // viewBox="0 0 24 24"
+                  fill="none"
+                  uri={
+                    'https://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg'
+                  }
+                  // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+                />
+              </View>
 
-            <Svg
-              style={{}}
-              width={18}
-              height={18}
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <Path
-                d="M13 8L25.1244 0.5H0.875645L13 8Z"
-                fill="white"
-                stroke="white"
-                strokeWidth={0.5}
-              />
-            </Svg>
-          </View>
+              <Svg
+                style={{}}
+                width={18}
+                height={18}
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <Path
+                  d="M13 8L25.1244 0.5H0.875645L13 8Z"
+                  fill="white"
+                  stroke="white"
+                  strokeWidth={0.5}
+                />
+              </Svg>
+            </View>
+          )}
           <View
             style={{
               alignContent: 'center',
               position: 'absolute',
-              top: parseFloat(locationY - 170),
-              left: parseFloat(locationX),
-              height: 20,
-              width: 20,
+              top: parseFloat(locationY - 171),
+              left: parseFloat(locationX - 10),
+              height: 18,
+              width: 18,
               backgroundColor: 'white',
               borderRadius: 10,
+              overflow: 'hidden',
+            }}
+          />
+          <View
+            style={{
+              alignContent: 'center',
+              position: 'absolute',
+              top: parseFloat(locationY - 179.5),
+              left: parseFloat(locationX - 18),
+              height: 35,
+              width: 35,
+              backgroundColor: 'white',
+              opacity: 0.6,
+              borderRadius: 18,
+              overflow: 'hidden',
+            }}
+          />
+          <View
+            style={{
+              alignContent: 'center',
+              position: 'absolute',
+              top: parseFloat(locationY - 189),
+              left: parseFloat(locationX - 27),
+              height: 54,
+              width: 54,
+              backgroundColor: 'white',
+              opacity: 0.4,
+              borderRadius: 27,
+              overflow: 'hidden',
+            }}
+          />
+          <View
+            style={{
+              alignContent: 'center',
+              position: 'absolute',
+              top: parseFloat(locationY - 198.5),
+              left: parseFloat(locationX - 37),
+              height: 74,
+              width: 74,
+              backgroundColor: 'white',
+              opacity: 0.2,
+              borderRadius: 37,
               overflow: 'hidden',
             }}
           />
@@ -1225,6 +1370,9 @@ const MoodEmotionDetector = ({navigation}) => {
             <View />
             <Text style={{textAlign: 'center', fontSize: 18}}>Save</Text>
           </TouchableOpacity>
+          {MoodFail && (
+            <Text style={styles.ErrorText}>Please select a mood</Text>
+          )}
         </View>
       </View>
       <VideoModal
@@ -1282,5 +1430,18 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: 14,
     backgroundColor: '#F6926C',
+  },
+  ErrorText: {
+    fontWeight: '300',
+    letterSpacing: 0.2,
+    fontSize: 12,
+    marginTop: 0,
+    marginLeft: width / 3,
+    // marginRight: 62,
+    textAlign: 'center',
+    color: 'red',
+    position: 'absolute',
+    alignSelf: 'flex-start',
+    justifyContent: 'center',
   },
 });

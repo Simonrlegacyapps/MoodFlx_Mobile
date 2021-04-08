@@ -14,6 +14,7 @@ import {
 } from '@rainbow-me/animated-charts';
 import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
 import {useSelector} from 'react-redux';
+import GraphBezierCustom from '../GraphBezierCustom/GraphBezierCustom';
 
 export const {width: SIZE} = Dimensions.get('window');
 
@@ -90,6 +91,19 @@ const BasicExample = ({day, zero, ones, twos, threes, fours, fives}) => {
     },
   ];
 
+  const max =
+    data &&
+    Math.max.apply(
+      Math,
+      data.map(function (o) {
+        return o.y;
+      }),
+    );
+
+  let heightProp = SIZE / 3.8;
+  let widthProp = SIZE - 114;
+  // console.log(`max`, max);
+
   const points = monotoneCubicInterpolation({data, range: 40});
   return (
     <View
@@ -99,11 +113,17 @@ const BasicExample = ({day, zero, ones, twos, threes, fours, fives}) => {
         borderRadius: 25,
         width: SIZE,
         height: SIZE / 1.8,
-        justifyContent: 'center',
+        // justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
       }}>
-      <View style={{flexDirection: 'row', marginBottom: 10, marginTop: -14}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginBottom: 10,
+          marginTop: 20,
+          justifyContent: 'flex-start',
+        }}>
         <TouchableOpacity
           onPress={() => {
             setDuration('Daily');
@@ -153,85 +173,97 @@ const BasicExample = ({day, zero, ones, twos, threes, fours, fives}) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <ChartPathProvider
+      {/* <ChartPathProvider
         data={{
           points,
           smoothingStrategy: 'bezier',
-        }}>
-        <ChartPath height={SIZE / 3.8} stroke="#70DEEC" width={SIZE - 100} />
-        <ChartDot
+        }}> */}
+      {/* <ChartPath height={SIZE / 3.8} stroke="#70DEEC" width={SIZE - 100} /> */}
+      {/* <ChartDot
           style={{
             backgroundColor: 'blue',
           }}
-        />
-        <View style={{position: 'absolute', flex: 1}}>
-          <View style={{flexDirection: 'row', flex: 1, marginLeft: 30}}>
-            <View>
-              <View style={styles.lineParent}>
-                <View style={styles.LineParentView} />
-              </View>
-              <Text style={styles.DayText}>
-                {Duration == 'Daily' ? '0' : 'Mo'}
-              </Text>
+        /> */}
+      <View style={{flex: 1}}>
+        <View style={{flexDirection: 'row', flex: 1, marginLeft: 30}}>
+          <View>
+            <View style={styles.lineParent}>
+              <View style={styles.LineParentView} />
             </View>
-            <View>
-              <View style={styles.lineParent}>
-                <View style={styles.LineParentView} />
-              </View>
-              <Text style={styles.DayText}>
-                {Duration == 'Daily' ? '4' : 'Tu'}
-              </Text>
+            <Text style={styles.DayText}>
+              {Duration == 'Daily' ? '0' : 'Mo'}
+            </Text>
+          </View>
+          <View>
+            <View style={styles.lineParent}>
+              <View style={styles.LineParentView} />
             </View>
-            <View>
-              <View style={styles.lineParent}>
-                <View style={styles.LineParentView} />
-              </View>
-              <Text style={styles.DayText}>
-                {Duration == 'Daily' ? '8' : 'We'}
-              </Text>
+            <Text style={styles.DayText}>
+              {Duration == 'Daily' ? '4' : 'Tu'}
+            </Text>
+          </View>
+          <View>
+            <View style={styles.lineParent}>
+              <View style={styles.LineParentView} />
             </View>
-            <View>
-              <View style={styles.lineParent}>
-                <View style={styles.LineParentView} />
-              </View>
-              <Text style={styles.DayText}>
-                {Duration == 'Daily' ? '12' : 'Th'}
-              </Text>
+            <Text style={styles.DayText}>
+              {Duration == 'Daily' ? '8' : 'We'}
+            </Text>
+          </View>
+          <View>
+            <View style={styles.lineParent}>
+              <View style={styles.LineParentView} />
             </View>
-            <View>
-              <View style={styles.lineParent}>
-                <View style={styles.LineParentView} />
-              </View>
-              <Text style={styles.DayText}>
-                {Duration == 'Daily' ? '16' : 'Fr'}
-              </Text>
+            <Text style={styles.DayText}>
+              {Duration == 'Daily' ? '12' : 'Th'}
+            </Text>
+          </View>
+          <View>
+            <View style={styles.lineParent}>
+              <View style={styles.LineParentView} />
             </View>
-            <View>
-              <View style={styles.lineParent}>
-                <View style={styles.LineParentView} />
-              </View>
-              <Text style={styles.DayText}>
-                {Duration == 'Daily' ? '20' : 'Sa'}
-              </Text>
+            <Text style={styles.DayText}>
+              {Duration == 'Daily' ? '16' : 'Fr'}
+            </Text>
+          </View>
+          <View>
+            <View style={styles.lineParent}>
+              <View style={styles.LineParentView} />
             </View>
-            <View>
-              <View style={styles.lineParent}>
-                <View style={styles.LineParentView} />
-              </View>
-              <Text style={styles.DayText}>
-                {Duration == 'Daily' ? '24' : 'Sa'}
-              </Text>
+            <Text style={styles.DayText}>
+              {Duration == 'Daily' ? '20' : 'Sa'}
+            </Text>
+          </View>
+          <View>
+            <View style={styles.lineParent}>
+              <View style={styles.LineParentView} />
             </View>
-            {/* <Text style={{width: (SIZE - 70) / 7}}>Tu</Text>
+            <Text style={styles.DayText}>
+              {Duration == 'Daily' ? '24' : 'Sa'}
+            </Text>
+          </View>
+          {/* <Text style={{width: (SIZE - 70) / 7}}>Tu</Text>
             <Text style={{width: (SIZE - 70) / 7}}>We</Text>
             <Text style={{width: (SIZE - 70) / 7}}>Th</Text>
             <Text style={{width: (SIZE - 70) / 7}}>Fr</Text>
             <Text style={{width: (SIZE - 70) / 7}}>Sa</Text>
             <Text style={{width: (SIZE - 70) / 7}}>Su</Text> */}
-          </View>
+          {data !== null && (
+            <GraphBezierCustom
+              abs
+              heightProp={heightProp}
+              H={4.8}
+              stroke="#70DEEC"
+              widthProp={widthProp}
+              // W={100}
+              data={data}
+              max={max}
+            />
+          )}
         </View>
-        {/* <Text>Hi</Text> */}
-      </ChartPathProvider>
+      </View>
+      {/* <Text>Hi</Text> */}
+      {/* </ChartPathProvider> */}
     </View>
   );
 };

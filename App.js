@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import thunk from 'redux-thunk';
-import {Provider} from 'react-redux';
+import {Provider, useDispatch, useSelector} from 'react-redux';
 import {createStore, applyMiddleware} from 'redux';
 import allReducers from './Src/redux/reducers';
 import ImageOne from './assets/OnBoarding/ImageOne';
@@ -25,8 +25,20 @@ import FastImage from 'react-native-fast-image';
 import Carousel from 'react-native-snap-carousel';
 import One from './assets/OnBoarding/ImageOne.svg';
 import {SvgCssUri, SvgUri, SvgXml} from 'react-native-svg';
+import {
+  GetUserId,
+  HealthPerm,
+  IsAnonymous,
+  Moods,
+  UserDetail,
+  UserDivision,
+  UserEmail,
+  WeatherPerm,
+} from './Src/redux/actions/actions';
+import DeviceInfo from 'react-native-device-info';
+import GetLocation from 'react-native-get-location';
 
-const store = createStore(allReducers, applyMiddleware(thunk));
+// const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
 
 const slides = [
@@ -73,6 +85,9 @@ const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState('');
 
+  const UserData = useSelector((state) => state.First);
+  const dispatch = useDispatch();
+
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
     let welcome = await JSON.parse(p);
@@ -103,6 +118,95 @@ const App: () => React$Node = () => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 2000);
+  }, []);
+
+  const checkStorage = async () => {};
+
+  const getProfileUserData = async () => {
+    // ---> checking all the data in local storage
+    let UserId = await AsyncStorage.getItem('UserId');
+    let anonymous = await AsyncStorage.getItem('Anonymous');
+    let p = await AsyncStorage.getItem('Email');
+    let d = await AsyncStorage.getItem('Division');
+    let Hp = await AsyncStorage.getItem('GiveHealthPerm');
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    let e = await JSON.parse(p);
+    let division = await JSON.parse(d);
+    let HealthP = await JSON.parse(Hp);
+    let WeatherP = await JSON.parse(Wp);
+    let Id = await JSON.parse(UserId);
+    let a = await JSON.parse(anonymous);
+    console.log(`e`, e);
+    console.log(`division`, division);
+    console.log(`HealthPerm`, HealthP);
+    console.log(`WeatherPerm`, WeatherP);
+    console.log(`userId`, Id);
+    console.log(`Anonymous`, a);
+    dispatch(UserEmail(e));
+    dispatch(UserDivision(division));
+    dispatch(HealthPerm(HealthP));
+    dispatch(WeatherPerm(WeatherP));
+    dispatch(GetUserId(Id));
+    dispatch(IsAnonymous(a === null ? true : false));
+
+    // ---> calling api for get user details
+    console.log(`called a get user`);
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: e,
+      user_id: Id,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        console.log('UserDetailsssssssssssssssss', await result?.userData);
+        await dispatch(UserDetail(result?.userData));
+      })
+      .catch((error) => console.log('error', error));
+  };
+
+  useEffect(() => {
+    {
+      (UserData.lat == null || UserData.lon == null) &&
+        GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+        })
+          .then((location) => {
+            //   console.log('Success', location);
+            setlat(location.latitude);
+            dispatch(Lat(location.latitude));
+            setlng(location.longitude);
+            dispatch(Long(location.longitude));
+          })
+          .catch((error) => {
+            const {code, message} = error;
+            console.log('error', code, message);
+          });
+    }
+    {
+      UserData.AllMoods == null &&
+        fetch('https://admin.moodflo.com/api/getMood')
+          .then((data) => data.json())
+          .then(async (res) => {
+            // await setGetMoods(res.data);
+            await dispatch(Moods(res.data));
+          });
+    }
+    checkStorage();
+    getProfileUserData();
   }, []);
 
   const renderItems = ({item, index}, parallaxProps) => {
@@ -136,24 +240,24 @@ const App: () => React$Node = () => {
   return (
     <>
       {/* {console.log('ShowWelcome--', ShowWelcome)} */}
-      <Provider store={store}>
-        {ShowWelcome === false ? (
-          <NavigationContainer>
-            <SafeAreaView style={{flex: 1}}>
-              <View style={styles.container}>
-                <StackNavigation />
-              </View>
-            </SafeAreaView>
-          </NavigationContainer>
-        ) : (
-          <AppIntroSlider
-            renderItem={renderItems}
-            data={Images}
-            onDone={_onDone}
-            showSkipButton={true}
-          />
-        )}
-      </Provider>
+      {/* <Provider store={store}> */}
+      {ShowWelcome === false ? (
+        <NavigationContainer>
+          <SafeAreaView style={{flex: 1}}>
+            <View style={styles.container}>
+              <StackNavigation />
+            </View>
+          </SafeAreaView>
+        </NavigationContainer>
+      ) : (
+        <AppIntroSlider
+          renderItem={renderItems}
+          data={Images}
+          onDone={_onDone}
+          showSkipButton={true}
+        />
+      )}
+      {/* </Provider> */}
     </>
   );
 };

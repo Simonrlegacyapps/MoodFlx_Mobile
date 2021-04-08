@@ -14,6 +14,7 @@ import Video from 'react-native-video';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
 
 function VideoModal({ModalVisible, dismissModalHandler}) {
+  const [color, setcolor] = useState('black');
   return (
     <Modal
       onBackButtonPress={dismissModalHandler}
@@ -23,6 +24,9 @@ function VideoModal({ModalVisible, dismissModalHandler}) {
       useNativeDriverForBackdrop
       swipeDirection={['down']}
       isVisible={ModalVisible}
+      onSwipeMove={() => {
+        setcolor('transparent');
+      }}
       //   customBackdrop={
       //     <TouchableOpacity onPress={() => dismissModalHandler()}>
       //       <View style={{flex: 1, backgroundColor: 'blue'}} />
@@ -30,6 +34,14 @@ function VideoModal({ModalVisible, dismissModalHandler}) {
       //   }
     >
       <SafeAreaView style={styles.container}>
+        <TouchableOpacity
+          onPress={() => dismissModalHandler()}
+          style={{
+            height: '25%',
+            width: '100%',
+            backgroundColor: color,
+            opacity: 0.2,
+          }}></TouchableOpacity>
         <View style={styles.upperContainer}>
           {/* <View style={styles.upperHandel} /> */}
           <TouchableOpacity

@@ -22,6 +22,7 @@ import {
 import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useSelector} from 'react-redux';
+import PopUp from '../../Components/PopUp/PopUp';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -47,6 +48,7 @@ const FitnessData = ({
   // const [anime, setanime] = useState(false)
 
   const UserData = useSelector((state) => state.First);
+  const [openActionSheet, setOpenActionSheet] = useState(false);
 
   // console.log(`UserData`, UserData);
 
@@ -63,6 +65,11 @@ const FitnessData = ({
   //   );
   // };
 
+  const VerifyDone = () => {
+    setOpenActionSheet(false);
+    checkStorage();
+  };
+
   return (
     <View>
       <StatusBar barStyle="dark-content" />
@@ -74,7 +81,8 @@ const FitnessData = ({
           <TouchableOpacity
             onPress={async () => {
               await AsyncStorage.setItem('GiveHealthPerm', 'true');
-              checkStorage();
+              setOpenActionSheet(true);
+
               // OnAutoSync();
               // filterDates();
               // filterSteps();
@@ -101,11 +109,8 @@ const FitnessData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              !Loading
-                ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
-                    3) *
-                  100
-                : 0
+              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
+              100
             }
             height={10}
             backgroundColor="#CB9866"
@@ -150,7 +155,7 @@ const FitnessData = ({
               }, timeout)} */}
           {/* {checkThis()} */}
           <AnimatedCircularProgress
-            duration={3000}
+            duration={1500}
             style={styles.CircularProgressStyle}
             arcSweepAngle={270}
             size={180}
@@ -176,7 +181,7 @@ const FitnessData = ({
               />
               <Text style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
                 {/* {(TodayStep * 100).toFixed(0)} */}
-                {UserSteps}
+                {UserSteps.toFixed(0)}
               </Text>
               <Text
                 style={[
@@ -221,7 +226,7 @@ const FitnessData = ({
             </View>
             <View style={{marginTop: 10}}>
               <Text style={[styles.SmallThinBlackText]}>
-                {UserCalories} kcal
+                {UserCalories.toFixed(0)} kcal
               </Text>
             </View>
           </View>
@@ -280,6 +285,7 @@ const FitnessData = ({
             </View>
           </View>
         </View>
+        {/* <GraphBezierCustom /> */}
         <GraphicChart
           day
           zero={zero}
@@ -316,6 +322,14 @@ const FitnessData = ({
           </View>
         )}
       </ScrollView>
+
+      <PopUp
+        image={Constants.Images.FitnessPopUp}
+        dataType={'fitness'}
+        modalVisible={openActionSheet}
+        dismissModalHandler={() => setOpenActionSheet(false)}
+        verifyDone={() => VerifyDone()}
+      />
     </View>
   );
 };
