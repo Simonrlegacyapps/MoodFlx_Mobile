@@ -729,7 +729,7 @@ const App = (props) => {
     const deviceId = DeviceInfo.getUniqueId();
     Fsteps.push();
 
-    // console.log(`Fsteps at last`, Fsteps);
+    console.log(`Fsteps at last`, Fsteps);
     // console.log(`walkTime at last`, WalkTime);
     // console.log(`Workouts at last`, Workouts);
     if (Fsteps.length > 0 && WalkTime.length > 0) {
