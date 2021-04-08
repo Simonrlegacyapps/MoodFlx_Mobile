@@ -28,6 +28,8 @@ import Geocoder from 'react-native-geocoding';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import AsyncStorage from '@react-native-community/async-storage';
 import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
+import PopUp from '../../../Components/PopUp/PopUp';
+import DeviceInfo from 'react-native-device-info';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -68,6 +70,7 @@ const WeatherData = ({
   // console.log(`b`, Date.parse(b));
 
   const UserData = useSelector((state) => state.First);
+  const [openActionSheet, setOpenActionSheet] = useState(false);
 
   let Weather = UserData.DayTemperature;
 
@@ -105,19 +108,93 @@ const WeatherData = ({
       });
   };
 
+  const syncWeatherData = () => {
+    let geocode = null;
+    let city = null;
+    let state = null;
+    let country = null;
+    console.log(
+      `here+=++=+++++++++=+++=====++++=====+_+_++_+_+_+_++__+_+_++++_+_++++_+_+_+_+_+_+++_+_+_+_+_+_+_++_+`,
+    );
+    Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
+
+    Geocoder.from({
+      lat: UserData.lat,
+      lng: UserData.lon,
+    })
+      .then((data) => {
+        console.log(`data==------->`, data);
+        geocode = data.plus_code.compound_code;
+        // const Id = data.results[0].address_components.find(({name}) => {
+        //   // console.log(`name`, name);
+        //   return name === Label;
+        // });
+        console.log(`city`, city);
+      })
+      .catch((err) => console.log(`weather api location err`, err));
+
+    const deviceId = DeviceInfo.getUniqueId();
+    const data = JSON.stringify({
+      user_id: UserData.UserId,
+      email: UserData.UserEmail,
+      device_id: deviceId,
+      hours: UserData.WeatherHours,
+      weather_type: 'Rainfall',
+      pollen: null,
+      pollen_type: 'Low',
+      weather_data: [Weather],
+      temp_min: Weather?.main?.temp_min,
+      temp_max: Weather?.main?.temp_max,
+      city: 'indore',
+      state: 'madhya pradesh',
+      country: 'india',
+      lat: UserData.lat,
+      lon: UserData.lon,
+    });
+
+    console.log(`data of checking`, data);
+
+    // var config = {
+    //   method: 'post',
+    //   url: 'https://admin.moodflo.com/api/updateWeather',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
+    //   },
+    //   data: data,
+    // };
+
+    // axios(config)
+    //   .then(function (response) {
+    //     console.log(
+    //       JSON.stringify(' ✅ ✅ ✅ ✅ Success ✅ ✅ ✅ ✅ ', response, data),
+    //     );
+    //   })
+    //   .catch(function (error) {
+    //     console.log('❌❌❌❌Fail ❌❌❌❌', error, data);
+    //   });
+  };
+
   const th = async () => {
     await WeatherDayData();
     console.log(`can you please check`);
-    // Geocoder.init('AIzaSyC-tC-W2SwDLpQoY4RjJ2qIYXbk53Huyig');
-    // Geocoder.from({
-    //   lat: UserData.lat,
-    //   lng: UserData.lon,
-    // }).then((data) => {
-    //   console.log(`data==------->`, data);
-    // });
   };
+
+  const VerifyDone = () => {
+    setOpenActionSheet(false);
+    CheckForWeather();
+  };
+
   useEffect(() => {
     th();
+  }, []);
+
+  useEffect(() => {
+    // if (swiperIndex == 1) {
+    setTimeout(() => {
+      syncWeatherData();
+    }, 500);
+    // }
   }, []);
 
   useEffect(() => {
@@ -179,7 +256,7 @@ const WeatherData = ({
           <TouchableOpacity
             onPress={async () => {
               await AsyncStorage.setItem('GiveWeatherPerm', 'true');
-              CheckForWeather();
+              setOpenActionSheet(true);
             }}
             style={{
               flexDirection: 'row',
@@ -408,6 +485,14 @@ const WeatherData = ({
           </View>
         )}
       </ScrollView>
+
+      <PopUp
+        image={Constants.Images.WeatherPopUp}
+        dataType={'weather'}
+        modalVisible={openActionSheet}
+        dismissModalHandler={() => setOpenActionSheet(false)}
+        verifyDone={() => VerifyDone()}
+      />
     </View>
   );
 };

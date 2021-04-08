@@ -25,7 +25,18 @@ import FastImage from 'react-native-fast-image';
 import Carousel from 'react-native-snap-carousel';
 import One from './assets/OnBoarding/ImageOne.svg';
 import {SvgCssUri, SvgUri, SvgXml} from 'react-native-svg';
-import {GetUserId, Moods} from './Src/redux/actions/actions';
+import {
+  GetUserId,
+  HealthPerm,
+  IsAnonymous,
+  Moods,
+  UserDetail,
+  UserDivision,
+  UserEmail,
+  WeatherPerm,
+} from './Src/redux/actions/actions';
+import DeviceInfo from 'react-native-device-info';
+import GetLocation from 'react-native-get-location';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -109,14 +120,82 @@ const App: () => React$Node = () => {
     }, 2000);
   }, []);
 
-  const checkStorage = async () => {
+  const checkStorage = async () => {};
+
+  const getProfileUserData = async () => {
+    // ---> checking all the data in local storage
     let UserId = await AsyncStorage.getItem('UserId');
-    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
-    let e = await JSON.parse(UserId);
-    console.log(`userId`, e);
-    dispatch(GetUserId(e));
+    let anonymous = await AsyncStorage.getItem('Anonymous');
+    let p = await AsyncStorage.getItem('Email');
+    let d = await AsyncStorage.getItem('Division');
+    let Hp = await AsyncStorage.getItem('GiveHealthPerm');
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    let e = await JSON.parse(p);
+    let division = await JSON.parse(d);
+    let HealthP = await JSON.parse(Hp);
+    let WeatherP = await JSON.parse(Wp);
+    let Id = await JSON.parse(UserId);
+    let a = await JSON.parse(anonymous);
+    console.log(`e`, e);
+    console.log(`division`, division);
+    console.log(`HealthPerm`, HealthP);
+    console.log(`WeatherPerm`, WeatherP);
+    console.log(`userId`, Id);
+    console.log(`Anonymous`, a);
+    dispatch(UserEmail(e));
+    dispatch(UserDivision(division));
+    dispatch(HealthPerm(HealthP));
+    dispatch(WeatherPerm(WeatherP));
+    dispatch(GetUserId(Id));
+    dispatch(IsAnonymous(a === null ? true : false));
+
+    // ---> calling api for get user details
+    console.log(`called a get user`);
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: e,
+      user_id: Id,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        console.log('UserDetailsssssssssssssssss', await result?.userData);
+        await dispatch(UserDetail(result?.userData));
+      })
+      .catch((error) => console.log('error', error));
   };
+
   useEffect(() => {
+    {
+      (UserData.lat == null || UserData.lon == null) &&
+        GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+        })
+          .then((location) => {
+            //   console.log('Success', location);
+            setlat(location.latitude);
+            dispatch(Lat(location.latitude));
+            setlng(location.longitude);
+            dispatch(Long(location.longitude));
+          })
+          .catch((error) => {
+            const {code, message} = error;
+            console.log('error', code, message);
+          });
+    }
     {
       UserData.AllMoods == null &&
         fetch('https://admin.moodflo.com/api/getMood')
@@ -127,6 +206,7 @@ const App: () => React$Node = () => {
           });
     }
     checkStorage();
+    getProfileUserData();
   }, []);
 
   const renderItems = ({item, index}, parallaxProps) => {

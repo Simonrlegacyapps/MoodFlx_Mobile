@@ -25,6 +25,8 @@ import {
   SET_WORKOUT_TOTAL,
   SET_DOB,
   USER_ID,
+  USER_DETAIL,
+  IS_ANONYMOUS,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -180,6 +182,18 @@ export const GetDOB = (data) => {
 export const GetUserId = (data) => {
   return {
     type: USER_ID,
+    payload: data,
+  };
+};
+export const UserDetail = (data) => {
+  return {
+    type: USER_DETAIL,
+    payload: data,
+  };
+};
+export const IsAnonymous = (data) => {
+  return {
+    type: IS_ANONYMOUS,
     payload: data,
   };
 };

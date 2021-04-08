@@ -35,6 +35,7 @@ import {
   Lat,
   Long,
   Moods,
+  UserDetail,
   UserDivision,
   UserEmail,
   WeatherPerm,
@@ -124,9 +125,38 @@ const MoodEmotionDetector = ({navigation}) => {
   //   `UserData.AllMoods`,
   //   UserData.AllMoods !== null ? UserData.AllMoods[0].name : 'nahi hai',
   // );
+
+  console.log(`called a get user`, UserData?.UserDetails);
+  const getProfileUserData = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData?.UserEmail,
+      user_id: UserData?.UserId,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        console.log('UserDetailsssssssssssssssss here', await result);
+        await dispatch(UserDetail(result.userData));
+      })
+      .catch((error) => console.log('error', error));
+  };
   useEffect(() => {
     setTimeout(() => {
       checkStorage();
+      getProfileUserData();
 
       {
         (UserData.lat == null || UserData.lon == null) &&
@@ -166,6 +196,7 @@ const MoodEmotionDetector = ({navigation}) => {
   // }, []);
   // console.log(`GetMoods`, GetMoods);
 
+  // console.log(`route?.params?.question`, route?.params?.question);
   const FindId = async () => {
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
@@ -194,43 +225,79 @@ const MoodEmotionDetector = ({navigation}) => {
         long: UserData.lon,
         email: Email,
       };
-      PostRequestApi('moodUpdate', params)
-        .then((resp) => {
-          if (resp.status == 200) {
-            AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
-            console.log(
-              'Success Message of respose mood ✅ ✅ ✅ ✅',
-              resp.data,
-            );
-            setLoading(false);
-            // navigation.navigate('VerifyEmail', {
-            //   code: resp.data.otp,
-            //   mail: value,
-            //   deviceID: deviceId,
-            // });
-            {
-              route?.params?.question != undefined
-                ? navigation.navigate('HomeScreen', {screen: 'MicScreen'})
-                : navigation.replace('HomeScreen', {
-                    lat: lat,
-                    long: lng,
-                    screen: 'Home',
-                  });
-            }
 
-            // navigation.replace('HomeScreen', {
-            //   lat: UserData.lat,
-            //   long: UserData.lon,
-            // });
+      if (route?.params?.question != undefined) {
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json');
+        myHeaders.append(
+          'Cookie',
+          '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
+        );
 
-            console.log(`params`, params);
-          }
-        })
-        .catch((err) => {
-          console.log(`params for err of mood`, params);
-          console.log('err of response mood❌ ❌ ❌ ❌', err);
-          setLoading(false);
+        var raw = JSON.stringify({
+          device_id: deviceId,
+          email: UserData.UserEmail,
+          pulse_question_id: route?.params?.question,
+          mood_id: Id.id,
+          is_anonymous: 0,
+          user_id: UserData.UserId,
         });
+
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow',
+        };
+
+        fetch('https://admin.moodflo.com/api/updateAnswer', requestOptions)
+          .then((response) => response.json())
+          .then((result) => {
+            console.log('quesstion updated', result), setLoading(false);
+            navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+          })
+          .catch((error) => {
+            console.log('error', error), setLoading(false);
+          });
+      } else {
+        PostRequestApi('moodUpdate', params)
+          .then((resp) => {
+            if (resp.status == 200) {
+              AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
+              console.log(
+                'Success Message of respose mood ✅ ✅ ✅ ✅',
+                resp.data,
+              );
+              setLoading(false);
+              // navigation.navigate('VerifyEmail', {
+              //   code: resp.data.otp,
+              //   mail: value,
+              //   deviceID: deviceId,
+              // });
+              {
+                route?.params?.question != undefined
+                  ? navigation.navigate('HomeScreen', {screen: 'MicScreen'})
+                  : navigation.replace('HomeScreen', {
+                      lat: lat,
+                      long: lng,
+                      screen: 'Home',
+                    });
+              }
+
+              // navigation.replace('HomeScreen', {
+              //   lat: UserData.lat,
+              //   long: UserData.lon,
+              // });
+
+              console.log(`params`, params);
+            }
+          })
+          .catch((err) => {
+            console.log(`params for err of mood`, params);
+            console.log('err of response mood❌ ❌ ❌ ❌', err);
+            setLoading(false);
+          });
+      }
     }
   };
 

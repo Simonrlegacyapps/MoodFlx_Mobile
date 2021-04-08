@@ -817,15 +817,14 @@ const App = (props) => {
     <View style={{flex: 1}}>
       <StatusBar barStyle="dark-content" />
       <Swiper
-        focusable={true}
+        // focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
         dotStyle={{height: 0, width: 0}}
         activeDotStyle={{height: 0, width: 0}}
         style={{backgroundColor: 'white'}}
         showsButtons={true}
         onIndexChanged={(index) => setSwiperIndex(index)}
-        loop={false}
-        pagingEnabled={true}>
+        loop={false}>
         <View>
           {/* {!Loading &&
           !UserData.UserMoodCount &&

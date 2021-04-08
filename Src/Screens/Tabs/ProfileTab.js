@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   FlatList,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -17,6 +19,10 @@ import FaqIcon from '../../../assets/profileicons/FaqIcon';
 import TermsIcon from '../../../assets/profileicons/TermsIcon';
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
+import {useDispatch, useSelector} from 'react-redux';
+import AddAnswer from '../../Components/AddAnswer/AddAnswer';
+import DeviceInfo from 'react-native-device-info';
+import {UserDetail} from '../../redux/actions/actions';
 
 const listData = [
   {name: 'Name', value: 'Annonymous'},
@@ -31,65 +37,145 @@ const bottomList = [
   {name: 'Privacy Policy', icon: <PrivacyIcon />},
 ];
 
-const ProfileTab = () => {
+const ProfileTab = ({navigation}) => {
   const [openActionSheet, setOpenActionSheet] = useState(false);
-  const [userData, setUserData] = useState(null);
+  // const [value, onChangeText] = React.useState('');
+  const UserData = useSelector((state) => state.First);
 
-  const renderList = ({item}) => {
-    return (
-      <View style={styles.flatlistViewStyle}>
-        <View>
-          <Text style={styles.nameTextStyle}>{item.name}</Text>
-          <Text style={styles.anonymousTextStyle}>{item.value}</Text>
-        </View>
-        <TouchableOpacity>
-          <AddButton />
-        </TouchableOpacity>
-      </View>
-    );
+  const [name, setname] = useState(
+    UserData?.UserDetails?.full_name ? UserData?.UserDetails?.full_name : '',
+  );
+  const [gender, setgender] = useState('');
+  const [Birthday, setBirthday] = useState('');
+  const [Pronoun, setPronoun] = useState('');
+  const [date, setdate] = useState('');
+  const [edit, setedit] = useState(false);
+  // const [userData, setUserData] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const addAnswer = (item, index) => {
+    setedit(!edit);
   };
 
+  // const renderList = ({item, index}) => {
+  //   return (
+  //     <View style={styles.flatlistViewStyle}>
+  //       <View>
+  //         <Text style={styles.nameTextStyle}>{item.name}</Text>
+  //         {!edit ? (
+  //           <Text style={styles.anonymousTextStyle}>{item.value}</Text>
+  //         ) : (
+  //           <TextInput
+  //             keyboardType={'email-address'}
+  //             returnKeyType={'done'}
+  //             autoCorrect={false}
+  //             autoCapitalize={false}
+  //             autoCompleteType={false}
+  //             placeholder={item.value}
+  //             placeholderTextColor={'black'}
+  //             style={[
+  //               {
+  //                 // height: dynamicSize(50),
+  //                 // width: dynamicSize(250),
+  //                 backgroundColor: 'white',
+  //                 // borderRadius: 10,
+  //                 borderBottomWidth: 1,
+  //                 // paddingLeft: 15,
+  //               },
+  //               styles.anonymousTextStyle,
+  //             ]}
+  //             onChangeText={(text) => {
+  //               onChangeText(text);
+  //             }}
+  //             value={value}
+  //           />
+  //         )}
+  //       </View>
+  //       <TouchableOpacity
+  //         onPress={() => {
+  //           UserData.UserEmail
+  //             ? addAnswer(item, index)
+  //             : addAnswer(item, index); //navigation.navigate('LinkCompanyStackNavigation');
+  //         }}>
+  //         <AddButton />
+  //       </TouchableOpacity>
+  //     </View>
+  //   );
+  // };
+
+  const getProfileUserData = () => {
+    console.log(`called called called called called called`);
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log('UserDetail', result.userData);
+        dispatch(UserDetail(result.userData));
+      })
+      .catch((error) => console.log('error', error));
+  };
+
+  useEffect(() => {
+    getProfileUserData();
+  }, []);
+
   const imagePostFunction = (imageData) => {
+    const deviceId = DeviceInfo.getUniqueId();
     const imageResponse = {
       ...imageData,
     };
     console.log(`imageResponse`, imageResponse);
-    // let formData = new FormData();
-    // formData.append('user_id', userData.id);
-    // formData.append('catch_id', catch_id);
-    // formData.append('comment', 'Image');
-    // formData.append('image', {
-    //   name:
-    //     Platform.OS === 'android'
-    //       ? imageResponse.uri
-    //       : imageResponse.uri.replace('file://', ''),
-    //   type: imageResponse.type,
-    //   uri:
-    //     Platform.OS === 'android'
-    //       ? imageResponse.uri
-    //       : imageResponse.uri.replace('file://', ''),
-    // });
-    // console.warn('this data', JSON.stringify(formData, undefined, 2));
-    // fetch("https://api.reelcash.com/api/addCommentCatch", {
-    //   method: "POST",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "multipart/form-data",
-    //   },
-    //   body: formData,
-    // })
-    //   .then(processResponse)
-    //   .then(async (res) => {
-    //     const { statusCode, data } = res;
-    //     console.log(statusCode);
-    //     setCommentText('');
-    //     apiCallingFunction();
-    //     // setCommentText('');
-    //     // console.log("add live well success", JSON.stringify(data, undefined, 2));
-    //   })
-    //   .catch((error) => {
-    //     console.log("error come", error);
-    //   });
+    let formData = new FormData();
+    formData.append('user_id', UserData.UserId);
+    formData.append('email', UserData.UserEmail);
+    formData.append('device_id', deviceId);
+    formData.append('image', {
+      name:
+        Platform.OS === 'android'
+          ? imageResponse.uri
+          : imageResponse.uri.replace('file://', ''),
+      type: imageResponse.type,
+      uri:
+        Platform.OS === 'android'
+          ? imageResponse.uri
+          : imageResponse.uri.replace('file://', ''),
+    });
+    console.warn('this data', JSON.stringify(formData));
+    fetch('https://admin.moodflo.com/api/updateStaffProfileImage', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then(async (res) => {
+        console.log(`res`, res);
+        getProfileUserData();
+        // setCommentText('');
+        // console.log("add live well success", JSON.stringify(data, undefined, 2));
+      })
+      .catch((error) => {
+        console.log('error come', error);
+      });
   };
 
   const renderBottomList = ({item}) => {
@@ -129,7 +215,7 @@ const ProfileTab = () => {
       };
       imagePostFunction(source);
       setOpenActionSheet(false);
-      // console.log(image);
+      // console.log('source', source);
     });
   };
 
@@ -153,15 +239,66 @@ const ProfileTab = () => {
     });
   };
 
+  const ProfileApiCallHere = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Accept', 'application/json');
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+      full_name: UserData?.UserDetails?.full_name
+        ? UserData?.UserDetails?.full_name
+        : name,
+      pronouns: Pronoun,
+      gender: gender == 'Male' ? 1 : gender == 'Female' ? 2 : 3,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    console.log(`raw`, raw);
+
+    fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        console.log('profile updated', result), getProfileUserData();
+      })
+      .catch((error) => console.log('error', error));
+  };
+
+  const genderData = [{label: 'Male'}, {label: 'Female'}, {label: 'trans'}];
+  const PronounData = [{label: 'He/him'}, {label: 'She/her'}, {label: 'trans'}];
+
   return (
     <ScrollView style={{flex: 1, backgroundColor: Constants.Colors.WhiteColor}}>
       <View style={styles.container}>
         <View style={styles.profileImageStyle}>
           <View style={styles.imageViewStyle}>
-            <ProfilePlaceholder
-              width={dynamicSize(160)}
-              height={dynamicSize(160)}
-            />
+            {UserData?.UserDetails?.profile_image ? (
+              <Image
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  resizeMode: 'stretch',
+                  borderRadius: dynamicSize(160),
+                }}
+                source={{
+                  uri: `https://admin.moodflo.com/${UserData?.UserDetails?.profile_image}`,
+                }}
+              />
+            ) : (
+              <ProfilePlaceholder
+                width={dynamicSize(160)}
+                height={dynamicSize(160)}
+              />
+            )}
             <View style={styles.pickupIconStyle}>
               <TouchableOpacity onPress={() => setOpenActionSheet(true)}>
                 <PickImageIcon />
@@ -183,7 +320,57 @@ const ProfileTab = () => {
           </View>
         </View>
         <View style={styles.flatlistContainer}>
-          <FlatList data={listData} renderItem={renderList} />
+          {/* <FlatList data={listData} renderItem={renderList} /> */}
+
+          <AddAnswer
+            checkedit={UserData?.UserDetails?.full_name ? true : false}
+            ProfileApiCallHere={ProfileApiCallHere}
+            label={'Name'}
+            navigation={navigation}
+            value={
+              UserData?.UserDetails?.full_name
+                ? UserData?.UserDetails?.full_name
+                : name
+            }
+            onChangeText={setname}
+          />
+          <AddAnswer
+            checkedit={UserData?.UserDetails?.gender ? true : false}
+            ProfileApiCallHere={ProfileApiCallHere}
+            data={genderData}
+            label={'Gender'}
+            navigation={navigation}
+            value={
+              UserData?.UserDetails?.gender
+                ? UserData?.UserDetails?.gender == 2
+                  ? 'Female'
+                  : UserData?.UserDetails?.gender == 1
+                  ? 'Male'
+                  : 'Trans'
+                : gender
+            }
+            onChangeText={setgender}
+            popUp
+          />
+          {/* <AddAnswer
+            label={'Birthday'}
+            value={Birthday}
+            navigation={navigation}
+            onChangeText={setBirthday}
+            date={setdate}
+            datePicker
+            popUp
+          /> */}
+          <AddAnswer
+            ProfileApiCallHere={ProfileApiCallHere}
+            navigation={navigation}
+            data={PronounData}
+            label={'Pronoun'}
+            value={Pronoun}
+            gender={gender}
+            onChangeText={setPronoun}
+            popUp
+          />
         </View>
         <View style={{flex: 1}}>
           <View style={styles.headerContainerStyle}>

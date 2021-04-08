@@ -21,12 +21,6 @@ const ActionSheet = ({
   selectedValue,
 }: props) => {
   const [color, setcolor] = useState('black');
-  console.log(
-    `modalView, dismissModalHandler, selectedValue`,
-    modalVisible,
-    dismissModalHandler,
-    selectedValue,
-  );
   return (
     <Modal
       style={styles.modalView}

@@ -12,7 +12,7 @@ import Constants from '../../Constants';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useDispatch} from 'react-redux';
-import {OTP_Verify, UserEmail} from '../../redux/actions/actions';
+import {GetUserId, OTP_Verify, UserEmail} from '../../redux/actions/actions';
 import {useRoute} from '@react-navigation/native';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -53,6 +53,7 @@ const VerifyEmail = ({navigation}) => {
                   'UserId',
                   JSON.stringify(resp.data.user_id),
                 );
+                dispatch(GetUserId(resp.data.user_id));
                 dispatch(UserEmail(mail));
               } else {
                 console.log(`Api Failed`, params);

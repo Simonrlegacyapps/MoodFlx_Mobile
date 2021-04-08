@@ -1,5 +1,12 @@
-import React, {useEffect} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import HappyIcon from '../../../assets/emotionsicons/HappyIcon';
 import Constants from '../../Constants';
@@ -8,6 +15,7 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
+import Svg, {Path, SvgUri} from 'react-native-svg';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
@@ -15,57 +23,61 @@ import {useSelector} from 'react-redux';
 
 const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
-
+  const [questions, setquestions] = useState(null);
+  const [Loading, setLoading] = useState(false);
   const getQuestions = () => {
-    var axios = require('axios');
     const deviceId = DeviceInfo.getUniqueId();
     var data = JSON.stringify({
       device_id: deviceId,
       email: UserData.UserEmail,
     });
     console.log(`data`, data);
-    var config = {
-      method: 'get',
-      url: 'https://admin.moodflo.com/api/getQuestions',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: data,
-    };
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
 
-    axios(config)
-      .then(function (response) {
-        console.log(JSON.stringify('question here', response.data));
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: data,
+      redirect: 'follow',
+    };
+    setLoading(true);
+    fetch('https://admin.moodflo.com/api/getQuestions', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        // console.log('response of questions', result.questions),
+        await setquestions(result.questions);
+        setLoading(false);
       })
-      .catch(function (error) {
-        console.log('question err', error);
-      });
+      .catch((error) => console.log('error', error));
   };
 
   useEffect(() => {
     getQuestions();
   }, []);
-  const Questions = [
-    {
-      question: 'What do you think of the CEO’s dress sense?',
-      showAns: true,
-    },
-    {
-      question: 'How did you feel about the new wage deal announcement today?',
-    },
-    {
-      question:
-        'How is the new work from home policy announced yesterday making you feel?',
-    },
-    {
-      question:
-        'How are the construction works next to the office making you feel?',
-    },
-    {
-      question:
-        'How would you feel if we moved the weekly workshop to the afternoon?',
-    },
-  ];
+  // const Questions = [
+  //   {
+  //     question: 'What do you think of the CEO’s dress sense?',
+  //     showAns: true,
+  //   },
+  //   {
+  //     question: 'How did you feel about the new wage deal announcement today?',
+  //   },
+  //   {
+  //     question:
+  //       'How is the new work from home policy announced yesterday making you feel?',
+  //   },
+  //   {
+  //     question:
+  //       'How are the construction works next to the office making you feel?',
+  //   },
+  //   {
+  //     question:
+  //       'How would you feel if we moved the weekly workshop to the afternoon?',
+  //   },
+  // ];
+
+  // console.log(`questions`, questions);
 
   return (
     <View
@@ -98,14 +110,16 @@ const MicScreen = ({navigation}) => {
         <View style={{marginHorizontal: 15}}>
           <Text style={styles.normalText}>Team Pulse</Text>
           <Text style={styles.BigText}>Have your say as a collective</Text>
-          {Questions &&
-            Questions.length > 0 &&
-            Questions.map((item, index) => {
+          {questions &&
+            questions.length > 0 &&
+            questions.map((item, index) => {
               return (
                 <TouchableOpacity
-                  disabled={item.showAns ? true : false}
+                  disabled={item.name ? true : false}
                   onPress={() =>
-                    navigation.replace('MoodEmotionDetector', {question: true})
+                    navigation.replace('MoodEmotionDetector', {
+                      question: item.id,
+                    })
                   }>
                   <View style={{flexDirection: 'row'}}>
                     <Text style={[styles.questionText, {marginHorizontal: 6}]}>
@@ -115,7 +129,7 @@ const MicScreen = ({navigation}) => {
                       {item.question}
                     </Text>
                   </View>
-                  {item.showAns && (
+                  {item.name && (
                     <View
                       style={{
                         flexDirection: 'row',
@@ -125,9 +139,17 @@ const MicScreen = ({navigation}) => {
                       <View style={styles.ans}>
                         <Text
                           style={{flexDirection: 'row', marginHorizontal: 10}}>
-                          Flat
+                          {item.name}
                         </Text>
-                        <HappyIcon />
+                        {/* <HappyIcon /> */}
+                        <SvgUri
+                          width={20}
+                          height={20}
+                          // viewBox="0 0 24 24"
+                          fill="none"
+                          uri={`https://super.moodflo.com/${item.icon}`}
+                          // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+                        />
                       </View>
                       <Text
                         style={{
@@ -139,7 +161,7 @@ const MicScreen = ({navigation}) => {
                       </Text>
                     </View>
                   )}
-                  {Questions.length - 1 != index && (
+                  {questions.length - 1 != index && (
                     <View style={styles.line} />
                   )}
                 </TouchableOpacity>
@@ -147,6 +169,21 @@ const MicScreen = ({navigation}) => {
             })}
         </View>
       </ScrollView>
+
+      {Loading && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'black',
+            opacity: 0.2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
     </View>
   );
 };

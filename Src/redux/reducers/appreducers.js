@@ -16,6 +16,7 @@ import {
   GET_USER_STEPS,
   GET_WEATHER_HOUR,
   GET_WEATHER_PERM,
+  IS_ANONYMOUS,
   OTP_VERIFIED,
   SET_CALORIES,
   SET_DISTANCE,
@@ -24,6 +25,7 @@ import {
   SET_MOVING,
   SET_STEPS,
   SET_WORKOUT_TOTAL,
+  USER_DETAIL,
   USER_ID,
 } from '../constants/action-types';
 
@@ -53,6 +55,8 @@ const intializedState = {
   MainWorkout: null,
   MainDOB: null,
   UserId: null,
+  UserDetails: null,
+  Anonymous: true,
 };
 
 export const First = (state = intializedState, action) => {
@@ -158,6 +162,14 @@ export const First = (state = intializedState, action) => {
     case USER_ID:
       return Object.assign({}, state, {
         UserId: action.payload,
+      });
+    case USER_DETAIL:
+      return Object.assign({}, state, {
+        UserDetails: action.payload,
+      });
+    case IS_ANONYMOUS:
+      return Object.assign({}, state, {
+        Anonymous: action.payload,
       });
     default:
       return state;

@@ -24,3 +24,5 @@ export const SET_MOVING = 'SET_MOVING';
 export const SET_WORKOUT_TOTAL = 'SET_WORKOUT_TOTAL';
 export const SET_DOB = 'SET_DOB';
 export const USER_ID = 'USER_ID';
+export const USER_DETAIL = 'USER_DETAIL';
+export const IS_ANONYMOUS = 'IS_ANONYMOUS';
