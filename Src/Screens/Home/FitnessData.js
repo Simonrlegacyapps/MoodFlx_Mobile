@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   StatusBar,
 } from 'react-native';
 import ProgressBar from 'react-native-animated-progress';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import Constants from '../../Constants';
 import {
   RubikExtraBold,
@@ -21,10 +21,10 @@ import {
 } from '../../Constants/fonts/Fonts';
 import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import AsyncStorage from '@react-native-community/async-storage';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import PopUp from '../../Components/PopUp/PopUp';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
 const FitnessData = ({
   Perm,
@@ -41,6 +41,7 @@ const FitnessData = ({
   fives,
   MoodCount,
   Loading,
+  swiperIndex
 }) => {
   // useEffect(() => {
   //   checkThis();
@@ -93,11 +94,11 @@ const FitnessData = ({
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{height: 20, width: 20}}
+                style={{ height: 20, width: 20 }}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
               <Text style={styles.lightText}>Sync your</Text>
               <Text style={styles.normalText}>Fitness data</Text>
             </View>
@@ -108,20 +109,20 @@ const FitnessData = ({
         </View>
         <View style={styles.ProgressBarView}>
           <ProgressBar
-            progress={
+            progress={swiperIndex == 0 ?
               ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
               100
-            }
+              : 0}
             height={10}
             backgroundColor="#CB9866"
           />
-          <View style={{flexDirection: 'row'}}>
-            <Text style={[styles.SmallThinText, {flex: 1}]}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={[styles.SmallThinText, { flex: 1 }]}>
               Try add 3 moods per day
             </Text>
             <Text
               style={
-                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
+                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
               }>
               {UserMoodCount < 3 ? UserMoodCount : 3}/3
             </Text>
@@ -133,13 +134,13 @@ const FitnessData = ({
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+          <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
             Activity
           </Text>
           <Text style={styles.swiperText}>
-            You are the <Text style={{color: '#5947D0'}}>happiest</Text> when
-            you walk over <Text style={{color: '#5947D0'}}>5000</Text> steps
-            before <Text style={{color: '#5947D0'}}>2PM</Text>
+            You are the <Text style={{ color: '#5947D0' }}>happiest</Text> when
+            you walk over <Text style={{ color: '#5947D0' }}>5000</Text> steps
+            before <Text style={{ color: '#5947D0' }}>2PM</Text>
           </Text>
         </View>
         {/* {UserData.TodayAllSteps !== null &&
@@ -149,7 +150,7 @@ const FitnessData = ({
           UserData.UserCalories !== null &&
           UserData.UserDistance !== null &&
           UserData.UserMoveTime !== null && ( */}
-        <View style={[styles.forCircle, {marginTop: 30}]}>
+        <View style={[styles.forCircle, { marginTop: 30 }]}>
           {/* {setTimeout(() => {
                 
               }, timeout)} */}
@@ -177,16 +178,16 @@ const FitnessData = ({
               source={Constants.Images.RunningBackground}>
               <Image
                 source={Constants.Images.RunningMan}
-                style={{height: 30, width: 30, marginTop: 25}}
+                style={{ height: 30, width: 30, marginTop: 25 }}
               />
-              <Text style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
+              <Text style={[styles.swiperText, { fontSize: 24, marginTop: 10 }]}>
                 {/* {(TodayStep * 100).toFixed(0)} */}
                 {UserSteps.toFixed(0)}
               </Text>
               <Text
                 style={[
                   styles.SmallThinText,
-                  {paddingVertical: 0, color: '#3B456D'},
+                  { paddingVertical: 0, color: '#3B456D' },
                 ]}>
                 steps
               </Text>
@@ -221,10 +222,10 @@ const FitnessData = ({
             <View style={styles.absolute}>
               <Image
                 source={Constants.Images.Calories}
-                style={{height: 25, width: 25, marginTop: -25}}
+                style={{ height: 25, width: 25, marginTop: -25 }}
               />
             </View>
-            <View style={{marginTop: 10}}>
+            <View style={{ marginTop: 10 }}>
               <Text style={[styles.SmallThinBlackText]}>
                 {UserCalories.toFixed(0)} kcal
               </Text>
@@ -248,10 +249,10 @@ const FitnessData = ({
             <View style={styles.absolute}>
               <Image
                 source={Constants.Images.Distance}
-                style={{height: 25, width: 25, marginTop: -25}}
+                style={{ height: 25, width: 25, marginTop: -25 }}
               />
             </View>
-            <View style={{marginTop: 10}}>
+            <View style={{ marginTop: 10 }}>
               <Text style={[styles.SmallThinBlackText]}>
                 {((UserDistance / 5000) * 5).toFixed(1)} km
               </Text>
@@ -275,10 +276,10 @@ const FitnessData = ({
             <View style={styles.absolute}>
               <Image
                 source={Constants.Images.Time}
-                style={{height: 25, width: 25, marginTop: -25}}
+                style={{ height: 25, width: 25, marginTop: -25 }}
               />
             </View>
-            <View style={{marginTop: 10}}>
+            <View style={{ marginTop: 10 }}>
               <Text style={[styles.SmallThinBlackText]}>
                 {UserMoveTime.toFixed(0)} min
               </Text>
@@ -315,7 +316,7 @@ const FitnessData = ({
                 fontFamily: RubikExtraBold,
                 fontSize: SIZE / 3.5,
                 color: '#E0DDED',
-                transform: [{rotate: '-15deg'}],
+                transform: [{ rotate: '-15deg' }],
               }}>
               Demo
             </Text>
@@ -439,7 +440,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
+  forCircle: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   BigCircleBackgroundImage: {
     height: 140,
     width: 130,
@@ -451,7 +452,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,
