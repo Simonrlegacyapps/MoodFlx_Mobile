@@ -7,12 +7,31 @@ import {RubikLight, RubikMedium} from '../../Constants/fonts/Fonts';
 import {useDispatch, useSelector} from 'react-redux';
 import {IsAnonymous} from '../../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
+import {PHOTO_URL} from '../../Constants/constants';
+import AddNameModal from '../Modals/AddNameModal/AddNameModal';
 
 const AnonymousHeader = ({backGround}) => {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   const [Anonymous, setAnonymous] = useState(false);
-  // console.log(`UserData.Anonymous`, UserData.Anonymous);
+  const [ShowAddName, setShowAddName] = useState(false);
+  const [name, setname] = useState('');
+  console.log(`UserData.Anonymous`, UserData.Anonymous);
+
+  const VerifyDone = async () => {
+    await AsyncStorage.setItem('Anonymous', JSON.stringify(false));
+    dispatch(IsAnonymous(false));
+    setShowAddName(false);
+  };
+
+  const cancelled = async () => {
+    await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
+    setShowAddName(false);
+    dispatch(IsAnonymous(true));
+  };
+
+  console.log(`name`, UserData.Anonymous);
+
   return backGround ? (
     <View
       style={{
@@ -43,8 +62,18 @@ const AnonymousHeader = ({backGround}) => {
               borderRadius: 25,
               justifyContent: 'center',
               alignItems: 'center',
+              overflow: 'hidden',
             }}>
-            <AnonymousIcon />
+            {UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
+              <Image
+                style={{height: '100%', width: '100%', resizeMode: 'cover'}}
+                source={{
+                  uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
+                }}
+              />
+            ) : (
+              <AnonymousIcon />
+            )}
           </View>
         </View>
         <View style={{flex: 1}}>
@@ -68,7 +97,9 @@ const AnonymousHeader = ({backGround}) => {
               color: 'grey',
               fontFamily: RubikLight,
             }}>
-            Your data is private
+            {UserData.Anonymous
+              ? 'Your data is private'
+              : 'Saving this mood as you'}
           </Text>
         </View>
         <View style={{marginHorizontal: 16}}>
@@ -79,8 +110,12 @@ const AnonymousHeader = ({backGround}) => {
             size="large"
             onToggle={async (isOn) => {
               console.log('changed to : ', isOn), setAnonymous(isOn);
-              dispatch(IsAnonymous(isOn));
-              await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
+              if (!isOn && !UserData?.UserDetails?.full_name) {
+                setShowAddName(true);
+              } else {
+                dispatch(IsAnonymous(true));
+                await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
+              }
             }}
           />
         </View>
@@ -109,8 +144,18 @@ const AnonymousHeader = ({backGround}) => {
             borderRadius: 25,
             justifyContent: 'center',
             alignItems: 'center',
+            overflow: 'hidden',
           }}>
-          <AnonymousIcon />
+          {UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
+            <Image
+              style={{height: '100%', width: '100%', resizeMode: 'cover'}}
+              source={{
+                uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
+              }}
+            />
+          ) : (
+            <AnonymousIcon />
+          )}
         </View>
       </View>
       <View style={{flex: 1}}>
@@ -122,7 +167,9 @@ const AnonymousHeader = ({backGround}) => {
             : 'Anonymous'}
         </Text>
         <Text style={{fontSize: 13, fontWeight: '400', color: 'grey'}}>
-          Your data is private
+          {UserData.Anonymous
+            ? 'Your data is private'
+            : 'Saving this mood as you'}
         </Text>
       </View>
       <View style={{marginHorizontal: 16}}>
@@ -133,11 +180,23 @@ const AnonymousHeader = ({backGround}) => {
           size="large"
           onToggle={async (isOn) => {
             console.log('changed to : ', isOn), setAnonymous(isOn);
-            dispatch(IsAnonymous(isOn));
-            await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
+            if (!isOn && !UserData?.UserDetails?.full_name) {
+              setShowAddName(true);
+            } else {
+              dispatch(IsAnonymous(true));
+              await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
+            }
           }}
         />
       </View>
+      <AddNameModal
+        dataType={'weather'}
+        modalVisible={ShowAddName}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={() => VerifyDone()}
+        value={name}
+        onChangeText={setname}
+      />
     </View>
   );
 };

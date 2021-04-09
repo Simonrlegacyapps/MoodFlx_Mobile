@@ -346,7 +346,9 @@ const ProfileTab = ({navigation}) => {
                   ? 'Female'
                   : UserData?.UserDetails?.gender == 1
                   ? 'Male'
-                  : 'Trans'
+                  : UserData?.UserDetails?.gender == 3
+                  ? 'Trans'
+                  : gender
                 : gender
             }
             onChangeText={setgender}
