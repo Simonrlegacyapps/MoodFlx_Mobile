@@ -50,6 +50,8 @@ const SaveConfirmModal = ({
   //     dismissModalHandler,
   //     selectedValue,
   //   );
+
+  // console.log(`value`, value);
   return (
     <Modal
       style={styles.modalView}
@@ -130,8 +132,9 @@ const SaveConfirmModal = ({
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
             <TouchableOpacity
-              disabled={!value}
-              onPress={verifyDone}
+              onPress={() => {
+                verifyDone('Yes');
+              }}
               style={{alignItems: 'center'}}>
               <View
                 style={{
@@ -151,8 +154,9 @@ const SaveConfirmModal = ({
               </View>
             </TouchableOpacity>
             <TouchableOpacity
-              disabled={!value}
-              onPress={verifyDone}
+              onPress={() => {
+                verifyDone('No');
+              }}
               style={{alignItems: 'center'}}>
               <View
                 style={{

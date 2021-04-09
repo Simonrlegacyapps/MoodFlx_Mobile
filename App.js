@@ -120,7 +120,13 @@ const App: () => React$Node = () => {
     // }
   }, []);
 
-  const checkStorage = async () => {};
+  const checkStorage = async () => {
+    let anonymous = await AsyncStorage.getItem('Anonymous');
+    let a = await JSON.parse(anonymous);
+    if (a == null) {
+      await AsyncStorage.setItem('Anonymous', 'true');
+    }
+  };
 
   const getProfileUserData = async () => {
     // ---> checking all the data in local storage

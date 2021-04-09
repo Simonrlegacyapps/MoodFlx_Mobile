@@ -1128,6 +1128,17 @@ const MoodEmotionDetector = ({navigation}) => {
   // Middle =>  x:2, y:383 ||  x: 208 y: 383 || x: 411 y: 383
   // Bottom =>  x:0, y:774 ||  x: 208 y: 778 || x: 411 y: 776
 
+  const VerifyDone = (value) => {
+    console.log(`value-->`, value);
+
+    if (value === 'Yes') {
+      setSaveConfirm(false);
+      FindId();
+    } else {
+      setSaveConfirm(false);
+    }
+  };
+
   return (
     <View style={{flex: 1}}>
       <StatusBar barStyle="dark-content" />
@@ -1430,7 +1441,7 @@ const MoodEmotionDetector = ({navigation}) => {
         onChangeText={setSaveName}
         modalVisible={SaveConfirm}
         dismissModalHandler={() => cancelled()}
-        verifyDone={() => VerifyDone()}
+        verifyDone={(value) => VerifyDone(value)}
       />
 
       {Loading && (
