@@ -23,12 +23,12 @@ import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import StarProgress from '../../../Components/StarProgress/StarProgress';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
-const IndicatorHelper = ({color, text}) => {
+const IndicatorHelper = ({ color, text }) => {
   return (
     <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
+      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
       <Text style={styles.indicatorText}>{text}</Text>
     </View>
   );
@@ -41,6 +41,7 @@ const SleepData = ({
   data,
   dataLow,
   MoodCount,
+  swiperIndex
 }) => {
   return (
     <View>
@@ -59,11 +60,11 @@ const SleepData = ({
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{height: 20, width: 20}}
+                style={{ height: 20, width: 20 }}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
               <Text style={styles.lightText}>Sync your</Text>
               <Text style={styles.normalText}>Sleep data</Text>
             </View>
@@ -74,20 +75,20 @@ const SleepData = ({
         </View>
         <View style={styles.ProgressBarView}>
           <ProgressBar
-            progress={
+            progress={swiperIndex == 3 ?
               ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
               100
-            }
+              : 0}
             height={10}
             backgroundColor="#CB9866"
           />
-          <View style={{flexDirection: 'row'}}>
-            <Text style={[styles.SmallThinText, {flex: 1}]}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={[styles.SmallThinText, { flex: 1 }]}>
               Try add 3 moods per day
             </Text>
             <Text
               style={
-                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
+                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
               }>
               {JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3}/3
             </Text>
@@ -99,23 +100,23 @@ const SleepData = ({
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+          <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
             SCREEN TIME
           </Text>
           <Text style={styles.swiperText}>
             You're more likely to be{' '}
-            <Text style={{color: '#5947D0'}}>excited</Text> and{' '}
-            <Text style={{color: '#5947D0'}}>happy</Text> when you sleep more
-            than <Text style={{color: '#5947D0'}}>7.5hrs</Text>
+            <Text style={{ color: '#5947D0' }}>excited</Text> and{' '}
+            <Text style={{ color: '#5947D0' }}>happy</Text> when you sleep more
+            than <Text style={{ color: '#5947D0' }}>7.5hrs</Text>
           </Text>
-          <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+          <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
             Almost there! Try sleep a bit longer
           </Text>
         </View>
 
         {/* <ProgressBarCustom /> */}
         {/* <HomeHeader /> */}
-        <View style={{marginBottom: 50}}>
+        <View style={{ marginBottom: 50 }}>
           {/* <BarGraph /> */}
           <StarProgress />
           <View
@@ -158,7 +159,7 @@ const SleepData = ({
                 fontFamily: RubikExtraBold,
                 fontSize: 120,
                 color: '#E0DDED',
-                transform: [{rotate: '-15deg'}],
+                transform: [{ rotate: '-15deg' }],
               }}>
               Demo
             </Text>
@@ -287,7 +288,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,
