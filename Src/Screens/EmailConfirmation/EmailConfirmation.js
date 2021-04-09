@@ -47,6 +47,7 @@ const EmailConfirmation = ({navigation}) => {
         } else {
           setCompanyFail(true);
           setLoading(false);
+          setShowWarning(false);
         }
       })
       .catch((err) => {
@@ -65,6 +66,12 @@ const EmailConfirmation = ({navigation}) => {
       setemail(true);
       console.log('Email is Correct');
     }
+  };
+
+  const submit = () => {
+    email ? onLink() : setShowWarning(true);
+
+    console.log(`submitted`, email);
   };
 
   return (
@@ -97,21 +104,22 @@ const EmailConfirmation = ({navigation}) => {
             textAlign: 'center',
             color: 'red',
           }}>
-          Sorry, your company hasn't joined Moodflo yet
+          Sorry, your company hasn't joined MoodFlo yet
         </Text>
       )}
-      <View
-        style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(100)}}>
-        <Text style={{fontWeight: '500', fontSize: 24}}>Work email</Text>
+      <View style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(80)}}>
+        <Text style={{fontWeight: '500', fontSize: dynamicSize(22)}}>
+          Work email
+        </Text>
         <Text
           numberOfLines={2}
           style={{
             fontWeight: '300',
             letterSpacing: 1,
-            fontSize: 16,
-            marginTop: 12,
-            marginLeft: 62,
-            marginRight: 62,
+            fontSize: dynamicSize(14),
+            marginTop: dynamicSize(12),
+            // marginLeft: 62,
+            // marginRight: 62,
             textAlign: 'center',
             width: '60%',
           }}>
@@ -125,7 +133,7 @@ const EmailConfirmation = ({navigation}) => {
             paddingHorizontal: 8,
             borderRadius: 10,
             paddingLeft: 15,
-            marginTop: 40,
+            marginTop: dynamicSize(35),
           }}>
           <Image
             style={{height: 20, width: 20}}
@@ -139,6 +147,7 @@ const EmailConfirmation = ({navigation}) => {
             autoCompleteType={false}
             placeholder={'example@work-mail.com'}
             placeholderTextColor={'#8A8BAB'}
+            onSubmitEditing={() => submit()}
             style={{
               height: dynamicSize(50),
               width: dynamicSize(250),
@@ -170,10 +179,11 @@ const EmailConfirmation = ({navigation}) => {
               width: '60%',
               color: 'red',
             }}>
-            Please enter valid email
+            That doesn’t look like an email address.
           </Text>
         )}
         <TouchableOpacity
+          style={{marginTop: dynamicSize(46)}}
           onPress={
             email
               ? () => onLink()
@@ -183,9 +193,8 @@ const EmailConfirmation = ({navigation}) => {
           }>
           <View
             style={{
-              marginTop: 48,
               height: 56,
-              width: 250,
+              width: dynamicSize(240),
               backgroundColor: '#7265E3',
               borderRadius: 16,
               alignItems: 'center',

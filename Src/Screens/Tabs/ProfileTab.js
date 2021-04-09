@@ -253,7 +253,10 @@ const ProfileTab = ({navigation}) => {
         ? UserData?.UserDetails?.full_name
         : name,
       pronouns: Pronoun,
-      gender: gender == 'Male' ? 1 : gender == 'Female' ? 2 : 3,
+      date_of_birth: UserData?.UserDetails?.date_of_bitrh
+        ? UserData?.UserDetails?.date_of_bitrh
+        : Birthday,
+      gender: gender == 'Male' ? 1 : gender == 'Female' ? 2 : gender,
     });
 
     var requestOptions = {
@@ -364,11 +367,17 @@ const ProfileTab = ({navigation}) => {
             popUp
           /> */}
           <AddAnswer
+            checkedit={UserData?.UserDetails?.pronouns ? true : false}
             ProfileApiCallHere={ProfileApiCallHere}
             navigation={navigation}
             data={PronounData}
             label={'Pronoun'}
-            value={Pronoun}
+            // value={Pronoun}
+            value={
+              UserData?.UserDetails?.pronouns
+                ? UserData?.UserDetails?.pronouns
+                : Pronoun
+            }
             gender={gender}
             onChangeText={setPronoun}
             popUp

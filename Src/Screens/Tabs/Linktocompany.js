@@ -55,11 +55,11 @@ const Linktocompany = ({navigation}) => {
   //
 
   const UserData = useSelector((state) => state.First);
-  console.log(
-    `UserData in link company`,
-    UserData.UserEmail,
-    UserData.UserDivision,
-  );
+  // console.log(
+  //   `UserData in link company`,
+  //   UserData.UserEmail,
+  //   UserData.UserDivision,
+  // );
 
   useEffect(() => {
     fetch('https://admin.moodflo.com/api/getDivision')
@@ -132,7 +132,7 @@ const Linktocompany = ({navigation}) => {
     dispatch(IsAnonymous(true));
     dispatch(UserDetail(null));
   };
-
+  console.log(`UserData.NameCompany`, UserData.NameCompany);
   return (
     <View style={{flex: 1}}>
       {/* {console.log('REDUX DATA ==============>', getDivision[0].id)} */}
@@ -213,17 +213,20 @@ const Linktocompany = ({navigation}) => {
 
       <AnonymousHeader backGround />
       {!UserData.UserDivision && !UserData.UserEmail && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
-          <Text style={{fontWeight: '500', fontSize: 26}}>Link a company</Text>
+        <View
+          style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(95)}}>
+          <Text style={{fontWeight: '500', fontSize: dynamicSize(24)}}>
+            Link a company
+          </Text>
           <Text
             numberOfLines={4}
             style={{
               lineHeight: 28,
               fontWeight: '300',
-              fontSize: 16,
-              marginTop: 12,
-              marginLeft: 62,
-              marginRight: 62,
+              fontSize: dynamicSize(14),
+              marginTop: dynamicSize(12),
+              // marginLeft: 62,
+              // marginRight: 62,
               textAlign: 'center',
               width: 270,
             }}>
@@ -244,7 +247,7 @@ const Linktocompany = ({navigation}) => {
               <Text
                 style={{
                   fontWeight: '500',
-                  fontSize: 16,
+                  fontSize: dynamicSize(15),
                   color: '#FFFFFF',
                   fontFamily: RubikBlack,
                 }}>
@@ -262,7 +265,7 @@ const Linktocompany = ({navigation}) => {
                 fontWeight: '300',
                 letterSpacing: 0.2,
                 fontSize: 12,
-                marginTop: 12,
+                marginTop: dynamicSize(10),
                 marginLeft: 62,
                 marginRight: 62,
                 textAlign: 'center',
@@ -272,7 +275,7 @@ const Linktocompany = ({navigation}) => {
               Sever Error: Please try again
             </Text>
           )}
-          <Text style={{fontWeight: '500', fontSize: 26}}>
+          <Text style={{fontWeight: '500', fontSize: dynamicSize(24)}}>
             What division are you in?
           </Text>
           <Text
@@ -280,15 +283,17 @@ const Linktocompany = ({navigation}) => {
             style={{
               lineHeight: 28,
               fontWeight: '300',
-              fontSize: 16,
+              fontSize: dynamicSize(14),
               marginTop: 12,
-              marginLeft: 62,
-              marginRight: 62,
+              // marginLeft: 62,
+              // marginRight: 62,
               textAlign: 'center',
-              width: 270,
+              width: dynamicSize(230),
             }}>
-            This, and which region you are located, are the only things AIA will
-            know about you
+            {`This, and which region you are located, are the only things ${
+              UserData.NameCompany ? UserData.NameCompany : ''
+            } will
+            know about you`}
           </Text>
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
@@ -315,7 +320,7 @@ const Linktocompany = ({navigation}) => {
             </Text>
             <Image
               resizeMode={'contain'}
-              style={{marginHorizontal: 18, height: 15, width: 15}}
+              style={{marginHorizontal: dynamicSize(16), height: 15, width: 15}}
               source={Constants.Images.DropDown}
             />
 
@@ -352,9 +357,9 @@ const Linktocompany = ({navigation}) => {
               lineHeight: 28,
               fontWeight: '300',
               fontSize: 14,
-              marginTop: 12,
-              marginLeft: 62,
-              marginRight: 62,
+              marginTop: dynamicSize(10),
+              // marginLeft: 62,
+              // marginRight: 62,
               textAlign: 'center',
               width: 270,
             }}>
@@ -365,9 +370,9 @@ const Linktocompany = ({navigation}) => {
             onPress={() => onDone('Done')}>
             <View
               style={{
-                marginTop: 20,
+                marginTop: dynamicSize(18),
                 height: 56,
-                width: 250,
+                width: dynamicSize(235),
                 backgroundColor: '#7265E3',
                 borderRadius: 16,
                 alignItems: 'center',

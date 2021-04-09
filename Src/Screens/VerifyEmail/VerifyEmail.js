@@ -12,7 +12,12 @@ import Constants from '../../Constants';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useDispatch} from 'react-redux';
-import {GetUserId, OTP_Verify, UserEmail} from '../../redux/actions/actions';
+import {
+  CompanyName,
+  GetUserId,
+  OTP_Verify,
+  UserEmail,
+} from '../../redux/actions/actions';
 import {useRoute} from '@react-navigation/native';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -45,14 +50,18 @@ const VerifyEmail = ({navigation}) => {
                   ' ✅ ✅ ✅ ✅ Sucess for verify✅ ✅ ✅ ✅',
                   resp.data,
                   resp.data.user_id,
+                  resp.data.companyInfo.full_name,
                 );
                 dispatch(OTP_Verify(resp.data));
-                navigation.navigate('Linktocompany', {email: mail});
+                navigation.navigate('Linktocompany', {
+                  email: mail,
+                });
                 await AsyncStorage.setItem('Email', JSON.stringify(mail));
                 await AsyncStorage.setItem(
                   'UserId',
                   JSON.stringify(resp.data.user_id),
                 );
+                dispatch(CompanyName(resp.data.companyInfo.full_name));
                 dispatch(GetUserId(resp.data.user_id));
                 dispatch(UserEmail(mail));
               } else {
@@ -75,15 +84,17 @@ const VerifyEmail = ({navigation}) => {
   return (
     <View style={{flex: 1}}>
       <AnonymousHeader backGround />
-      <View style={{flex: 1, alignItems: 'center', marginTop: 100}}>
-        <Text style={{fontWeight: '500', fontSize: 24}}>Verify your email</Text>
+      <View style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(85)}}>
+        <Text style={{fontWeight: '500', fontSize: dynamicSize(22)}}>
+          Verify your email
+        </Text>
         <Text
           numberOfLines={2}
           style={{
             fontWeight: '300',
             letterSpacing: 0.6,
-            fontSize: 14,
-            marginTop: 12,
+            fontSize: dynamicSize(12),
+            marginTop: dynamicSize(10),
             marginLeft: 62,
             marginRight: 62,
             textAlign: 'center',
@@ -98,7 +109,7 @@ const VerifyEmail = ({navigation}) => {
             fontWeight: '400',
             letterSpacing: 0.6,
             fontSize: 14,
-            marginTop: 12,
+            marginTop: dynamicSize(10),
             marginLeft: 62,
             marginRight: 62,
             textAlign: 'center',
@@ -183,7 +194,7 @@ const VerifyEmail = ({navigation}) => {
           onPress={Code ? () => onLink() : () => console.log('no OTP entered')}>
           <View
             style={{
-              marginTop: 48,
+              marginTop: dynamicSize(42),
               height: 56,
               width: 250,
               backgroundColor: '#7265E3',
@@ -203,7 +214,7 @@ const VerifyEmail = ({navigation}) => {
               fontWeight: '400',
               letterSpacing: 0.6,
               fontSize: 12,
-              marginTop: 12,
+              marginTop: dynamicSize(12),
               marginLeft: 62,
               marginRight: 62,
               textAlign: 'center',
