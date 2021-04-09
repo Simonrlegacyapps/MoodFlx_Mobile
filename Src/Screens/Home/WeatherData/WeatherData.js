@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -23,20 +23,21 @@ import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import moment from 'moment';
 import axios from 'axios';
-import {useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Geocoder from 'react-native-geocoding';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import AsyncStorage from '@react-native-community/async-storage';
 import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
 import PopUp from '../../../Components/PopUp/PopUp';
 import DeviceInfo from 'react-native-device-info';
+import GetLocation from 'react-native-get-location';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
-const IndicatorHelper = ({color, text}) => {
+const IndicatorHelper = ({ color, text }) => {
   return (
     <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
+      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
       <Text style={styles.indicatorText}>{text}</Text>
     </View>
   );
@@ -70,20 +71,40 @@ const WeatherData = ({
   // console.log(`b`, Date.parse(b));
 
   const UserData = useSelector((state) => state.First);
+  const dispatch = useDispatch()
   const [openActionSheet, setOpenActionSheet] = useState(false);
 
   let Weather = UserData.DayTemperature;
 
   // console.log(`Weather`, UserData.DayTemperature);
 
-  const WeatherDayData = () => {
+  useEffect(() => {
+    if (swiperIndex == 1) {
+      getUserLocation()
+    }
+  }, [swiperIndex])
+
+  const getUserLocation = () => {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+      .then((location) => {
+        if (UserData.lat == null || UserData.lon == null) {
+          WeatherDayData(location.latitude, location.longitude)
+        }
+      })
+      .catch((error) => {
+        const { code, message } = error;
+        console.log('error', code, message);
+      });
+  }
+  const WeatherDayData = (loc_lat, loc_long) => {
     let value = 0;
     axios
       .get(
-        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${
-          UserData.lat
-        }&lon=${UserData.lon}&dt=${
-          Date.parse(a) / 1000
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${loc_lat
+        }&lon=${loc_long}&dt=${Date.parse(a) / 1000
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
@@ -101,12 +122,16 @@ const WeatherData = ({
               break;
             }
           }
+        } else {
+          CheckForWeather(loc_lat, loc_long)
         }
       })
       .catch(function (error) {
         console.log(`error for weather here`, error);
       });
   };
+
+
 
   const syncWeatherData = () => {
     let geocode = null;
@@ -176,18 +201,17 @@ const WeatherData = ({
   };
 
   const th = async () => {
-    await WeatherDayData();
-    console.log(`can you please check`);
+    WeatherDayData(UserData.lat, UserData.lon);
   };
 
   const VerifyDone = () => {
     setOpenActionSheet(false);
-    CheckForWeather();
+    CheckForWeather(UserData.lat, UserData.lon);
   };
 
   useEffect(() => {
     th();
-  }, []);
+  }, [swiperIndex]);
 
   useEffect(() => {
     // if (swiperIndex == 1) {
@@ -202,23 +226,23 @@ const WeatherData = ({
   }, [One, Two, Three, Four, Five]);
 
   const data = [
-    {x: 1, y: One ? One?.current?.temp : 0},
-    {x: 2, y: Two ? Two?.current?.temp : 0},
-    {x: 3, y: Three ? Three?.current?.temp : 0},
-    {x: 4, y: Four ? Four?.current?.temp : 0},
-    {x: 5, y: Five ? Five?.current?.temp : 0},
-    {x: 6, y: 2},
-    {x: 7, y: 2},
+    { x: 1, y: One ? One?.current?.temp : 0 },
+    { x: 2, y: Two ? Two?.current?.temp : 0 },
+    { x: 3, y: Three ? Three?.current?.temp : 0 },
+    { x: 4, y: Four ? Four?.current?.temp : 0 },
+    { x: 5, y: Five ? Five?.current?.temp : 0 },
+    { x: 6, y: 2 },
+    { x: 7, y: 2 },
   ];
 
   const dataLow = [
-    {x: 1, y: 10},
-    {x: 2, y: 20},
-    {x: 3, y: 29},
-    {x: 4, y: 18},
-    {x: 5, y: 22},
-    {x: 6, y: 2},
-    {x: 7, y: 23},
+    { x: 1, y: 10 },
+    { x: 2, y: 20 },
+    { x: 3, y: 29 },
+    { x: 4, y: 18 },
+    { x: 5, y: 22 },
+    { x: 6, y: 2 },
+    { x: 7, y: 23 },
   ];
 
   let heightProp = SIZE / 4.3;
@@ -263,11 +287,11 @@ const WeatherData = ({
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{height: 20, width: 20}}
+                style={{ height: 20, width: 20 }}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
               <Text style={styles.lightText}>Sync your</Text>
               <Text style={styles.normalText}>Weather data</Text>
             </View>
@@ -277,32 +301,21 @@ const WeatherData = ({
           </View>
         </View>
         <View style={styles.ProgressBarView}>
-          {swiperIndex == 1 ? (
-            <ProgressBar
-              progress={
-                ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
-                100
-              }
-              height={10}
-              backgroundColor="#CB9866"
-            />
-          ) : (
-            <View
-              style={{
-                height: 10,
-                width: '100%',
-                borderRadius: 10,
-                backgroundColor: '#ebebeb',
-              }}
-            />
-          )}
-          <View style={{flexDirection: 'row'}}>
-            <Text style={[styles.SmallThinText, {flex: 1}]}>
+          <ProgressBar
+            progress={swiperIndex == 1 ?
+              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
+              100
+              : 0}
+            height={10}
+            backgroundColor="#CB9866"
+          />
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={[styles.SmallThinText, { flex: 1 }]}>
               Try add 3 moods per day
             </Text>
             <Text
               style={
-                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
+                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
               }>
               {JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3}
               /3
@@ -315,14 +328,14 @@ const WeatherData = ({
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+          <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
             Activity
           </Text>
           <Text style={styles.swiperText}>
-            You are more <Text style={{color: '#5947D0'}}>energetic</Text> when
-            the temperature is below <Text style={{color: '#5947D0'}}>20ª</Text>{' '}
-            and it <Text style={{color: '#5947D0'}}>rains</Text> around{' '}
-            <Text style={{color: '#5947D0'}}>2hrs</Text>
+            You are more <Text style={{ color: '#5947D0' }}>energetic</Text> when
+            the temperature is below <Text style={{ color: '#5947D0' }}>20ª</Text>{' '}
+            and it <Text style={{ color: '#5947D0' }}>rains</Text> around{' '}
+            <Text style={{ color: '#5947D0' }}>2hrs</Text>
           </Text>
         </View>
 
@@ -332,7 +345,7 @@ const WeatherData = ({
               <Text
                 style={[
                   styles.SmallThinText,
-                  {paddingVertical: 0, paddingBottom: 4},
+                  { paddingVertical: 0, paddingBottom: 4 },
                 ]}>
                 Today's Weather
               </Text>
@@ -348,17 +361,17 @@ const WeatherData = ({
                     borderRadius: 15,
                     marginHorizontal: 20,
                   }}>
-                  <View style={{flexDirection: 'row', padding: 15}}>
+                  <View style={{ flexDirection: 'row', padding: 15 }}>
                     <Image
                       resizeMode={'contain'}
                       source={Constants.Images.Rain}
-                      style={{margin: 10, marginHorizontal: 20}}
+                      style={{ margin: 10, marginHorizontal: 20 }}
                     />
                     <View>
                       <Text style={[styles.Card1Text]}>
                         {Weather ? Weather.weather[0].description : 'Low'}
                       </Text>
-                      <Text style={[, {fontFamily: RubikMedium, fontSize: 36}]}>
+                      <Text style={[, { fontFamily: RubikMedium, fontSize: 36 }]}>
                         {Math.round(Weather ? Weather.main.temp : '0')}ºC
                       </Text>
                     </View>
@@ -366,7 +379,7 @@ const WeatherData = ({
                 </View>
                 <View style={styles.CardsView}>
                   <View style={styles.card2View}>
-                    <View style={{flexDirection: 'row', padding: 15}}>
+                    <View style={{ flexDirection: 'row', padding: 15 }}>
                       <Image
                         resizeMode={'contain'}
                         source={Constants.Images.Rain}
@@ -377,7 +390,7 @@ const WeatherData = ({
                           {Weather ? Weather.weather[0].description : 'Low'}
                         </Text>
                         <Text
-                          style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
+                          style={[, { fontFamily: RubikMedium, fontSize: 18 }]}>
                           {hours ? hours : 1}hr
                         </Text>
                       </View>
@@ -389,7 +402,7 @@ const WeatherData = ({
                       backgroundColor: 'white',
                       borderRadius: 15,
                     }}>
-                    <View style={{flexDirection: 'row', padding: 15}}>
+                    <View style={{ flexDirection: 'row', padding: 15 }}>
                       <Image
                         resizeMode={'contain'}
                         source={Constants.Images.Rain}
@@ -398,7 +411,7 @@ const WeatherData = ({
                       <View>
                         <Text style={[, styles.smallCardText]}>Pollen</Text>
                         <Text
-                          style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
+                          style={[, { fontFamily: RubikMedium, fontSize: 18 }]}>
                           Low
                         </Text>
                       </View>
@@ -412,7 +425,7 @@ const WeatherData = ({
 
         {/* <ProgressBarCustom /> */}
         <HomeHeader />
-        <View style={{marginBottom: 50, alignItems: 'center'}}>
+        <View style={{ marginBottom: 50, alignItems: 'center' }}>
           {swiperIndex == 1 && <BarGraph ShowPollen={true} />}
           <View
             style={{
@@ -439,7 +452,7 @@ const WeatherData = ({
                     H={9}
                   />
                 </View>
-                <View style={{marginTop: 20}}>
+                <View style={{ marginTop: 20 }}>
                   {/* <BezierGraphAuto data={dataLow} color={'#70DEEC'} /> */}
                   <GraphBezierCustom
                     heightProp={heightProp}
@@ -453,7 +466,7 @@ const WeatherData = ({
               </View>
             )}
           </View>
-          <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+          <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
             <IndicatorHelper color={'#7FE3F0'} text={'Min ºC'} />
             <IndicatorHelper color={'#FC4190'} text={'Max ºC'} />
             <IndicatorHelper color={'#7265E3'} text={'Rainfall'} />
@@ -478,7 +491,7 @@ const WeatherData = ({
                 fontFamily: RubikExtraBold,
                 fontSize: SIZE / 3.5,
                 color: '#E0DDED',
-                transform: [{rotate: '-15deg'}],
+                transform: [{ rotate: '-15deg' }],
               }}>
               Demo
             </Text>
@@ -671,7 +684,7 @@ const styles = StyleSheet.create({
   //     flex: 1,
   //     position: 'absolute',
   //   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

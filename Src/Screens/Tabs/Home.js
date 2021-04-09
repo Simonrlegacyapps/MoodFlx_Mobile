@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -20,7 +20,7 @@ import axios from 'axios';
 import AppleHealthKit from 'rn-apple-healthkit';
 import GetLocation from 'react-native-get-location';
 import DeviceInfo from 'react-native-device-info';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import {
   RubikBlack,
   RubikBold,
@@ -43,16 +43,16 @@ import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import ProgressBarCustom from '../../Components/ProgressBar/ProgressBarCustom';
 import BarGraph from '../../Components/BarChart/BarGraph';
-import {LineChart} from 'react-native-chart-kit';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import { LineChart } from 'react-native-chart-kit';
+import { dynamicSize } from '../../Constants/sizeChoose';
 import BezierGraphAuto from '../../Components/BezierGraphAuto/BezierGraphAuto';
 import HomeHeader from '../../Components/HomeHeader/HomeHeader';
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
 import ScreenData from '../Home/screenData/screenData';
 import SleepData from '../Home/SleepData/SleepData';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   DaySteps,
   DayTemp,
@@ -71,26 +71,26 @@ import {
   WeatherPerm,
 } from '../../redux/actions/actions';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
 const data = [
-  {x: 1, y: 1.2},
-  {x: 2, y: 2.3},
-  {x: 3, y: 2.42},
-  {x: 4, y: 1.1},
-  {x: 5, y: 2.41},
-  {x: 6, y: 2.43},
-  {x: 7, y: 2.2},
+  { x: 1, y: 1.2 },
+  { x: 2, y: 2.3 },
+  { x: 3, y: 2.42 },
+  { x: 4, y: 1.1 },
+  { x: 5, y: 2.41 },
+  { x: 6, y: 2.43 },
+  { x: 7, y: 2.2 },
 ];
 
 const dataLow = [
-  {x: 1, y: 10},
-  {x: 2, y: 20},
-  {x: 3, y: 29},
-  {x: 4, y: 18},
-  {x: 5, y: 22},
-  {x: 6, y: 20},
-  {x: 7, y: 23},
+  { x: 1, y: 10 },
+  { x: 2, y: 20 },
+  { x: 3, y: 29 },
+  { x: 4, y: 18 },
+  { x: 5, y: 22 },
+  { x: 6, y: 20 },
+  { x: 7, y: 23 },
 ];
 
 // const points = monotoneCubicInterpolation({data, range: 30});
@@ -140,10 +140,10 @@ const App = (props) => {
     UserData.HealthPermission ? true : false,
   );
   const [swiperIndex, setSwiperIndex] = useState(0);
-
+  const [callOneTime, setcallOneTime] = useState("one")
   const route = useRoute();
-
-  const {lat, long} = route.params.cord;
+  const [loadAgain, setloadAgain] = useState(1)
+  const { lat, long } = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
   // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
@@ -170,14 +170,45 @@ const App = (props) => {
 
   const dispatch = useDispatch();
 
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     // InteractionManager.runAfterInteractions(() => {
+  //     console.log(`Hiiiiiiii Loooooooooo`);
+  //     checkStorage();
+  //     // });
+  //   }, 200);
+  // }, []);
+
   useEffect(() => {
-    setTimeout(() => {
-      // InteractionManager.runAfterInteractions(() => {
-      console.log(`Hiiiiiiii Loooooooooo`);
-      checkStorage();
-      // });
-    }, 200);
-  }, []);
+    if (callOneTime === 'one') {
+      callAnApi()
+    }
+  }, [Height])
+
+  const callAnApi = async () => {
+    let p = await AsyncStorage.getItem('GiveHealthPerm');
+    let MCount = await AsyncStorage.getItem('MoodCount');
+    let e = await JSON.parse(MCount);
+    setMoodCount(e);
+    dispatch(UserMoodCount(e));
+    console.log(`mood count again`, e);
+    let HealthP = await JSON.parse(p);
+    dispatch(HealthPerm(HealthP));
+    if (HealthP != null) {
+      console.log('good to go for API in async');
+      await OnAutoSync();
+      const steps_data = await UserData.MainSteps;
+      if (steps_data !== null) {
+        setLoading(UserData.HealthPermission ? true : false);
+        setcallOneTime('second')
+        console.log(`UserData.MainSteps`, UserData.MainSteps);
+        filterDates();
+        filterSteps();
+        AddDataToFilter();
+      }
+      setLoading(false);
+    }
+  }
 
   const checkStorage = async () => {
     setLoading(UserData.HealthPermission ? true : false);
@@ -332,27 +363,27 @@ const App = (props) => {
               total = total + results[j].value;
               if (
                 moment(results[j].startDate).startOf('day') <
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <
-                  moment(results[j].startDate).startOf('day').hours(4)
+                moment(results[j].startDate).startOf('day').hours(4)
               ) {
                 console.log(`0`);
                 zero = zero + results[j].value;
                 setOnes(zero);
               } else if (
                 moment(results[j].startDate).startOf('day').hours(4) <
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <
-                  moment(results[j].startDate).startOf('day').hours(8)
+                moment(results[j].startDate).startOf('day').hours(8)
               ) {
                 console.log(`2`, results[j].value);
                 ones = ones + results[j].value;
                 setTwos(ones);
               } else if (
                 moment(results[j].startDate).startOf('day').hours(8) <=
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <=
-                  moment(results[j].startDate).startOf('day').hours(12)
+                moment(results[j].startDate).startOf('day').hours(12)
               ) {
                 twos = twos + results[j].value;
                 console.log(`3`, twos);
@@ -360,18 +391,18 @@ const App = (props) => {
                 //add setzeros to this.
               } else if (
                 moment(results[j].startDate).startOf('day').hours(12) <=
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <=
-                  moment(results[j].startDate).startOf('day').hours(16)
+                moment(results[j].startDate).startOf('day').hours(16)
               ) {
                 threes = threes + results[j].value;
                 console.log(`4`, threes);
                 setFours(threes);
               } else if (
                 moment(results[j].startDate).startOf('day').hours(16) <
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <
-                  moment(results[j].startDate).startOf('day').hours(20)
+                moment(results[j].startDate).startOf('day').hours(20)
               ) {
                 fours = fours + results[j].value;
                 console.log(`5`, results[j].value);
@@ -582,27 +613,27 @@ const App = (props) => {
         }
         if (
           moment(UserData.MainSteps[j].startDate).startOf('day') <
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(4)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(4)
         ) {
           console.log(`0`);
           zero = zero + UserData.MainSteps[j].value;
           setOnes(zero);
         } else if (
           moment(UserData.MainSteps[j].startDate).startOf('day').hours(4) <
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(8)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(8)
         ) {
           console.log(`2`, UserData.MainSteps[j].value);
           ones = ones + UserData.MainSteps[j].value;
           setTwos(ones);
         } else if (
           moment(UserData.MainSteps[j].startDate).startOf('day').hours(8) <=
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <=
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(12)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(12)
         ) {
           twos = twos + UserData.MainSteps[j].value;
           console.log(`3`, twos);
@@ -610,18 +641,18 @@ const App = (props) => {
           //add setzeros to this.
         } else if (
           moment(UserData.MainSteps[j].startDate).startOf('day').hours(12) <=
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <=
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(16)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(16)
         ) {
           threes = threes + UserData.MainSteps[j].value;
           console.log(`4`, threes);
           setFours(threes);
         } else if (
           moment(UserData.MainSteps[j].startDate).startOf('day').hours(16) <
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(20)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(20)
         ) {
           fours = fours + UserData.MainSteps[j].value;
           console.log(`5`, UserData.MainSteps[j].value);
@@ -701,9 +732,9 @@ const App = (props) => {
     // console.log(`Workouts |||||||||||| ppppppp =========`, Workouts);
   };
 
-  const CheckForWeather = async () => {
+  const CheckForWeather = async (loc_lat, loc_long) => {
     console.log(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
     );
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let WeatherP = await JSON.parse(Wp);
@@ -712,7 +743,7 @@ const App = (props) => {
 
     axios
       .get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+        `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
         console.log(`response`, response.data);
@@ -743,7 +774,7 @@ const App = (props) => {
       var axios = require('axios');
       var data = JSON.stringify({
         device_id: deviceId,
-        exercise_time: UserData.MainWorkout,
+        exercise_time: UserData?.MainWorkout ? UserData?.MainWorkout : null,
         moving_time: WalkTime,
         steps: Fsteps,
         height: Height != null ? Height.value : 0,
@@ -752,7 +783,7 @@ const App = (props) => {
         age: DateOfBirth.age,
         email: UserData.UserEmail,
       });
-      console.log(`data`, data);
+      console.log(`data1111`, data);
 
       var config = {
         method: 'post',
@@ -814,14 +845,14 @@ const App = (props) => {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" />
       <Swiper
         // focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
-        dotStyle={{height: 0, width: 0}}
-        activeDotStyle={{height: 0, width: 0}}
-        style={{backgroundColor: 'white'}}
+        dotStyle={{ height: 0, width: 0 }}
+        activeDotStyle={{ height: 0, width: 0 }}
+        style={{ backgroundColor: 'white' }}
         showsButtons={true}
         onIndexChanged={(index) => setSwiperIndex(index)}
         loop={false}>
@@ -841,6 +872,7 @@ const App = (props) => {
             </View>
           )} */}
           <FitnessData
+            swiperIndex={swiperIndex}
             TodayStep={TodayStep}
             TodayCalories={TodayCalories}
             TodayDistance={TodayDistance}
@@ -881,8 +913,9 @@ const App = (props) => {
           )} */}
         </View>
 
-        {/* <View style={styles.slide3}>
+        <View style={styles.slide3}>
           <ScreenData
+            swiperIndex={swiperIndex}
             data={data}
             dataLow={dataLow}
             Weather={Weather}
@@ -893,6 +926,7 @@ const App = (props) => {
         </View>
         <View style={styles.slide3}>
           <SleepData
+            swiperIndex={swiperIndex}
             data={data}
             dataLow={dataLow}
             Weather={Weather}
@@ -900,7 +934,7 @@ const App = (props) => {
             CheckForWeather={CheckForScreenData}
             MoodCount={MoodCount}
           />
-        </View> */}
+        </View>
       </Swiper>
       {Loading && (
         <View
@@ -1025,7 +1059,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
+  forCircle: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   BigCircleBackgroundImage: {
     height: 140,
     width: 130,
@@ -1037,7 +1071,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,
