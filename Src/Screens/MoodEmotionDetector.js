@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 // import all the components we are going to use
 import {
@@ -15,13 +15,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import AnonymousHeader from '../Components/AnonymousHeader/AnonymousHeader';
-import {getUniqueId} from 'react-native-device-info';
+import { getUniqueId } from 'react-native-device-info';
 import ToolTip from '../../assets/tooltip/ToolTip';
-import Svg, {Path, SvgUri} from 'react-native-svg';
+import Svg, { Path, SvgUri } from 'react-native-svg';
 import HappyIcon from '../../assets/emotionsicons/HappyIcon';
 import CloseIcon from '../../assets/commonicons/CloseIcon';
 import QuestionMarkIcon from '../../assets/commonicons/QuestionMarkIcon';
-import {dynamicSize} from '../Constants/sizeChoose';
+import { dynamicSize } from '../Constants/sizeChoose';
 import moment from 'moment';
 import GetLocation from 'react-native-get-location';
 import PostRequestApi from '../apirequest/PostRequestApi';
@@ -29,7 +29,7 @@ import DeviceInfo from 'react-native-device-info';
 import Modal from 'react-native-modal';
 import VideoModal from '../Components/VideoModal/VideoModal';
 import AsyncStorage from '@react-native-community/async-storage';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   HealthPerm,
   Lat,
@@ -40,10 +40,16 @@ import {
   UserEmail,
   WeatherPerm,
 } from '../redux/actions/actions';
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import SaveConfirmModal from '../Components/Modals/SaveConfirmModal/SaveConfirmModal';
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 
-const {StatusBarManager, statusBarHeight} = NativeModules;
+const options = {
+  enableVibrateFallback: true,
+  ignoreAndroidSystemSettings: false
+};
+
+const { StatusBarManager, statusBarHeight } = NativeModules;
 
 const moods = [
   'Happy',
@@ -59,9 +65,9 @@ function useForceUpdate() {
   return () => setValue((value) => value + 1); // update the state to force render
 }
 
-const {width, height} = Dimensions.get('screen');
+const { width, height } = Dimensions.get('screen');
 
-const MoodEmotionDetector = ({navigation}) => {
+const MoodEmotionDetector = ({ navigation }) => {
   // console.log(`width and height`, width, height);
   // console.log(`statusBarHeight`, statusBarHeight);
   const [locationX, setLocationX] = useState(width / 2);
@@ -102,29 +108,20 @@ const MoodEmotionDetector = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
 
   const checkStorage = async () => {
-    let FirstCount = await AsyncStorage.getItem('ScreenCount');
-    let OneCount = await JSON.parse(FirstCount);
-    await AsyncStorage.setItem(
-      'ScreenCount',
-      JSON.stringify(OneCount === null ? 0 : OneCount + 1),
-    );
     // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
     let p = await AsyncStorage.getItem('Email');
     let d = await AsyncStorage.getItem('Division');
     let Hp = await AsyncStorage.getItem('GiveHealthPerm');
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    let SCount = await AsyncStorage.getItem('ScreenCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
     let division = await JSON.parse(d);
     let HealthP = await JSON.parse(Hp);
     let WeatherP = await JSON.parse(Wp);
-    let TotalScreenCount = await JSON.parse(SCount);
     console.log(`e`, e);
     console.log(`division`, division);
     console.log(`HealthPerm`, HealthP);
     console.log(`WeatherPerm`, WeatherP);
-    console.log(`TotalScreenCount`, TotalScreenCount);
     await setEmail(e);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
@@ -184,7 +181,7 @@ const MoodEmotionDetector = ({navigation}) => {
               dispatch(Long(location.longitude));
             })
             .catch((error) => {
-              const {code, message} = error;
+              const { code, message } = error;
               console.log('error', code, message);
             });
       }
@@ -215,7 +212,7 @@ const MoodEmotionDetector = ({navigation}) => {
     let e = await JSON.parse(p);
     console.log(`mood count`, e);
 
-    const Id = UserData.AllMoods.find(({name}) => {
+    const Id = UserData.AllMoods.find(({ name }) => {
       // console.log(`name`, name);
       return name === Label;
     });
@@ -266,7 +263,7 @@ const MoodEmotionDetector = ({navigation}) => {
           .then((response) => response.json())
           .then((result) => {
             console.log('quesstion updated', result), setLoading(false);
-            navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+            navigation.navigate('HomeScreen', { screen: 'MicScreen' });
           })
           .catch((error) => {
             console.log('error', error), setLoading(false);
@@ -288,12 +285,12 @@ const MoodEmotionDetector = ({navigation}) => {
               // });
               {
                 route?.params?.question != undefined
-                  ? navigation.navigate('HomeScreen', {screen: 'MicScreen'})
+                  ? navigation.navigate('HomeScreen', { screen: 'MicScreen' })
                   : navigation.replace('HomeScreen', {
-                      lat: lat,
-                      long: lng,
-                      screen: 'Home',
-                    });
+                    lat: lat,
+                    long: lng,
+                    screen: 'Home',
+                  });
               }
 
               // navigation.replace('HomeScreen', {
@@ -313,92 +310,92 @@ const MoodEmotionDetector = ({navigation}) => {
     }
   };
 
-  const FindSvg = ({moveY, moveX, dx, dy, y0, x0}) => {
+  const FindSvg = ({ moveY, moveX, dx, dy, y0, x0 }) => {
     let Svg = '';
 
     const locationX = moveX;
     const locationY = moveY;
     0 < locationX &&
-    locationX < fourthWidth &&
-    statusHeight < locationY &&
-    locationY < fourthHeight + statusHeight
+      locationX < fourthWidth &&
+      statusHeight < locationY &&
+      locationY < fourthHeight + statusHeight
       ? (Svg = 'mood_icons/16161615941398599996054ab3aa7d5a.svg')
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
         locationY < 2 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/16161615941398599996054ab3aa7d5a.svg')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/161616020811568889776054a5d0a647b.svg')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/161616165713773338836054ab79f1da3.svg')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/16161615819211632466054ab2df10cd.svg')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/161616160519398103336054ab4547f6f.svg')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/16161598431282637146054a4639766f.svg')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/16161616415022878446054ab69f2c06.svg')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/16161618594253055676054ac43027d1.svg')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/1616161630114389416054ab5eabe61.svg')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/16161617966057941926054ac048c7bf.svg')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/161616167810216837516054ab8e7cb4e.svg')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/161616176321272238406054abe3bb450.svg')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/16161617438626044096054abcf2e5c9.svg')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/161616181011965041556054ac126be19.svg')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (Svg = 'mood_icons/16161616189187972696054ab524887b.svg')
-      : (Svg = 'mood_icons/16161618594253055676054ac43027d1.svg');
+        ? (Svg = 'mood_icons/16161615941398599996054ab3aa7d5a.svg')
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+          ? (Svg = 'mood_icons/161616020811568889776054a5d0a647b.svg')
+          : 0 < locationX &&
+            locationX < fourthWidth &&
+            3 * fourthHeight + statusHeight < locationY &&
+            locationY < 4 * fourthHeight + statusHeight
+            ? (Svg = 'mood_icons/161616165713773338836054ab79f1da3.svg')
+            : fourthWidth < locationX &&
+              locationX < 2 * fourthWidth &&
+              statusHeight < locationY &&
+              locationY < fourthHeight + statusHeight
+              ? (Svg = 'mood_icons/16161615819211632466054ab2df10cd.svg')
+              : fourthWidth < locationX &&
+                locationX < 2 * fourthWidth &&
+                fourthHeight < locationY &&
+                locationY < 2 * fourthHeight + statusHeight
+                ? (Svg = 'mood_icons/161616160519398103336054ab4547f6f.svg')
+                : fourthWidth < locationX &&
+                  locationX < 2 * fourthWidth &&
+                  2 * fourthHeight + statusHeight < locationY &&
+                  locationY < 3 * fourthHeight + statusHeight
+                  ? (Svg = 'mood_icons/16161598431282637146054a4639766f.svg')
+                  : fourthWidth < locationX &&
+                    locationX < 2 * fourthWidth &&
+                    3 * fourthHeight + statusHeight < locationY &&
+                    locationY < 4 * fourthHeight + statusHeight
+                    ? (Svg = 'mood_icons/16161616415022878446054ab69f2c06.svg')
+                    : 2 * fourthWidth < locationX &&
+                      locationX < 3 * fourthWidth &&
+                      statusHeight < locationY &&
+                      locationY < fourthHeight + statusHeight
+                      ? (Svg = 'mood_icons/16161618594253055676054ac43027d1.svg')
+                      : 2 * fourthWidth < locationX &&
+                        locationX < 3 * fourthWidth &&
+                        fourthHeight < locationY &&
+                        locationY < 2 * fourthHeight + statusHeight
+                        ? (Svg = 'mood_icons/1616161630114389416054ab5eabe61.svg')
+                        : 2 * fourthWidth < locationX &&
+                          locationX < 3 * fourthWidth &&
+                          2 * fourthHeight + statusHeight < locationY &&
+                          locationY < 3 * fourthHeight + statusHeight
+                          ? (Svg = 'mood_icons/16161617966057941926054ac048c7bf.svg')
+                          : 2 * fourthWidth < locationX &&
+                            locationX < 3 * fourthWidth &&
+                            3 * fourthHeight + statusHeight < locationY &&
+                            locationY < 4 * fourthHeight + statusHeight
+                            ? (Svg = 'mood_icons/161616167810216837516054ab8e7cb4e.svg')
+                            : 3 * fourthWidth < locationX &&
+                              locationX < 4 * fourthWidth &&
+                              statusHeight < locationY &&
+                              locationY < fourthHeight + statusHeight
+                              ? (Svg = 'mood_icons/161616176321272238406054abe3bb450.svg')
+                              : 3 * fourthWidth < locationX &&
+                                locationX < 4 * fourthWidth &&
+                                fourthHeight < locationY &&
+                                locationY < 2 * fourthHeight + statusHeight
+                                ? (Svg = 'mood_icons/16161617438626044096054abcf2e5c9.svg')
+                                : 3 * fourthWidth < locationX &&
+                                  locationX < 4 * fourthWidth &&
+                                  2 * fourthHeight + statusHeight < locationY &&
+                                  locationY < 3 * fourthHeight + statusHeight
+                                  ? (Svg = 'mood_icons/161616181011965041556054ac126be19.svg')
+                                  : 3 * fourthWidth < locationX &&
+                                    locationX < 4 * fourthWidth &&
+                                    3 * fourthHeight + statusHeight < locationY &&
+                                    locationY < 4 * fourthHeight + statusHeight
+                                    ? (Svg = 'mood_icons/16161616189187972696054ab524887b.svg')
+                                    : (Svg = 'mood_icons/16161618594253055676054ac43027d1.svg');
     return Svg;
     // console.log(`Svg`, Svg);
   };
@@ -409,7 +406,7 @@ const MoodEmotionDetector = ({navigation}) => {
   let fourthHeight = (halfHeight - statusHeight) / 2;
   let fourthWidth = width / 4;
 
-  const getDirectionAndColor = ({moveY, moveX, dx, dy, y0, x0}) => {
+  const getDirectionAndColor = ({ moveY, moveX, dx, dy, y0, x0 }) => {
     // console.log('moveX, moveY, dx, dy, move', moveY, moveX, dx, dy, y0, x0);
     // console.log('dx', dx)
     // console.log('dy', dy)
@@ -423,93 +420,93 @@ const MoodEmotionDetector = ({navigation}) => {
     setLocationY(moveY.toFixed(2));
     if (UserData.AllMoods !== null) {
       0 < locationX &&
-      locationX < fourthWidth &&
-      statusHeight < locationY &&
-      locationY < fourthHeight + statusHeight
+        locationX < fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
         ? (word = UserData.AllMoods[10].name)
         : 0 < locationX &&
           locationX < fourthWidth &&
           fourthHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[2].name)
-        : 0 < locationX &&
-          locationX < fourthWidth &&
-          2 * fourthHeight + statusHeight < locationY &&
-          locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[3].name)
-        : 0 < locationX &&
-          locationX < fourthWidth &&
-          3 * fourthHeight + statusHeight < locationY &&
-          locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[14].name)
-        : fourthWidth < locationX &&
-          locationX < 2 * fourthWidth &&
-          statusHeight < locationY &&
-          locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[1].name)
-        : fourthWidth < locationX &&
-          locationX < 2 * fourthWidth &&
-          fourthHeight < locationY &&
-          locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[9].name)
-        : fourthWidth < locationX &&
-          locationX < 2 * fourthWidth &&
-          2 * fourthHeight + statusHeight < locationY &&
-          locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[4].name)
-        : fourthWidth < locationX &&
-          locationX < 2 * fourthWidth &&
-          3 * fourthHeight + statusHeight < locationY &&
-          locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[13].name)
-        : 2 * fourthWidth < locationX &&
-          locationX < 3 * fourthWidth &&
-          statusHeight < locationY &&
-          locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[0].name)
-        : 2 * fourthWidth < locationX &&
-          locationX < 3 * fourthWidth &&
-          fourthHeight < locationY &&
-          locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[12].name)
-        : 2 * fourthWidth < locationX &&
-          locationX < 3 * fourthWidth &&
-          2 * fourthHeight + statusHeight < locationY &&
-          locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[6].name)
-        : 2 * fourthWidth < locationX &&
-          locationX < 3 * fourthWidth &&
-          3 * fourthHeight + statusHeight < locationY &&
-          locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[15].name)
-        : 3 * fourthWidth < locationX &&
-          locationX < 4 * fourthWidth &&
-          statusHeight < locationY &&
-          locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[7].name)
-        : 3 * fourthWidth < locationX &&
-          locationX < 4 * fourthWidth &&
-          fourthHeight < locationY &&
-          locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[8].name)
-        : 3 * fourthWidth < locationX &&
-          locationX < 4 * fourthWidth &&
-          2 * fourthHeight + statusHeight < locationY &&
-          locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[5].name)
-        : 3 * fourthWidth < locationX &&
-          locationX < 4 * fourthWidth &&
-          3 * fourthHeight + statusHeight < locationY &&
-          locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[11].name)
-        : (word = 'Okay');
+          ? (word = UserData.AllMoods[2].name)
+          : 0 < locationX &&
+            locationX < fourthWidth &&
+            2 * fourthHeight + statusHeight < locationY &&
+            locationY < 3 * fourthHeight + statusHeight
+            ? (word = UserData.AllMoods[3].name)
+            : 0 < locationX &&
+              locationX < fourthWidth &&
+              3 * fourthHeight + statusHeight < locationY &&
+              locationY < 4 * fourthHeight + statusHeight
+              ? (word = UserData.AllMoods[14].name)
+              : fourthWidth < locationX &&
+                locationX < 2 * fourthWidth &&
+                statusHeight < locationY &&
+                locationY < fourthHeight + statusHeight
+                ? (word = UserData.AllMoods[1].name)
+                : fourthWidth < locationX &&
+                  locationX < 2 * fourthWidth &&
+                  fourthHeight < locationY &&
+                  locationY < 2 * fourthHeight + statusHeight
+                  ? (word = UserData.AllMoods[9].name)
+                  : fourthWidth < locationX &&
+                    locationX < 2 * fourthWidth &&
+                    2 * fourthHeight + statusHeight < locationY &&
+                    locationY < 3 * fourthHeight + statusHeight
+                    ? (word = UserData.AllMoods[4].name)
+                    : fourthWidth < locationX &&
+                      locationX < 2 * fourthWidth &&
+                      3 * fourthHeight + statusHeight < locationY &&
+                      locationY < 4 * fourthHeight + statusHeight
+                      ? (word = UserData.AllMoods[13].name)
+                      : 2 * fourthWidth < locationX &&
+                        locationX < 3 * fourthWidth &&
+                        statusHeight < locationY &&
+                        locationY < fourthHeight + statusHeight
+                        ? (word = UserData.AllMoods[0].name)
+                        : 2 * fourthWidth < locationX &&
+                          locationX < 3 * fourthWidth &&
+                          fourthHeight < locationY &&
+                          locationY < 2 * fourthHeight + statusHeight
+                          ? (word = UserData.AllMoods[12].name)
+                          : 2 * fourthWidth < locationX &&
+                            locationX < 3 * fourthWidth &&
+                            2 * fourthHeight + statusHeight < locationY &&
+                            locationY < 3 * fourthHeight + statusHeight
+                            ? (word = UserData.AllMoods[6].name)
+                            : 2 * fourthWidth < locationX &&
+                              locationX < 3 * fourthWidth &&
+                              3 * fourthHeight + statusHeight < locationY &&
+                              locationY < 4 * fourthHeight + statusHeight
+                              ? (word = UserData.AllMoods[15].name)
+                              : 3 * fourthWidth < locationX &&
+                                locationX < 4 * fourthWidth &&
+                                statusHeight < locationY &&
+                                locationY < fourthHeight + statusHeight
+                                ? (word = UserData.AllMoods[7].name)
+                                : 3 * fourthWidth < locationX &&
+                                  locationX < 4 * fourthWidth &&
+                                  fourthHeight < locationY &&
+                                  locationY < 2 * fourthHeight + statusHeight
+                                  ? (word = UserData.AllMoods[8].name)
+                                  : 3 * fourthWidth < locationX &&
+                                    locationX < 4 * fourthWidth &&
+                                    2 * fourthHeight + statusHeight < locationY &&
+                                    locationY < 3 * fourthHeight + statusHeight
+                                    ? (word = UserData.AllMoods[5].name)
+                                    : 3 * fourthWidth < locationX &&
+                                      locationX < 4 * fourthWidth &&
+                                      3 * fourthHeight + statusHeight < locationY &&
+                                      locationY < 4 * fourthHeight + statusHeight
+                                      ? (word = UserData.AllMoods[11].name)
+                                      : (word = 'Okay');
     }
 
     // console.log('label', Label)
 
     return word;
   };
-  const getDirectionAndColorOnClick = ({moveY, moveX, dx, dy, y0, x0}) => {
+  const getDirectionAndColorOnClick = ({ moveY, moveX, dx, dy, y0, x0 }) => {
     console.log('clickX, clickY, dx, dy, click', moveY, moveX, dx, dy, y0, x0);
     console.log(`fourthHeight`, fourthHeight);
     // console.log('dx', dx)
@@ -523,86 +520,86 @@ const MoodEmotionDetector = ({navigation}) => {
     setLocationY(y0.toFixed(2));
     if (UserData.AllMoods !== null) {
       0 < locationX &&
-      locationX < fourthWidth &&
-      statusHeight < locationY &&
-      locationY < fourthHeight + statusHeight
+        locationX < fourthWidth &&
+        statusHeight < locationY &&
+        locationY < fourthHeight + statusHeight
         ? (word = UserData.AllMoods[10].name)
         : 0 < locationX &&
           locationX < fourthWidth &&
           fourthHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[2].name)
-        : 0 < locationX &&
-          locationX < fourthWidth &&
-          2 * fourthHeight + statusHeight < locationY &&
-          locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[3].name)
-        : 0 < locationX &&
-          locationX < fourthWidth &&
-          3 * fourthHeight + statusHeight < locationY &&
-          locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[14].name)
-        : fourthWidth < locationX &&
-          locationX < 2 * fourthWidth &&
-          statusHeight < locationY &&
-          locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[1].name)
-        : fourthWidth < locationX &&
-          locationX < 2 * fourthWidth &&
-          fourthHeight < locationY &&
-          locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[9].name)
-        : fourthWidth < locationX &&
-          locationX < 2 * fourthWidth &&
-          2 * fourthHeight + statusHeight < locationY &&
-          locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[4].name)
-        : fourthWidth < locationX &&
-          locationX < 2 * fourthWidth &&
-          3 * fourthHeight + statusHeight < locationY &&
-          locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[13].name)
-        : 2 * fourthWidth < locationX &&
-          locationX < 3 * fourthWidth &&
-          statusHeight < locationY &&
-          locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[0].name)
-        : 2 * fourthWidth < locationX &&
-          locationX < 3 * fourthWidth &&
-          fourthHeight < locationY &&
-          locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[12].name)
-        : 2 * fourthWidth < locationX &&
-          locationX < 3 * fourthWidth &&
-          2 * fourthHeight + statusHeight < locationY &&
-          locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[6].name)
-        : 2 * fourthWidth < locationX &&
-          locationX < 3 * fourthWidth &&
-          3 * fourthHeight + statusHeight < locationY &&
-          locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[15].name)
-        : 3 * fourthWidth < locationX &&
-          locationX < 4 * fourthWidth &&
-          statusHeight < locationY &&
-          locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[7].name)
-        : 3 * fourthWidth < locationX &&
-          locationX < 4 * fourthWidth &&
-          fourthHeight < locationY &&
-          locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[8].name)
-        : 3 * fourthWidth < locationX &&
-          locationX < 4 * fourthWidth &&
-          2 * fourthHeight + statusHeight < locationY &&
-          locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[5].name)
-        : 3 * fourthWidth < locationX &&
-          locationX < 4 * fourthWidth &&
-          3 * fourthHeight + statusHeight < locationY &&
-          locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[11].name)
-        : (word = 'Okay');
+          ? (word = UserData.AllMoods[2].name)
+          : 0 < locationX &&
+            locationX < fourthWidth &&
+            2 * fourthHeight + statusHeight < locationY &&
+            locationY < 3 * fourthHeight + statusHeight
+            ? (word = UserData.AllMoods[3].name)
+            : 0 < locationX &&
+              locationX < fourthWidth &&
+              3 * fourthHeight + statusHeight < locationY &&
+              locationY < 4 * fourthHeight + statusHeight
+              ? (word = UserData.AllMoods[14].name)
+              : fourthWidth < locationX &&
+                locationX < 2 * fourthWidth &&
+                statusHeight < locationY &&
+                locationY < fourthHeight + statusHeight
+                ? (word = UserData.AllMoods[1].name)
+                : fourthWidth < locationX &&
+                  locationX < 2 * fourthWidth &&
+                  fourthHeight < locationY &&
+                  locationY < 2 * fourthHeight + statusHeight
+                  ? (word = UserData.AllMoods[9].name)
+                  : fourthWidth < locationX &&
+                    locationX < 2 * fourthWidth &&
+                    2 * fourthHeight + statusHeight < locationY &&
+                    locationY < 3 * fourthHeight + statusHeight
+                    ? (word = UserData.AllMoods[4].name)
+                    : fourthWidth < locationX &&
+                      locationX < 2 * fourthWidth &&
+                      3 * fourthHeight + statusHeight < locationY &&
+                      locationY < 4 * fourthHeight + statusHeight
+                      ? (word = UserData.AllMoods[13].name)
+                      : 2 * fourthWidth < locationX &&
+                        locationX < 3 * fourthWidth &&
+                        statusHeight < locationY &&
+                        locationY < fourthHeight + statusHeight
+                        ? (word = UserData.AllMoods[0].name)
+                        : 2 * fourthWidth < locationX &&
+                          locationX < 3 * fourthWidth &&
+                          fourthHeight < locationY &&
+                          locationY < 2 * fourthHeight + statusHeight
+                          ? (word = UserData.AllMoods[12].name)
+                          : 2 * fourthWidth < locationX &&
+                            locationX < 3 * fourthWidth &&
+                            2 * fourthHeight + statusHeight < locationY &&
+                            locationY < 3 * fourthHeight + statusHeight
+                            ? (word = UserData.AllMoods[6].name)
+                            : 2 * fourthWidth < locationX &&
+                              locationX < 3 * fourthWidth &&
+                              3 * fourthHeight + statusHeight < locationY &&
+                              locationY < 4 * fourthHeight + statusHeight
+                              ? (word = UserData.AllMoods[15].name)
+                              : 3 * fourthWidth < locationX &&
+                                locationX < 4 * fourthWidth &&
+                                statusHeight < locationY &&
+                                locationY < fourthHeight + statusHeight
+                                ? (word = UserData.AllMoods[7].name)
+                                : 3 * fourthWidth < locationX &&
+                                  locationX < 4 * fourthWidth &&
+                                  fourthHeight < locationY &&
+                                  locationY < 2 * fourthHeight + statusHeight
+                                  ? (word = UserData.AllMoods[8].name)
+                                  : 3 * fourthWidth < locationX &&
+                                    locationX < 4 * fourthWidth &&
+                                    2 * fourthHeight + statusHeight < locationY &&
+                                    locationY < 3 * fourthHeight + statusHeight
+                                    ? (word = UserData.AllMoods[5].name)
+                                    : 3 * fourthWidth < locationX &&
+                                      locationX < 4 * fourthWidth &&
+                                      3 * fourthHeight + statusHeight < locationY &&
+                                      locationY < 4 * fourthHeight + statusHeight
+                                      ? (word = UserData.AllMoods[11].name)
+                                      : (word = 'Okay');
     }
     // 0 < locationX && locationX < 208 && -15 < locationY && locationY < 383
     //   ? (word = word + 'Sad')
@@ -653,6 +650,7 @@ const MoodEmotionDetector = ({navigation}) => {
         // setLocationX(gestureState.x0)
         // setLocationY(gestureState.y0)
         const click = getDirectionAndColorOnClick(gestureState);
+        ReactNativeHapticFeedback.trigger("notificationSuccess", options);
         setLabel(click);
       },
       onMoveShouldSetPanResponderCapture: (event, gestureState) => {
@@ -681,344 +679,344 @@ const MoodEmotionDetector = ({navigation}) => {
   const ColorFunctionB1 = () => {
     var colorCode = '';
     0 < locationX &&
-    locationX < fourthWidth &&
-    statusHeight < locationY &&
-    locationY < fourthHeight + statusHeight
+      locationX < fourthWidth &&
+      statusHeight < locationY &&
+      locationY < fourthHeight + statusHeight
       ? (colorCode = '#BEBFD5')
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
         locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#CA929A')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#D9A790')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#82D1C3')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#8DC3B3')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#B6C9D8')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#A0C595')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#AFD4DA')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#BE7B83')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#C47CCF')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#D593A9')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#BEC947')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#DBB790')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#C59CB9')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#B7D9CE')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#89D881')
-      : (colorCode = '#BE7B83'); //purple
+        ? (colorCode = '#CA929A')
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+          ? (colorCode = '#D9A790')
+          : 0 < locationX &&
+            locationX < fourthWidth &&
+            3 * fourthHeight + statusHeight < locationY &&
+            locationY < 4 * fourthHeight + statusHeight
+            ? (colorCode = '#82D1C3')
+            : fourthWidth < locationX &&
+              locationX < 2 * fourthWidth &&
+              statusHeight < locationY &&
+              locationY < fourthHeight + statusHeight
+              ? (colorCode = '#8DC3B3')
+              : fourthWidth < locationX &&
+                locationX < 2 * fourthWidth &&
+                fourthHeight < locationY &&
+                locationY < 2 * fourthHeight + statusHeight
+                ? (colorCode = '#B6C9D8')
+                : fourthWidth < locationX &&
+                  locationX < 2 * fourthWidth &&
+                  2 * fourthHeight + statusHeight < locationY &&
+                  locationY < 3 * fourthHeight + statusHeight
+                  ? (colorCode = '#A0C595')
+                  : fourthWidth < locationX &&
+                    locationX < 2 * fourthWidth &&
+                    3 * fourthHeight + statusHeight < locationY &&
+                    locationY < 4 * fourthHeight + statusHeight
+                    ? (colorCode = '#AFD4DA')
+                    : 2 * fourthWidth < locationX &&
+                      locationX < 3 * fourthWidth &&
+                      statusHeight < locationY &&
+                      locationY < fourthHeight + statusHeight
+                      ? (colorCode = '#BE7B83')
+                      : 2 * fourthWidth < locationX &&
+                        locationX < 3 * fourthWidth &&
+                        fourthHeight < locationY &&
+                        locationY < 2 * fourthHeight + statusHeight
+                        ? (colorCode = '#C47CCF')
+                        : 2 * fourthWidth < locationX &&
+                          locationX < 3 * fourthWidth &&
+                          2 * fourthHeight + statusHeight < locationY &&
+                          locationY < 3 * fourthHeight + statusHeight
+                          ? (colorCode = '#D593A9')
+                          : 2 * fourthWidth < locationX &&
+                            locationX < 3 * fourthWidth &&
+                            3 * fourthHeight + statusHeight < locationY &&
+                            locationY < 4 * fourthHeight + statusHeight
+                            ? (colorCode = '#BEC947')
+                            : 3 * fourthWidth < locationX &&
+                              locationX < 4 * fourthWidth &&
+                              statusHeight < locationY &&
+                              locationY < fourthHeight + statusHeight
+                              ? (colorCode = '#DBB790')
+                              : 3 * fourthWidth < locationX &&
+                                locationX < 4 * fourthWidth &&
+                                fourthHeight < locationY &&
+                                locationY < 2 * fourthHeight + statusHeight
+                                ? (colorCode = '#C59CB9')
+                                : 3 * fourthWidth < locationX &&
+                                  locationX < 4 * fourthWidth &&
+                                  2 * fourthHeight + statusHeight < locationY &&
+                                  locationY < 3 * fourthHeight + statusHeight
+                                  ? (colorCode = '#B7D9CE')
+                                  : 3 * fourthWidth < locationX &&
+                                    locationX < 4 * fourthWidth &&
+                                    3 * fourthHeight + statusHeight < locationY &&
+                                    locationY < 4 * fourthHeight + statusHeight
+                                    ? (colorCode = '#89D881')
+                                    : (colorCode = '#BE7B83'); //purple
 
     return colorCode;
   };
   const ColorFunctionB2 = () => {
     var colorCode = '';
     0 < locationX &&
-    locationX < fourthWidth &&
-    statusHeight < locationY &&
-    locationY < fourthHeight + statusHeight
+      locationX < fourthWidth &&
+      statusHeight < locationY &&
+      locationY < fourthHeight + statusHeight
       ? (colorCode = '#ADADC9')
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
         locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#BF7B85')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#D19377')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#6FC9B8')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#70A998')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#A3B9CC')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#91BB83')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#9BCAD0')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#B56873')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#BA65C6')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#CC7E99')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#B8C235')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#D2A77C')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#BA8AAB')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#A5CDC0')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#77D06D')
-      : (colorCode = '#B56873'); //purple
+        ? (colorCode = '#BF7B85')
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+          ? (colorCode = '#D19377')
+          : 0 < locationX &&
+            locationX < fourthWidth &&
+            3 * fourthHeight + statusHeight < locationY &&
+            locationY < 4 * fourthHeight + statusHeight
+            ? (colorCode = '#6FC9B8')
+            : fourthWidth < locationX &&
+              locationX < 2 * fourthWidth &&
+              statusHeight < locationY &&
+              locationY < fourthHeight + statusHeight
+              ? (colorCode = '#70A998')
+              : fourthWidth < locationX &&
+                locationX < 2 * fourthWidth &&
+                fourthHeight < locationY &&
+                locationY < 2 * fourthHeight + statusHeight
+                ? (colorCode = '#A3B9CC')
+                : fourthWidth < locationX &&
+                  locationX < 2 * fourthWidth &&
+                  2 * fourthHeight + statusHeight < locationY &&
+                  locationY < 3 * fourthHeight + statusHeight
+                  ? (colorCode = '#91BB83')
+                  : fourthWidth < locationX &&
+                    locationX < 2 * fourthWidth &&
+                    3 * fourthHeight + statusHeight < locationY &&
+                    locationY < 4 * fourthHeight + statusHeight
+                    ? (colorCode = '#9BCAD0')
+                    : 2 * fourthWidth < locationX &&
+                      locationX < 3 * fourthWidth &&
+                      statusHeight < locationY &&
+                      locationY < fourthHeight + statusHeight
+                      ? (colorCode = '#B56873')
+                      : 2 * fourthWidth < locationX &&
+                        locationX < 3 * fourthWidth &&
+                        fourthHeight < locationY &&
+                        locationY < 2 * fourthHeight + statusHeight
+                        ? (colorCode = '#BA65C6')
+                        : 2 * fourthWidth < locationX &&
+                          locationX < 3 * fourthWidth &&
+                          2 * fourthHeight + statusHeight < locationY &&
+                          locationY < 3 * fourthHeight + statusHeight
+                          ? (colorCode = '#CC7E99')
+                          : 2 * fourthWidth < locationX &&
+                            locationX < 3 * fourthWidth &&
+                            3 * fourthHeight + statusHeight < locationY &&
+                            locationY < 4 * fourthHeight + statusHeight
+                            ? (colorCode = '#B8C235')
+                            : 3 * fourthWidth < locationX &&
+                              locationX < 4 * fourthWidth &&
+                              statusHeight < locationY &&
+                              locationY < fourthHeight + statusHeight
+                              ? (colorCode = '#D2A77C')
+                              : 3 * fourthWidth < locationX &&
+                                locationX < 4 * fourthWidth &&
+                                fourthHeight < locationY &&
+                                locationY < 2 * fourthHeight + statusHeight
+                                ? (colorCode = '#BA8AAB')
+                                : 3 * fourthWidth < locationX &&
+                                  locationX < 4 * fourthWidth &&
+                                  2 * fourthHeight + statusHeight < locationY &&
+                                  locationY < 3 * fourthHeight + statusHeight
+                                  ? (colorCode = '#A5CDC0')
+                                  : 3 * fourthWidth < locationX &&
+                                    locationX < 4 * fourthWidth &&
+                                    3 * fourthHeight + statusHeight < locationY &&
+                                    locationY < 4 * fourthHeight + statusHeight
+                                    ? (colorCode = '#77D06D')
+                                    : (colorCode = '#B56873'); //purple
 
     return colorCode;
   };
   const ColorFunctionB3 = () => {
     var colorCode = '';
     0 < locationX &&
-    locationX < fourthWidth &&
-    statusHeight < locationY &&
-    locationY < fourthHeight + statusHeight
+      locationX < fourthWidth &&
+      statusHeight < locationY &&
+      locationY < fourthHeight + statusHeight
       ? (colorCode = '#8688AF')
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
         locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#B05D69')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#C37555')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#4DBAA5')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#5DA891')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#7F9DB8')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#72A661')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#77B4BD')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#A24551')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#A83FB6')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#BB5779')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#949E25')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#C58C55')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#A46891')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#81B9A6')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#54C347')
-      : (colorCode = '#A24551'); //purple
+        ? (colorCode = '#B05D69')
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+          ? (colorCode = '#C37555')
+          : 0 < locationX &&
+            locationX < fourthWidth &&
+            3 * fourthHeight + statusHeight < locationY &&
+            locationY < 4 * fourthHeight + statusHeight
+            ? (colorCode = '#4DBAA5')
+            : fourthWidth < locationX &&
+              locationX < 2 * fourthWidth &&
+              statusHeight < locationY &&
+              locationY < fourthHeight + statusHeight
+              ? (colorCode = '#5DA891')
+              : fourthWidth < locationX &&
+                locationX < 2 * fourthWidth &&
+                fourthHeight < locationY &&
+                locationY < 2 * fourthHeight + statusHeight
+                ? (colorCode = '#7F9DB8')
+                : fourthWidth < locationX &&
+                  locationX < 2 * fourthWidth &&
+                  2 * fourthHeight + statusHeight < locationY &&
+                  locationY < 3 * fourthHeight + statusHeight
+                  ? (colorCode = '#72A661')
+                  : fourthWidth < locationX &&
+                    locationX < 2 * fourthWidth &&
+                    3 * fourthHeight + statusHeight < locationY &&
+                    locationY < 4 * fourthHeight + statusHeight
+                    ? (colorCode = '#77B4BD')
+                    : 2 * fourthWidth < locationX &&
+                      locationX < 3 * fourthWidth &&
+                      statusHeight < locationY &&
+                      locationY < fourthHeight + statusHeight
+                      ? (colorCode = '#A24551')
+                      : 2 * fourthWidth < locationX &&
+                        locationX < 3 * fourthWidth &&
+                        fourthHeight < locationY &&
+                        locationY < 2 * fourthHeight + statusHeight
+                        ? (colorCode = '#A83FB6')
+                        : 2 * fourthWidth < locationX &&
+                          locationX < 3 * fourthWidth &&
+                          2 * fourthHeight + statusHeight < locationY &&
+                          locationY < 3 * fourthHeight + statusHeight
+                          ? (colorCode = '#BB5779')
+                          : 2 * fourthWidth < locationX &&
+                            locationX < 3 * fourthWidth &&
+                            3 * fourthHeight + statusHeight < locationY &&
+                            locationY < 4 * fourthHeight + statusHeight
+                            ? (colorCode = '#949E25')
+                            : 3 * fourthWidth < locationX &&
+                              locationX < 4 * fourthWidth &&
+                              statusHeight < locationY &&
+                              locationY < fourthHeight + statusHeight
+                              ? (colorCode = '#C58C55')
+                              : 3 * fourthWidth < locationX &&
+                                locationX < 4 * fourthWidth &&
+                                fourthHeight < locationY &&
+                                locationY < 2 * fourthHeight + statusHeight
+                                ? (colorCode = '#A46891')
+                                : 3 * fourthWidth < locationX &&
+                                  locationX < 4 * fourthWidth &&
+                                  2 * fourthHeight + statusHeight < locationY &&
+                                  locationY < 3 * fourthHeight + statusHeight
+                                  ? (colorCode = '#81B9A6')
+                                  : 3 * fourthWidth < locationX &&
+                                    locationX < 4 * fourthWidth &&
+                                    3 * fourthHeight + statusHeight < locationY &&
+                                    locationY < 4 * fourthHeight + statusHeight
+                                    ? (colorCode = '#54C347')
+                                    : (colorCode = '#A24551'); //purple
 
     return colorCode;
   };
   const ColorFunctionB4 = () => {
     var colorCode = '';
     0 < locationX &&
-    locationX < fourthWidth &&
-    statusHeight < locationY &&
-    locationY < fourthHeight + statusHeight
+      locationX < fourthWidth &&
+      statusHeight < locationY &&
+      locationY < fourthHeight + statusHeight
       ? (colorCode = '#9C9DBE')
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
         locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#B76B76')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#CB8466')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#5BC0AE')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#69AF99')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#92ACC3')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#80B072')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#87BEC6')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#AC5762')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#B052BE')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#C46988')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#ABB629')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#CB9866')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#AE779C')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#91C2B3')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#65CA5A')
-      : (colorCode = '#AC5762'); //purple
+        ? (colorCode = '#B76B76')
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+          ? (colorCode = '#CB8466')
+          : 0 < locationX &&
+            locationX < fourthWidth &&
+            3 * fourthHeight + statusHeight < locationY &&
+            locationY < 4 * fourthHeight + statusHeight
+            ? (colorCode = '#5BC0AE')
+            : fourthWidth < locationX &&
+              locationX < 2 * fourthWidth &&
+              statusHeight < locationY &&
+              locationY < fourthHeight + statusHeight
+              ? (colorCode = '#69AF99')
+              : fourthWidth < locationX &&
+                locationX < 2 * fourthWidth &&
+                fourthHeight < locationY &&
+                locationY < 2 * fourthHeight + statusHeight
+                ? (colorCode = '#92ACC3')
+                : fourthWidth < locationX &&
+                  locationX < 2 * fourthWidth &&
+                  2 * fourthHeight + statusHeight < locationY &&
+                  locationY < 3 * fourthHeight + statusHeight
+                  ? (colorCode = '#80B072')
+                  : fourthWidth < locationX &&
+                    locationX < 2 * fourthWidth &&
+                    3 * fourthHeight + statusHeight < locationY &&
+                    locationY < 4 * fourthHeight + statusHeight
+                    ? (colorCode = '#87BEC6')
+                    : 2 * fourthWidth < locationX &&
+                      locationX < 3 * fourthWidth &&
+                      statusHeight < locationY &&
+                      locationY < fourthHeight + statusHeight
+                      ? (colorCode = '#AC5762')
+                      : 2 * fourthWidth < locationX &&
+                        locationX < 3 * fourthWidth &&
+                        fourthHeight < locationY &&
+                        locationY < 2 * fourthHeight + statusHeight
+                        ? (colorCode = '#B052BE')
+                        : 2 * fourthWidth < locationX &&
+                          locationX < 3 * fourthWidth &&
+                          2 * fourthHeight + statusHeight < locationY &&
+                          locationY < 3 * fourthHeight + statusHeight
+                          ? (colorCode = '#C46988')
+                          : 2 * fourthWidth < locationX &&
+                            locationX < 3 * fourthWidth &&
+                            3 * fourthHeight + statusHeight < locationY &&
+                            locationY < 4 * fourthHeight + statusHeight
+                            ? (colorCode = '#ABB629')
+                            : 3 * fourthWidth < locationX &&
+                              locationX < 4 * fourthWidth &&
+                              statusHeight < locationY &&
+                              locationY < fourthHeight + statusHeight
+                              ? (colorCode = '#CB9866')
+                              : 3 * fourthWidth < locationX &&
+                                locationX < 4 * fourthWidth &&
+                                fourthHeight < locationY &&
+                                locationY < 2 * fourthHeight + statusHeight
+                                ? (colorCode = '#AE779C')
+                                : 3 * fourthWidth < locationX &&
+                                  locationX < 4 * fourthWidth &&
+                                  2 * fourthHeight + statusHeight < locationY &&
+                                  locationY < 3 * fourthHeight + statusHeight
+                                  ? (colorCode = '#91C2B3')
+                                  : 3 * fourthWidth < locationX &&
+                                    locationX < 4 * fourthWidth &&
+                                    3 * fourthHeight + statusHeight < locationY &&
+                                    locationY < 4 * fourthHeight + statusHeight
+                                    ? (colorCode = '#65CA5A')
+                                    : (colorCode = '#AC5762'); //purple
 
     return colorCode;
   };
@@ -1026,86 +1024,86 @@ const MoodEmotionDetector = ({navigation}) => {
   const BottomAndTopBar = () => {
     var colorCode = '';
     0 < locationX &&
-    locationX < fourthWidth &&
-    statusHeight < locationY &&
-    locationY < fourthHeight + statusHeight
+      locationX < fourthWidth &&
+      statusHeight < locationY &&
+      locationY < fourthHeight + statusHeight
       ? (colorCode = '#A7A8BF')
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
         locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#C18390')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#DFBAA8')
-      : 0 < locationX &&
-        locationX < fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#89C7BB')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#82C6B1')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#ADBAC8')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#A3C499')
-      : fourthWidth < locationX &&
-        locationX < 2 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#A0C9CE')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#BA6D77')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#A964B4')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#C88BA1')
-      : 2 * fourthWidth < locationX &&
-        locationX < 3 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#AEB75A')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        statusHeight < locationY &&
-        locationY < fourthHeight + statusHeight
-      ? (colorCode = '#CFB190')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        fourthHeight < locationY &&
-        locationY < 2 * fourthHeight + statusHeight
-      ? (colorCode = '#B994AD')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        2 * fourthHeight + statusHeight < locationY &&
-        locationY < 3 * fourthHeight + statusHeight
-      ? (colorCode = '#6AA290')
-      : 3 * fourthWidth < locationX &&
-        locationX < 4 * fourthWidth &&
-        3 * fourthHeight + statusHeight < locationY &&
-        locationY < 4 * fourthHeight + statusHeight
-      ? (colorCode = '#7CD272')
-      : (colorCode = '#BA6D77'); //purple
+        ? (colorCode = '#C18390')
+        : 0 < locationX &&
+          locationX < fourthWidth &&
+          2 * fourthHeight + statusHeight < locationY &&
+          locationY < 3 * fourthHeight + statusHeight
+          ? (colorCode = '#DFBAA8')
+          : 0 < locationX &&
+            locationX < fourthWidth &&
+            3 * fourthHeight + statusHeight < locationY &&
+            locationY < 4 * fourthHeight + statusHeight
+            ? (colorCode = '#89C7BB')
+            : fourthWidth < locationX &&
+              locationX < 2 * fourthWidth &&
+              statusHeight < locationY &&
+              locationY < fourthHeight + statusHeight
+              ? (colorCode = '#82C6B1')
+              : fourthWidth < locationX &&
+                locationX < 2 * fourthWidth &&
+                fourthHeight < locationY &&
+                locationY < 2 * fourthHeight + statusHeight
+                ? (colorCode = '#ADBAC8')
+                : fourthWidth < locationX &&
+                  locationX < 2 * fourthWidth &&
+                  2 * fourthHeight + statusHeight < locationY &&
+                  locationY < 3 * fourthHeight + statusHeight
+                  ? (colorCode = '#A3C499')
+                  : fourthWidth < locationX &&
+                    locationX < 2 * fourthWidth &&
+                    3 * fourthHeight + statusHeight < locationY &&
+                    locationY < 4 * fourthHeight + statusHeight
+                    ? (colorCode = '#A0C9CE')
+                    : 2 * fourthWidth < locationX &&
+                      locationX < 3 * fourthWidth &&
+                      statusHeight < locationY &&
+                      locationY < fourthHeight + statusHeight
+                      ? (colorCode = '#BA6D77')
+                      : 2 * fourthWidth < locationX &&
+                        locationX < 3 * fourthWidth &&
+                        fourthHeight < locationY &&
+                        locationY < 2 * fourthHeight + statusHeight
+                        ? (colorCode = '#A964B4')
+                        : 2 * fourthWidth < locationX &&
+                          locationX < 3 * fourthWidth &&
+                          2 * fourthHeight + statusHeight < locationY &&
+                          locationY < 3 * fourthHeight + statusHeight
+                          ? (colorCode = '#C88BA1')
+                          : 2 * fourthWidth < locationX &&
+                            locationX < 3 * fourthWidth &&
+                            3 * fourthHeight + statusHeight < locationY &&
+                            locationY < 4 * fourthHeight + statusHeight
+                            ? (colorCode = '#AEB75A')
+                            : 3 * fourthWidth < locationX &&
+                              locationX < 4 * fourthWidth &&
+                              statusHeight < locationY &&
+                              locationY < fourthHeight + statusHeight
+                              ? (colorCode = '#CFB190')
+                              : 3 * fourthWidth < locationX &&
+                                locationX < 4 * fourthWidth &&
+                                fourthHeight < locationY &&
+                                locationY < 2 * fourthHeight + statusHeight
+                                ? (colorCode = '#B994AD')
+                                : 3 * fourthWidth < locationX &&
+                                  locationX < 4 * fourthWidth &&
+                                  2 * fourthHeight + statusHeight < locationY &&
+                                  locationY < 3 * fourthHeight + statusHeight
+                                  ? (colorCode = '#6AA290')
+                                  : 3 * fourthWidth < locationX &&
+                                    locationX < 4 * fourthWidth &&
+                                    3 * fourthHeight + statusHeight < locationY &&
+                                    locationY < 4 * fourthHeight + statusHeight
+                                    ? (colorCode = '#7CD272')
+                                    : (colorCode = '#BA6D77'); //purple
 
     return colorCode;
   };
@@ -1115,8 +1113,7 @@ const MoodEmotionDetector = ({navigation}) => {
 
     if (!UserData.Anonymous) {
       setSaveConfirm(true);
-    } else {
-      FindId();
+      // FindId();
     }
   };
 
@@ -1149,12 +1146,8 @@ const MoodEmotionDetector = ({navigation}) => {
     }
   };
 
-  const cancelled = async () => {
-    setSaveConfirm(false);
-  };
-
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
         {/* <Text style={styles.titleStyle}>
@@ -1226,12 +1219,12 @@ const MoodEmotionDetector = ({navigation}) => {
                     Label?.length >= 5 && Label?.length <= 6
                       ? parseFloat(locationX - 44)
                       : Label?.length > 6 && Label?.length <= 7
-                      ? parseFloat(locationX - 49)
-                      : Label?.length >= 7 && Label?.length <= 8
-                      ? parseFloat(locationX - 47)
-                      : Label?.length >= 8 && Label?.length <= 12
-                      ? parseFloat(locationX - 63)
-                      : parseFloat(locationX - 35),
+                        ? parseFloat(locationX - 49)
+                        : Label?.length >= 7 && Label?.length <= 8
+                          ? parseFloat(locationX - 47)
+                          : Label?.length >= 8 && Label?.length <= 12
+                            ? parseFloat(locationX - 63)
+                            : parseFloat(locationX - 35),
                 },
               ]}>
               <View
@@ -1244,7 +1237,7 @@ const MoodEmotionDetector = ({navigation}) => {
                   overflow: 'hidden',
                 }}>
                 {/* {console.log(`Label`, Label.length)} */}
-                <Text style={{paddingHorizontal: 7}}>
+                <Text style={{ paddingHorizontal: 7 }}>
                   {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
                   {/* X: {locationX}, Y: {locationY} */}
                 </Text>
@@ -1256,7 +1249,7 @@ const MoodEmotionDetector = ({navigation}) => {
                   uri={
                     'https://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg'
                   }
-                  // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+                // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
                 />
               </View>
 
@@ -1395,9 +1388,9 @@ const MoodEmotionDetector = ({navigation}) => {
             flexDirection: 'row',
           }}>
           <TouchableOpacity
-            style={{marginLeft: 12}}
+            style={{ marginLeft: 12 }}
             onPress={
-              () => navigation.navigate('HomeScreen', {lat: lat, long: lng})
+              () => navigation.navigate('HomeScreen', { lat: lat, long: lng })
               // navigation.replace('HomeScreen', {
               //   lat: UserData.lat,
               //   long: UserData.lon,
@@ -1438,7 +1431,7 @@ const MoodEmotionDetector = ({navigation}) => {
               alignItems: 'center',
             }}>
             <View />
-            <Text style={{textAlign: 'center', fontSize: 18}}>Save</Text>
+            <Text style={{ textAlign: 'center', fontSize: 18 }}>Save</Text>
           </TouchableOpacity>
           {MoodFail && (
             <Text style={styles.ErrorText}>Please select a mood</Text>
@@ -1523,3 +1516,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -20,7 +20,7 @@ import axios from 'axios';
 import AppleHealthKit from 'rn-apple-healthkit';
 import GetLocation from 'react-native-get-location';
 import DeviceInfo from 'react-native-device-info';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import {
   RubikBlack,
   RubikBold,
@@ -43,16 +43,16 @@ import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import ProgressBarCustom from '../../Components/ProgressBar/ProgressBarCustom';
 import BarGraph from '../../Components/BarChart/BarGraph';
-import {LineChart} from 'react-native-chart-kit';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import { LineChart } from 'react-native-chart-kit';
+import { dynamicSize } from '../../Constants/sizeChoose';
 import BezierGraphAuto from '../../Components/BezierGraphAuto/BezierGraphAuto';
 import HomeHeader from '../../Components/HomeHeader/HomeHeader';
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
 import ScreenData from '../Home/screenData/screenData';
 import SleepData from '../Home/SleepData/SleepData';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   DaySteps,
   DayTemp,
@@ -71,26 +71,26 @@ import {
   WeatherPerm,
 } from '../../redux/actions/actions';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
 const data = [
-  {x: 1, y: 1.2},
-  {x: 2, y: 2.3},
-  {x: 3, y: 2.42},
-  {x: 4, y: 1.1},
-  {x: 5, y: 2.41},
-  {x: 6, y: 2.43},
-  {x: 7, y: 2.2},
+  { x: 1, y: 1.2 },
+  { x: 2, y: 2.3 },
+  { x: 3, y: 2.42 },
+  { x: 4, y: 1.1 },
+  { x: 5, y: 2.41 },
+  { x: 6, y: 2.43 },
+  { x: 7, y: 2.2 },
 ];
 
 const dataLow = [
-  {x: 1, y: 10},
-  {x: 2, y: 20},
-  {x: 3, y: 29},
-  {x: 4, y: 18},
-  {x: 5, y: 22},
-  {x: 6, y: 20},
-  {x: 7, y: 23},
+  { x: 1, y: 10 },
+  { x: 2, y: 20 },
+  { x: 3, y: 29 },
+  { x: 4, y: 18 },
+  { x: 5, y: 22 },
+  { x: 6, y: 20 },
+  { x: 7, y: 23 },
 ];
 
 // const points = monotoneCubicInterpolation({data, range: 30});
@@ -143,7 +143,7 @@ const App = (props) => {
   const [callOneTime, setcallOneTime] = useState('one');
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
-  const {lat, long} = route.params.cord;
+  const { lat, long } = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
   // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
@@ -363,27 +363,27 @@ const App = (props) => {
               total = total + results[j].value;
               if (
                 moment(results[j].startDate).startOf('day') <
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <
-                  moment(results[j].startDate).startOf('day').hours(4)
+                moment(results[j].startDate).startOf('day').hours(4)
               ) {
                 console.log(`0`);
                 zero = zero + results[j].value;
                 setOnes(zero);
               } else if (
                 moment(results[j].startDate).startOf('day').hours(4) <
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <
-                  moment(results[j].startDate).startOf('day').hours(8)
+                moment(results[j].startDate).startOf('day').hours(8)
               ) {
                 console.log(`2`, results[j].value);
                 ones = ones + results[j].value;
                 setTwos(ones);
               } else if (
                 moment(results[j].startDate).startOf('day').hours(8) <=
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <=
-                  moment(results[j].startDate).startOf('day').hours(12)
+                moment(results[j].startDate).startOf('day').hours(12)
               ) {
                 twos = twos + results[j].value;
                 console.log(`3`, twos);
@@ -391,18 +391,18 @@ const App = (props) => {
                 //add setzeros to this.
               } else if (
                 moment(results[j].startDate).startOf('day').hours(12) <=
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <=
-                  moment(results[j].startDate).startOf('day').hours(16)
+                moment(results[j].startDate).startOf('day').hours(16)
               ) {
                 threes = threes + results[j].value;
                 console.log(`4`, threes);
                 setFours(threes);
               } else if (
                 moment(results[j].startDate).startOf('day').hours(16) <
-                  moment(results[j].startDate) &&
+                moment(results[j].startDate) &&
                 moment(results[j].startDate) <
-                  moment(results[j].startDate).startOf('day').hours(20)
+                moment(results[j].startDate).startOf('day').hours(20)
               ) {
                 fours = fours + results[j].value;
                 console.log(`5`, results[j].value);
@@ -613,27 +613,27 @@ const App = (props) => {
         }
         if (
           moment(UserData.MainSteps[j].startDate).startOf('day') <
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(4)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(4)
         ) {
           console.log(`0`);
           zero = zero + UserData.MainSteps[j].value;
           setOnes(zero);
         } else if (
           moment(UserData.MainSteps[j].startDate).startOf('day').hours(4) <
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(8)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(8)
         ) {
           console.log(`2`, UserData.MainSteps[j].value);
           ones = ones + UserData.MainSteps[j].value;
           setTwos(ones);
         } else if (
           moment(UserData.MainSteps[j].startDate).startOf('day').hours(8) <=
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <=
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(12)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(12)
         ) {
           twos = twos + UserData.MainSteps[j].value;
           console.log(`3`, twos);
@@ -641,18 +641,18 @@ const App = (props) => {
           //add setzeros to this.
         } else if (
           moment(UserData.MainSteps[j].startDate).startOf('day').hours(12) <=
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <=
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(16)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(16)
         ) {
           threes = threes + UserData.MainSteps[j].value;
           console.log(`4`, threes);
           setFours(threes);
         } else if (
           moment(UserData.MainSteps[j].startDate).startOf('day').hours(16) <
-            moment(UserData.MainSteps[j].startDate) &&
+          moment(UserData.MainSteps[j].startDate) &&
           moment(UserData.MainSteps[j].startDate) <
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(20)
+          moment(UserData.MainSteps[j].startDate).startOf('day').hours(20)
         ) {
           fours = fours + UserData.MainSteps[j].value;
           console.log(`5`, UserData.MainSteps[j].value);
@@ -740,21 +740,21 @@ const App = (props) => {
     let WeatherP = await JSON.parse(Wp);
     console.log(`WeatherP`, WeatherP);
     dispatch(WeatherPerm(WeatherP));
-    if (UserData.WeatherPermission) {
-      axios
-        .get(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-        )
-        .then(async (response) => {
-          console.log(`response`, response.data);
-          await dispatch(DayTemp(response.data));
+    // if (UserData.WeatherPermission) {
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      )
+      .then(async (response) => {
+        console.log(`response`, response.data);
+        await dispatch(DayTemp(response.data));
 
-          // await console.log(`response.data for weather`, response.data);
-        })
-        .catch(function (error) {
-          console.log(`error for weather`, error);
-        });
-    }
+        // await console.log(`response.data for weather`, response.data);
+      })
+      .catch(function (error) {
+        console.log(`error for weather`, error);
+      });
+    // }
   };
 
   const AddDataToFilter = async () => {
@@ -846,14 +846,14 @@ const App = (props) => {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" />
       <Swiper
         // focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
-        dotStyle={{height: 0, width: 0}}
-        activeDotStyle={{height: 0, width: 0}}
-        style={{backgroundColor: 'white'}}
+        dotStyle={{ height: 0, width: 0 }}
+        activeDotStyle={{ height: 0, width: 0 }}
+        style={{ backgroundColor: 'white' }}
         showsButtons={true}
         onIndexChanged={(index) => setSwiperIndex(index)}
         loop={false}>
@@ -1060,7 +1060,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
+  forCircle: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   BigCircleBackgroundImage: {
     height: 140,
     width: 130,
@@ -1072,7 +1072,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,
