@@ -27,6 +27,7 @@ import {
   USER_ID,
   USER_DETAIL,
   IS_ANONYMOUS,
+  COMPANY_NAME,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -194,6 +195,12 @@ export const UserDetail = (data) => {
 export const IsAnonymous = (data) => {
   return {
     type: IS_ANONYMOUS,
+    payload: data,
+  };
+};
+export const CompanyName = (data) => {
+  return {
+    type: COMPANY_NAME,
     payload: data,
   };
 };

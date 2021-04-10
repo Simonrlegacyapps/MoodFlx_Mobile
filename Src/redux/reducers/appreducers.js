@@ -1,4 +1,5 @@
 import {
+  COMPANY_NAME,
   FIRST_ACTION_TYPE,
   GET_ALL_MOODS,
   GET_DAY_STEPS,
@@ -57,6 +58,7 @@ const intializedState = {
   UserId: null,
   UserDetails: null,
   Anonymous: true,
+  NameCompany: '',
 };
 
 export const First = (state = intializedState, action) => {
@@ -170,6 +172,10 @@ export const First = (state = intializedState, action) => {
     case IS_ANONYMOUS:
       return Object.assign({}, state, {
         Anonymous: action.payload,
+      });
+    case COMPANY_NAME:
+      return Object.assign({}, state, {
+        NameCompany: action.payload,
       });
     default:
       return state;

@@ -5,10 +5,11 @@ import ToggleSwitch from 'toggle-switch-react-native';
 import AnonymousIcon from '../../../assets/commonicons/AnonymousIcon';
 import {RubikLight, RubikMedium} from '../../Constants/fonts/Fonts';
 import {useDispatch, useSelector} from 'react-redux';
-import {IsAnonymous} from '../../redux/actions/actions';
+import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
 import {PHOTO_URL} from '../../Constants/constants';
 import AddNameModal from '../Modals/AddNameModal/AddNameModal';
+import DeviceInfo from 'react-native-device-info';
 
 const AnonymousHeader = ({backGround}) => {
   const UserData = useSelector((state) => state.First);
@@ -16,12 +17,76 @@ const AnonymousHeader = ({backGround}) => {
   const [Anonymous, setAnonymous] = useState(false);
   const [ShowAddName, setShowAddName] = useState(false);
   const [name, setname] = useState('');
-  console.log(`UserData.Anonymous`, UserData.Anonymous);
+  // console.log(`UserData.Anonymous`, UserData?.UserDetails);
 
   const VerifyDone = async () => {
-    await AsyncStorage.setItem('Anonymous', JSON.stringify(false));
-    dispatch(IsAnonymous(false));
-    setShowAddName(false);
+    ProfileApiCallHere();
+  };
+
+  const ProfileApiCallHere = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Accept', 'application/json');
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+      full_name: UserData?.UserDetails?.full_name
+        ? UserData?.UserDetails?.full_name
+        : name,
+      pronouns: null,
+      date_of_birth: null,
+      gender: null,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    console.log(`raw`, raw);
+
+    fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions)
+      .then((response) => response.text())
+      .then(async (result) => {
+        await AsyncStorage.setItem('Anonymous', JSON.stringify(false));
+        dispatch(IsAnonymous(false));
+        setShowAddName(false);
+        console.log('profile updated', result), getProfileUserData();
+      })
+      .catch((error) => console.log('error', error));
+  };
+
+  const getProfileUserData = () => {
+    console.log(`called called called called called called`);
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log('UserDetail', result.userData);
+        dispatch(UserDetail(result.userData));
+      })
+      .catch((error) => console.log('error', error));
   };
 
   const cancelled = async () => {
@@ -40,6 +105,14 @@ const AnonymousHeader = ({backGround}) => {
         justifyContent: 'center',
         marginVertical: 20,
       }}>
+      <AddNameModal
+        dataType={'weather'}
+        modalVisible={ShowAddName}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={() => VerifyDone()}
+        value={name}
+        onChangeText={setname}
+      />
       <View
         style={{
           height: 80,
@@ -109,12 +182,12 @@ const AnonymousHeader = ({backGround}) => {
             labelStyle={{color: 'black', fontWeight: '900'}}
             size="large"
             onToggle={async (isOn) => {
-              console.log('changed to : ', isOn), setAnonymous(isOn);
-              if (!isOn && !UserData?.UserDetails?.full_name) {
+              await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
+              dispatch(IsAnonymous(isOn));
+              console.log(`Full name`, UserData?.UserDetails?.full_name);
+              console.log(`UserData.Anonymous === false`, UserData.Anonymous);
+              if (isOn === false && !UserData?.UserDetails?.full_name) {
                 setShowAddName(true);
-              } else {
-                dispatch(IsAnonymous(true));
-                await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
               }
             }}
           />
@@ -179,12 +252,14 @@ const AnonymousHeader = ({backGround}) => {
           labelStyle={{color: 'black', fontWeight: '900'}}
           size="large"
           onToggle={async (isOn) => {
-            console.log('changed to : ', isOn), setAnonymous(isOn);
-            if (!isOn && !UserData?.UserDetails?.full_name) {
+            await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
+            dispatch(IsAnonymous(isOn));
+            console.log(
+              `UserData.Anonymous === false`,
+              UserData?.UserDetails?.full_name,
+            );
+            if (isOn === false && !UserData?.UserDetails?.full_name) {
               setShowAddName(true);
-            } else {
-              dispatch(IsAnonymous(true));
-              await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
             }
           }}
         />
@@ -202,3 +277,12 @@ const AnonymousHeader = ({backGround}) => {
 };
 
 export default AnonymousHeader;
+
+// console.log('changed to : ', isOn), setAnonymous(isOn);
+//             dispatch(IsAnonymous(isOn));
+//             if (!isOn && !UserData?.UserDetails?.full_name) {
+//               setShowAddName(true);
+//             } else {
+//               dispatch(IsAnonymous(true));
+//               await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
+//             }

@@ -45,8 +45,9 @@ const MicScreen = ({navigation}) => {
     var data = JSON.stringify({
       device_id: deviceId,
       email: UserData.UserEmail,
+      user_id: UserData.UserId,
     });
-    console.log(`data`, data);
+    console.log(`data of questions`, data);
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
