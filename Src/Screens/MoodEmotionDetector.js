@@ -407,6 +407,7 @@ const MoodEmotionDetector = ({ navigation }) => {
   let fourthWidth = width / 4;
 
   const getDirectionAndColor = ({ moveY, moveX, dx, dy, y0, x0 }) => {
+    ReactNativeHapticFeedback.trigger("notificationSuccess", options);
     // console.log('moveX, moveY, dx, dy, move', moveY, moveX, dx, dy, y0, x0);
     // console.log('dx', dx)
     // console.log('dy', dy)
@@ -631,11 +632,13 @@ const MoodEmotionDetector = ({ navigation }) => {
     PanResponder.create({
       onStartShouldSetPanResponder: (event, gestureState) => {
         UserData.AllMoods !== null &&
-          !!getDirectionAndColorOnClick(gestureState);
+          !!getDirectionAndColorOnClick(gestureState); ReactNativeHapticFeedback.trigger("notificationSuccess", options);
         setstartTime(Date.now());
         console.log(`check check check`);
       },
-      onStartShouldSetPanResponderCapture: (event, gestureState) => true,
+      onStartShouldSetPanResponderCapture: (event, gestureState) => {
+        ReactNativeHapticFeedback.trigger("notificationSuccess", options);
+      },
       onMoveShouldSetPanResponder: (event, gestureState) => {
         !!getDirectionAndColor(gestureState);
         !!FindSvg(gestureState);
@@ -650,7 +653,7 @@ const MoodEmotionDetector = ({ navigation }) => {
         // setLocationX(gestureState.x0)
         // setLocationY(gestureState.y0)
         const click = getDirectionAndColorOnClick(gestureState);
-        ReactNativeHapticFeedback.trigger("notificationSuccess", options);
+        // ReactNativeHapticFeedback.trigger("notificationSuccess", options);
         setLabel(click);
       },
       onMoveShouldSetPanResponderCapture: (event, gestureState) => {

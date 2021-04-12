@@ -333,7 +333,7 @@ const WeatherData = ({
           </Text>
           <Text style={styles.swiperText}>
             You are more <Text style={{ color: '#5947D0' }}>energetic</Text> when
-            the temperature is below <Text style={{ color: '#5947D0' }}>20ª</Text>{' '}
+            the temperature is below <Text style={{ color: '#5947D0' }}>20°</Text>{' '}
             and it <Text style={{ color: '#5947D0' }}>rains</Text> around{' '}
             <Text style={{ color: '#5947D0' }}>2hrs</Text>
           </Text>
