@@ -52,6 +52,8 @@ const SaveConfirmModal = ({
   //   );
 
   // console.log(`value`, value);
+
+  let myname = UserData?.UserDetails?.full_name;
   return (
     <Modal
       style={styles.modalView}
@@ -93,14 +95,22 @@ const SaveConfirmModal = ({
                 overflow: 'hidden',
                 marginTop: 25,
               }}>
-              {
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: dynamicSize(40),
+                  fontFamily: RubikRegular,
+                }}>
+                {myname.substring(0, 1)}
+              </Text>
+              {/* { 
                 <Image
                   style={{height: '100%', width: '100%', resizeMode: 'cover'}}
                   source={{
                     uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
                   }}
                 />
-              }
+              } */}
             </View>
           </View>
           <Text

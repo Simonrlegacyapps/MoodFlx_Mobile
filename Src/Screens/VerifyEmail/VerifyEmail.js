@@ -61,7 +61,7 @@ const VerifyEmail = ({navigation}) => {
                   'UserId',
                   JSON.stringify(resp.data.user_id),
                 );
-                dispatch(CompanyName(resp.data.companyInfo.full_name));
+                dispatch(CompanyName(resp.data.companyInfo));
                 dispatch(GetUserId(resp.data.user_id));
                 dispatch(UserEmail(mail));
               } else {

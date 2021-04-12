@@ -95,11 +95,10 @@ const AnonymousHeader = ({backGround}) => {
     dispatch(IsAnonymous(true));
   };
 
-  console.log(`name`, UserData.Anonymous);
-
   return backGround ? (
     <View
       style={{
+        zIndex: -99999,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',

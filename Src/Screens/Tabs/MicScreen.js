@@ -21,6 +21,7 @@ import {dynamicSize} from '../../Constants/sizeChoose';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import {useSelector} from 'react-redux';
+import moment from 'moment';
 
 const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
@@ -123,7 +124,14 @@ const MicScreen = ({navigation}) => {
             justifyContent: 'center',
             // flex: 1,
           }}>
-          <Image source={Constants.Images.GirlImage} style={{}} />
+          <Image
+            source={Constants.Images.GirlImage}
+            style={{
+              height: dynamicSize(300),
+              width: dynamicSize(300),
+              resizeMode: 'contain',
+            }}
+          />
         </View>
         <Image style={{marginTop: -10}} source={Constants.Images.Circles} />
         <View style={{marginHorizontal: 15}}>
@@ -132,9 +140,12 @@ const MicScreen = ({navigation}) => {
           {questions &&
             questions.length > 0 &&
             questions.map((item, index) => {
+              let givenDate = new Date(moment(item.end_date)).getTime();
+              let todayDate = new Date().getTime();
+              console.log(`todayDate`, item.end_date, givenDate, todayDate);
               return (
                 <TouchableOpacity
-                  // disabled={item.name ? true : false}
+                  disabled={givenDate >= todayDate ? false : true}
                   onPress={() =>
                     navigation.replace('MoodEmotionDetector', {
                       question: item.id,
