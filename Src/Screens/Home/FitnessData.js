@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   StatusBar,
 } from 'react-native';
 import ProgressBar from 'react-native-animated-progress';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import Constants from '../../Constants';
 import {
   RubikExtraBold,
@@ -21,10 +21,13 @@ import {
 } from '../../Constants/fonts/Fonts';
 import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import AsyncStorage from '@react-native-community/async-storage';
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import PopUp from '../../Components/PopUp/PopUp';
+import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
+import DeviceInfo from 'react-native-device-info';
+import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
 
-export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
+export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
 const FitnessData = ({
   Perm,
@@ -41,7 +44,7 @@ const FitnessData = ({
   fives,
   MoodCount,
   Loading,
-  swiperIndex
+  swiperIndex,
 }) => {
   // useEffect(() => {
   //   checkThis();
@@ -50,7 +53,8 @@ const FitnessData = ({
 
   const UserData = useSelector((state) => state.First);
   const [openActionSheet, setOpenActionSheet] = useState(false);
-
+  const [name, setname] = useState('');
+  const [ShowAddName, setShowAddName] = useState(false);
   // console.log(`UserData`, UserData);
 
   const {
@@ -66,9 +70,81 @@ const FitnessData = ({
   //   );
   // };
 
+  const dispatch = useDispatch();
+
   const VerifyDone = () => {
     setOpenActionSheet(false);
     checkStorage();
+  };
+  const VerifyAddName = () => {
+    ProfileApiCallHere();
+  };
+  const ProfileApiCallHere = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Accept', 'application/json');
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+      full_name: UserData?.UserDetails?.full_name
+        ? UserData?.UserDetails?.full_name
+        : name,
+      pronouns: null,
+      date_of_birth: null,
+      gender: null,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    console.log(`raw`, raw);
+
+    fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions)
+      .then((response) => response.text())
+      .then(async (result) => {
+        setShowAddName(false);
+        console.log('profile updated', result), getProfileUserData();
+      })
+      .catch((error) => console.log('error', error));
+  };
+
+  const getProfileUserData = () => {
+    console.log(`called called called called called called getProfileUserData`);
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log('UserDetail', result.userData);
+        dispatch(UserDetail(result.userData));
+      })
+      .catch((error) => console.log('error', error));
+  };
+
+  const cancelled = async () => {
+    setShowAddName(false);
   };
 
   return (
@@ -82,7 +158,9 @@ const FitnessData = ({
           <TouchableOpacity
             onPress={async () => {
               await AsyncStorage.setItem('GiveHealthPerm', 'true');
-              setOpenActionSheet(true);
+              UserData.HealthPermission
+                ? checkStorage()
+                : setOpenActionSheet(true);
 
               // OnAutoSync();
               // filterDates();
@@ -94,37 +172,50 @@ const FitnessData = ({
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{ height: 20, width: 20 }}
+                style={{height: 20, width: 20}}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
-              <Text style={styles.lightText}>Sync your</Text>
+            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+              <Text style={styles.lightText}>
+                {UserData.HealthPermission ? 'Syncing you' : 'Sync your'}
+              </Text>
               <Text style={styles.normalText}>Fitness data</Text>
             </View>
           </TouchableOpacity>
-          <View style={styles.ColoredView}>
+          <TouchableOpacity
+            onPress={() =>
+              UserData?.UserDetails?.full_name
+                ? console.log(`Name available`)
+                : setShowAddName(true)
+            }
+            style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anonymous</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.ProgressBarView}>
           <ProgressBar
-            progress={swiperIndex == 0 ?
-              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
-              100
-              : 0}
+            progress={
+              swiperIndex == 0
+                ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
+                    3) *
+                  100
+                : 0
+            }
             height={10}
             backgroundColor="#CB9866"
           />
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={[styles.SmallThinText, { flex: 1 }]}>
-              Try add 3 moods per day
+          <View style={{flexDirection: 'row'}}>
+            <Text numberOfLines={1} style={[styles.SmallThinText, {flex: 1}]}>
+              {UserMoodCount < 3
+                ? 'Try add 3 moods per day'
+                : "Boom! You've added 3 moods today"}
             </Text>
             <Text
               style={
-                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
+                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
               }>
-              {UserMoodCount < 3 ? UserMoodCount : 3}/3
+              {UserMoodCount === null ? 0 : UserMoodCount}/3
             </Text>
           </View>
         </View>
@@ -134,14 +225,35 @@ const FitnessData = ({
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-            Activity
+          <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+            ACTIVITY
           </Text>
           <Text style={styles.swiperText}>
-            You are the <Text style={{ color: '#5947D0' }}>happiest</Text> when
-            you walk over <Text style={{ color: '#5947D0' }}>5000</Text> steps
-            before <Text style={{ color: '#5947D0' }}>2PM</Text>
+            You are the <Text style={{color: '#5947D0'}}>happiest</Text> when
+            you walk over <Text style={{color: '#5947D0'}}>5000</Text> steps
+            before <Text style={{color: '#5947D0'}}>2PM</Text>
           </Text>
+          {UserData.HealthPermission && (
+            <View
+              style={{
+                position: 'absolute',
+                zIndex: -234234,
+                justifyContent: 'center',
+                top: SIZE / 2.6,
+              }}>
+              <Text
+                style={{
+                  marginTop: -160,
+                  fontWeight: '700',
+                  fontFamily: RubikExtraBold,
+                  fontSize: SIZE / 5.5,
+                  color: '#E0DDED',
+                  transform: [{rotate: '-15deg'}],
+                }}>
+                Demo
+              </Text>
+            </View>
+          )}
         </View>
         {/* {UserData.TodayAllSteps !== null &&
           !Loading &&
@@ -150,7 +262,7 @@ const FitnessData = ({
           UserData.UserCalories !== null &&
           UserData.UserDistance !== null &&
           UserData.UserMoveTime !== null && ( */}
-        <View style={[styles.forCircle, { marginTop: 30 }]}>
+        <View style={[styles.forCircle, {marginTop: 30}]}>
           {/* {setTimeout(() => {
                 
               }, timeout)} */}
@@ -178,16 +290,16 @@ const FitnessData = ({
               source={Constants.Images.RunningBackground}>
               <Image
                 source={Constants.Images.RunningMan}
-                style={{ height: 30, width: 30, marginTop: 25 }}
+                style={{height: 30, width: 30, marginTop: 25}}
               />
-              <Text style={[styles.swiperText, { fontSize: 24, marginTop: 10 }]}>
+              <Text style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
                 {/* {(TodayStep * 100).toFixed(0)} */}
                 {UserSteps.toFixed(0)}
               </Text>
               <Text
                 style={[
                   styles.SmallThinText,
-                  { paddingVertical: 0, color: '#3B456D' },
+                  {paddingVertical: 0, color: '#3B456D'},
                 ]}>
                 steps
               </Text>
@@ -222,10 +334,10 @@ const FitnessData = ({
             <View style={styles.absolute}>
               <Image
                 source={Constants.Images.Calories}
-                style={{ height: 25, width: 25, marginTop: -25 }}
+                style={{height: 25, width: 25, marginTop: -25}}
               />
             </View>
-            <View style={{ marginTop: 10 }}>
+            <View style={{marginTop: 10}}>
               <Text style={[styles.SmallThinBlackText]}>
                 {UserCalories.toFixed(0)} kcal
               </Text>
@@ -249,10 +361,10 @@ const FitnessData = ({
             <View style={styles.absolute}>
               <Image
                 source={Constants.Images.Distance}
-                style={{ height: 25, width: 25, marginTop: -25 }}
+                style={{height: 25, width: 25, marginTop: -25}}
               />
             </View>
-            <View style={{ marginTop: 10 }}>
+            <View style={{marginTop: 10}}>
               <Text style={[styles.SmallThinBlackText]}>
                 {((UserDistance / 5000) * 5).toFixed(1)} km
               </Text>
@@ -276,10 +388,10 @@ const FitnessData = ({
             <View style={styles.absolute}>
               <Image
                 source={Constants.Images.Time}
-                style={{ height: 25, width: 25, marginTop: -25 }}
+                style={{height: 25, width: 25, marginTop: -25}}
               />
             </View>
-            <View style={{ marginTop: 10 }}>
+            <View style={{marginTop: 10}}>
               <Text style={[styles.SmallThinBlackText]}>
                 {UserMoveTime.toFixed(0)} min
               </Text>
@@ -316,7 +428,7 @@ const FitnessData = ({
                 fontFamily: RubikExtraBold,
                 fontSize: SIZE / 3.5,
                 color: '#E0DDED',
-                transform: [{ rotate: '-15deg' }],
+                transform: [{rotate: '-15deg'}],
               }}>
               Demo
             </Text>
@@ -330,6 +442,14 @@ const FitnessData = ({
         modalVisible={openActionSheet}
         dismissModalHandler={() => setOpenActionSheet(false)}
         verifyDone={() => VerifyDone()}
+      />
+      <AddNameModal
+        dataType={'Fitness'}
+        modalVisible={ShowAddName}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={() => VerifyAddName()}
+        value={name}
+        onChangeText={setname}
       />
     </View>
   );
@@ -440,7 +560,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  forCircle: { alignItems: 'center', justifyContent: 'center', flex: 1 },
+  forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
   BigCircleBackgroundImage: {
     height: 140,
     width: 130,
@@ -452,7 +572,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
-  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
+  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

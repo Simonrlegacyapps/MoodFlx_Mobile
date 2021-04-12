@@ -88,7 +88,7 @@ const PopUp = ({
                 justifyContent: 'center',
               }}>
               <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
-                Verify
+                Next
               </Text>
             </View>
           </TouchableOpacity>
