@@ -99,6 +99,7 @@ const WeatherData = ({
         console.log('error', code, message);
       });
   };
+
   const WeatherDayData = (loc_lat, loc_long) => {
     let value = 0;
     axios
@@ -107,8 +108,6 @@ const WeatherData = ({
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
-        // console.log(`response of weather data`, response.data);
-        // await setWeatherDay(response.data);
         if (UserData.DayTemperature) {
           for (let i in response.data.hourly) {
             if (
@@ -130,30 +129,30 @@ const WeatherData = ({
       });
   };
 
-  const syncWeatherData = () => {
+  const syncWeatherData = async () => {
     let geocode = null;
-    let city = null;
-    let state = null;
-    let country = null;
-    // console.log(
-    //   `here+=++=+++++++++=+++=====++++=====+_+_++_+_+_+_++__+_+_++++_+_++++_+_+_+_+_+_+++_+_+_+_+_+_+_++_+`,
-    // );
     Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
-
-    Geocoder.from({
+    var state_info = ""
+    var city_info = ""
+    var country_info = ""
+    await Geocoder.from({
       lat: UserData.lat,
       lng: UserData.lon,
-    })
-      .then((data) => {
-        // console.log(`data==------->`, data);
-        geocode = data.plus_code.compound_code;
-        // const Id = data.results[0].address_components.find(({name}) => {
-        //   // console.log(`name`, name);
-        //   return name === Label;
-        // });
-        // console.log(`city`, city);
-      })
-      .catch((err) => console.log(`weather api location err`, err));
+    }).then((data) => {
+      geocode = data.plus_code.compound_code;
+      const address_list = data.results[0].address_components
+      for (i = 0; i < address_list.length; i++) {
+        if (address_list[i].types.includes("country")) {
+          country_info = address_list[i].long_name
+        }
+        if (address_list[i].types.includes("administrative_area_level_1")) {
+          state_info = address_list[i].long_name
+        }
+        if (address_list[i].types.includes("administrative_area_level_2")) {
+          city_info = address_list[i].long_name
+        }
+      }
+    }).catch((err) => console.log(`weather api location err`, err));
 
     const deviceId = DeviceInfo.getUniqueId();
     const data = JSON.stringify({
@@ -167,34 +166,33 @@ const WeatherData = ({
       weather_data: [Weather],
       temp_min: Weather?.main?.temp_min,
       temp_max: Weather?.main?.temp_max,
-      city: 'indore',
-      state: 'madhya pradesh',
-      country: 'india',
+      city: city_info,
+      state: state_info,
+      country: country_info,
       lat: UserData.lat,
       lon: UserData.lon,
     });
 
-    // console.log(`data of checking`, data);
+    console.log('weather', data)
+    var config = {
+      method: 'post',
+      url: 'https://admin.moodflo.com/api/updateWeather',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
+      },
+      data: data,
+    };
 
-    // var config = {
-    //   method: 'post',
-    //   url: 'https://admin.moodflo.com/api/updateWeather',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
-    //   },
-    //   data: data,
-    // };
-
-    // axios(config)
-    //   .then(function (response) {
-    //     console.log(
-    //       JSON.stringify(' ✅ ✅ ✅ ✅ Success ✅ ✅ ✅ ✅ ', response, data),
-    //     );
-    //   })
-    //   .catch(function (error) {
-    //     console.log('❌❌❌❌Fail ❌❌❌❌', error, data);
-    //   });
+    axios(config)
+      .then(function (response) {
+        console.log(
+          JSON.stringify(' ✅ ✅ ✅ ✅ Success ✅ ✅ ✅ ✅ ', response, data),
+        );
+      })
+      .catch(function (error) {
+        console.log('❌❌❌❌Fail ❌❌❌❌', error, data);
+      });
   };
 
   const th = async () => {
@@ -203,7 +201,8 @@ const WeatherData = ({
 
   const VerifyDone = () => {
     setOpenActionSheet(false);
-    CheckForWeather(UserData.lat, UserData.lon);
+    // CheckForWeather(UserData.lat, UserData.lon);
+    syncWeatherData()
   };
 
   useEffect(() => {

@@ -733,12 +733,8 @@ const App = (props) => {
   };
 
   const CheckForWeather = async (loc_lat, loc_long) => {
-    console.log(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-    );
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let WeatherP = await JSON.parse(Wp);
-    console.log(`WeatherP`, WeatherP);
     dispatch(WeatherPerm(WeatherP));
     // if (UserData.WeatherPermission) {
     axios
@@ -747,7 +743,7 @@ const App = (props) => {
       )
       .then(async (response) => {
         console.log(`response`, response.data);
-        await dispatch(DayTemp(response.data));
+        dispatch(DayTemp(response.data));
 
         // await console.log(`response.data for weather`, response.data);
       })
