@@ -31,6 +31,7 @@ import {RubikBlack, RubikRegular} from '../../Constants/fonts/Fonts';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
+import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 
 const Linktocompany = ({navigation}) => {
   const {OTPVerified, setDivision, getDivision} = useSelector(
@@ -47,6 +48,7 @@ const Linktocompany = ({navigation}) => {
   const [APIfail, setAPIfail] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [labelShow, setLabelShow] = useState('');
+  const [UnlinkConfirm, setUnlinkConfirm] = useState(false)
 
   const dispatch = useDispatch();
   const route = useRoute();
@@ -116,10 +118,15 @@ const Linktocompany = ({navigation}) => {
   };
   console.log(`UserData.UserDivision`, UserData.UserDivision);
 
-  const onUnlink = async (type) => {
-    console.log('run');
-    // setLinked(type);
-    dispatch(OTP_Verify(false));
+  const cancelled =()=>{
+    setUnlinkConfirm(false)
+  }
+
+  const VerifyDone = async (type) => {
+    console.log('verify', type);
+
+    if(type === "Yes"){
+      dispatch(OTP_Verify(false));
     dispatch(Division(null));
     await AsyncStorage.removeItem('UserId');
     await AsyncStorage.removeItem('Anonymous');
@@ -131,6 +138,12 @@ const Linktocompany = ({navigation}) => {
     dispatch(GetUserId(null));
     dispatch(IsAnonymous(true));
     dispatch(UserDetail(null));
+    setUnlinkConfirm(false)
+    } else{
+      setUnlinkConfirm(false)
+    }
+    // setLinked(type);
+    
   };
   console.log(`UserData.NameCompany`, UserData.NameCompany);
   return (
@@ -421,7 +434,7 @@ const Linktocompany = ({navigation}) => {
           </Text>
           <TouchableOpacity
             // disabled={selectedLanguage ? false : true}
-            onPress={() => onUnlink('Link')}>
+            onPress={() => setUnlinkConfirm(true)}>
             <View
               style={{
                 marginTop: 20,
@@ -475,6 +488,11 @@ const Linktocompany = ({navigation}) => {
           <ActivityIndicator size="large" />
         </View>
       )}
+
+      <UnlinkConfirmModal
+      modalVisible={UnlinkConfirm}
+      dismissModalHandler={() => cancelled()}
+      verifyDone={(value) => VerifyDone(value)}/>
     </View>
   );
 };
