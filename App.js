@@ -130,6 +130,7 @@ const App: () => React$Node = () => {
 
   const getProfileUserData = async () => {
     // ---> checking all the data in local storage
+    await AsyncStorage.setItem('Anonymous', "true")
     let UserId = await AsyncStorage.getItem('UserId');
     let anonymous = await AsyncStorage.getItem('Anonymous');
     let p = await AsyncStorage.getItem('Email');
