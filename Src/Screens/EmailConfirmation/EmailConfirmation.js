@@ -143,7 +143,7 @@ const EmailConfirmation = ({navigation}) => {
             keyboardType={'email-address'}
             returnKeyType={'done'}
             autoCorrect={false}
-            autoCapitalize={false}
+            autoCapitalize={'none'}
             autoCompleteType={false}
             placeholder={'example@work-mail.com'}
             placeholderTextColor={'#8A8BAB'}

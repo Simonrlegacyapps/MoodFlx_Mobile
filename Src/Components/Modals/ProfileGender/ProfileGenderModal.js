@@ -11,6 +11,7 @@ import Modal from 'react-native-modal';
 import {RubikRegular} from '../../../Constants/fonts/Fonts';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
+import {dynamicSize} from '../../../Constants/sizeChoose';
 
 type props = {
   modalVisible: Boolean,
@@ -76,15 +77,30 @@ const ProfileGenderModal = ({
           ) : (
             data &&
             data.length > 0 &&
-            data.map((item) => {
+            data.map((item, index) => {
               return (
                 <TouchableOpacity
                   onPress={() => {
                     onChangeText(item.label), dismissModalHandler();
                   }}
                   activeOpacity={0.9}
-                  style={styles.buttonsStyle}>
+                  style={[
+                    styles.buttonsStyle,
+                    {
+                      borderBottomWidth: 1,
+                      minWidth: dynamicSize(190),
+                      borderBottomColor: '#D8D8D8',
+                    },
+                  ]}>
                   <Text style={styles.textStyles}>{item.label}</Text>
+                  <View
+                    style={{
+                      width: '90%',
+                      height: 1,
+                      backgroundColor: 'black',
+                    }}
+                  />
+                  {/* <Text>Hi</Text> */}
                 </TouchableOpacity>
               );
             })

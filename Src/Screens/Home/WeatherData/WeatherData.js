@@ -31,6 +31,9 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import PopUp from '../../../Components/PopUp/PopUp';
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
+import {dynamicSize} from '../../../Constants/sizeChoose';
+import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
+import {WeatherPerm} from '../../../redux/actions/actions';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -51,6 +54,7 @@ const WeatherData = ({
   // dataLow,
   // lat,
   // long,
+  tryWeather,
   MoodCount,
   swiperIndex,
 }) => {
@@ -62,13 +66,19 @@ const WeatherData = ({
   const [Five, setFive] = useState(null);
   const [WeatherDay, setWeatherDay] = useState(null);
   const [hours, sethours] = useState(0);
+  const [EditManualWeather, setEditManualWeather] = useState(false);
+  const [ManualTemp, setManualTemp] = useState(null);
+  const [ManulHours, setManulHours] = useState(null);
+  const [ManulPollen, setManulPollen] = useState(null);
+  const [ManualWeatherType, setManualWeatherType] = useState(null);
+  const [AllDayWeather, setAllDayWeather] = useState(null);
 
   const a = moment().subtract(0, 'days').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
   const c = moment().subtract(2, 'days').startOf('day').toString();
   const d = moment().subtract(3, 'days').startOf('day').toString();
   const e = moment().subtract(4, 'days').startOf('day').toString();
-  // console.log(`b`, Date.parse(b));
+  // console.log('tryWeather', tryWeather);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -99,7 +109,7 @@ const WeatherData = ({
         console.log('error', code, message);
       });
   };
-
+  let valueHours = 0;
   const WeatherDayData = (loc_lat, loc_long) => {
     let value = 0;
     axios
@@ -109,6 +119,8 @@ const WeatherData = ({
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
+        // console.log(`response.data.hourly`, response.data.hourly);
+        setAllDayWeather(response.data.hourly);
         if (UserData.DayTemperature) {
           for (let i in response.data.hourly) {
             if (
@@ -117,8 +129,7 @@ const WeatherData = ({
             ) {
               value = value + 1;
               sethours(value);
-            } else {
-              break;
+              valueHours = value;
             }
           }
         } else {
@@ -130,41 +141,69 @@ const WeatherData = ({
       });
   };
 
+  const findWeather = (value) => {
+    console.log(`value`, value);
+    let weather = '';
+    if (value) {
+      value == 'clear sky'
+        ? (weather = weather + 'Sunny')
+        : value == 'few clouds' ||
+          value == 'scattered clouds' ||
+          value == 'broken clouds'
+        ? (weather = weather + 'Cloudy')
+        : value == 'rain' || value == 'shower rain'
+        ? (weather = weather + 'Rainy')
+        : value == 'thunderstorm'
+        ? (weather = weather + 'Stormy')
+        : value == 'snow' || value == 'mist'
+        ? (weather = weather + 'Snowy')
+        : value == undefined
+        ? (weather = weather + 'Rainy')
+        : (weather = weather + 'Rainy');
+    }
+
+    return weather;
+  };
+
   const syncWeatherData = async () => {
     let geocode = null;
     Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
-    var state_info = ""
-    var city_info = ""
-    var country_info = ""
+    var state_info = '';
+    var city_info = '';
+    var country_info = '';
     await Geocoder.from({
       lat: UserData.lat,
       lng: UserData.lon,
-    }).then((data) => {
-      geocode = data.plus_code.compound_code;
-      const address_list = data.results[0].address_components
-      for (i = 0; i < address_list.length; i++) {
-        if (address_list[i].types.includes("country")) {
-          country_info = address_list[i].long_name
+    })
+      .then((data) => {
+        geocode = data.plus_code.compound_code;
+        const address_list = data.results[0].address_components;
+        for (i = 0; i < address_list.length; i++) {
+          if (address_list[i].types.includes('country')) {
+            country_info = address_list[i].long_name;
+          }
+          if (address_list[i].types.includes('administrative_area_level_1')) {
+            state_info = address_list[i].long_name;
+          }
+          if (address_list[i].types.includes('administrative_area_level_2')) {
+            city_info = address_list[i].long_name;
+          }
         }
-        if (address_list[i].types.includes("administrative_area_level_1")) {
-          state_info = address_list[i].long_name
-        }
-        if (address_list[i].types.includes("administrative_area_level_2")) {
-          city_info = address_list[i].long_name
-        }
-      }
-    }).catch((err) => console.log(`weather api location err`, err));
+      })
+      .catch((err) => console.log(`weather api location err`, err));
 
     const deviceId = DeviceInfo.getUniqueId();
     const data = JSON.stringify({
       user_id: UserData.UserId,
       email: UserData.UserEmail,
       device_id: deviceId,
-      hours: UserData.WeatherHours,
-      weather_type: 'Rainfall',
+      hours: ManulHours ? ManulHours : hours,
+      weather_type: ManualWeatherType
+        ? ManualWeatherType
+        : findWeather(UserData?.DayTemperature?.weather[0].description),
       pollen: null,
-      pollen_type: 'Low',
-      weather_data: [Weather],
+      pollen_type: ManulPollen ? ManulPollen : 'Low',
+      weather_data: UserData.DayTemperature,
       temp_min: Weather?.main?.temp_min,
       temp_max: Weather?.main?.temp_max,
       city: city_info,
@@ -174,7 +213,7 @@ const WeatherData = ({
       lon: UserData.lon,
     });
 
-    console.log('weather', data)
+    console.log('weather', data);
     var config = {
       method: 'post',
       url: 'https://admin.moodflo.com/api/updateWeather',
@@ -200,10 +239,15 @@ const WeatherData = ({
     WeatherDayData(UserData.lat, UserData.lon);
   };
 
-  const VerifyDone = () => {
+  const VerifyDone = async () => {
+    await AsyncStorage.setItem('GiveWeatherPerm', 'true');
     setOpenActionSheet(false);
     // CheckForWeather(UserData.lat, UserData.lon);
-    syncWeatherData()
+    syncWeatherData();
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    let WeatherP = await JSON.parse(Wp);
+    console.log(`WeatherPerm`, WeatherP);
+    dispatch(WeatherPerm(WeatherP));
   };
 
   useEffect(() => {
@@ -265,6 +309,27 @@ const WeatherData = ({
 
   // console.log(`Lowmax`, Lowmax, dataLow);
 
+  const editTemp = () => {
+    setEditManualWeather(true);
+  };
+  const cancelled = () => {
+    setEditManualWeather(false);
+  };
+
+  const EditDone = () => {
+    cancelled();
+    syncWeatherData();
+  };
+  dataOfWeatherGraph = [
+    {x: 1, y: AllDayWeather ? AllDayWeather[0].temp : 0},
+    {x: 2, y: AllDayWeather ? AllDayWeather[3].temp : 0},
+    {x: 3, y: AllDayWeather ? AllDayWeather[7].temp : 0},
+    {x: 4, y: AllDayWeather ? AllDayWeather[11].temp : 0},
+    {x: 5, y: AllDayWeather ? AllDayWeather[15].temp : 0},
+    {x: 6, y: AllDayWeather ? AllDayWeather[19].temp : 0},
+    {x: 7, y: AllDayWeather ? AllDayWeather[23].temp : 0},
+  ];
+  // console.log(`dataOfWeatherGraph`, dataOfWeatherGraph);
   return (
     <View>
       {/* {console.log(`data`, data)} */}
@@ -276,7 +341,6 @@ const WeatherData = ({
         <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
-              await AsyncStorage.setItem('GiveWeatherPerm', 'true');
               setOpenActionSheet(true);
             }}
             style={{
@@ -313,7 +377,7 @@ const WeatherData = ({
             <Text numberOfLines={1} style={[styles.SmallThinText, {flex: 1}]}>
               {JSON.parse(MoodCount) < 3
                 ? 'Try add 3 moods per day'
-                : "Boom! You've added 3 moods today"}
+                : `Boom! You've added ${JSON.parse(MoodCount)} moods today`}
             </Text>
             <Text
               style={
@@ -385,7 +449,12 @@ const WeatherData = ({
                     borderRadius: 15,
                     marginHorizontal: 20,
                   }}>
-                  <View style={{flexDirection: 'row', padding: 15}}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      padding: 15,
+                      overflow: 'hidden',
+                    }}>
                     <Image
                       resizeMode={'contain'}
                       source={Constants.Images.Rain}
@@ -393,13 +462,38 @@ const WeatherData = ({
                     />
                     <View>
                       <Text style={[styles.Card1Text]}>
-                        {Weather ? Weather.weather[0].description : 'Low'}
+                        {ManualWeatherType
+                          ? ManualWeatherType
+                          : Weather
+                          ? Weather.weather[0].description
+                          : 'Low'}
                       </Text>
-                      <Text style={[, {fontFamily: RubikMedium, fontSize: 36}]}>
-                        {Math.round(Weather ? Weather.main.temp : '0')}ºC
+                      <Text
+                        style={[
+                          ,
+                          {fontFamily: RubikMedium, fontSize: dynamicSize(32)},
+                        ]}>
+                        {ManualTemp
+                          ? ManualTemp
+                          : Math.round(Weather ? Weather.main.temp : '0')}
+                        ºC
                       </Text>
                     </View>
                   </View>
+                  <TouchableOpacity onPress={editTemp}>
+                    <Image
+                      style={{
+                        resizeMode: 'contain',
+                        height: dynamicSize(17),
+                        width: dynamicSize(17),
+                        marginTop: -25,
+                        right: 5,
+                        bottom: 7,
+                        alignSelf: 'flex-end',
+                      }}
+                      source={Constants.Images.Edit}
+                    />
+                  </TouchableOpacity>
                 </View>
                 <View style={styles.CardsView}>
                   <View style={styles.card2View}>
@@ -411,14 +505,38 @@ const WeatherData = ({
                       />
                       <View>
                         <Text style={[styles.smallCardText]}>
-                          {Weather ? Weather.weather[0].description : 'Low'}
+                          {ManualWeatherType
+                            ? ManualWeatherType
+                            : Weather
+                            ? Weather.weather[0].description
+                            : 'Low'}
                         </Text>
                         <Text
-                          style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
-                          {hours ? hours : 1}hr
+                          style={[
+                            ,
+                            {
+                              fontFamily: RubikMedium,
+                              fontSize: dynamicSize(14),
+                            },
+                          ]}>
+                          {ManulHours ? ManulHours : hours ? hours : 1}hr
                         </Text>
                       </View>
                     </View>
+                    <TouchableOpacity onPress={editTemp}>
+                      <Image
+                        style={{
+                          resizeMode: 'contain',
+                          height: dynamicSize(17),
+                          width: dynamicSize(17),
+                          marginTop: -18,
+                          right: 5,
+                          bottom: 7,
+                          alignSelf: 'flex-end',
+                        }}
+                        source={Constants.Images.Edit}
+                      />
+                    </TouchableOpacity>
                   </View>
                   <View
                     style={{
@@ -435,11 +553,31 @@ const WeatherData = ({
                       <View>
                         <Text style={[, styles.smallCardText]}>Pollen</Text>
                         <Text
-                          style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
-                          Low
+                          style={[
+                            ,
+                            {
+                              fontFamily: RubikMedium,
+                              fontSize: dynamicSize(14),
+                            },
+                          ]}>
+                          {ManulPollen ? ManulPollen : 'Low'}
                         </Text>
                       </View>
                     </View>
+                    <TouchableOpacity onPress={editTemp}>
+                      <Image
+                        style={{
+                          resizeMode: 'contain',
+                          height: dynamicSize(17),
+                          width: dynamicSize(17),
+                          marginTop: -18,
+                          right: 5,
+                          bottom: 8,
+                          alignSelf: 'flex-end',
+                        }}
+                        source={Constants.Images.Edit}
+                      />
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
@@ -497,7 +635,9 @@ const WeatherData = ({
             <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
           </View>
         </View>
-        {swiperIndex == 1 && <GraphicChart />}
+        {swiperIndex == 1 && (
+          <GraphicChart dataOfWeatherGraph={dataOfWeatherGraph} />
+        )}
         {!UserData.WeatherPermission && (
           <View
             style={{
@@ -522,7 +662,21 @@ const WeatherData = ({
           </View>
         )}
       </ScrollView>
-
+      <EditManualWeatherModal
+        modalVisible={EditManualWeather}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={(value) => EditDone(value)}
+        Weather={Weather}
+        hours={hours}
+        Temp={ManualTemp}
+        EditTemp={setManualTemp}
+        Hour={ManulHours}
+        EditHour={setManulHours}
+        Pollen={ManulPollen}
+        EditPollen={setManulPollen}
+        WeatherType={ManualWeatherType}
+        EditWeatherType={setManualWeatherType}
+      />
       <PopUp
         image={Constants.Images.WeatherPopUp}
         dataType={'weather'}
@@ -605,19 +759,20 @@ const styles = StyleSheet.create({
     margin: 5,
     height: 20,
     width: 20,
+    marginLeft: -5,
   },
   smallCardText: {
     fontFamily: RubikLight,
     fontWeight: '300',
     color: '#8A8BAB',
-    fontSize: 16,
+    fontSize: dynamicSize(13),
     marginBottom: 5,
   },
 
   ColoredView: {
     height: 40,
-    marginHorizontal: 10,
-    paddingHorizontal: 20,
+    marginHorizontal: dynamicSize(10),
+    paddingHorizontal: dynamicSize(20),
     backgroundColor: '#DED6FE',
     borderRadius: 13,
     alignItems: 'center',
@@ -627,8 +782,8 @@ const styles = StyleSheet.create({
     fontFamily: RubikLight,
     fontWeight: '300',
     color: '#8A8BAB',
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: dynamicSize(15),
+    width: dynamicSize(70),
   },
   HeaderView: {
     height: 80,

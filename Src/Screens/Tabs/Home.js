@@ -142,6 +142,7 @@ const App = (props) => {
   );
   const [swiperIndex, setSwiperIndex] = useState(0);
   const [callOneTime, setcallOneTime] = useState('one');
+  const [TryWeather, setTryWeather] = useState(null);
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
   const {lat, long} = route.params.cord;
@@ -571,7 +572,7 @@ const App = (props) => {
       // setLoading(false);
     }
 
-    CheckForWeather();
+    CheckForWeather(lat, long);
   };
 
   const dates = [];
@@ -758,7 +759,7 @@ const App = (props) => {
       .then(async (response) => {
         console.log(`response`, response.data);
         dispatch(DayTemp(response.data));
-
+        await setTryWeather(response.data);
         // await console.log(`response.data for weather`, response.data);
       })
       .catch(function (error) {
@@ -903,7 +904,9 @@ const App = (props) => {
 
         <View>
           {/* {swiperIndex == 1 ? ( */}
+          {console.log(`tryWeather`, TryWeather)}
           <WeatherData
+            tryWeather={UserData.DayTemperature}
             swiperIndex={swiperIndex}
             Weather={Weather}
             PermWeather={PermWeather}

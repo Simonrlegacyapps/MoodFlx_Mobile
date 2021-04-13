@@ -23,4 +23,6 @@ export default {
   GirlImage: require('../../../assets/newImage/GirlImage/img.png'),
   FitnessPopUp: require('../../../assets/newImage/FitnessPopUp/FitnessPopUp.png'),
   WeatherPopUp: require('../../../assets/newImage/WeatherPopUp/WeatherPopUp.png'),
+  Edit: require('../../../assets/newImage/EditPencil/edit.png'),
+  dropDownTwo: require('../../../assets/newImage/DropDownFill/dropdown.png'),
 };

@@ -22,11 +22,13 @@ import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import {useSelector} from 'react-redux';
 import moment from 'moment';
+import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 
 const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
+  const [DateExpired, setDateExpired] = useState(false);
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -96,6 +98,14 @@ const MicScreen = ({navigation}) => {
 
   // console.log(`questions`, questions);
 
+  const cancelled = () => {
+    setDateExpired(false);
+  };
+
+  const VerifyDone = (value) => {
+    setDateExpired(false);
+  };
+
   return (
     <View
       style={{
@@ -136,7 +146,13 @@ const MicScreen = ({navigation}) => {
         <Image style={{marginTop: -10}} source={Constants.Images.Circles} />
         <View style={{marginHorizontal: 15}}>
           <Text style={styles.normalText}>Team Pulse</Text>
-          <Text style={styles.BigText}>{UserData.UserEmail ? "Have your say as a collective" : questions && questions.length > 0  ? "Anonymously answer Team Pulses with how you feel. You'll get a notification when a Team Pulse is available, stay tuned!" : "Connect with your company here to answer Team Pulses anonymously"}</Text>
+          <Text style={styles.BigText}>
+            {UserData.UserEmail
+              ? 'Have your say as a collective'
+              : questions && questions.length > 0
+              ? "Anonymously answer Team Pulses with how you feel. You'll get a notification when a Team Pulse is available, stay tuned!"
+              : 'Connect with your company here to answer Team Pulses anonymously'}
+          </Text>
           {questions &&
             questions.length > 0 &&
             questions.map((item, index) => {
@@ -145,11 +161,13 @@ const MicScreen = ({navigation}) => {
               console.log(`todayDate`, item.end_date, givenDate, todayDate);
               return (
                 <TouchableOpacity
-                  disabled={givenDate >= todayDate ? false : true}
+                  // disabled={givenDate >= todayDate ? false : true}
                   onPress={() =>
-                    navigation.replace('MoodEmotionDetector', {
-                      question: item.id,
-                    })
+                    givenDate >= todayDate
+                      ? navigation.replace('MoodEmotionDetector', {
+                          question: item.id,
+                        })
+                      : setDateExpired(true)
                   }>
                   <View style={{flexDirection: 'row'}}>
                     <Text style={[styles.questionText, {marginHorizontal: 6}]}>
@@ -199,6 +217,12 @@ const MicScreen = ({navigation}) => {
             })}
         </View>
       </ScrollView>
+
+      <DateExpiredModal
+        modalVisible={DateExpired}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={(value) => VerifyDone(value)}
+      />
 
       {Loading && (
         <View

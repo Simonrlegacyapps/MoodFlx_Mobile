@@ -158,9 +158,10 @@ const FitnessData = ({
           <TouchableOpacity
             onPress={async () => {
               await AsyncStorage.setItem('GiveHealthPerm', 'true');
-              UserData.HealthPermission
-                ? checkStorage()
-                : setOpenActionSheet(true);
+              // UserData.HealthPermission
+              //   ? checkStorage()
+              //   :
+              setOpenActionSheet(true);
 
               // OnAutoSync();
               // filterDates();
@@ -178,12 +179,13 @@ const FitnessData = ({
             </View>
             <View style={{alignContent: 'center', paddingHorizontal: 15}}>
               <Text style={styles.lightText}>
-                {UserData.HealthPermission ? 'Syncing you' : 'Sync your'}
+                {UserData.HealthPermission ? 'Syncing your' : 'Sync your'}
               </Text>
               <Text style={styles.normalText}>Fitness data</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={UserData?.UserDetails?.full_name}
             onPress={() =>
               UserData?.UserDetails?.full_name
                 ? console.log(`Name available`)
@@ -209,7 +211,7 @@ const FitnessData = ({
             <Text numberOfLines={1} style={[styles.SmallThinText, {flex: 1}]}>
               {UserMoodCount < 3
                 ? 'Try add 3 moods per day'
-                : "Boom! You've added 3 moods today"}
+                : `Boom! You've added ${UserMoodCount} moods today`}
             </Text>
             <Text
               style={
