@@ -136,7 +136,7 @@ const MicScreen = ({navigation}) => {
         <Image style={{marginTop: -10}} source={Constants.Images.Circles} />
         <View style={{marginHorizontal: 15}}>
           <Text style={styles.normalText}>Team Pulse</Text>
-          <Text style={styles.BigText}>Have your say as a collective</Text>
+          <Text style={styles.BigText}>{UserData.UserEmail ? "Have your say as a collective" : questions && questions.length > 0  ? "Anonymously answer Team Pulses with how you feel. You'll get a notification when a Team Pulse is available, stay tuned!" : "Connect with your company here to answer Team Pulses anonymously"}</Text>
           {questions &&
             questions.length > 0 &&
             questions.map((item, index) => {
