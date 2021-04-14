@@ -101,7 +101,7 @@ const App: () => React$Node = () => {
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
-    }, 4000);
+    }, 2500);
     CheckScreen();
     if (ShowWelcome == null) {
       AsyncStorage.setItem('ShowWelcomeScreen', 'true');

@@ -31,6 +31,8 @@ type props = {
 
 const {width} = Dimensions.get('window');
 const DateExpiredModal = ({
+  WeatherPopUp,
+  FitnessPopUp,
   modalVisible,
   dismissModalHandler,
   selectedValue,
@@ -93,10 +95,10 @@ const DateExpiredModal = ({
               textAlign: 'center',
               marginTop: 20,
             }}>
-            Team Pulse
+            {FitnessPopUp ? 'Fitenss' : WeatherPopUp ? 'Weather' : 'Team Pulse'}
           </Text>
           <Text
-            numberOfLines={4}
+            numberOfLines={10}
             style={{
               //   fontWeight: '500',
               //   letterSpacing: 1,
@@ -108,11 +110,14 @@ const DateExpiredModal = ({
               //   marginRight: 62,
               textAlign: 'center',
               alignSelf: 'center',
-              width: '75%',
+              width: '85%',
               lineHeight: dynamicSize(26),
             }}>
-            Too late! Sorry you missed this Team Pulse, watch out for a
-            notification for the next one
+            {FitnessPopUp
+              ? "We hope you like the demo insights into the relationship between your mood and activity. Once you've used MoodFlo long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
+              : WeatherPopUp
+              ? "We hope you like the demo insights into the relationship between your mood and weather. Once you've used MoodFlo long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
+              : 'Too late! Sorry you missed this Team Pulse, watch out for a notification for the next one'}
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
             <TouchableOpacity

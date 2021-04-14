@@ -147,11 +147,59 @@ const MicScreen = ({navigation}) => {
         <View style={{marginHorizontal: 15}}>
           <Text style={styles.normalText}>Team Pulse</Text>
           <Text style={styles.BigText}>
-            {UserData.UserEmail
-              ? questions && questions.length > 0
-                ? 'Have your say as a collective'
-                : "Anonymously answer Team Pulses with how you feel. You'll get a notification when a Team Pulse is available, stay tuned!"
-              : 'Connect with your company to answer Team Pulses anonymously'}
+            {UserData.UserEmail ? (
+              questions && questions.length > 0 ? (
+                'Have your say as a collective'
+              ) : (
+                <View>
+                  <Text
+                    numberOfLines={4}
+                    style={{
+                      lineHeight: 28,
+                      fontWeight: '500',
+                      fontSize: dynamicSize(18),
+                      marginTop: dynamicSize(12),
+                      // marginLeft: 62,
+                      // marginRight: 62,
+                      textAlign: 'center',
+                      // width: dynamicSize(290),
+                    }}>
+                    Anonymously answer Team Pulses with how you feel.
+                  </Text>
+                  <Text
+                    numberOfLines={4}
+                    style={{
+                      lineHeight: 28,
+                      fontWeight: '500',
+                      fontSize: dynamicSize(18),
+                      marginTop: dynamicSize(12),
+                      // marginLeft: 62,
+                      // marginRight: 62,
+                      textAlign: 'center',
+                      alignSelf: 'center',
+                      // width: dynamicSize(270),
+                    }}>
+                    You'll get a notification when a Team Pulse is available,
+                    stay tuned!
+                  </Text>
+                </View>
+              )
+            ) : (
+              <Text
+                numberOfLines={4}
+                style={{
+                  lineHeight: 28,
+                  fontWeight: '500',
+                  fontSize: dynamicSize(18),
+                  marginTop: dynamicSize(12),
+                  // marginLeft: 62,
+                  // marginRight: 62,
+                  textAlign: 'center',
+                  width: dynamicSize(250),
+                }}>
+                Connect with your company to answer Team Pulses anonymously
+              </Text>
+            )}
           </Text>
           {questions &&
             questions.length > 0 &&

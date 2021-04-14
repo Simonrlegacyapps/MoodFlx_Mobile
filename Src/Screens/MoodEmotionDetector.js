@@ -100,7 +100,7 @@ const MoodEmotionDetector = ({navigation}) => {
   const dispatch = useDispatch();
   const route = useRoute();
   // const {question} = route.params;
-  // console.log(`route`, route?.params?.question);
+  console.log(`route`, route?.params);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -109,6 +109,7 @@ const MoodEmotionDetector = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
 
   const checkStorage = async () => {
+    await AsyncStorage.setItem('Anonymous', 'true');
     // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
     let p = await AsyncStorage.getItem('Email');
     let d = await AsyncStorage.getItem('Division');
@@ -239,10 +240,6 @@ const MoodEmotionDetector = ({navigation}) => {
       if (route?.params?.question != undefined) {
         var myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
-        myHeaders.append(
-          'Cookie',
-          '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
-        );
 
         var raw = JSON.stringify({
           device_id: deviceId,
@@ -418,7 +415,7 @@ const MoodEmotionDetector = ({navigation}) => {
         : (word = UserData.AllMoods[11].icon);
     }
 
-    console.log('label', word);
+    // console.log('label', word);
     return word;
   };
 

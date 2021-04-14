@@ -77,7 +77,7 @@ const EditManualWeatherModal = ({
   ];
 
   const findWeather = (value) => {
-    console.log(`value`, value);
+    // console.log(`value`, value);
     let weather = '';
     if (value) {
       value == 'clear sky'

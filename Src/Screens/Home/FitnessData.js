@@ -26,6 +26,8 @@ import PopUp from '../../Components/PopUp/PopUp';
 import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
 import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
+import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
+import {dynamicSize} from '../../Constants/sizeChoose';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -55,6 +57,7 @@ const FitnessData = ({
   const [openActionSheet, setOpenActionSheet] = useState(false);
   const [name, setname] = useState('');
   const [ShowAddName, setShowAddName] = useState(false);
+  const [FitnessPopUp, setFitnessPopUp] = useState(false);
   // console.log(`UserData`, UserData);
 
   const {
@@ -147,6 +150,10 @@ const FitnessData = ({
     setShowAddName(false);
   };
 
+  const FitnessPopUpcancelled = () => {
+    setFitnessPopUp(false);
+  };
+
   return (
     <View>
       <StatusBar barStyle="dark-content" />
@@ -221,34 +228,227 @@ const FitnessData = ({
             </Text>
           </View>
         </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
-            ACTIVITY
-          </Text>
-          <Text style={styles.swiperText}>
-            You are the <Text style={{color: '#5947D0'}}>happiest</Text> when
-            you walk over <Text style={{color: '#5947D0'}}>5000</Text> steps
-            before <Text style={{color: '#5947D0'}}>2PM</Text>
-          </Text>
-          {UserData.HealthPermission && (
+
+        <View>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+              ACTIVITY
+            </Text>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={{
+                // fontSize: SIZE / 14,
+                // fontWeight: '500',
+                alignItems: 'center',
+                width: '100%',
+              }}
+              onPress={() => setFitnessPopUp(true)}>
+              <Text style={styles.swiperText}>
+                You are the <Text style={{color: '#5947D0'}}>happiest</Text>{' '}
+                when you walk over <Text style={{color: '#5947D0'}}>5000</Text>{' '}
+                steps before <Text style={{color: '#5947D0'}}>2PM</Text>
+              </Text>
+            </TouchableOpacity>
+            {UserData.HealthPermission && (
+              <View
+                style={{
+                  position: 'absolute',
+                  zIndex: -234234,
+                  justifyContent: 'center',
+                  top: SIZE / 2.6,
+                }}>
+                <Text
+                  style={{
+                    marginTop: -160,
+                    fontWeight: '700',
+                    fontFamily: RubikExtraBold,
+                    fontSize: SIZE / 5.5,
+                    color: '#E0DDED',
+                    transform: [{rotate: '-15deg'}],
+                  }}>
+                  Demo
+                </Text>
+              </View>
+            )}
+          </View>
+          {/* {UserData.TodayAllSteps !== null &&
+          !Loading &&
+          UserData.UserMoodCount !== null &&
+          UserData.UserSteps !== null &&
+          UserData.UserCalories !== null &&
+          UserData.UserDistance !== null &&
+          UserData.UserMoveTime !== null && ( */}
+          <View style={[styles.forCircle, {marginTop: 30}]}>
+            {/* {setTimeout(() => {
+                
+              }, timeout)} */}
+            {/* {checkThis()} */}
+            <AnimatedCircularProgress
+              duration={1500}
+              style={styles.CircularProgressStyle}
+              arcSweepAngle={270}
+              size={180}
+              width={13}
+              fill={!Loading ? (UserSteps / 10000) * 100 : 0}
+              // fill={!Loading ? 50 : 0}
+              prefill={1}
+              rotation={-135}
+              tintColor="#9889F9"
+              lineCap={'round'}
+              // onAnimationComplete={() => console.log('onAnimationComplete')}
+              backgroundColor="#E2E4EA"
+            />
+
+            <View style={styles.absolute}>
+              <ImageBackground
+                resizeMode={'contain'}
+                style={styles.BigCircleBackgroundImage}
+                source={Constants.Images.RunningBackground}>
+                <Image
+                  source={Constants.Images.RunningMan}
+                  style={{height: 30, width: 30, marginTop: 25}}
+                />
+                <Text
+                  style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
+                  {/* {(TodayStep * 100).toFixed(0)} */}
+                  {UserSteps.toFixed(0)}
+                </Text>
+                <Text
+                  style={[
+                    styles.SmallThinText,
+                    {paddingVertical: 0, color: '#3B456D'},
+                  ]}>
+                  steps
+                </Text>
+              </ImageBackground>
+            </View>
+          </View>
+          {/* )} */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              width: '80%',
+              alignSelf: 'center',
+              marginTop: 10,
+              marginBottom: 40,
+            }}>
+            <View style={styles.forCircle}>
+              <AnimatedCircularProgress
+                duration={1500}
+                style={styles.CircularProgressStyle}
+                arcSweepAngle={360}
+                size={70}
+                width={10}
+                fill={!Loading ? (UserCalories / 1000) * 100 : 0}
+                // fill={0}
+                rotation={0}
+                tintColor="#30C3D6"
+                lineCap={'round'}
+                // // onAnimationComplete={() => console.log('onAnimationComplete')}
+                backgroundColor="#E0F8FB"
+              />
+              <View style={styles.absolute}>
+                <Image
+                  source={Constants.Images.Calories}
+                  style={{height: 25, width: 25, marginTop: -25}}
+                />
+              </View>
+              <View style={{marginTop: 10}}>
+                <Text style={[styles.SmallThinBlackText]}>
+                  {UserCalories.toFixed(0)} kcal
+                </Text>
+              </View>
+            </View>
+            <View style={styles.forCircle}>
+              <AnimatedCircularProgress
+                duration={1500}
+                style={styles.CircularProgressStyle}
+                arcSweepAngle={360}
+                size={70}
+                width={10}
+                fill={!Loading ? (UserDistance / 5000) * 100 : 0}
+                // fill={50}
+                rotation={0}
+                tintColor="#F43085"
+                lineCap={'round'}
+                // // onAnimationComplete={() => console.log('onAnimationComplete')}
+                backgroundColor="#FDE2EF"
+              />
+              <View style={styles.absolute}>
+                <Image
+                  source={Constants.Images.Distance}
+                  style={{height: 25, width: 25, marginTop: -25}}
+                />
+              </View>
+              <View style={{marginTop: 10}}>
+                <Text style={[styles.SmallThinBlackText]}>
+                  {((UserDistance / 5000) * 5).toFixed(1)} km
+                </Text>
+              </View>
+            </View>
+            <View style={styles.forCircle}>
+              <AnimatedCircularProgress
+                duration={900}
+                style={styles.CircularProgressStyle}
+                arcSweepAngle={360}
+                size={70}
+                width={10}
+                fill={!Loading ? (UserMoveTime / 120) * 100 : 0}
+                // fill={25}
+                rotation={0}
+                tintColor="#37DD67"
+                lineCap={'round'}
+                // // onAnimationComplete={() => console.log('onAnimationComplete')}
+                backgroundColor="#C6F9E8"
+              />
+              <View style={styles.absolute}>
+                <Image
+                  source={Constants.Images.Time}
+                  style={{height: 25, width: 25, marginTop: -25}}
+                />
+              </View>
+              <View style={{marginTop: 10}}>
+                <Text style={[styles.SmallThinBlackText]}>
+                  {UserMoveTime.toFixed(0)} min
+                </Text>
+              </View>
+            </View>
+          </View>
+          {/* <GraphBezierCustom /> */}
+          <GraphicChart
+            day
+            zero={zero}
+            ones={ones}
+            twos={twos}
+            threes={threes}
+            fours={fours}
+            fives={fives}
+          />
+          {!UserData.HealthPermission && (
             <View
               style={{
+                // backgroundColor: 'blue',
                 position: 'absolute',
+                // flex: 1,
+                top: 420,
+                alignItems: 'center',
+                // justifyContent: 'center',
+                height: '100%',
+                width: '100%',
                 zIndex: -234234,
-                justifyContent: 'center',
-                top: SIZE / 2.6,
               }}>
               <Text
                 style={{
-                  marginTop: -160,
+                  marginTop: dynamicSize(-320),
                   fontWeight: '700',
                   fontFamily: RubikExtraBold,
-                  fontSize: SIZE / 5.5,
+                  fontSize: SIZE / 3.5,
                   color: '#E0DDED',
                   transform: [{rotate: '-15deg'}],
                 }}>
@@ -256,186 +456,23 @@ const FitnessData = ({
               </Text>
             </View>
           )}
-        </View>
-        {/* {UserData.TodayAllSteps !== null &&
-          !Loading &&
-          UserData.UserMoodCount !== null &&
-          UserData.UserSteps !== null &&
-          UserData.UserCalories !== null &&
-          UserData.UserDistance !== null &&
-          UserData.UserMoveTime !== null && ( */}
-        <View style={[styles.forCircle, {marginTop: 30}]}>
-          {/* {setTimeout(() => {
-                
-              }, timeout)} */}
-          {/* {checkThis()} */}
-          <AnimatedCircularProgress
-            duration={1500}
-            style={styles.CircularProgressStyle}
-            arcSweepAngle={270}
-            size={180}
-            width={13}
-            fill={!Loading ? (UserSteps / 10000) * 100 : 0}
-            // fill={!Loading ? 50 : 0}
-            prefill={1}
-            rotation={-135}
-            tintColor="#9889F9"
-            lineCap={'round'}
-            // onAnimationComplete={() => console.log('onAnimationComplete')}
-            backgroundColor="#E2E4EA"
-          />
-
-          <View style={styles.absolute}>
-            <ImageBackground
-              resizeMode={'contain'}
-              style={styles.BigCircleBackgroundImage}
-              source={Constants.Images.RunningBackground}>
-              <Image
-                source={Constants.Images.RunningMan}
-                style={{height: 30, width: 30, marginTop: 25}}
-              />
-              <Text style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
-                {/* {(TodayStep * 100).toFixed(0)} */}
-                {UserSteps.toFixed(0)}
-              </Text>
-              <Text
-                style={[
-                  styles.SmallThinText,
-                  {paddingVertical: 0, color: '#3B456D'},
-                ]}>
-                steps
-              </Text>
-            </ImageBackground>
-          </View>
-        </View>
-        {/* )} */}
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            width: '80%',
-            alignSelf: 'center',
-            marginTop: 10,
-            marginBottom: 40,
-          }}>
-          <View style={styles.forCircle}>
-            <AnimatedCircularProgress
-              duration={1500}
-              style={styles.CircularProgressStyle}
-              arcSweepAngle={360}
-              size={70}
-              width={10}
-              fill={!Loading ? (UserCalories / 1000) * 100 : 0}
-              // fill={0}
-              rotation={0}
-              tintColor="#30C3D6"
-              lineCap={'round'}
-              // // onAnimationComplete={() => console.log('onAnimationComplete')}
-              backgroundColor="#E0F8FB"
-            />
-            <View style={styles.absolute}>
-              <Image
-                source={Constants.Images.Calories}
-                style={{height: 25, width: 25, marginTop: -25}}
-              />
-            </View>
-            <View style={{marginTop: 10}}>
-              <Text style={[styles.SmallThinBlackText]}>
-                {UserCalories.toFixed(0)} kcal
-              </Text>
-            </View>
-          </View>
-          <View style={styles.forCircle}>
-            <AnimatedCircularProgress
-              duration={1500}
-              style={styles.CircularProgressStyle}
-              arcSweepAngle={360}
-              size={70}
-              width={10}
-              fill={!Loading ? (UserDistance / 5000) * 100 : 0}
-              // fill={50}
-              rotation={0}
-              tintColor="#F43085"
-              lineCap={'round'}
-              // // onAnimationComplete={() => console.log('onAnimationComplete')}
-              backgroundColor="#FDE2EF"
-            />
-            <View style={styles.absolute}>
-              <Image
-                source={Constants.Images.Distance}
-                style={{height: 25, width: 25, marginTop: -25}}
-              />
-            </View>
-            <View style={{marginTop: 10}}>
-              <Text style={[styles.SmallThinBlackText]}>
-                {((UserDistance / 5000) * 5).toFixed(1)} km
-              </Text>
-            </View>
-          </View>
-          <View style={styles.forCircle}>
-            <AnimatedCircularProgress
-              duration={900}
-              style={styles.CircularProgressStyle}
-              arcSweepAngle={360}
-              size={70}
-              width={10}
-              fill={!Loading ? (UserMoveTime / 120) * 100 : 0}
-              // fill={25}
-              rotation={0}
-              tintColor="#37DD67"
-              lineCap={'round'}
-              // // onAnimationComplete={() => console.log('onAnimationComplete')}
-              backgroundColor="#C6F9E8"
-            />
-            <View style={styles.absolute}>
-              <Image
-                source={Constants.Images.Time}
-                style={{height: 25, width: 25, marginTop: -25}}
-              />
-            </View>
-            <View style={{marginTop: 10}}>
-              <Text style={[styles.SmallThinBlackText]}>
-                {UserMoveTime.toFixed(0)} min
-              </Text>
-            </View>
-          </View>
-        </View>
-        {/* <GraphBezierCustom /> */}
-        <GraphicChart
-          day
-          zero={zero}
-          ones={ones}
-          twos={twos}
-          threes={threes}
-          fours={fours}
-          fives={fives}
-        />
-        {!UserData.HealthPermission && (
-          <View
-            style={{
-              // backgroundColor: 'blue',
-              position: 'absolute',
-              // flex: 1,
-              top: 420,
-              alignItems: 'center',
-              // justifyContent: 'center',
-              height: '100%',
-              width: '100%',
-              zIndex: -234234,
-            }}>
-            <Text
+          {!UserData.HealthPermission && (
+            <TouchableOpacity
+              activeOpacity={0}
+              onPress={async () => {
+                await AsyncStorage.setItem('GiveHealthPerm', 'true');
+                setOpenActionSheet(true);
+              }}
               style={{
-                marginTop: -160,
-                fontWeight: '700',
-                fontFamily: RubikExtraBold,
-                fontSize: SIZE / 3.5,
-                color: '#E0DDED',
-                transform: [{rotate: '-15deg'}],
-              }}>
-              Demo
-            </Text>
-          </View>
-        )}
+                position: 'absolute',
+                flex: 1,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'black',
+                opacity: 0,
+              }}></TouchableOpacity>
+          )}
+        </View>
       </ScrollView>
 
       <PopUp
@@ -452,6 +489,12 @@ const FitnessData = ({
         verifyDone={() => VerifyAddName()}
         value={name}
         onChangeText={setname}
+      />
+      <DateExpiredModal
+        FitnessPopUp
+        modalVisible={FitnessPopUp}
+        dismissModalHandler={() => FitnessPopUpcancelled()}
+        verifyDone={() => FitnessPopUpcancelled()}
       />
     </View>
   );
