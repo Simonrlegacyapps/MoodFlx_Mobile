@@ -9,6 +9,7 @@ import {
   Image,
   Dimensions,
   TextInput,
+  Keyboard,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
@@ -75,6 +76,30 @@ const EditManualWeatherModal = ({
     {label: 'Snowy'},
   ];
 
+  const findWeather = (value) => {
+    console.log(`value`, value);
+    let weather = '';
+    if (value) {
+      value == 'clear sky'
+        ? (weather = weather + 'Sunny')
+        : value == 'few clouds' ||
+          value == 'scattered clouds' ||
+          value == 'broken clouds'
+        ? (weather = weather + 'Cloudy')
+        : value == 'rain' || value == 'shower rain'
+        ? (weather = weather + 'Rainy')
+        : value == 'thunderstorm'
+        ? (weather = weather + 'Stormy')
+        : value == 'snow' || value == 'mist'
+        ? (weather = weather + 'Snowy')
+        : value == undefined
+        ? (weather = weather + 'Rainy')
+        : (weather = weather + 'Rainy');
+    }
+
+    return weather;
+  };
+
   let myname = UserData?.UserDetails?.full_name
     ? UserData?.UserDetails?.full_name
     : 'InnoApps';
@@ -131,6 +156,7 @@ const EditManualWeatherModal = ({
                   style={{
                     flexDirection: 'row',
                     padding: 15,
+                    paddingLeft: 8,
                     overflow: 'hidden',
                   }}>
                   <Image
@@ -146,7 +172,7 @@ const EditManualWeatherModal = ({
                         {WeatherType
                           ? WeatherType
                           : Weather
-                          ? Weather.weather[0].description.substring(0, 13)
+                          ? findWeather(Weather.weather[0].description)
                           : 'Low'}
                       </Text>
                       <Image
@@ -163,11 +189,13 @@ const EditManualWeatherModal = ({
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row'}}>
                       <TextInput
+                        onSubmitEditing={Keyboard.dismiss()}
+                        autoFocus={true}
                         placeholder={Temp}
                         onChangeText={(text) => {
                           EditTemp(text);
                         }}
-                        keyboardType={'decimal-pad'}
+                        keyboardType={'number-pad'}
                         style={[
                           {
                             fontFamily: RubikMedium,
@@ -206,7 +234,7 @@ const EditManualWeatherModal = ({
                           {WeatherType
                             ? WeatherType
                             : Weather
-                            ? Weather.weather[0].description
+                            ? findWeather(Weather.weather[0].description)
                             : 'Low'}
                         </Text>
                       </TouchableOpacity>
@@ -223,6 +251,7 @@ const EditManualWeatherModal = ({
                               fontFamily: RubikMedium,
                               fontSize: 18,
                               borderBottomWidth: 1,
+                              width: 14,
                             },
                           ]}>
                           {hours ? hours : 1}
@@ -265,7 +294,7 @@ const EditManualWeatherModal = ({
                             ,
                             {
                               fontFamily: RubikMedium,
-                              fontSize: 18,
+                              fontSize: dynamicSize(16),
                             },
                           ]}>
                           {Pollen ? Pollen : 'Low'}
@@ -273,8 +302,8 @@ const EditManualWeatherModal = ({
                         <Image
                           resizeMode={'contain'}
                           style={{
-                            height: 12,
-                            width: 12,
+                            height: dynamicSize(11),
+                            width: dynamicSize(11),
                             marginHorizontal: 5,
                             justifyContent: 'center',
                             alignSelf: 'center',
@@ -438,7 +467,7 @@ const styles = StyleSheet.create({
     minHeight: 250,
   },
   WeatherCard: {
-    width: 320,
+    // width: 320,
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',

@@ -72,6 +72,7 @@ const WeatherData = ({
   const [ManulPollen, setManulPollen] = useState(null);
   const [ManualWeatherType, setManualWeatherType] = useState(null);
   const [AllDayWeather, setAllDayWeather] = useState(null);
+  const [Graph, setGraph] = useState(null);
 
   const a = moment().subtract(0, 'days').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
@@ -263,27 +264,54 @@ const WeatherData = ({
   }, []);
 
   useEffect(() => {
-    data;
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    setTimeout(() => {
+      console.log(`Weather Graph Data Params`, raw);
+      fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log('weather Graph data', result),
+            setGraph(result.weatherData);
+          data.push({});
+        })
+        .catch((error) => console.log('error', error));
+    }, 1000);
   }, [One, Two, Three, Four, Five]);
 
   const data = [
-    {x: 1, y: One ? One?.current?.temp : 0},
-    {x: 2, y: Two ? Two?.current?.temp : 0},
-    {x: 3, y: Three ? Three?.current?.temp : 0},
-    {x: 4, y: Four ? Four?.current?.temp : 0},
-    {x: 5, y: Five ? Five?.current?.temp : 0},
-    {x: 6, y: 2},
-    {x: 7, y: 2},
+    {x: 1, y: Graph ? (Graph[0].temp_max === null ? 0 : Graph[0].temp_max) : 0},
+    {x: 2, y: Graph ? (Graph[1].temp_max === null ? 0 : Graph[1].temp_max) : 0},
+    {x: 3, y: Graph ? (Graph[2].temp_max === null ? 0 : Graph[2].temp_max) : 0},
+    {x: 4, y: Graph ? (Graph[3].temp_max === null ? 0 : Graph[3].temp_max) : 0},
+    {x: 5, y: Graph ? (Graph[4].temp_max === null ? 0 : Graph[4].temp_max) : 0},
+    {x: 6, y: Graph ? (Graph[5].temp_max === null ? 0 : Graph[5].temp_max) : 0},
+    {x: 7, y: Graph ? (Graph[6].temp_max === null ? 0 : Graph[6].temp_max) : 0},
   ];
 
   const dataLow = [
-    {x: 1, y: 10},
-    {x: 2, y: 20},
-    {x: 3, y: 29},
-    {x: 4, y: 18},
-    {x: 5, y: 22},
-    {x: 6, y: 2},
-    {x: 7, y: 23},
+    {x: 1, y: Graph ? (Graph[0].temp_min === null ? 0 : Graph[0].temp_min) : 0},
+    {x: 2, y: Graph ? (Graph[1].temp_min === null ? 0 : Graph[1].temp_min) : 0},
+    {x: 3, y: Graph ? (Graph[2].temp_min === null ? 0 : Graph[2].temp_min) : 0},
+    {x: 4, y: Graph ? (Graph[3].temp_min === null ? 0 : Graph[3].temp_min) : 0},
+    {x: 5, y: Graph ? (Graph[4].temp_min === null ? 0 : Graph[4].temp_min) : 0},
+    {x: 6, y: Graph ? (Graph[5].temp_min === null ? 0 : Graph[5].temp_min) : 0},
+    {x: 7, y: Graph ? (Graph[6].temp_min === null ? 0 : Graph[6].temp_min) : 0},
   ];
 
   let heightProp = SIZE / 4.3;
@@ -307,7 +335,7 @@ const WeatherData = ({
       }),
     );
 
-  // console.log(`Lowmax`, Lowmax, dataLow);
+  // console.log(`Lowmax`, data, dataLow);
 
   const editTemp = () => {
     setEditManualWeather(true);
@@ -465,7 +493,7 @@ const WeatherData = ({
                         {ManualWeatherType
                           ? ManualWeatherType
                           : Weather
-                          ? Weather.weather[0].description
+                          ? findWeather(Weather.weather[0].description)
                           : 'Low'}
                       </Text>
                       <Text
@@ -484,8 +512,8 @@ const WeatherData = ({
                     <Image
                       style={{
                         resizeMode: 'contain',
-                        height: dynamicSize(17),
-                        width: dynamicSize(17),
+                        height: dynamicSize(21),
+                        width: dynamicSize(21),
                         marginTop: -25,
                         right: 5,
                         bottom: 7,
@@ -508,7 +536,7 @@ const WeatherData = ({
                           {ManualWeatherType
                             ? ManualWeatherType
                             : Weather
-                            ? Weather.weather[0].description
+                            ? findWeather(Weather.weather[0].description)
                             : 'Low'}
                         </Text>
                         <Text
@@ -516,7 +544,7 @@ const WeatherData = ({
                             ,
                             {
                               fontFamily: RubikMedium,
-                              fontSize: dynamicSize(14),
+                              fontSize: dynamicSize(15),
                             },
                           ]}>
                           {ManulHours ? ManulHours : hours ? hours : 1}hr
@@ -527,8 +555,8 @@ const WeatherData = ({
                       <Image
                         style={{
                           resizeMode: 'contain',
-                          height: dynamicSize(17),
-                          width: dynamicSize(17),
+                          height: dynamicSize(19),
+                          width: dynamicSize(19),
                           marginTop: -18,
                           right: 5,
                           bottom: 7,
@@ -554,10 +582,9 @@ const WeatherData = ({
                         <Text style={[, styles.smallCardText]}>Pollen</Text>
                         <Text
                           style={[
-                            ,
                             {
                               fontFamily: RubikMedium,
-                              fontSize: dynamicSize(14),
+                              fontSize: dynamicSize(14.5),
                             },
                           ]}>
                           {ManulPollen ? ManulPollen : 'Low'}
@@ -568,8 +595,8 @@ const WeatherData = ({
                       <Image
                         style={{
                           resizeMode: 'contain',
-                          height: dynamicSize(17),
-                          width: dynamicSize(17),
+                          height: dynamicSize(19),
+                          width: dynamicSize(19),
                           marginTop: -18,
                           right: 5,
                           bottom: 8,

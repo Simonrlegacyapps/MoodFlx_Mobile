@@ -126,21 +126,23 @@ const SaveConfirmModal = ({
             Confirm
           </Text>
           <Text
-            numberOfLines={2}
+            numberOfLines={4}
             style={{
               fontWeight: '500',
-              letterSpacing: 1,
+              // letterSpacing: 1,
               fontFamily: RubikBold,
 
               fontSize: dynamicSize(20),
               marginTop: 12,
-              marginLeft: 62,
-              marginRight: 62,
+              alignSelf: 'center',
+              // marginLeft: 62,
+              // marginRight: 62,
               textAlign: 'center',
-              width: '60%',
+              width: dynamicSize(240),
               lineHeight: dynamicSize(26),
             }}>
-            Save this mood with my name
+            You are not anonymous for this mood input. Save this mood with your
+            name?
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
             <TouchableOpacity

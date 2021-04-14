@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, Image} from 'react-native';
 import Constants from '../../Constants';
 import ToggleSwitch from 'toggle-switch-react-native';
@@ -94,6 +94,15 @@ const AnonymousHeader = ({backGround}) => {
       .catch((error) => console.log('error', error));
   };
 
+  useEffect(() => {
+    setTimeout(async () => {
+      if (UserData?.UserDetails?.full_name === '') {
+        await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
+        dispatch(IsAnonymous(true));
+      }
+    }, 1000);
+  }, []);
+
   const cancelled = async () => {
     await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
     setShowAddName(false);
@@ -148,7 +157,9 @@ const AnonymousHeader = ({backGround}) => {
                   uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
                 }}
               />
-            ) : !UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
+            ) : !UserData?.UserDetails?.profile_image &&
+              !UserData.Anonymous &&
+              UserData?.UserDetails?.full_name ? (
               <Text
                 style={{
                   color: 'white',
@@ -241,7 +252,9 @@ const AnonymousHeader = ({backGround}) => {
                 uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
               }}
             />
-          ) : !UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
+          ) : !UserData?.UserDetails?.profile_image &&
+            !UserData.Anonymous &&
+            UserData?.UserDetails?.full_name ? (
             <Text
               style={{
                 color: 'white',

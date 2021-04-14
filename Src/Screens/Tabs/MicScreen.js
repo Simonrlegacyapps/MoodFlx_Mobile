@@ -158,7 +158,7 @@ const MicScreen = ({navigation}) => {
             questions.map((item, index) => {
               let givenDate = new Date(moment(item.end_date)).getTime();
               let todayDate = new Date().getTime();
-              console.log(`todayDate`, item.end_date, givenDate, todayDate);
+              // console.log(`todayDate`, item.end_date, givenDate, todayDate);
               return (
                 <TouchableOpacity
                   // disabled={givenDate >= todayDate ? false : true}

@@ -1190,7 +1190,7 @@ const MoodEmotionDetector = ({navigation}) => {
         {/* {console.log('Moving', Moving)} */}
         {/* Header Bar */}
         <TouchableOpacity
-          onPress={() => navigation.navigate('buttonCheck')}
+          disabled={true}
           style={{
             zIndex: -99999,
             backgroundColor: BottomAndTopBar(),

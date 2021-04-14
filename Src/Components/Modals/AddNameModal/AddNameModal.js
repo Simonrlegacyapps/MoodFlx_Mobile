@@ -174,7 +174,7 @@ const AddNameModal = ({
                 marginBottom: 40,
               }}>
               <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
-                Verify
+                Save
               </Text>
             </View>
           </TouchableOpacity>
