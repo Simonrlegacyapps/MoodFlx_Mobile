@@ -21,11 +21,14 @@ import {dynamicSize} from '../../Constants/sizeChoose';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import {useSelector} from 'react-redux';
+import moment from 'moment';
+import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 
 const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
+  const [DateExpired, setDateExpired] = useState(false);
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -47,7 +50,7 @@ const MicScreen = ({navigation}) => {
       email: UserData.UserEmail,
       user_id: UserData.UserId,
     });
-    console.log(`data of questions`, data);
+    // console.log(`data of questions`, data);
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -61,8 +64,8 @@ const MicScreen = ({navigation}) => {
     fetch('https://admin.moodflo.com/api/getQuestions', requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
-        console.log('response of questions', result),
-          await setquestions(result.questions);
+        // console.log('response of questions', result),
+        await setquestions(result.questions);
         setLoading(false);
       })
       .catch((error) => console.log('error', error));
@@ -95,6 +98,14 @@ const MicScreen = ({navigation}) => {
 
   // console.log(`questions`, questions);
 
+  const cancelled = () => {
+    setDateExpired(false);
+  };
+
+  const VerifyDone = (value) => {
+    setDateExpired(false);
+  };
+
   return (
     <View
       style={{
@@ -123,22 +134,40 @@ const MicScreen = ({navigation}) => {
             justifyContent: 'center',
             // flex: 1,
           }}>
-          <Image source={Constants.Images.GirlImage} style={{}} />
+          <Image
+            source={Constants.Images.GirlImage}
+            style={{
+              height: dynamicSize(300),
+              width: dynamicSize(300),
+              resizeMode: 'contain',
+            }}
+          />
         </View>
         <Image style={{marginTop: -10}} source={Constants.Images.Circles} />
         <View style={{marginHorizontal: 15}}>
           <Text style={styles.normalText}>Team Pulse</Text>
-          <Text style={styles.BigText}>Have your say as a collective</Text>
+          <Text style={styles.BigText}>
+            {UserData.UserEmail
+              ? questions && questions.length > 0
+                ? 'Have your say as a collective'
+                : "Anonymously answer Team Pulses with how you feel. You'll get a notification when a Team Pulse is available, stay tuned!"
+              : 'Connect with your company to answer Team Pulses anonymously'}
+          </Text>
           {questions &&
             questions.length > 0 &&
             questions.map((item, index) => {
+              let givenDate = new Date(moment(item.end_date)).getTime();
+              let todayDate = new Date().getTime();
+              // console.log(`todayDate`, item.end_date, givenDate, todayDate);
               return (
                 <TouchableOpacity
-                  // disabled={item.name ? true : false}
+                  // disabled={givenDate >= todayDate ? false : true}
                   onPress={() =>
-                    navigation.replace('MoodEmotionDetector', {
-                      question: item.id,
-                    })
+                    givenDate >= todayDate
+                      ? navigation.replace('MoodEmotionDetector', {
+                          question: item.id,
+                        })
+                      : setDateExpired(true)
                   }>
                   <View style={{flexDirection: 'row'}}>
                     <Text style={[styles.questionText, {marginHorizontal: 6}]}>
@@ -186,8 +215,38 @@ const MicScreen = ({navigation}) => {
                 </TouchableOpacity>
               );
             })}
+          {!UserData.UserEmail && (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('LinkCompanyStackNavigation');
+              }}
+              style={{alignItems: 'center', justifyContent: 'center'}}>
+              <View
+                style={{
+                  marginTop: dynamicSize(48),
+                  height: dynamicSize(53),
+                  width: dynamicSize(230),
+                  backgroundColor: '#E4DFFF',
+                  borderRadius: 16,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 40,
+                }}>
+                <Text
+                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
+                  Connect
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
+
+      <DateExpiredModal
+        modalVisible={DateExpired}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={(value) => VerifyDone(value)}
+      />
 
       {Loading && (
         <View

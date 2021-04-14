@@ -32,6 +32,7 @@ import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
+import {PHOTO_URL} from '../../Constants/constants';
 
 const Linktocompany = ({navigation}) => {
   const {OTPVerified, setDivision, getDivision} = useSelector(
@@ -48,7 +49,7 @@ const Linktocompany = ({navigation}) => {
   const [APIfail, setAPIfail] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [labelShow, setLabelShow] = useState('');
-  const [UnlinkConfirm, setUnlinkConfirm] = useState(false)
+  const [UnlinkConfirm, setUnlinkConfirm] = useState(false);
 
   const dispatch = useDispatch();
   const route = useRoute();
@@ -116,36 +117,35 @@ const Linktocompany = ({navigation}) => {
         console.log('err', err), setLoading(false), setAPIfail(true);
       });
   };
-  console.log(`UserData.UserDivision`, UserData.UserDivision);
+  // console.log(`UserData.UserDivision`, UserData.UserDivision);
 
-  const cancelled =()=>{
-    setUnlinkConfirm(false)
-  }
+  const cancelled = () => {
+    setUnlinkConfirm(false);
+  };
 
   const VerifyDone = async (type) => {
     console.log('verify', type);
 
-    if(type === "Yes"){
+    if (type === 'Yes') {
       dispatch(OTP_Verify(false));
-    dispatch(Division(null));
-    await AsyncStorage.removeItem('UserId');
-    await AsyncStorage.removeItem('Anonymous');
-    await AsyncStorage.removeItem('Email');
-    await AsyncStorage.removeItem('Division');
-    await AsyncStorage.removeItem('Email');
-    dispatch(UserDivision(null));
-    dispatch(UserEmail(null));
-    dispatch(GetUserId(null));
-    dispatch(IsAnonymous(true));
-    dispatch(UserDetail(null));
-    setUnlinkConfirm(false)
-    } else{
-      setUnlinkConfirm(false)
+      dispatch(Division(null));
+      await AsyncStorage.removeItem('UserId');
+      await AsyncStorage.removeItem('Anonymous');
+      await AsyncStorage.removeItem('Email');
+      await AsyncStorage.removeItem('Division');
+      await AsyncStorage.removeItem('Email');
+      dispatch(UserDivision(null));
+      dispatch(UserEmail(null));
+      dispatch(GetUserId(null));
+      dispatch(IsAnonymous(true));
+      dispatch(UserDetail(null));
+      setUnlinkConfirm(false);
+    } else {
+      setUnlinkConfirm(false);
     }
     // setLinked(type);
-    
   };
-  console.log(`UserData.NameCompany`, UserData.NameCompany);
+  // console.log(`UserData.NameCompany`, UserData.NameCompany);
   return (
     <View style={{flex: 1}}>
       {/* {console.log('REDUX DATA ==============>', getDivision[0].id)} */}
@@ -229,7 +229,7 @@ const Linktocompany = ({navigation}) => {
         <View
           style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(95)}}>
           <Text style={{fontWeight: '500', fontSize: dynamicSize(24)}}>
-            Link a company
+            Connect to a company
           </Text>
           <Text
             numberOfLines={4}
@@ -264,7 +264,7 @@ const Linktocompany = ({navigation}) => {
                   color: '#FFFFFF',
                   fontFamily: RubikBlack,
                 }}>
-                Link Now
+                Connect Now
               </Text>
             </View>
           </TouchableOpacity>
@@ -303,10 +303,25 @@ const Linktocompany = ({navigation}) => {
               textAlign: 'center',
               width: dynamicSize(230),
             }}>
-            {`This, and which region you are located, are the only things ${
-              UserData.NameCompany ? UserData.NameCompany : ''
-            } will
-            know about you`}
+            This, and which region you are located, are the only things
+            <Text
+              style={{
+                lineHeight: 28,
+                fontWeight: '500',
+                fontSize: dynamicSize(14),
+                marginTop: 12,
+                // marginLeft: 62,
+                // marginRight: 62,
+
+                textAlign: 'center',
+                width: dynamicSize(230),
+              }}>
+              {' '}
+              {UserData?.NameCompany?.full_name
+                ? UserData?.NameCompany?.full_name
+                : ''}{' '}
+            </Text>
+            will know about you
           </Text>
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
@@ -403,16 +418,37 @@ const Linktocompany = ({navigation}) => {
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
           </Text> */}
-          <Image source={Constants.Images.CompanyLogo} />
+          <View style={{}}>
+            {console.log(
+              'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
+            )}
+            {UserData?.NameCompany?.logo && (
+              <Image
+                style={{
+                  height: dynamicSize(80),
+                  width: dynamicSize(80),
+                  resizeMode: 'contain',
+                  backgroundColor: 'grey',
+                  borderRadius: dynamicSize(40),
+                }}
+                source={{
+                  uri:
+                    'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
+                  // UserData?.NameCompany?.company_logo,
+                }}
+                // style={{backgroundColor: '#4C5980'}}
+              />
+            )}
+          </View>
           <Text
             numberOfLines={2}
             style={{
               lineHeight: 28,
               fontWeight: '300',
               fontSize: 16,
-              marginTop: 102,
-              marginLeft: 62,
-              marginRight: 62,
+              marginTop: dynamicSize(52),
+              // marginLeft: 62,
+              // marginRight: 62,
               textAlign: 'center',
               width: 270,
             }}>
@@ -490,9 +526,10 @@ const Linktocompany = ({navigation}) => {
       )}
 
       <UnlinkConfirmModal
-      modalVisible={UnlinkConfirm}
-      dismissModalHandler={() => cancelled()}
-      verifyDone={(value) => VerifyDone(value)}/>
+        modalVisible={UnlinkConfirm}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={(value) => VerifyDone(value)}
+      />
     </View>
   );
 };

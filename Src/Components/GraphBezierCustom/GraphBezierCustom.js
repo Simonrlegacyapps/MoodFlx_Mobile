@@ -13,6 +13,7 @@ import * as path from 'svg-path-properties';
 import * as shape from 'd3-shape';
 
 import {scaleTime, scaleLinear, scaleQuantile} from 'd3-scale';
+import {dynamicSize} from '../../Constants/sizeChoose';
 
 // const {Path, Defs, LinearGradient, Stop} = Svg;
 
@@ -93,7 +94,7 @@ const GraphBezierCustom = ({
     },
     container: {
       // marginTop: 60,
-      height: heightProp + 5,
+      height: heightProp + dynamicSize(6),
       // width,
     },
     cursor: {

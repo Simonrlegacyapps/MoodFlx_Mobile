@@ -134,7 +134,7 @@ const AddNameModal = ({
               keyboardType={'email-address'}
               returnKeyType={'done'}
               autoCorrect={false}
-              autoCapitalize={false}
+              autoCapitalize={'words'}
               autoCompleteType={'off'}
               placeholder={'Eg. John Doe'}
               placeholderTextColor={'#8A8BAB'}
@@ -174,7 +174,7 @@ const AddNameModal = ({
                 marginBottom: 40,
               }}>
               <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
-                Verify
+                Save
               </Text>
             </View>
           </TouchableOpacity>

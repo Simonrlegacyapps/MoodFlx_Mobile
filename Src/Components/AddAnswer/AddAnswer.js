@@ -53,10 +53,11 @@ const AddAnswer = ({
           </TouchableOpacity>
         ) : (
           <TextInput
+            autoFocus={true}
             keyboardType={'email-address'}
             returnKeyType={'done'}
             autoCorrect={false}
-            autoCapitalize={false}
+            autoCapitalize={'words'}
             autoCompleteType={'off'}
             placeholder={'Annonymous'}
             placeholderTextColor={'black'}
@@ -81,18 +82,21 @@ const AddAnswer = ({
       {!edit ? (
         <TouchableOpacity
           onPress={() => {
-            UserData.UserEmail
-              ? setedit(!edit)
-              : navigation.navigate('LinkCompanyStackNavigation'); //navigation.navigate('LinkCompanyStackNavigation');
+            // UserData.UserEmail
+            //   ?
+            popUp && setOpenActionSheet(true);
+            setedit(!edit);
+            // : navigation.navigate('LinkCompanyStackNavigation'); //navigation.navigate('LinkCompanyStackNavigation');
           }}>
           <AddButton label={checkedit ? 'Edit' : 'Add'} />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
           onPress={() => {
-            UserData.UserEmail
-              ? apicall()
-              : navigation.navigate('LinkCompanyStackNavigation'); //navigation.navigate('LinkCompanyStackNavigation');
+            // UserData.UserEmail
+            //   ?
+            apicall();
+            // : navigation.navigate('LinkCompanyStackNavigation'); //navigation.navigate('LinkCompanyStackNavigation');
           }}>
           <AddButton label={'Done'} />
         </TouchableOpacity>

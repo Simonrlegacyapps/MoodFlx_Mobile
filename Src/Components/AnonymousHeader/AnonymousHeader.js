@@ -1,15 +1,20 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, Image} from 'react-native';
 import Constants from '../../Constants';
 import ToggleSwitch from 'toggle-switch-react-native';
 import AnonymousIcon from '../../../assets/commonicons/AnonymousIcon';
-import {RubikLight, RubikMedium} from '../../Constants/fonts/Fonts';
+import {
+  RubikLight,
+  RubikMedium,
+  RubikRegular,
+} from '../../Constants/fonts/Fonts';
 import {useDispatch, useSelector} from 'react-redux';
 import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
 import {PHOTO_URL} from '../../Constants/constants';
 import AddNameModal from '../Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
+import {dynamicSize} from '../../Constants/sizeChoose';
 
 const AnonymousHeader = ({backGround}) => {
   const UserData = useSelector((state) => state.First);
@@ -89,17 +94,25 @@ const AnonymousHeader = ({backGround}) => {
       .catch((error) => console.log('error', error));
   };
 
+  useEffect(() => {
+    setTimeout(async () => {
+      if (UserData?.UserDetails?.full_name === '') {
+        await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
+        dispatch(IsAnonymous(true));
+      }
+    }, 1000);
+  }, []);
+
   const cancelled = async () => {
     await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
     setShowAddName(false);
     dispatch(IsAnonymous(true));
   };
 
-  console.log(`name`, UserData.Anonymous);
-
   return backGround ? (
     <View
       style={{
+        zIndex: -99999,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
@@ -144,6 +157,19 @@ const AnonymousHeader = ({backGround}) => {
                   uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
                 }}
               />
+            ) : !UserData?.UserDetails?.profile_image &&
+              !UserData.Anonymous &&
+              UserData?.UserDetails?.full_name ? (
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: dynamicSize(25),
+                  fontFamily: RubikRegular,
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                }}>
+                {UserData?.UserDetails?.full_name.substring(0, 1)}
+              </Text>
             ) : (
               <AnonymousIcon />
             )}
@@ -226,6 +252,19 @@ const AnonymousHeader = ({backGround}) => {
                 uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
               }}
             />
+          ) : !UserData?.UserDetails?.profile_image &&
+            !UserData.Anonymous &&
+            UserData?.UserDetails?.full_name ? (
+            <Text
+              style={{
+                color: 'white',
+                fontSize: dynamicSize(25),
+                fontFamily: RubikRegular,
+                alignSelf: 'center',
+                justifyContent: 'center',
+              }}>
+              {UserData?.UserDetails?.full_name.substring(0, 1)}
+            </Text>
           ) : (
             <AnonymousIcon />
           )}

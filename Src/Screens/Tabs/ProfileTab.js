@@ -249,14 +249,27 @@ const ProfileTab = ({navigation}) => {
       device_id: deviceId,
       email: UserData.UserEmail,
       user_id: UserData.UserId,
-      full_name: UserData?.UserDetails?.full_name
+      full_name: name
+        ? name
+        : name != '' && UserData?.UserDetails?.full_name
         ? UserData?.UserDetails?.full_name
         : name,
-      pronouns: Pronoun,
+      pronouns: Pronoun
+        ? Pronoun
+        : UserData?.UserDetails?.pronouns
+        ? UserData?.UserDetails?.pronouns
+        : Pronoun,
       date_of_birth: UserData?.UserDetails?.date_of_bitrh
         ? UserData?.UserDetails?.date_of_bitrh
         : Birthday,
-      gender: gender == 'Male' ? 1 : gender == 'Female' ? 2 : gender,
+      gender:
+        gender == 'Male'
+          ? 1
+          : gender == 'Female'
+          ? 2
+          : gender == 'trans'
+          ? 2
+          : gender,
     });
 
     var requestOptions = {
@@ -331,7 +344,9 @@ const ProfileTab = ({navigation}) => {
             label={'Name'}
             navigation={navigation}
             value={
-              UserData?.UserDetails?.full_name
+              name
+                ? name
+                : name != '' && UserData?.UserDetails?.full_name
                 ? UserData?.UserDetails?.full_name
                 : name
             }
@@ -344,7 +359,9 @@ const ProfileTab = ({navigation}) => {
             label={'Gender'}
             navigation={navigation}
             value={
-              UserData?.UserDetails?.gender
+              gender
+                ? gender
+                : UserData?.UserDetails?.gender
                 ? UserData?.UserDetails?.gender == 2
                   ? 'Female'
                   : UserData?.UserDetails?.gender == 1
@@ -374,7 +391,9 @@ const ProfileTab = ({navigation}) => {
             label={'Pronoun'}
             // value={Pronoun}
             value={
-              UserData?.UserDetails?.pronouns
+              Pronoun
+                ? Pronoun
+                : UserData?.UserDetails?.pronouns
                 ? UserData?.UserDetails?.pronouns
                 : Pronoun
             }

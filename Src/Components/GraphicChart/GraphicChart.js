@@ -28,68 +28,80 @@ export const {width: SIZE} = Dimensions.get('window');
 //   {x: 7, y: 7},
 // ];
 
-const BasicExample = ({day, zero, ones, twos, threes, fours, fives}) => {
+const BasicExample = ({
+  day,
+  zero,
+  ones,
+  twos,
+  threes,
+  fours,
+  fives,
+  dataOfWeatherGraph,
+}) => {
   const [Duration, setDuration] = useState('Daily');
 
   const UserData = useSelector((state) => state.First);
 
-  const data = [
-    {x: 1, y: 0},
-    {
-      x: 2,
-      y:
-        Duration === 'Daily'
-          ? UserData.TodayAllSteps !== null
-            ? 1 + UserData.TodayAllSteps[0].two
-            : 0
-          : 0,
-    },
-    {
-      x: 3,
-      y:
-        Duration === 'Daily'
-          ? UserData.TodayAllSteps !== null
-            ? UserData.TodayAllSteps[0].three
-            : 1
-          : 1,
-    },
-    {
-      x: 4,
-      y:
-        Duration === 'Daily'
-          ? UserData.TodayAllSteps !== null
-            ? UserData.TodayAllSteps[0].four
-            : 0
-          : 0,
-    },
-    {
-      x: 5,
-      y:
-        Duration === 'Daily'
-          ? UserData.TodayAllSteps !== null
-            ? UserData.TodayAllSteps[0].five
-            : 0
-          : 0,
-    },
-    {
-      x: 6,
-      y:
-        Duration === 'Daily'
-          ? UserData.TodayAllSteps !== null
-            ? UserData.TodayAllSteps[0].six
-            : 0
-          : 0,
-    },
-    {
-      x: 7,
-      y:
-        Duration === 'Daily'
-          ? UserData.TodayAllSteps !== null
-            ? UserData.TodayAllSteps[0].seven
-            : 0
-          : 0,
-    },
-  ];
+  const data =
+    dataOfWeatherGraph && Duration === 'Daily'
+      ? dataOfWeatherGraph
+      : [
+          {x: 1, y: 0},
+          {
+            x: 2,
+            y:
+              Duration === 'Daily'
+                ? UserData.TodayAllSteps !== null
+                  ? 1 + UserData.TodayAllSteps[0].two
+                  : 0
+                : 0,
+          },
+          {
+            x: 3,
+            y:
+              Duration === 'Daily'
+                ? UserData.TodayAllSteps !== null
+                  ? UserData.TodayAllSteps[0].three
+                  : 1
+                : 1,
+          },
+          {
+            x: 4,
+            y:
+              Duration === 'Daily'
+                ? UserData.TodayAllSteps !== null
+                  ? UserData.TodayAllSteps[0].four
+                  : 0
+                : 0,
+          },
+          {
+            x: 5,
+            y:
+              Duration === 'Daily'
+                ? UserData.TodayAllSteps !== null
+                  ? UserData.TodayAllSteps[0].five
+                  : 0
+                : 0,
+          },
+          {
+            x: 6,
+            y:
+              Duration === 'Daily'
+                ? UserData.TodayAllSteps !== null
+                  ? UserData.TodayAllSteps[0].six
+                  : 0
+                : 0,
+          },
+          {
+            x: 7,
+            y:
+              Duration === 'Daily'
+                ? UserData.TodayAllSteps !== null
+                  ? UserData.TodayAllSteps[0].seven
+                  : 0
+                : 0,
+          },
+        ];
 
   const max =
     data &&

@@ -52,6 +52,10 @@ const SaveConfirmModal = ({
   //   );
 
   // console.log(`value`, value);
+
+  let myname = UserData?.UserDetails?.full_name
+    ? UserData?.UserDetails?.full_name
+    : 'InnoApps';
   return (
     <Modal
       style={styles.modalView}
@@ -93,14 +97,22 @@ const SaveConfirmModal = ({
                 overflow: 'hidden',
                 marginTop: 25,
               }}>
-              {
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: dynamicSize(40),
+                  fontFamily: RubikRegular,
+                }}>
+                {myname.substring(0, 1)}
+              </Text>
+              {/* { 
                 <Image
                   style={{height: '100%', width: '100%', resizeMode: 'cover'}}
                   source={{
                     uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
                   }}
                 />
-              }
+              } */}
             </View>
           </View>
           <Text
@@ -114,21 +126,23 @@ const SaveConfirmModal = ({
             Confirm
           </Text>
           <Text
-            numberOfLines={2}
+            numberOfLines={4}
             style={{
               fontWeight: '500',
-              letterSpacing: 1,
+              // letterSpacing: 1,
               fontFamily: RubikBold,
 
               fontSize: dynamicSize(20),
               marginTop: 12,
-              marginLeft: 62,
-              marginRight: 62,
+              alignSelf: 'center',
+              // marginLeft: 62,
+              // marginRight: 62,
               textAlign: 'center',
-              width: '60%',
+              width: dynamicSize(240),
               lineHeight: dynamicSize(26),
             }}>
-            Saved this mood with my name
+            You are not anonymous for this mood input. Save this mood with your
+            name?
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
             <TouchableOpacity

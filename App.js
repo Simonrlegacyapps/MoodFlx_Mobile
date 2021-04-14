@@ -29,6 +29,8 @@ import {
   GetUserId,
   HealthPerm,
   IsAnonymous,
+  Lat,
+  Long,
   Moods,
   UserDetail,
   UserDivision,
@@ -37,6 +39,7 @@ import {
 } from './Src/redux/actions/actions';
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
+import moment from 'moment';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -129,7 +132,15 @@ const App: () => React$Node = () => {
   };
 
   const getProfileUserData = async () => {
+    // let aDay = moment().format('DD MMM YYYY');
+    // await AsyncStorage.setItem('DateCheck', JSON.stringify(aDay));
+    // let DateCheck = await AsyncStorage.getItem('DateCheck');
+    // let CheckForTodayDate = await JSON.parse(DateCheck);
+    // if(CheckForTodayDate === )
+    // let bDay = moment().format('DD MMM YYYY');
+
     // ---> checking all the data in local storage
+    await AsyncStorage.setItem('Anonymous', 'true');
     let UserId = await AsyncStorage.getItem('UserId');
     let anonymous = await AsyncStorage.getItem('Anonymous');
     let p = await AsyncStorage.getItem('Email');
@@ -191,9 +202,9 @@ const App: () => React$Node = () => {
         })
           .then((location) => {
             //   console.log('Success', location);
-            setlat(location.latitude);
+            // setlat(location.latitude);
             dispatch(Lat(location.latitude));
-            setlng(location.longitude);
+            // setlng(location.longitude);
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
@@ -260,6 +271,7 @@ const App: () => React$Node = () => {
           data={Images}
           onDone={_onDone}
           showSkipButton={true}
+          onSkip={_onDone}
         />
       )}
       {/* </Provider> */}

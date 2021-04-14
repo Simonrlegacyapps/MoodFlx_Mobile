@@ -10,6 +10,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
+import {useSelector} from 'react-redux';
 import Constants from '../../Constants';
 import {
   RubikLight,
@@ -33,6 +34,8 @@ const PopUp = ({
   dataType,
 }: props) => {
   const [color, setcolor] = useState('black');
+
+  const UserData = useSelector((state) => state.First);
   //   console.log(
   //     `modalView, dismissModalHandler, selectedValue`,
   //     modalVisible,
@@ -74,7 +77,9 @@ const PopUp = ({
           />
           <Text style={styles.smallText}> Let’s sync your {dataType} data</Text>
           <Text style={styles.bigText}>
-            Remember that all your data is anonymous
+            {UserData.HealthPermission
+              ? 'Anonymously syncing your data'
+              : 'Remember that all your data is anonymous'}
           </Text>
           <TouchableOpacity style={{alignSelf: 'center'}} onPress={verifyDone}>
             <View
@@ -88,7 +93,7 @@ const PopUp = ({
                 justifyContent: 'center',
               }}>
               <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
-                Verify
+                Next
               </Text>
             </View>
           </TouchableOpacity>
