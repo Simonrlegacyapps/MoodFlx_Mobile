@@ -3,13 +3,18 @@ import {View, Text, Image} from 'react-native';
 import Constants from '../../Constants';
 import ToggleSwitch from 'toggle-switch-react-native';
 import AnonymousIcon from '../../../assets/commonicons/AnonymousIcon';
-import {RubikLight, RubikMedium} from '../../Constants/fonts/Fonts';
+import {
+  RubikLight,
+  RubikMedium,
+  RubikRegular,
+} from '../../Constants/fonts/Fonts';
 import {useDispatch, useSelector} from 'react-redux';
 import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
 import {PHOTO_URL} from '../../Constants/constants';
 import AddNameModal from '../Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
+import {dynamicSize} from '../../Constants/sizeChoose';
 
 const AnonymousHeader = ({backGround}) => {
   const UserData = useSelector((state) => state.First);
@@ -143,6 +148,17 @@ const AnonymousHeader = ({backGround}) => {
                   uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
                 }}
               />
+            ) : !UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: dynamicSize(25),
+                  fontFamily: RubikRegular,
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                }}>
+                {UserData?.UserDetails?.full_name.substring(0, 1)}
+              </Text>
             ) : (
               <AnonymousIcon />
             )}
@@ -225,6 +241,17 @@ const AnonymousHeader = ({backGround}) => {
                 uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
               }}
             />
+          ) : !UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
+            <Text
+              style={{
+                color: 'white',
+                fontSize: dynamicSize(25),
+                fontFamily: RubikRegular,
+                alignSelf: 'center',
+                justifyContent: 'center',
+              }}>
+              {UserData?.UserDetails?.full_name.substring(0, 1)}
+            </Text>
           ) : (
             <AnonymousIcon />
           )}

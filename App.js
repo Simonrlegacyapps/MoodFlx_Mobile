@@ -39,6 +39,7 @@ import {
 } from './Src/redux/actions/actions';
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
+import moment from 'moment';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -131,6 +132,13 @@ const App: () => React$Node = () => {
   };
 
   const getProfileUserData = async () => {
+    // let aDay = moment().format('DD MMM YYYY');
+    // await AsyncStorage.setItem('DateCheck', JSON.stringify(aDay));
+    // let DateCheck = await AsyncStorage.getItem('DateCheck');
+    // let CheckForTodayDate = await JSON.parse(DateCheck);
+    // if(CheckForTodayDate === )
+    // let bDay = moment().format('DD MMM YYYY');
+
     // ---> checking all the data in local storage
     await AsyncStorage.setItem('Anonymous', 'true');
     let UserId = await AsyncStorage.getItem('UserId');
@@ -263,6 +271,7 @@ const App: () => React$Node = () => {
           data={Images}
           onDone={_onDone}
           showSkipButton={true}
+          onSkip={_onDone}
         />
       )}
       {/* </Provider> */}

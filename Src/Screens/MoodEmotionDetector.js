@@ -158,7 +158,7 @@ const MoodEmotionDetector = ({navigation}) => {
     fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
-        console.log('UserDetailsssssssssssssssss here', await result);
+        // console.log('UserDetailsssssssssssssssss here', await result);
         await dispatch(UserDetail(result.userData));
       })
       .catch((error) => console.log('error', error));
@@ -1485,12 +1485,14 @@ const MoodEmotionDetector = ({navigation}) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            disabled={UserData.AllMoods ? false : true}
+            disabled={
+              UserData.AllMoods && Label !== 'Slide finger' ? false : true
+            }
             onPress={() => savingDataWithName()}
             style={{
               height: dynamicSize(52),
               width: dynamicSize(197),
-              backgroundColor: 'white',
+              backgroundColor: Label === 'Slide finger' ? 'grey' : 'white',
               borderRadius: 17,
               justifyContent: 'center',
               alignItems: 'center',
@@ -1498,9 +1500,9 @@ const MoodEmotionDetector = ({navigation}) => {
             <View />
             <Text style={{textAlign: 'center', fontSize: 18}}>Save</Text>
           </TouchableOpacity>
-          {MoodFail && (
+          {/* {MoodFail && (
             <Text style={styles.ErrorText}>Please select a mood</Text>
-          )}
+          )} */}
         </View>
       </View>
       <VideoModal

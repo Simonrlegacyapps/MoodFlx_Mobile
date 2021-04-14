@@ -112,18 +112,20 @@ const EmailConfirmation = ({navigation}) => {
           Work email
         </Text>
         <Text
-          numberOfLines={2}
+          numberOfLines={3}
           style={{
             fontWeight: '300',
-            letterSpacing: 1,
+            // letterSpacing: 1,
             fontSize: dynamicSize(14),
             marginTop: dynamicSize(12),
             // marginLeft: 62,
             // marginRight: 62,
+            lineHeight: dynamicSize(25),
             textAlign: 'center',
-            width: '60%',
+            width: dynamicSize(250),
           }}>
-          Just to confirm you actually work there
+          NB your email will never be shared with your company, we pinky
+          promise! You are completely anonymous
         </Text>
         <View
           style={{

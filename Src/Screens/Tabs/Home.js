@@ -904,7 +904,7 @@ const App = (props) => {
 
         <View>
           {/* {swiperIndex == 1 ? ( */}
-          {console.log(`tryWeather`, TryWeather)}
+          {/* {console.log(`tryWeather`, TryWeather)} */}
           <WeatherData
             tryWeather={UserData.DayTemperature}
             swiperIndex={swiperIndex}

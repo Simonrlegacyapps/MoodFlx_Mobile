@@ -117,7 +117,7 @@ const Linktocompany = ({navigation}) => {
         console.log('err', err), setLoading(false), setAPIfail(true);
       });
   };
-  console.log(`UserData.UserDivision`, UserData.UserDivision);
+  // console.log(`UserData.UserDivision`, UserData.UserDivision);
 
   const cancelled = () => {
     setUnlinkConfirm(false);
@@ -145,7 +145,7 @@ const Linktocompany = ({navigation}) => {
     }
     // setLinked(type);
   };
-  console.log(`UserData.NameCompany`, UserData.NameCompany);
+  // console.log(`UserData.NameCompany`, UserData.NameCompany);
   return (
     <View style={{flex: 1}}>
       {/* {console.log('REDUX DATA ==============>', getDivision[0].id)} */}
@@ -229,7 +229,7 @@ const Linktocompany = ({navigation}) => {
         <View
           style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(95)}}>
           <Text style={{fontWeight: '500', fontSize: dynamicSize(24)}}>
-            Link a company
+            Connect to a company
           </Text>
           <Text
             numberOfLines={4}
@@ -264,7 +264,7 @@ const Linktocompany = ({navigation}) => {
                   color: '#FFFFFF',
                   fontFamily: RubikBlack,
                 }}>
-                Link Now
+                Connect Now
               </Text>
             </View>
           </TouchableOpacity>

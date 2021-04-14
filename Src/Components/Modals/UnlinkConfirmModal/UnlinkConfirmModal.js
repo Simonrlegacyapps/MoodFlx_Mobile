@@ -81,7 +81,7 @@ const UnlinkConfirmModal = ({
             position: 'absolute',
           }}></TouchableOpacity>
         <View style={styles.upperContainer}>
-          <View style={{alignItems: 'center'}}>
+          {/* <View style={{alignItems: 'center'}}>
             <View
               style={{
                 height: dynamicSize(80),
@@ -102,14 +102,14 @@ const UnlinkConfirmModal = ({
                 />
               }
             </View>
-          </View>
+          </View> */}
           <Text
             style={{
               fontWeight: '500',
               fontSize: 16,
               color: '#9C9EB9',
               textAlign: 'center',
-              marginTop: 20,
+              marginTop: dynamicSize(25),
             }}>
             Confirm
           </Text>

@@ -53,7 +53,9 @@ const SaveConfirmModal = ({
 
   // console.log(`value`, value);
 
-  let myname = UserData?.UserDetails?.full_name ? UserData?.UserDetails?.full_name : "InnoApps";
+  let myname = UserData?.UserDetails?.full_name
+    ? UserData?.UserDetails?.full_name
+    : 'InnoApps';
   return (
     <Modal
       style={styles.modalView}
@@ -138,7 +140,7 @@ const SaveConfirmModal = ({
               width: '60%',
               lineHeight: dynamicSize(26),
             }}>
-            Saved this mood with my name
+            Save this mood with my name
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
             <TouchableOpacity

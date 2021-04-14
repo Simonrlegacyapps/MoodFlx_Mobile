@@ -50,7 +50,7 @@ const MicScreen = ({navigation}) => {
       email: UserData.UserEmail,
       user_id: UserData.UserId,
     });
-    console.log(`data of questions`, data);
+    // console.log(`data of questions`, data);
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -64,8 +64,8 @@ const MicScreen = ({navigation}) => {
     fetch('https://admin.moodflo.com/api/getQuestions', requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
-        console.log('response of questions', result),
-          await setquestions(result.questions);
+        // console.log('response of questions', result),
+        await setquestions(result.questions);
         setLoading(false);
       })
       .catch((error) => console.log('error', error));
@@ -148,10 +148,10 @@ const MicScreen = ({navigation}) => {
           <Text style={styles.normalText}>Team Pulse</Text>
           <Text style={styles.BigText}>
             {UserData.UserEmail
-              ? 'Have your say as a collective'
-              : questions && questions.length > 0
-              ? "Anonymously answer Team Pulses with how you feel. You'll get a notification when a Team Pulse is available, stay tuned!"
-              : 'Connect with your company here to answer Team Pulses anonymously'}
+              ? questions && questions.length > 0
+                ? 'Have your say as a collective'
+                : "Anonymously answer Team Pulses with how you feel. You'll get a notification when a Team Pulse is available, stay tuned!"
+              : 'Connect with your company to answer Team Pulses anonymously'}
           </Text>
           {questions &&
             questions.length > 0 &&
@@ -215,6 +215,30 @@ const MicScreen = ({navigation}) => {
                 </TouchableOpacity>
               );
             })}
+          {!UserData.UserEmail && (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('LinkCompanyStackNavigation');
+              }}
+              style={{alignItems: 'center', justifyContent: 'center'}}>
+              <View
+                style={{
+                  marginTop: dynamicSize(48),
+                  height: dynamicSize(53),
+                  width: dynamicSize(230),
+                  backgroundColor: '#E4DFFF',
+                  borderRadius: 16,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 40,
+                }}>
+                <Text
+                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
+                  Connect
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
 
