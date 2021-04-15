@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -50,6 +51,7 @@ const ProfileTab = ({navigation}) => {
   const [Pronoun, setPronoun] = useState('');
   const [date, setdate] = useState('');
   const [edit, setedit] = useState(false);
+  const [ImageLoading, setImageLoading] = useState(false);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -126,10 +128,12 @@ const ProfileTab = ({navigation}) => {
     fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        console.log('UserDetail', result.userData);
+        console.log('UserDetaills', result.userData);
         dispatch(UserDetail(result.userData));
+        setImageLoading(false);
       })
       .catch((error) => console.log('error', error));
+    setImageLoading(false);
   };
 
   useEffect(() => {
@@ -137,6 +141,7 @@ const ProfileTab = ({navigation}) => {
   }, []);
 
   const imagePostFunction = (imageData) => {
+    setImageLoading(true);
     const deviceId = DeviceInfo.getUniqueId();
     const imageResponse = {
       ...imageData,
@@ -170,11 +175,13 @@ const ProfileTab = ({navigation}) => {
       .then(async (res) => {
         console.log(`res`, res);
         getProfileUserData();
+
         // setCommentText('');
         // console.log("add live well success", JSON.stringify(data, undefined, 2));
       })
       .catch((error) => {
         console.log('error come', error);
+        setImageLoading(false);
       });
   };
 
@@ -233,7 +240,7 @@ const ProfileTab = ({navigation}) => {
       };
       const images = [source];
 
-      // imagePostFunction(source)
+      imagePostFunction(source);
       setOpenActionSheet(false);
       console.log(`images`, images);
     });
@@ -298,17 +305,19 @@ const ProfileTab = ({navigation}) => {
         <View style={styles.profileImageStyle}>
           <View style={styles.imageViewStyle}>
             {UserData?.UserDetails?.profile_image ? (
-              <Image
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  resizeMode: 'stretch',
-                  borderRadius: dynamicSize(160),
-                }}
-                source={{
-                  uri: `https://admin.moodflo.com/${UserData?.UserDetails?.profile_image}`,
-                }}
-              />
+              <View>
+                <Image
+                  style={{
+                    height: '100%',
+                    width: '100%',
+                    resizeMode: 'cover',
+                    borderRadius: dynamicSize(160),
+                  }}
+                  source={{
+                    uri: `https://admin.moodflo.com/${UserData?.UserDetails?.profile_image}`,
+                  }}
+                />
+              </View>
             ) : (
               <ProfilePlaceholder
                 width={dynamicSize(160)}
@@ -320,6 +329,21 @@ const ProfileTab = ({navigation}) => {
                 <PickImageIcon />
               </TouchableOpacity>
             </View>
+            {ImageLoading && (
+              <View
+                style={{
+                  position: 'absolute',
+                  height: '100%',
+                  width: '100%',
+                  backgroundColor: 'black',
+                  opacity: 0.2,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: dynamicSize(160),
+                }}>
+                <ActivityIndicator size="large" />
+              </View>
+            )}
           </View>
           <View style={styles.headerContainerStyle}>
             <View
@@ -388,7 +412,7 @@ const ProfileTab = ({navigation}) => {
             ProfileApiCallHere={ProfileApiCallHere}
             navigation={navigation}
             data={PronounData}
-            label={'Pronoun'}
+            label={'Pronouns'}
             // value={Pronoun}
             value={
               Pronoun

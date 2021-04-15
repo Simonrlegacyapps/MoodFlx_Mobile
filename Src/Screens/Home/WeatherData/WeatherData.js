@@ -34,6 +34,7 @@ import GetLocation from 'react-native-get-location';
 import {dynamicSize} from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
 import {WeatherPerm} from '../../../redux/actions/actions';
+import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -73,6 +74,7 @@ const WeatherData = ({
   const [ManualWeatherType, setManualWeatherType] = useState(null);
   const [AllDayWeather, setAllDayWeather] = useState(null);
   const [Graph, setGraph] = useState(null);
+  const [WeatherPopUp, setWeatherPopUp] = useState(false);
 
   const a = moment().subtract(0, 'days').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
@@ -143,7 +145,7 @@ const WeatherData = ({
   };
 
   const findWeather = (value) => {
-    console.log(`value`, value);
+    // console.log(`value`, value);
     let weather = '';
     if (value) {
       value == 'clear sky'
@@ -282,7 +284,7 @@ const WeatherData = ({
     };
 
     setTimeout(() => {
-      console.log(`Weather Graph Data Params`, raw);
+      // console.log(`Weather Graph Data Params`, raw);
       fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
         .then((response) => response.json())
         .then((result) => {
@@ -347,6 +349,10 @@ const WeatherData = ({
   const EditDone = () => {
     cancelled();
     syncWeatherData();
+  };
+
+  const WeatherPopUpcancelled = () => {
+    setWeatherPopUp(false);
   };
   dataOfWeatherGraph = [
     {x: 1, y: AllDayWeather ? AllDayWeather[0].temp : 0},
@@ -416,123 +422,92 @@ const WeatherData = ({
             </Text>
           </View>
         </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
-            WEATHER
-          </Text>
-          <Text style={styles.swiperText}>
-            You are more <Text style={{color: '#5947D0'}}>energetic</Text> when
-            the temperature is below <Text style={{color: '#5947D0'}}>20°</Text>{' '}
-            and it <Text style={{color: '#5947D0'}}>rains</Text> around{' '}
-            <Text style={{color: '#5947D0'}}>2hrs</Text>
-          </Text>
-
-          {UserData.WeatherPermission && (
-            <View
+        <View>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+              WEATHER
+            </Text>
+            <TouchableOpacity
+              activeOpacity={1}
               style={{
-                position: 'absolute',
-                zIndex: -234234,
-                justifyContent: 'center',
-                top: SIZE / 2.2,
-              }}>
-              <Text
-                style={{
-                  marginTop: -160,
-                  fontWeight: '700',
-                  fontFamily: RubikExtraBold,
-                  fontSize: SIZE / 5.5,
-                  color: '#E0DDED',
-                  transform: [{rotate: '-15deg'}],
-                }}>
-                Demo
+                // fontSize: SIZE / 14,
+                // fontWeight: '500',
+                alignItems: 'center',
+                width: '100%',
+              }}
+              onPress={() => setWeatherPopUp(true)}>
+              <Text style={styles.swiperText}>
+                You are more <Text style={{color: '#5947D0'}}>energetic</Text>{' '}
+                when the temperature is below{' '}
+                <Text style={{color: '#5947D0'}}>20°</Text> and it{' '}
+                <Text style={{color: '#5947D0'}}>rains</Text> around{' '}
+                <Text style={{color: '#5947D0'}}>2hrs</Text>
               </Text>
-            </View>
-          )}
-        </View>
+            </TouchableOpacity>
 
-        <View style={styles.WeatherCardMain}>
-          {swiperIndex == 1 && (
-            <View style={styles.WeatherCard}>
-              <Text
-                style={[
-                  styles.SmallThinText,
-                  {paddingVertical: 0, paddingBottom: 4},
-                ]}>
-                Today's Weather
-              </Text>
-              <Text style={[styles.SmallThinText, styles.city]}>
-                {Weather ? Weather?.name : 'Loading ...'}
-              </Text>
-              <View>
-                <View
+            {UserData.WeatherPermission && (
+              <View
+                style={{
+                  position: 'absolute',
+                  zIndex: -234234,
+                  justifyContent: 'center',
+                  top: SIZE / 2.2,
+                }}>
+                <Text
                   style={{
-                    width: 260,
-                    backgroundColor: 'white',
-                    margin: 10,
-                    borderRadius: 15,
-                    marginHorizontal: 20,
+                    marginTop: -160,
+                    fontWeight: '700',
+                    fontFamily: RubikExtraBold,
+                    fontSize: SIZE / 5.5,
+                    color: '#E0DDED',
+                    transform: [{rotate: '-15deg'}],
                   }}>
+                  Demo
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <View style={styles.WeatherCardMain}>
+            {swiperIndex == 1 && (
+              <View style={styles.WeatherCard}>
+                <Text
+                  style={[
+                    styles.SmallThinText,
+                    {paddingVertical: 0, paddingBottom: 4},
+                  ]}>
+                  Today's Weather
+                </Text>
+                <Text style={[styles.SmallThinText, styles.city]}>
+                  {Weather ? Weather?.name : 'Loading ...'}
+                </Text>
+                <View>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      padding: 15,
-                      overflow: 'hidden',
+                      width: 260,
+                      backgroundColor: 'white',
+                      margin: 10,
+                      borderRadius: 15,
+                      marginHorizontal: 20,
                     }}>
-                    <Image
-                      resizeMode={'contain'}
-                      source={Constants.Images.Rain}
-                      style={{margin: 10, marginHorizontal: 20}}
-                    />
-                    <View>
-                      <Text style={[styles.Card1Text]}>
-                        {ManualWeatherType
-                          ? ManualWeatherType
-                          : Weather
-                          ? findWeather(Weather.weather[0].description)
-                          : 'Low'}
-                      </Text>
-                      <Text
-                        style={[
-                          ,
-                          {fontFamily: RubikMedium, fontSize: dynamicSize(32)},
-                        ]}>
-                        {ManualTemp
-                          ? ManualTemp
-                          : Math.round(Weather ? Weather.main.temp : '0')}
-                        ºC
-                      </Text>
-                    </View>
-                  </View>
-                  <TouchableOpacity onPress={editTemp}>
-                    <Image
+                    <View
                       style={{
-                        resizeMode: 'contain',
-                        height: dynamicSize(21),
-                        width: dynamicSize(21),
-                        marginTop: -25,
-                        right: 5,
-                        bottom: 7,
-                        alignSelf: 'flex-end',
-                      }}
-                      source={Constants.Images.Edit}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.CardsView}>
-                  <View style={styles.card2View}>
-                    <View style={{flexDirection: 'row', padding: 15}}>
+                        flexDirection: 'row',
+                        padding: 15,
+                        overflow: 'hidden',
+                      }}>
                       <Image
                         resizeMode={'contain'}
                         source={Constants.Images.Rain}
-                        style={styles.SmallCardImage}
+                        style={{margin: 10, marginHorizontal: 20}}
                       />
                       <View>
-                        <Text style={[styles.smallCardText]}>
+                        <Text style={[styles.Card1Text]}>
                           {ManualWeatherType
                             ? ManualWeatherType
                             : Weather
@@ -544,10 +519,13 @@ const WeatherData = ({
                             ,
                             {
                               fontFamily: RubikMedium,
-                              fontSize: dynamicSize(15),
+                              fontSize: dynamicSize(32),
                             },
                           ]}>
-                          {ManulHours ? ManulHours : hours ? hours : 1}hr
+                          {ManualTemp
+                            ? ManualTemp
+                            : Math.round(Weather ? Weather.main.temp : '0')}
+                          ºC
                         </Text>
                       </View>
                     </View>
@@ -555,9 +533,9 @@ const WeatherData = ({
                       <Image
                         style={{
                           resizeMode: 'contain',
-                          height: dynamicSize(19),
-                          width: dynamicSize(19),
-                          marginTop: -18,
+                          height: dynamicSize(21),
+                          width: dynamicSize(21),
+                          marginTop: -25,
                           right: 5,
                           bottom: 7,
                           alignSelf: 'flex-end',
@@ -566,128 +544,188 @@ const WeatherData = ({
                       />
                     </TouchableOpacity>
                   </View>
-                  <View
-                    style={{
-                      width: 120,
-                      backgroundColor: 'white',
-                      borderRadius: 15,
-                    }}>
-                    <View style={{flexDirection: 'row', padding: 15}}>
-                      <Image
-                        resizeMode={'contain'}
-                        source={Constants.Images.Rain}
-                        style={styles.SmallCardImage}
-                      />
-                      <View>
-                        <Text style={[, styles.smallCardText]}>Pollen</Text>
-                        <Text
-                          style={[
-                            {
-                              fontFamily: RubikMedium,
-                              fontSize: dynamicSize(14.5),
-                            },
-                          ]}>
-                          {ManulPollen ? ManulPollen : 'Low'}
-                        </Text>
+                  <View style={styles.CardsView}>
+                    <View style={styles.card2View}>
+                      <View style={{flexDirection: 'row', padding: 15}}>
+                        <Image
+                          resizeMode={'contain'}
+                          source={Constants.Images.Rain}
+                          style={styles.SmallCardImage}
+                        />
+                        <View>
+                          <Text style={[styles.smallCardText]}>
+                            {ManualWeatherType
+                              ? ManualWeatherType
+                              : Weather
+                              ? findWeather(Weather.weather[0].description)
+                              : 'Low'}
+                          </Text>
+                          <Text
+                            style={[
+                              ,
+                              {
+                                fontFamily: RubikMedium,
+                                fontSize: dynamicSize(15),
+                              },
+                            ]}>
+                            {ManulHours ? ManulHours : hours ? hours : 1}hr
+                          </Text>
+                        </View>
                       </View>
+                      <TouchableOpacity onPress={editTemp}>
+                        <Image
+                          style={{
+                            resizeMode: 'contain',
+                            height: dynamicSize(19),
+                            width: dynamicSize(19),
+                            marginTop: -18,
+                            right: 5,
+                            bottom: 7,
+                            alignSelf: 'flex-end',
+                          }}
+                          source={Constants.Images.Edit}
+                        />
+                      </TouchableOpacity>
                     </View>
-                    <TouchableOpacity onPress={editTemp}>
-                      <Image
-                        style={{
-                          resizeMode: 'contain',
-                          height: dynamicSize(19),
-                          width: dynamicSize(19),
-                          marginTop: -18,
-                          right: 5,
-                          bottom: 8,
-                          alignSelf: 'flex-end',
-                        }}
-                        source={Constants.Images.Edit}
-                      />
-                    </TouchableOpacity>
+                    <View
+                      style={{
+                        width: 120,
+                        backgroundColor: 'white',
+                        borderRadius: 15,
+                      }}>
+                      <View style={{flexDirection: 'row', padding: 15}}>
+                        <Image
+                          resizeMode={'contain'}
+                          source={Constants.Images.Rain}
+                          style={styles.SmallCardImage}
+                        />
+                        <View>
+                          <Text style={[, styles.smallCardText]}>Pollen</Text>
+                          <Text
+                            style={[
+                              {
+                                fontFamily: RubikMedium,
+                                fontSize: dynamicSize(14.5),
+                              },
+                            ]}>
+                            {ManulPollen ? ManulPollen : 'Low'}
+                          </Text>
+                        </View>
+                      </View>
+                      <TouchableOpacity onPress={editTemp}>
+                        <Image
+                          style={{
+                            resizeMode: 'contain',
+                            height: dynamicSize(19),
+                            width: dynamicSize(19),
+                            marginTop: -18,
+                            right: 5,
+                            bottom: 8,
+                            alignSelf: 'flex-end',
+                          }}
+                          source={Constants.Images.Edit}
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              </View>
-            </View>
-          )}
-        </View>
-
-        {/* <ProgressBarCustom /> */}
-        <HomeHeader />
-        <View style={{marginBottom: 50, alignItems: 'center'}}>
-          {swiperIndex == 1 && <BarGraph ShowPollen={true} />}
-          <View
-            style={{
-              // flex: 1,
-              position: 'absolute',
-              left: SIZE / 6,
-              // alignSelf: 'center',
-              // alignItems: 'center',
-              // justifyContent: 'center',
-              marginTop: 30,
-            }}>
-            {swiperIndex == 1 && (
-              <View>
-                <View>
-                  {/* <BezierGraphAuto data={data} color={'#F4227E'} /> */}
-
-                  <GraphBezierCustom
-                    // abs
-                    heightProp={heightProp}
-                    stroke="#F4227E"
-                    widthProp={widthProp}
-                    data={data}
-                    max={max}
-                    H={9}
-                  />
-                </View>
-                <View style={{marginTop: 20}}>
-                  {/* <BezierGraphAuto data={dataLow} color={'#70DEEC'} /> */}
-                  <GraphBezierCustom
-                    heightProp={heightProp}
-                    stroke="#70DEEC"
-                    widthProp={widthProp}
-                    data={dataLow}
-                    max={Lowmax}
-                    H={4}
-                  />
                 </View>
               </View>
             )}
           </View>
-          <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-            <IndicatorHelper color={'#7FE3F0'} text={'Min ºC'} />
-            <IndicatorHelper color={'#FC4190'} text={'Max ºC'} />
-            <IndicatorHelper color={'#7265E3'} text={'Rainfall'} />
-            <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
-          </View>
-        </View>
-        {swiperIndex == 1 && (
-          <GraphicChart dataOfWeatherGraph={dataOfWeatherGraph} />
-        )}
-        {!UserData.WeatherPermission && (
-          <View
-            style={{
-              position: 'absolute',
-              top: 420,
-              alignItems: 'center',
-              height: '100%',
-              width: '100%',
-              zIndex: -234234,
-            }}>
-            <Text
+
+          {/* <ProgressBarCustom /> */}
+          <HomeHeader />
+          <View style={{marginBottom: 50, alignItems: 'center'}}>
+            {swiperIndex == 1 && <BarGraph ShowPollen={true} />}
+            <View
               style={{
-                marginTop: -160,
-                fontWeight: '700',
-                fontFamily: RubikExtraBold,
-                fontSize: SIZE / 3.5,
-                color: '#E0DDED',
-                transform: [{rotate: '-15deg'}],
+                // flex: 1,
+                position: 'absolute',
+                left: SIZE / 6,
+                // alignSelf: 'center',
+                // alignItems: 'center',
+                // justifyContent: 'center',
+                marginTop: 30,
               }}>
-              Demo
-            </Text>
+              {swiperIndex == 1 && (
+                <View>
+                  <View>
+                    {/* <BezierGraphAuto data={data} color={'#F4227E'} /> */}
+
+                    <GraphBezierCustom
+                      // abs
+                      heightProp={heightProp}
+                      stroke="#F4227E"
+                      widthProp={widthProp}
+                      data={data}
+                      max={max}
+                      H={9}
+                    />
+                  </View>
+                  <View style={{marginTop: 20}}>
+                    {/* <BezierGraphAuto data={dataLow} color={'#70DEEC'} /> */}
+                    <GraphBezierCustom
+                      heightProp={heightProp}
+                      stroke="#70DEEC"
+                      widthProp={widthProp}
+                      data={dataLow}
+                      max={Lowmax}
+                      H={4}
+                    />
+                  </View>
+                </View>
+              )}
+            </View>
+            <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+              <IndicatorHelper color={'#7FE3F0'} text={'Min ºC'} />
+              <IndicatorHelper color={'#FC4190'} text={'Max ºC'} />
+              <IndicatorHelper color={'#7265E3'} text={'Rainfall'} />
+              <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
+            </View>
           </View>
-        )}
+          {swiperIndex == 1 && (
+            <GraphicChart dataOfWeatherGraph={dataOfWeatherGraph} />
+          )}
+          {!UserData.WeatherPermission && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 420,
+                alignItems: 'center',
+                height: '100%',
+                width: '100%',
+                zIndex: -234234,
+              }}>
+              <Text
+                style={{
+                  marginTop: dynamicSize(-300),
+                  fontWeight: '700',
+                  fontFamily: RubikExtraBold,
+                  fontSize: SIZE / 3.5,
+                  color: '#E0DDED',
+                  transform: [{rotate: '-15deg'}],
+                }}>
+                Demo
+              </Text>
+            </View>
+          )}
+          {!UserData.WeatherPermission && (
+            <TouchableOpacity
+              activeOpacity={0}
+              onPress={async () => {
+                // await AsyncStorage.setItem('GiveHealthPerm', 'true');
+                setOpenActionSheet(true);
+              }}
+              style={{
+                position: 'absolute',
+                flex: 1,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'black',
+                opacity: 0,
+              }}></TouchableOpacity>
+          )}
+        </View>
       </ScrollView>
       <EditManualWeatherModal
         modalVisible={EditManualWeather}
@@ -710,6 +748,13 @@ const WeatherData = ({
         modalVisible={openActionSheet}
         dismissModalHandler={() => setOpenActionSheet(false)}
         verifyDone={() => VerifyDone()}
+      />
+
+      <DateExpiredModal
+        WeatherPopUp
+        modalVisible={WeatherPopUp}
+        dismissModalHandler={() => WeatherPopUpcancelled()}
+        verifyDone={() => WeatherPopUpcancelled()}
       />
     </View>
   );

@@ -422,7 +422,7 @@ const Linktocompany = ({navigation}) => {
             {console.log(
               'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
             )}
-            {UserData?.NameCompany?.logo && (
+            {UserData?.NameCompany?.logo ? (
               <Image
                 style={{
                   height: dynamicSize(80),
@@ -434,6 +434,22 @@ const Linktocompany = ({navigation}) => {
                 source={{
                   uri:
                     'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
+                  // UserData?.NameCompany?.company_logo,
+                }}
+                // style={{backgroundColor: '#4C5980'}}
+              />
+            ) : (
+              <Image
+                style={{
+                  height: dynamicSize(80),
+                  width: dynamicSize(80),
+                  resizeMode: 'contain',
+                  backgroundColor: 'grey',
+                  borderRadius: dynamicSize(40),
+                }}
+                source={{
+                  uri:
+                    'https://admin.launchnet.works/images/logo/ic_mood_logo.jpg',
                   // UserData?.NameCompany?.company_logo,
                 }}
                 // style={{backgroundColor: '#4C5980'}}

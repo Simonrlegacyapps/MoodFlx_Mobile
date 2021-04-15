@@ -203,7 +203,7 @@ const App = (props) => {
       if (steps_data !== null) {
         setLoading(UserData.HealthPermission ? true : false);
         setcallOneTime('second');
-        console.log(`UserData.MainSteps`, UserData.MainSteps);
+        // console.log(`UserData.MainSteps`, UserData.MainSteps);
         filterDates();
         filterSteps();
         AddDataToFilter();
@@ -227,7 +227,7 @@ const App = (props) => {
       await OnAutoSync();
       await UserData.MainSteps;
       if (UserData.MainSteps !== null) {
-        console.log(`UserData.MainSteps`, UserData.MainSteps);
+        // console.log(`UserData.MainSteps`, UserData.MainSteps);
         filterDates();
         filterSteps();
         AddDataToFilter();

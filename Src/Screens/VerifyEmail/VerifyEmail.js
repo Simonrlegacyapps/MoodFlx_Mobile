@@ -116,7 +116,7 @@ const VerifyEmail = ({navigation}) => {
             width: '60%',
             lineHeight: 25,
           }}>
-          example@company.com
+          {mail ? mail : 'example@company.com'}
         </Text>
         <Text
           numberOfLines={2}

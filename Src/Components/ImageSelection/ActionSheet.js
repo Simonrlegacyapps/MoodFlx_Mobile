@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
+import {dynamicSize} from '../../Constants/sizeChoose';
 type props = {
   modalVisible: Boolean,
   dismissModalHandler: Object,
@@ -120,7 +121,9 @@ const styles = StyleSheet.create({
   },
   buttonsStyle: {
     height: 55,
-    width: '100%',
+    // width: '100%',
+    borderBottomWidth: 1,
+    width: dynamicSize(200),
     marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',

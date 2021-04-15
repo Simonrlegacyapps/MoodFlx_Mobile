@@ -46,7 +46,11 @@ const HomeScreen = ({navigation, route}) => {
               ) : (
                 <TouchableOpacity
                   activeOpacity={1}
-                  onPress={() => navigation.navigate('MoodEmotionDetector')}>
+                  onPress={() =>
+                    navigation.navigate('MoodEmotionDetector', {
+                      question: undefined,
+                    })
+                  }>
                   <Image
                     style={{
                       marginBottom: 75,

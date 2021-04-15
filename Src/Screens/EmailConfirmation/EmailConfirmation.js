@@ -107,7 +107,7 @@ const EmailConfirmation = ({navigation}) => {
           Sorry, your company hasn't joined MoodFlo yet
         </Text>
       )}
-      <View style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(80)}}>
+      <View style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(40)}}>
         <Text style={{fontWeight: '500', fontSize: dynamicSize(22)}}>
           Work email
         </Text>
@@ -124,8 +124,7 @@ const EmailConfirmation = ({navigation}) => {
             textAlign: 'center',
             width: dynamicSize(250),
           }}>
-          NB your email will never be shared with your company, we pinky
-          promise! You are completely anonymous
+          This is just to make sure we connect you with the right company
         </Text>
         <View
           style={{
@@ -168,6 +167,22 @@ const EmailConfirmation = ({navigation}) => {
             value={value}
           />
         </View>
+        <Text
+          numberOfLines={3}
+          style={{
+            fontWeight: '300',
+            // letterSpacing: 1,
+            fontSize: dynamicSize(14),
+            marginTop: dynamicSize(12),
+            // marginLeft: 62,
+            // marginRight: 62,
+            lineHeight: dynamicSize(25),
+            textAlign: 'center',
+            width: dynamicSize(250),
+          }}>
+          NB: Your email will never be shared with your company, we pinky
+          promise! You are completely anonymous
+        </Text>
         {ShowWarning && (
           <Text
             style={{
