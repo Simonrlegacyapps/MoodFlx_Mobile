@@ -95,7 +95,11 @@ const DateExpiredModal = ({
               textAlign: 'center',
               marginTop: 20,
             }}>
-            {FitnessPopUp ? 'Fitenss' : WeatherPopUp ? 'Weather' : 'Team Pulse'}
+            {FitnessPopUp
+              ? 'Activity'
+              : WeatherPopUp
+              ? 'Weather'
+              : 'Team Pulse'}
           </Text>
           <Text
             numberOfLines={10}
@@ -138,7 +142,7 @@ const DateExpiredModal = ({
                 }}>
                 <Text
                   style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
-                  Okay
+                  {FitnessPopUp || WeatherPopUp ? 'Great' : 'Okay'}
                 </Text>
               </View>
             </TouchableOpacity>

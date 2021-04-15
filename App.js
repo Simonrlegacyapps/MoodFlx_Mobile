@@ -40,6 +40,7 @@ import {
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import moment from 'moment';
+import LightSensor from 'react-native-light-sensor';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -132,7 +133,25 @@ const App: () => React$Node = () => {
   };
 
   const getProfileUserData = async () => {
-    // let aDay = moment().format('DD MMM YYYY');
+    let DateCheck = await AsyncStorage.getItem('DateCheck');
+    let CheckForTodayDate = await JSON.parse(DateCheck);
+    console.log(`CheckForTodayDate ------ 1`, CheckForTodayDate);
+    if (CheckForTodayDate === null) {
+      console.log(`date is set in storage for 1st time`);
+      let aDay = moment().format('DD MMM YYYY');
+      await AsyncStorage.setItem('DateCheck', JSON.stringify(aDay));
+    }
+    let DateCheckTwo = await AsyncStorage.getItem('DateCheck');
+    let CheckForTodayDateTwo = await JSON.parse(DateCheckTwo);
+    console.log(`CheckForTodayDate ------ 2`, CheckForTodayDateTwo);
+    let bDay = moment().format('DD MMM YYYY');
+    console.log(`Check for days ======> `, CheckForTodayDateTwo, bDay);
+    if (CheckForTodayDateTwo !== bDay) {
+      console.log(`Date is confirmed sure And &&&&&&&& Mood is reset`);
+      await AsyncStorage.setItem('DateCheck', JSON.stringify(bDay));
+      AsyncStorage.setItem('MoodCount', JSON.stringify(0));
+    }
+
     // await AsyncStorage.setItem('DateCheck', JSON.stringify(aDay));
     // let DateCheck = await AsyncStorage.getItem('DateCheck');
     // let CheckForTodayDate = await JSON.parse(DateCheck);
@@ -194,6 +213,7 @@ const App: () => React$Node = () => {
   };
 
   useEffect(() => {
+    console.log(`LightSensor`, LightSensor);
     {
       (UserData.lat == null || UserData.lon == null) &&
         GetLocation.getCurrentPosition({
