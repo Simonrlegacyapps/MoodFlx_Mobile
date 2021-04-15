@@ -26,6 +26,7 @@ type props = {
 
 const {width} = Dimensions.get('window');
 const PopUp = ({
+  permission,
   modalVisible,
   dismissModalHandler,
   selectedValue,
@@ -75,7 +76,7 @@ const PopUp = ({
             source={image}
             style={{height: 80, width: 80, margin: 15, resizeMode: 'contain'}}
           />
-          <Text style={styles.smallText}> Let’s sync your {dataType} data</Text>
+          {!permission &&<Text style={styles.smallText}> Let’s sync your {dataType} data</Text>}
           <Text style={styles.bigText}>
             {UserData.HealthPermission
               ? 'Anonymously syncing your data'
@@ -93,7 +94,7 @@ const PopUp = ({
                 justifyContent: 'center',
               }}>
               <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
-                Next
+                {permission ? "Great!" :"Next"}
               </Text>
             </View>
           </TouchableOpacity>

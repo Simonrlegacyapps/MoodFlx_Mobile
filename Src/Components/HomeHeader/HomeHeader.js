@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import Constants from '../../Constants';
 import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
 
-const HomeHeader = () => {
+const HomeHeader = ({click, value}) => {
   return (
     <View style={styles.HeaderView}>
       <TouchableOpacity
@@ -25,16 +25,16 @@ const HomeHeader = () => {
           <Text style={styles.normalText}>History</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity
+      <TouchableOpacity onPress={click}
         style={[
           styles.ColoredView,
           {flexDirection: 'row', alignItems: 'center'},
         ]}>
-        <Text style={styles.ColoredText}>Weekly</Text>
+        <Text style={styles.ColoredText}>{value}</Text>
         <Image
           resizeMode={'contain'}
           style={{height: 12, width: 12, marginHorizontal: 5}}
-          source={Constants.Images.DropDownFill}
+          source={Constants.Images.dropDownTwo}
         />
       </TouchableOpacity>
     </View>

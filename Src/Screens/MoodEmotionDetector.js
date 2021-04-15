@@ -326,7 +326,7 @@ const MoodEmotionDetector = ({navigation}) => {
     ) {
       // setLocationX(moveX.toFixed(2));
       // setLocationY(moveY.toFixed(2));
-      ReactNativeHapticFeedback.trigger('notificationSuccess', options);
+      ReactNativeHapticFeedback.trigger('selection', options);
     }
     // console.log('moveX, moveY, dx, dy, move', moveY, moveX, dx, dy, y0, x0);
     // console.log('dx', dx)
@@ -432,7 +432,7 @@ const MoodEmotionDetector = ({navigation}) => {
     ) {
       setLocationX(moveX.toFixed(2));
       setLocationY(moveY.toFixed(2));
-      ReactNativeHapticFeedback.trigger('notificationSuccess', options);
+      ReactNativeHapticFeedback.trigger('selection', options);
     }
     // console.log('moveX, moveY, dx, dy, move', moveY, moveX, dx, dy, y0, x0);
     // console.log('dx', dx)
@@ -525,7 +525,7 @@ const MoodEmotionDetector = ({navigation}) => {
     return word;
   };
   const getDirectionAndColorOnClick = ({moveY, moveX, dx, dy, y0, x0}) => {
-    ReactNativeHapticFeedback.trigger('notificationSuccess', options);
+    ReactNativeHapticFeedback.trigger('selection', options);
     console.log('clickX, clickY, dx, dy, click', moveY, moveX, dx, dy, y0, x0);
     console.log(`fourthHeight`, fourthHeight, statusHeight);
     // console.log('dx', dx)
@@ -651,7 +651,7 @@ const MoodEmotionDetector = ({navigation}) => {
       onStartShouldSetPanResponder: (event, gestureState) => {
         UserData.AllMoods !== null &&
           !!getDirectionAndColorOnClick(gestureState);
-        ReactNativeHapticFeedback.trigger('notificationSuccess', options);
+        ReactNativeHapticFeedback.trigger('selection', options);
         setstartTime(Date.now());
         !!FindSvg(gestureState);
         console.log(`check check check`);
@@ -674,7 +674,7 @@ const MoodEmotionDetector = ({navigation}) => {
         // setLocationX(gestureState.x0)
         // setLocationY(gestureState.y0)
         const click = getDirectionAndColorOnClick(gestureState);
-        // ReactNativeHapticFeedback.trigger("notificationSuccess", options);
+        // ReactNativeHapticFeedback.trigger("selection", options);
         const svg = FindSvg(gestureState);
         setSvgs(svg);
         setLabel(click);

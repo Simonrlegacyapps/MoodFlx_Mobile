@@ -25,4 +25,6 @@ export default {
   WeatherPopUp: require('../../../assets/newImage/WeatherPopUp/WeatherPopUp.png'),
   Edit: require('../../../assets/newImage/EditPencil/edit.png'),
   dropDownTwo: require('../../../assets/newImage/DropDownFill/dropdown.png'),
+  Pollen: require('../../../assets/newImage/PollenImage/Vector.png'),
+  RainyHour:  require('../../../assets/newImage/RainyHour/RainyHour.png'),
 };

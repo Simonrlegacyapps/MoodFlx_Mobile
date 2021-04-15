@@ -35,6 +35,8 @@ import {dynamicSize} from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
 import {WeatherPerm} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
+import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
+import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -75,6 +77,9 @@ const WeatherData = ({
   const [AllDayWeather, setAllDayWeather] = useState(null);
   const [Graph, setGraph] = useState(null);
   const [WeatherPopUp, setWeatherPopUp] = useState(false);
+  const [AnonymousClick, setAnonymousClick] = useState(false)
+  const [WeatherDurationModal, setWeatherDurationModal] = useState(false)
+  const [WeatherDuration, setWeatherDuration] = useState("Week")
 
   const a = moment().subtract(0, 'days').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
@@ -297,23 +302,23 @@ const WeatherData = ({
   }, [One, Two, Three, Four, Five]);
 
   const data = [
-    {x: 1, y: Graph ? (Graph[0].temp_max === null ? 0 : Graph[0].temp_max) : 0},
-    {x: 2, y: Graph ? (Graph[1].temp_max === null ? 0 : Graph[1].temp_max) : 0},
-    {x: 3, y: Graph ? (Graph[2].temp_max === null ? 0 : Graph[2].temp_max) : 0},
-    {x: 4, y: Graph ? (Graph[3].temp_max === null ? 0 : Graph[3].temp_max) : 0},
-    {x: 5, y: Graph ? (Graph[4].temp_max === null ? 0 : Graph[4].temp_max) : 0},
-    {x: 6, y: Graph ? (Graph[5].temp_max === null ? 0 : Graph[5].temp_max) : 0},
-    {x: 7, y: Graph ? (Graph[6].temp_max === null ? 0 : Graph[6].temp_max) : 0},
+    {x: 1, y: Graph && WeatherDuration === "Week" ? (Graph[0].temp_max === null ? 0 : Graph[0].temp_max) : 0},
+    {x: 2, y: Graph && WeatherDuration === "Week" ? (Graph[1].temp_max === null ? 0 : Graph[1].temp_max) : 0},
+    {x: 3, y: Graph && WeatherDuration === "Week" ? (Graph[2].temp_max === null ? 0 : Graph[2].temp_max) : 0},
+    {x: 4, y: Graph && WeatherDuration === "Week" ? (Graph[3].temp_max === null ? 0 : Graph[3].temp_max) : 0},
+    {x: 5, y: Graph && WeatherDuration === "Week" ? (Graph[4].temp_max === null ? 0 : Graph[4].temp_max) : 0},
+    {x: 6, y: Graph && WeatherDuration === "Week" ? (Graph[5].temp_max === null ? 0 : Graph[5].temp_max) : 0},
+    {x: 7, y: Graph && WeatherDuration === "Week" ? (Graph[6].temp_max === null ? 0 : Graph[6].temp_max) : 0},
   ];
 
   const dataLow = [
-    {x: 1, y: Graph ? (Graph[0].temp_min === null ? 0 : Graph[0].temp_min) : 0},
-    {x: 2, y: Graph ? (Graph[1].temp_min === null ? 0 : Graph[1].temp_min) : 0},
-    {x: 3, y: Graph ? (Graph[2].temp_min === null ? 0 : Graph[2].temp_min) : 0},
-    {x: 4, y: Graph ? (Graph[3].temp_min === null ? 0 : Graph[3].temp_min) : 0},
-    {x: 5, y: Graph ? (Graph[4].temp_min === null ? 0 : Graph[4].temp_min) : 0},
-    {x: 6, y: Graph ? (Graph[5].temp_min === null ? 0 : Graph[5].temp_min) : 0},
-    {x: 7, y: Graph ? (Graph[6].temp_min === null ? 0 : Graph[6].temp_min) : 0},
+    {x: 1, y: Graph && WeatherDuration === "Week" ? (Graph[0].temp_min === null ? 0 : Graph[0].temp_min) : 0},
+    {x: 2, y: Graph && WeatherDuration === "Week" ? (Graph[1].temp_min === null ? 0 : Graph[1].temp_min) : 0},
+    {x: 3, y: Graph && WeatherDuration === "Week" ? (Graph[2].temp_min === null ? 0 : Graph[2].temp_min) : 0},
+    {x: 4, y: Graph && WeatherDuration === "Week" ? (Graph[3].temp_min === null ? 0 : Graph[3].temp_min) : 0},
+    {x: 5, y: Graph && WeatherDuration === "Week" ? (Graph[4].temp_min === null ? 0 : Graph[4].temp_min) : 0},
+    {x: 6, y: Graph && WeatherDuration === "Week" ? (Graph[5].temp_min === null ? 0 : Graph[5].temp_min) : 0},
+    {x: 7, y: Graph && WeatherDuration === "Week" ? (Graph[6].temp_min === null ? 0 : Graph[6].temp_min) : 0},
   ];
 
   let heightProp = SIZE / 4.3;
@@ -337,6 +342,8 @@ const WeatherData = ({
       }),
     );
 
+    const WeatherDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
+
   // console.log(`Lowmax`, data, dataLow);
 
   const editTemp = () => {
@@ -354,6 +361,15 @@ const WeatherData = ({
   const WeatherPopUpcancelled = () => {
     setWeatherPopUp(false);
   };
+
+  const AnonymousPopUpcancelled=()=>{
+    setAnonymousClick(false)
+  }
+
+  const WeatherDurationModalCancelled = ()=>{
+    setWeatherDurationModal(false)
+  }
+
   dataOfWeatherGraph = [
     {x: 1, y: AllDayWeather ? AllDayWeather[0].temp : 0},
     {x: 2, y: AllDayWeather ? AllDayWeather[3].temp : 0},
@@ -387,13 +403,16 @@ const WeatherData = ({
               />
             </View>
             <View style={{alignContent: 'center', paddingHorizontal: 15}}>
-              <Text style={styles.lightText}>Sync your</Text>
+              <Text style={styles.lightText}>{UserData.WeatherPermission ? "Syncing your" :"Sync your"}</Text>
               <Text style={styles.normalText}>Weather data</Text>
             </View>
           </TouchableOpacity>
-          <View style={styles.ColoredView}>
+          <TouchableOpacity
+            onPress={() =>
+              setAnonymousClick(true)}
+            style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anonymous</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.ProgressBarView}>
           <ProgressBar
@@ -549,7 +568,7 @@ const WeatherData = ({
                       <View style={{flexDirection: 'row', padding: 15}}>
                         <Image
                           resizeMode={'contain'}
-                          source={Constants.Images.Rain}
+                          source={Constants.Images.RainyHour}
                           style={styles.SmallCardImage}
                         />
                         <View>
@@ -596,8 +615,14 @@ const WeatherData = ({
                       <View style={{flexDirection: 'row', padding: 15}}>
                         <Image
                           resizeMode={'contain'}
-                          source={Constants.Images.Rain}
-                          style={styles.SmallCardImage}
+                          source={Constants.Images.Pollen}
+                          style={{margin: 5,
+                            height: 15,
+                            width: 15,
+                            justifyContent:'center',
+                            marginTop:10,
+                            marginLeft: -5,
+                          marginRight:10}}
                         />
                         <View>
                           <Text style={[, styles.smallCardText]}>Pollen</Text>
@@ -634,7 +659,7 @@ const WeatherData = ({
           </View>
 
           {/* <ProgressBarCustom /> */}
-          <HomeHeader />
+          <HomeHeader click={()=>setWeatherDurationModal(true)} value={WeatherDuration}/>
           <View style={{marginBottom: 50, alignItems: 'center'}}>
             {swiperIndex == 1 && <BarGraph ShowPollen={true} />}
             <View
@@ -743,6 +768,7 @@ const WeatherData = ({
         EditWeatherType={setManualWeatherType}
       />
       <PopUp
+      permission = {UserData.WeatherPermission}
         image={Constants.Images.WeatherPopUp}
         dataType={'weather'}
         modalVisible={openActionSheet}
@@ -756,6 +782,20 @@ const WeatherData = ({
         dismissModalHandler={() => WeatherPopUpcancelled()}
         verifyDone={() => WeatherPopUpcancelled()}
       />
+
+<AnonymousPopUp
+        modalVisible={AnonymousClick}
+        dismissModalHandler={() => AnonymousPopUpcancelled()}
+        verifyDone={() => AnonymousPopUpcancelled()}
+      />
+
+<WeatherGraphDurationModal
+          data={WeatherDurations}
+          modalVisible={WeatherDurationModal}
+          onChangeText={setWeatherDuration}
+          value={WeatherDuration}
+          dismissModalHandler={() => setWeatherDurationModal(false)}
+        />
     </View>
   );
 };

@@ -131,7 +131,7 @@ const DateExpiredModal = ({
               style={{alignItems: 'center'}}>
               <View
                 style={{
-                  marginTop: 48,
+                  marginTop: 30,
                   height: dynamicSize(53),
                   width: dynamicSize(230),
                   backgroundColor: '#E4DFFF',
@@ -142,7 +142,7 @@ const DateExpiredModal = ({
                 }}>
                 <Text
                   style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
-                  {FitnessPopUp || WeatherPopUp ? 'Great' : 'Okay'}
+                  {FitnessPopUp || WeatherPopUp ? 'Great!' : 'Okay'}
                 </Text>
               </View>
             </TouchableOpacity>

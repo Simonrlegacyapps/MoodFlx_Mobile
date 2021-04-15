@@ -149,7 +149,7 @@ const BasicExample = ({
           }}>
           <Text
             style={{color: 'white', fontSize: 13, fontFamily: RubikRegular}}>
-            DAILY
+            DAY
           </Text>
         </TouchableOpacity>
         <TouchableOpacity

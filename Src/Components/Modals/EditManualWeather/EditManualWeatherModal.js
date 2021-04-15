@@ -189,7 +189,7 @@ const EditManualWeatherModal = ({
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row'}}>
                       <TextInput
-                        onSubmitEditing={Keyboard.dismiss()}
+                        // onSubmitEditing={Keyboard.dismiss()}
                         autoFocus={true}
                         placeholder={Temp}
                         onChangeText={(text) => {
@@ -224,7 +224,7 @@ const EditManualWeatherModal = ({
                   <View style={{flexDirection: 'row', padding: 15}}>
                     <Image
                       resizeMode={'contain'}
-                      source={Constants.Images.Rain}
+                      source={Constants.Images.RainyHour}
                       style={styles.SmallCardImage}
                     />
                     <View>
@@ -251,7 +251,7 @@ const EditManualWeatherModal = ({
                               fontFamily: RubikMedium,
                               fontSize: 18,
                               borderBottomWidth: 1,
-                              width: 14,
+                              // width: 14,
                             },
                           ]}>
                           {hours ? hours : 1}
@@ -282,10 +282,16 @@ const EditManualWeatherModal = ({
                       padding: 15,
                     }}>
                     <Image
-                      resizeMode={'contain'}
-                      source={Constants.Images.Rain}
-                      style={styles.SmallCardImage}
-                    />
+                          resizeMode={'contain'}
+                          source={Constants.Images.Pollen}
+                          style={{margin: 5,
+                            height: 15,
+                            width: 15,
+                            justifyContent:'center',
+                            marginTop:10,
+                            marginLeft: -5,
+                          marginRight:10}}
+                        />
                     <View>
                       <Text style={[, styles.smallCardText]}>Pollen</Text>
                       <View style={{flexDirection: 'row'}}>

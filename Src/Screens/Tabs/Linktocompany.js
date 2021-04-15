@@ -304,7 +304,7 @@ const Linktocompany = ({navigation}) => {
               width: dynamicSize(230),
             }}>
             This, and which region you are located, are the only things
-            <Text
+            {/* <Text
               style={{
                 lineHeight: 28,
                 fontWeight: '500',
@@ -315,12 +315,12 @@ const Linktocompany = ({navigation}) => {
 
                 textAlign: 'center',
                 width: dynamicSize(230),
-              }}>
+              }}> */}
               {' '}
               {UserData?.NameCompany?.full_name
                 ? UserData?.NameCompany?.full_name
                 : ''}{' '}
-            </Text>
+            {/* </Text> */}
             will know about you
           </Text>
           <TouchableOpacity
@@ -429,7 +429,7 @@ const Linktocompany = ({navigation}) => {
                   width: dynamicSize(80),
                   resizeMode: 'contain',
                   backgroundColor: 'grey',
-                  borderRadius: dynamicSize(40),
+                  // borderRadius: dynamicSize(40),
                 }}
                 source={{
                   uri:

@@ -28,6 +28,7 @@ import DeviceInfo from 'react-native-device-info';
 import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import {dynamicSize} from '../../Constants/sizeChoose';
+import AnonymousPopUp from '../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -58,6 +59,7 @@ const FitnessData = ({
   const [name, setname] = useState('');
   const [ShowAddName, setShowAddName] = useState(false);
   const [FitnessPopUp, setFitnessPopUp] = useState(false);
+  const [AnonymousClick, setAnonymousClick] = useState(false)
   // console.log(`UserData`, UserData);
 
   const {
@@ -154,6 +156,10 @@ const FitnessData = ({
     setFitnessPopUp(false);
   };
 
+  const AnonymousPopUpcancelled=()=>{
+    setAnonymousClick(false)
+  }
+
   return (
     <View>
       <StatusBar barStyle="dark-content" />
@@ -192,12 +198,8 @@ const FitnessData = ({
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            disabled={UserData?.UserDetails?.full_name}
             onPress={() =>
-              UserData?.UserDetails?.full_name
-                ? console.log(`Name available`)
-                : setShowAddName(true)
-            }
+              setAnonymousClick(true)}
             style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anonymous</Text>
           </TouchableOpacity>
@@ -476,6 +478,7 @@ const FitnessData = ({
       </ScrollView>
 
       <PopUp
+      permission = {UserData.HealthPermission}
         image={Constants.Images.FitnessPopUp}
         dataType={'fitness'}
         modalVisible={openActionSheet}
@@ -495,6 +498,12 @@ const FitnessData = ({
         modalVisible={FitnessPopUp}
         dismissModalHandler={() => FitnessPopUpcancelled()}
         verifyDone={() => FitnessPopUpcancelled()}
+      />
+
+      <AnonymousPopUp
+        modalVisible={AnonymousClick}
+        dismissModalHandler={() => AnonymousPopUpcancelled()}
+        verifyDone={() => AnonymousPopUpcancelled()}
       />
     </View>
   );
