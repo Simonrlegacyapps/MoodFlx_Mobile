@@ -97,7 +97,7 @@ const WeatherData = ({
   // console.log(`Weather`, UserData.DayTemperature);
 
   useEffect(() => {
-    if (swiperIndex == 1) {
+    if (swiperIndex == 1 && UserData.WeatherPermission) {
       // getUserLocation();
     }
   }, [swiperIndex]);
@@ -218,7 +218,7 @@ const WeatherData = ({
         ? ManualWeatherType
         : findWeather(UserData?.DayTemperature?.weather[0].description),
       pollen: null,
-      pollen_type: ManulPollen ? ManulPollen : 'Low',
+      pollen_type: ManulPollen ? ManulPollen.name : 'Low',
       weather_data: UserData.DayTemperature,
       temp_min: Weather?.main?.temp_min,
       temp_max: Weather?.main?.temp_max,
@@ -642,7 +642,7 @@ const WeatherData = ({
                                 fontSize: dynamicSize(14.5),
                               },
                             ]}>
-                            {ManulPollen ? ManulPollen : 'Low'}
+                            {ManulPollen ? ManulPollen.name : 'Low'}
                           </Text>
                         </View>
                       </View>

@@ -67,13 +67,13 @@ const EditManualWeatherModal = ({
 
   // console.log(`value`, value);
 
-  let data = [{label: 'Low'}, {label: 'Medium'}, {label: 'High'}];
+  let data = [{name: 'Low', id: 'Low'}, {name: 'Medium', id: 'Medium'}, {name: 'High', id: 'High'}];
   let Weatherdata = [
-    {label: 'Rainy'},
-    {label: 'Sunny'},
-    {label: 'Cloudy'},
-    {label: 'Stormy'},
-    {label: 'Snowy'},
+    {name: 'Rainy', id: 'Rainy'},
+    {name: 'Sunny', id: 'Sunny'},
+    {name: 'Cloudy', id: 'Cloudy'},
+    {name: 'Stormy', id: 'Stormy'},
+    {name: 'Snowy', id: 'Snowy'},
   ];
 
   const findWeather = (value) => {
@@ -349,6 +349,7 @@ const EditManualWeatherModal = ({
           </View>
         </View>
         <ProfileGenderModal
+        weatherDrop
           //   datePicker={datePicker}
           data={Weatherdata}
           modalVisible={OpenWeatherType}
@@ -357,6 +358,7 @@ const EditManualWeatherModal = ({
           dismissModalHandler={() => setOpenWeatherType(false)}
         />
         <ProfileGenderModal
+        weatherDrop
           //   datePicker={datePicker}
           data={data}
           modalVisible={OpenPollen}
