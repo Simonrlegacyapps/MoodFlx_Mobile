@@ -29,6 +29,7 @@ const AddAnswer = ({
   const [edit, setedit] = useState(false);
   // const [userData, setUserData] = useState(null);
 
+  console.log(`data of add answer`, data)
   const apicall = () => {
     setedit(!edit);
     ProfileApiCallHere();

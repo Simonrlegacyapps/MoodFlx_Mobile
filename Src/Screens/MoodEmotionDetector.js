@@ -169,24 +169,24 @@ const MoodEmotionDetector = ({navigation}) => {
       checkStorage();
       getProfileUserData();
 
-      {
-        (UserData.lat == null || UserData.lon == null) &&
-          GetLocation.getCurrentPosition({
-            enableHighAccuracy: true,
-            timeout: 15000,
-          })
-            .then((location) => {
-              //   console.log('Success', location);
-              setlat(location.latitude);
-              dispatch(Lat(location.latitude));
-              setlng(location.longitude);
-              dispatch(Long(location.longitude));
-            })
-            .catch((error) => {
-              const {code, message} = error;
-              console.log('error', code, message);
-            });
-      }
+      // {
+      //   (UserData.lat == null || UserData.lon == null) &&
+      //     GetLocation.getCurrentPosition({
+      //       enableHighAccuracy: true,
+      //       timeout: 15000,
+      //     })
+      //       .then((location) => {
+      //         //   console.log('Success', location);
+      //         setlat(location.latitude);
+      //         dispatch(Lat(location.latitude));
+      //         setlng(location.longitude);
+      //         dispatch(Long(location.longitude));
+      //       })
+      //       .catch((error) => {
+      //         const {code, message} = error;
+      //         console.log('error', code, message);
+      //       });
+      // }
 
       StatusBarManager.getHeight((statusBarHeight) => {
         setStatusVertical(statusBarHeight.height);

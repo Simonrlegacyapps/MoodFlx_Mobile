@@ -81,7 +81,7 @@ const ProfileGenderModal = ({
               return (
                 <TouchableOpacity
                   onPress={() => {
-                    onChangeText(item.label), dismissModalHandler();
+                    onChangeText(item), dismissModalHandler();
                   }}
                   activeOpacity={0.9}
                   style={[
@@ -92,7 +92,7 @@ const ProfileGenderModal = ({
                       borderBottomColor: '#D8D8D8',
                     },
                   ]}>
-                  <Text style={styles.textStyles}>{item.label}</Text>
+                  <Text style={styles.textStyles}>{item.name}</Text>
                   <View
                     style={{
                       width: '90%',

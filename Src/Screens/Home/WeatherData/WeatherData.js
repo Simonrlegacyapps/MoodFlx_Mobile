@@ -33,7 +33,7 @@ import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import {dynamicSize} from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
-import {WeatherPerm} from '../../../redux/actions/actions';
+import {Lat, Long, WeatherPerm} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
@@ -98,7 +98,7 @@ const WeatherData = ({
 
   useEffect(() => {
     if (swiperIndex == 1) {
-      getUserLocation();
+      // getUserLocation();
     }
   }, [swiperIndex]);
 
@@ -108,6 +108,12 @@ const WeatherData = ({
       timeout: 15000,
     })
       .then((location) => {
+
+          console.log('Success', location);
+            // setlat(location.latitude);
+            dispatch(Lat(location.latitude));
+            // setlng(location.longitude);
+            dispatch(Long(location.longitude));
         if (UserData.lat == null || UserData.lon == null) {
           WeatherDayData(location.latitude, location.longitude);
         }
@@ -117,6 +123,8 @@ const WeatherData = ({
         console.log('error', code, message);
       });
   };
+
+
   let valueHours = 0;
   const WeatherDayData = (loc_lat, loc_long) => {
     let value = 0;
@@ -248,6 +256,7 @@ const WeatherData = ({
   };
 
   const VerifyDone = async () => {
+    getUserLocation();
     await AsyncStorage.setItem('GiveWeatherPerm', 'true');
     setOpenActionSheet(false);
     // CheckForWeather(UserData.lat, UserData.lon);

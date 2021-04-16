@@ -41,6 +41,8 @@ import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import moment from 'moment';
 import LightSensor from 'react-native-light-sensor';
+import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -211,27 +213,59 @@ const App: () => React$Node = () => {
       })
       .catch((error) => console.log('error', error));
   };
+useEffect(()=>{
+    fp()
+},[])
 
+const fp = () =>{
+  let a = new Date()
+  console.log('call')
+  PushNotificationIOS.addNotificationRequest({
+    id:"First",
+    title: "MoodFlo", // (required)
+    subtitle : "Flo would love to know how you feel",
+    fireDate: new Date(a.setHours(10,0,0,0)), // in 60 secs
+    repeats :true
+    // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
+  });
+  PushNotificationIOS.addNotificationRequest({
+    id:"Second",
+    title: "MoodFlo", // (required)
+    subtitle : "Time to check in with Flo",
+    fireDate: new Date(a.setHours(13,0,0,0)), // in 60 secs
+    repeats :true
+    // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
+  });
+  PushNotificationIOS.addNotificationRequest({
+    id:"Third",
+    title: "MoodFlo", // (required)
+    subtitle : "It's Flo time",
+    fireDate: new Date(a.setHours(16,0,0,0)), // in 60 secs
+    repeats :true
+    // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
+  });
+  
+}
   useEffect(() => {
     console.log(`LightSensor`, LightSensor);
-    {
-      (UserData.lat == null || UserData.lon == null) &&
-        GetLocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 15000,
-        })
-          .then((location) => {
-            //   console.log('Success', location);
-            // setlat(location.latitude);
-            dispatch(Lat(location.latitude));
-            // setlng(location.longitude);
-            dispatch(Long(location.longitude));
-          })
-          .catch((error) => {
-            const {code, message} = error;
-            console.log('error', code, message);
-          });
-    }
+    // {
+    //   (UserData.lat == null || UserData.lon == null) &&
+    //     GetLocation.getCurrentPosition({
+    //       enableHighAccuracy: true,
+    //       timeout: 15000,
+    //     })
+    //       .then((location) => {
+    //         //   console.log('Success', location);
+    //         // setlat(location.latitude);
+    //         dispatch(Lat(location.latitude));
+    //         // setlng(location.longitude);
+    //         dispatch(Long(location.longitude));
+    //       })
+    //       .catch((error) => {
+    //         const {code, message} = error;
+    //         console.log('error', code, message);
+    //       });
+    // }
     {
       UserData.AllMoods == null &&
         fetch('https://admin.moodflo.com/api/getMood')
