@@ -57,6 +57,7 @@ const EditManualWeatherModal = ({
   const dispatch = useDispatch();
   const [OpenPollen, setOpenPollen] = useState(false);
   const [OpenWeatherType, setOpenWeatherType] = useState(false);
+  const [TouchTextEdit, setTouchTextEdit] = useState('Temp');
   // const [value, onChangeText] = React.useState('');
   //   console.log(
   //     `modalView, dismissModalHandler, selectedValue`,
@@ -67,7 +68,11 @@ const EditManualWeatherModal = ({
 
   // console.log(`value`, value);
 
-  let data = [{name: 'Low', id: 'Low'}, {name: 'Medium', id: 'Medium'}, {name: 'High', id: 'High'}];
+  let data = [
+    {name: 'Low', id: 'Low'},
+    {name: 'Medium', id: 'Medium'},
+    {name: 'High', id: 'High'},
+  ];
   let Weatherdata = [
     {name: 'Rainy', id: 'Rainy'},
     {name: 'Sunny', id: 'Sunny'},
@@ -144,7 +149,10 @@ const EditManualWeatherModal = ({
           </Text>
           <View style={styles.WeatherCard}>
             <View>
-              <View
+              <TouchableOpacity
+                onPress={() => {
+                  setTouchTextEdit('Temp');
+                }}
                 style={{
                   width: dynamicSize(250),
                   backgroundColor: 'white',
@@ -190,7 +198,11 @@ const EditManualWeatherModal = ({
                     <View style={{flexDirection: 'row'}}>
                       <TextInput
                         // onSubmitEditing={Keyboard.dismiss()}
-                        autoFocus={true}
+                        autoFocus={
+                          TouchTextEdit && TouchTextEdit === 'Temp'
+                            ? true
+                            : false
+                        }
                         placeholder={Temp}
                         onChangeText={(text) => {
                           EditTemp(text);
@@ -218,9 +230,14 @@ const EditManualWeatherModal = ({
                     </View>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
+              {console.log(`TouchTextEdit`, TouchTextEdit)}
               <View style={styles.CardsView}>
-                <View style={styles.card2View}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setTouchTextEdit('Hours');
+                  }}
+                  style={styles.card2View}>
                   <View style={{flexDirection: 'row', padding: 15}}>
                     <Image
                       resizeMode={'contain'}
@@ -240,6 +257,11 @@ const EditManualWeatherModal = ({
                       </TouchableOpacity>
                       <View style={{flexDirection: 'row'}}>
                         <TextInput
+                          autoFocus={
+                            !!TouchTextEdit && TouchTextEdit === 'Hours'
+                              ? true
+                              : false
+                          }
                           placeholder={Hour}
                           onChangeText={(text) => {
                             EditHour(text);
@@ -264,7 +286,7 @@ const EditManualWeatherModal = ({
                       </View>
                     </View>
                   </View>
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity
                   activeOpacity={1}
                   onPress={() => {
@@ -282,16 +304,18 @@ const EditManualWeatherModal = ({
                       padding: 15,
                     }}>
                     <Image
-                          resizeMode={'contain'}
-                          source={Constants.Images.Pollen}
-                          style={{margin: 5,
-                            height: 15,
-                            width: 15,
-                            justifyContent:'center',
-                            marginTop:10,
-                            marginLeft: -5,
-                          marginRight:10}}
-                        />
+                      resizeMode={'contain'}
+                      source={Constants.Images.Pollen}
+                      style={{
+                        margin: 5,
+                        height: 15,
+                        width: 15,
+                        justifyContent: 'center',
+                        marginTop: 10,
+                        marginLeft: -5,
+                        marginRight: 10,
+                      }}
+                    />
                     <View>
                       <Text style={[, styles.smallCardText]}>Pollen</Text>
                       <View style={{flexDirection: 'row'}}>
@@ -349,7 +373,7 @@ const EditManualWeatherModal = ({
           </View>
         </View>
         <ProfileGenderModal
-        weatherDrop
+          weatherDrop
           //   datePicker={datePicker}
           data={Weatherdata}
           modalVisible={OpenWeatherType}
@@ -358,7 +382,7 @@ const EditManualWeatherModal = ({
           dismissModalHandler={() => setOpenWeatherType(false)}
         />
         <ProfileGenderModal
-        weatherDrop
+          weatherDrop
           //   datePicker={datePicker}
           data={data}
           modalVisible={OpenPollen}

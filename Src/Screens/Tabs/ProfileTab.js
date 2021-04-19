@@ -52,7 +52,7 @@ const ProfileTab = ({navigation}) => {
   const [date, setdate] = useState('');
   const [edit, setedit] = useState(false);
   const [ImageLoading, setImageLoading] = useState(false);
-  const [ComingGenderPronoun, setComingGenderPronoun] = useState(null)
+  const [ComingGenderPronoun, setComingGenderPronoun] = useState(null);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -140,20 +140,25 @@ const ProfileTab = ({navigation}) => {
   useEffect(() => {
     getProfileUserData();
 
-
     var myHeaders = new Headers();
-myHeaders.append("Cookie", "__cfduid=dcc52dc3ea7bfd9948604c5b092925bc81618561732");
+    myHeaders.append(
+      'Cookie',
+      '__cfduid=dcc52dc3ea7bfd9948604c5b092925bc81618561732',
+    );
 
-var requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  redirect: 'follow'
-};
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
 
-fetch("https://admin.moodflo.com/api/getGenderPronoun", requestOptions)
-  .then(response => response.json())
-  .then(async result => {console.log("Gender Pronoun Data",await result), await setComingGenderPronoun(result)})
-  .catch(error => console.log('error', error));
+    fetch('https://admin.moodflo.com/api/getGenderPronoun', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        console.log('Gender Pronoun Data', await result),
+          await setComingGenderPronoun(result);
+      })
+      .catch((error) => console.log('error', error));
   }, []);
 
   const imagePostFunction = (imageData) => {
@@ -281,12 +286,15 @@ fetch("https://admin.moodflo.com/api/getGenderPronoun", requestOptions)
         ? Pronoun.name
         : UserData?.UserDetails?.pronouns
         ? UserData?.UserDetails?.pronouns
-        : Pronoun.name,
+        : '',
       date_of_birth: UserData?.UserDetails?.date_of_bitrh
         ? UserData?.UserDetails?.date_of_bitrh
         : Birthday,
-      gender: gender ?
-        gender.id : UserData?.UserDetails?.gender ? UserData?.UserDetails?.gender : 1
+      gender: gender
+        ? gender.id
+        : UserData?.UserDetails?.gender
+        ? UserData?.UserDetails?.gender
+        : '',
     });
 
     var requestOptions = {
@@ -306,17 +314,16 @@ fetch("https://admin.moodflo.com/api/getGenderPronoun", requestOptions)
       .catch((error) => console.log('error', error));
   };
 
+  const checkGenderName = (value) => {
+    console.log(`value`, value, ComingGenderPronoun.gender);
 
-  const checkGenderName=(value)=>{
-    console.log(`value`, value, ComingGenderPronoun.gender)
-    
     const Id = ComingGenderPronoun.gender.find(({id}) => {
       console.log(`name`, id, value);
       return id == value;
     });
     console.log(`Id`, Id);
-    return Id.name
-  }
+    return Id.name;
+  };
 
   const genderData = [{label: 'Male'}, {label: 'Female'}, {label: 'trans'}];
   const PronounData = [{label: 'He/him'}, {label: 'She/her'}, {label: 'trans'}];
@@ -408,16 +415,16 @@ fetch("https://admin.moodflo.com/api/getGenderPronoun", requestOptions)
             value={
               gender
                 ? gender.name
-                : UserData?.UserDetails?.gender && ComingGenderPronoun 
+                : UserData?.UserDetails?.gender && ComingGenderPronoun
                 ? checkGenderName(UserData?.UserDetails?.gender)
-                // ? UserData?.UserDetails?.gender == 2
-                //   ? 'Female'
-                //   : UserData?.UserDetails?.gender == 1
-                //   ? 'Male'
-                //   : UserData?.UserDetails?.gender == 3
-                //   ? 'Trans'
-                //   : gender
-                : gender
+                : // ? UserData?.UserDetails?.gender == 2
+                  //   ? 'Female'
+                  //   : UserData?.UserDetails?.gender == 1
+                  //   ? 'Male'
+                  //   : UserData?.UserDetails?.gender == 3
+                  //   ? 'Trans'
+                  //   : gender
+                  gender
             }
             onChangeText={setgender}
             popUp
@@ -443,7 +450,7 @@ fetch("https://admin.moodflo.com/api/getGenderPronoun", requestOptions)
                 ? Pronoun.name
                 : UserData?.UserDetails?.pronouns
                 ? UserData?.UserDetails?.pronouns
-                : "He/him"
+                : 'He/him'
             }
             gender={gender}
             onChangeText={setPronoun}

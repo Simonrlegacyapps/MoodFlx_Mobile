@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
+import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
 import Constants from '../../../Constants';
 import {PHOTO_URL} from '../../../Constants/constants';
 import {
@@ -97,22 +98,37 @@ const SaveConfirmModal = ({
                 overflow: 'hidden',
                 marginTop: 25,
               }}>
-              <Text
+              {/* <Text
                 style={{
                   color: 'white',
                   fontSize: dynamicSize(40),
                   fontFamily: RubikRegular,
                 }}>
                 {myname.substring(0, 1)}
-              </Text>
-              {/* { 
+              </Text> */}
+              {UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
                 <Image
                   style={{height: '100%', width: '100%', resizeMode: 'cover'}}
                   source={{
                     uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
                   }}
                 />
-              } */}
+              ) : !UserData?.UserDetails?.profile_image &&
+                !UserData.Anonymous &&
+                UserData?.UserDetails?.full_name ? (
+                <Text
+                  style={{
+                    color: 'white',
+                    fontSize: dynamicSize(40),
+                    fontFamily: RubikRegular,
+                    alignSelf: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  {UserData?.UserDetails?.full_name.substring(0, 1)}
+                </Text>
+              ) : (
+                <AnonymousIcon />
+              )}
             </View>
           </View>
           <Text

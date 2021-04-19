@@ -937,7 +937,7 @@ const App = (props) => {
             CheckForScreenData={CheckForScreenData}
             MoodCount={MoodCount}
           />
-        </View>
+        </View> */}
         <View style={styles.slide3}>
           <SleepData
             swiperIndex={swiperIndex}
@@ -948,7 +948,7 @@ const App = (props) => {
             CheckForWeather={CheckForScreenData}
             MoodCount={MoodCount}
           />
-        </View> */}
+        </View>
       </Swiper>
       {Loading && (
         <View

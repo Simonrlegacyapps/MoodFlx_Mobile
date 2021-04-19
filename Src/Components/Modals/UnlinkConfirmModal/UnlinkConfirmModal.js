@@ -123,13 +123,14 @@ const UnlinkConfirmModal = ({
               // marginLeft: 62,
               // marginRight: 62,
               textAlign: 'center',
-              alignSelf:'center',
+              alignSelf: 'center',
               width: '74%',
               lineHeight: dynamicSize(26),
             }}>
-            Are you sure you want to stop providing anonymous insights to {UserData?.NameCompany?.full_name
-                ? UserData?.NameCompany?.full_name
-                : ''}
+            Are you sure you want to stop providing anonymous insights to{' '}
+            {UserData?.NameCompany?.full_name
+              ? UserData?.NameCompany?.full_name
+              : 'MoodFlo'}
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
             <TouchableOpacity

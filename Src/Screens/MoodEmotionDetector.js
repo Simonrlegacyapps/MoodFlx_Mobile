@@ -43,6 +43,7 @@ import {
 import {useRoute} from '@react-navigation/native';
 import SaveConfirmModal from '../Components/Modals/SaveConfirmModal/SaveConfirmModal';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Geocoder from 'react-native-geocoding';
 import BubbleIcon from '../../assets/emotionsicons/Bubble';
 
 const options = {
@@ -169,24 +170,25 @@ const MoodEmotionDetector = ({navigation}) => {
       checkStorage();
       getProfileUserData();
 
-      // {
-      //   (UserData.lat == null || UserData.lon == null) &&
-      //     GetLocation.getCurrentPosition({
-      //       enableHighAccuracy: true,
-      //       timeout: 15000,
-      //     })
-      //       .then((location) => {
-      //         //   console.log('Success', location);
-      //         setlat(location.latitude);
-      //         dispatch(Lat(location.latitude));
-      //         setlng(location.longitude);
-      //         dispatch(Long(location.longitude));
-      //       })
-      //       .catch((error) => {
-      //         const {code, message} = error;
-      //         console.log('error', code, message);
-      //       });
-      // }
+      {
+        UserData.WeatherPermission &&
+          (UserData.lat == null || UserData.lon == null) &&
+          GetLocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 15000,
+          })
+            .then((location) => {
+              //   console.log('Success', location);
+              setlat(location.latitude);
+              dispatch(Lat(location.latitude));
+              setlng(location.longitude);
+              dispatch(Long(location.longitude));
+            })
+            .catch((error) => {
+              const {code, message} = error;
+              console.log('error', code, message);
+            });
+      }
 
       StatusBarManager.getHeight((statusBarHeight) => {
         setStatusVertical(statusBarHeight.height);
@@ -214,6 +216,32 @@ const MoodEmotionDetector = ({navigation}) => {
     let e = await JSON.parse(p);
     console.log(`mood count`, e);
 
+    let geocode = null;
+    Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
+    var state_info = '';
+    var city_info = '';
+    var country_info = '';
+    await Geocoder.from({
+      lat: UserData.lat,
+      lng: UserData.lon,
+    })
+      .then((data) => {
+        geocode = data.plus_code.compound_code;
+        const address_list = data.results[0].address_components;
+        for (i = 0; i < address_list.length; i++) {
+          if (address_list[i].types.includes('country')) {
+            country_info = address_list[i].long_name;
+          }
+          if (address_list[i].types.includes('administrative_area_level_1')) {
+            state_info = address_list[i].long_name;
+          }
+          if (address_list[i].types.includes('administrative_area_level_2')) {
+            city_info = address_list[i].long_name;
+          }
+        }
+      })
+      .catch((err) => console.log(`weather api location err`, err));
+
     const Id = UserData.AllMoods.find(({name}) => {
       // console.log(`name`, name);
       return name === Label;
@@ -235,6 +263,9 @@ const MoodEmotionDetector = ({navigation}) => {
         lat: UserData.lat,
         long: UserData.lon,
         email: Email,
+        city: city_info,
+        state: state_info,
+        country: country_info,
       };
 
       if (route?.params?.question != undefined) {

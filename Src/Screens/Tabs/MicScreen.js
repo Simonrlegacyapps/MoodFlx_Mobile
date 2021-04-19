@@ -197,9 +197,12 @@ const MicScreen = ({navigation}) => {
                   textAlign: 'center',
                   width: dynamicSize(250),
                 }}>
-                  <TouchableOpacity onPress={()=>navigation.navigate('LinkCompanyStackNavigation')}><Text style={{textDecorationLine:'underline', fontWeight: 'bold',
-                  fontSize: dynamicSize(18),textAlign: 'center',}}>Connect with your company</Text></TouchableOpacity>  
-                 <Text style={{alignSelf:'center', textAlign:'center'}}>{" "}to answer Team Pulses anonymously</Text>
+                {/* <TouchableOpacity onPress={()=>navigation.navigate('LinkCompanyStackNavigation')}><Text style={{textDecorationLine:'underline', fontWeight: 'bold',
+                  fontSize: dynamicSize(18),textAlign: 'center',}}> */}
+                Connect with your company to answer Team Pulses anonymously
+                {/* </Text></TouchableOpacity>   */}
+                {/* <Text style={{alignSelf:'center', textAlign:'center'}}>{" "} */}
+                {/* </Text> */}
               </Text>
             )}
           </Text>

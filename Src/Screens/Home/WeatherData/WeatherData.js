@@ -77,9 +77,9 @@ const WeatherData = ({
   const [AllDayWeather, setAllDayWeather] = useState(null);
   const [Graph, setGraph] = useState(null);
   const [WeatherPopUp, setWeatherPopUp] = useState(false);
-  const [AnonymousClick, setAnonymousClick] = useState(false)
-  const [WeatherDurationModal, setWeatherDurationModal] = useState(false)
-  const [WeatherDuration, setWeatherDuration] = useState("Week")
+  const [AnonymousClick, setAnonymousClick] = useState(false);
+  const [WeatherDurationModal, setWeatherDurationModal] = useState(false);
+  const [WeatherDuration, setWeatherDuration] = useState('Week');
 
   const a = moment().subtract(0, 'days').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
@@ -98,7 +98,7 @@ const WeatherData = ({
 
   useEffect(() => {
     if (swiperIndex == 1 && UserData.WeatherPermission) {
-      // getUserLocation();
+      getUserLocation();
     }
   }, [swiperIndex]);
 
@@ -108,12 +108,11 @@ const WeatherData = ({
       timeout: 15000,
     })
       .then((location) => {
-
-          console.log('Success', location);
-            // setlat(location.latitude);
-            dispatch(Lat(location.latitude));
-            // setlng(location.longitude);
-            dispatch(Long(location.longitude));
+        console.log('Success', location);
+        // setlat(location.latitude);
+        dispatch(Lat(location.latitude));
+        // setlng(location.longitude);
+        dispatch(Long(location.longitude));
         if (UserData.lat == null || UserData.lon == null) {
           WeatherDayData(location.latitude, location.longitude);
         }
@@ -123,7 +122,6 @@ const WeatherData = ({
         console.log('error', code, message);
       });
   };
-
 
   let valueHours = 0;
   const WeatherDayData = (loc_lat, loc_long) => {
@@ -218,7 +216,7 @@ const WeatherData = ({
         ? ManualWeatherType
         : findWeather(UserData?.DayTemperature?.weather[0].description),
       pollen: null,
-      pollen_type: ManulPollen ? ManulPollen.name : 'Low',
+      pollen_type: ManulPollen ? ManulPollen : 'Low',
       weather_data: UserData.DayTemperature,
       temp_min: Weather?.main?.temp_min,
       temp_max: Weather?.main?.temp_max,
@@ -311,23 +309,135 @@ const WeatherData = ({
   }, [One, Two, Three, Four, Five]);
 
   const data = [
-    {x: 1, y: Graph && WeatherDuration === "Week" ? (Graph[0].temp_max === null ? 0 : Graph[0].temp_max) : 0},
-    {x: 2, y: Graph && WeatherDuration === "Week" ? (Graph[1].temp_max === null ? 0 : Graph[1].temp_max) : 0},
-    {x: 3, y: Graph && WeatherDuration === "Week" ? (Graph[2].temp_max === null ? 0 : Graph[2].temp_max) : 0},
-    {x: 4, y: Graph && WeatherDuration === "Week" ? (Graph[3].temp_max === null ? 0 : Graph[3].temp_max) : 0},
-    {x: 5, y: Graph && WeatherDuration === "Week" ? (Graph[4].temp_max === null ? 0 : Graph[4].temp_max) : 0},
-    {x: 6, y: Graph && WeatherDuration === "Week" ? (Graph[5].temp_max === null ? 0 : Graph[5].temp_max) : 0},
-    {x: 7, y: Graph && WeatherDuration === "Week" ? (Graph[6].temp_max === null ? 0 : Graph[6].temp_max) : 0},
+    {
+      x: 1,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[0].temp_max === null
+            ? 0
+            : Graph[0].temp_max
+          : 0,
+    },
+    {
+      x: 2,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[1].temp_max === null
+            ? 0
+            : Graph[1].temp_max
+          : 0,
+    },
+    {
+      x: 3,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[2].temp_max === null
+            ? 0
+            : Graph[2].temp_max
+          : 0,
+    },
+    {
+      x: 4,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[3].temp_max === null
+            ? 0
+            : Graph[3].temp_max
+          : 0,
+    },
+    {
+      x: 5,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[4].temp_max === null
+            ? 0
+            : Graph[4].temp_max
+          : 0,
+    },
+    {
+      x: 6,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[5].temp_max === null
+            ? 0
+            : Graph[5].temp_max
+          : 0,
+    },
+    {
+      x: 7,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[6].temp_max === null
+            ? 0
+            : Graph[6].temp_max
+          : 0,
+    },
   ];
 
   const dataLow = [
-    {x: 1, y: Graph && WeatherDuration === "Week" ? (Graph[0].temp_min === null ? 0 : Graph[0].temp_min) : 0},
-    {x: 2, y: Graph && WeatherDuration === "Week" ? (Graph[1].temp_min === null ? 0 : Graph[1].temp_min) : 0},
-    {x: 3, y: Graph && WeatherDuration === "Week" ? (Graph[2].temp_min === null ? 0 : Graph[2].temp_min) : 0},
-    {x: 4, y: Graph && WeatherDuration === "Week" ? (Graph[3].temp_min === null ? 0 : Graph[3].temp_min) : 0},
-    {x: 5, y: Graph && WeatherDuration === "Week" ? (Graph[4].temp_min === null ? 0 : Graph[4].temp_min) : 0},
-    {x: 6, y: Graph && WeatherDuration === "Week" ? (Graph[5].temp_min === null ? 0 : Graph[5].temp_min) : 0},
-    {x: 7, y: Graph && WeatherDuration === "Week" ? (Graph[6].temp_min === null ? 0 : Graph[6].temp_min) : 0},
+    {
+      x: 1,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[0].temp_min === null
+            ? 0
+            : Graph[0].temp_min
+          : 0,
+    },
+    {
+      x: 2,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[1].temp_min === null
+            ? 0
+            : Graph[1].temp_min
+          : 0,
+    },
+    {
+      x: 3,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[2].temp_min === null
+            ? 0
+            : Graph[2].temp_min
+          : 0,
+    },
+    {
+      x: 4,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[3].temp_min === null
+            ? 0
+            : Graph[3].temp_min
+          : 0,
+    },
+    {
+      x: 5,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[4].temp_min === null
+            ? 0
+            : Graph[4].temp_min
+          : 0,
+    },
+    {
+      x: 6,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[5].temp_min === null
+            ? 0
+            : Graph[5].temp_min
+          : 0,
+    },
+    {
+      x: 7,
+      y:
+        Graph && WeatherDuration === 'Week'
+          ? Graph[6].temp_min === null
+            ? 0
+            : Graph[6].temp_min
+          : 0,
+    },
   ];
 
   let heightProp = SIZE / 4.3;
@@ -351,7 +461,7 @@ const WeatherData = ({
       }),
     );
 
-    const WeatherDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
+  const WeatherDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
 
   // console.log(`Lowmax`, data, dataLow);
 
@@ -371,24 +481,66 @@ const WeatherData = ({
     setWeatherPopUp(false);
   };
 
-  const AnonymousPopUpcancelled=()=>{
-    setAnonymousClick(false)
-  }
+  const AnonymousPopUpcancelled = () => {
+    setAnonymousClick(false);
+  };
 
-  const WeatherDurationModalCancelled = ()=>{
-    setWeatherDurationModal(false)
-  }
+  const WeatherDurationModalCancelled = () => {
+    setWeatherDurationModal(false);
+  };
 
   dataOfWeatherGraph = [
-    {x: 1, y: AllDayWeather ? AllDayWeather[0].temp : 0},
-    {x: 2, y: AllDayWeather ? AllDayWeather[3].temp : 0},
-    {x: 3, y: AllDayWeather ? AllDayWeather[7].temp : 0},
-    {x: 4, y: AllDayWeather ? AllDayWeather[11].temp : 0},
-    {x: 5, y: AllDayWeather ? AllDayWeather[15].temp : 0},
-    {x: 6, y: AllDayWeather ? AllDayWeather[19].temp : 0},
-    {x: 7, y: AllDayWeather ? AllDayWeather[23].temp : 0},
+    {
+      x: 1,
+      y:
+        AllDayWeather != null && AllDayWeather[0] != undefined
+          ? AllDayWeather[0].temp
+          : 0,
+    },
+    {
+      x: 2,
+      y:
+        AllDayWeather != null && AllDayWeather[3] != undefined
+          ? AllDayWeather[3].temp
+          : 0,
+    },
+    {
+      x: 3,
+      y:
+        AllDayWeather != null && AllDayWeather[7] != undefined
+          ? AllDayWeather[7].temp
+          : 0,
+    },
+    {
+      x: 4,
+      y:
+        AllDayWeather != null && AllDayWeather[11] != undefined
+          ? AllDayWeather[11].temp
+          : 0,
+    },
+    {
+      x: 5,
+      y:
+        AllDayWeather != null && AllDayWeather[15] != undefined
+          ? AllDayWeather[15].temp
+          : 0,
+    },
+    {
+      x: 6,
+      y:
+        AllDayWeather != null && AllDayWeather[19] != undefined
+          ? AllDayWeather[19].temp
+          : 0,
+    },
+    {
+      x: 7,
+      y:
+        AllDayWeather != null && AllDayWeather[23] != undefined
+          ? AllDayWeather[23].temp
+          : 0,
+    },
   ];
-  // console.log(`dataOfWeatherGraph`, dataOfWeatherGraph);
+  // console.log(`AllDayWeather`, AllDayWeather);
   return (
     <View>
       {/* {console.log(`data`, data)} */}
@@ -412,13 +564,14 @@ const WeatherData = ({
               />
             </View>
             <View style={{alignContent: 'center', paddingHorizontal: 15}}>
-              <Text style={styles.lightText}>{UserData.WeatherPermission ? "Syncing your" :"Sync your"}</Text>
+              <Text style={styles.lightText}>
+                {UserData.WeatherPermission ? 'Syncing your' : 'Sync your'}
+              </Text>
               <Text style={styles.normalText}>Weather data</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              setAnonymousClick(true)}
+            onPress={() => setAnonymousClick(true)}
             style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anonymous</Text>
           </TouchableOpacity>
@@ -515,7 +668,9 @@ const WeatherData = ({
                   {Weather ? Weather?.name : 'Loading ...'}
                 </Text>
                 <View>
-                  <View
+                  <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={editTemp}
                     style={{
                       width: 260,
                       backgroundColor: 'white',
@@ -571,9 +726,12 @@ const WeatherData = ({
                         source={Constants.Images.Edit}
                       />
                     </TouchableOpacity>
-                  </View>
+                  </TouchableOpacity>
                   <View style={styles.CardsView}>
-                    <View style={styles.card2View}>
+                    <TouchableOpacity
+                      activeOpacity={1}
+                      onPress={editTemp}
+                      style={styles.card2View}>
                       <View style={{flexDirection: 'row', padding: 15}}>
                         <Image
                           resizeMode={'contain'}
@@ -614,8 +772,10 @@ const WeatherData = ({
                           source={Constants.Images.Edit}
                         />
                       </TouchableOpacity>
-                    </View>
-                    <View
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      activeOpacity={1}
+                      onPress={editTemp}
                       style={{
                         width: 120,
                         backgroundColor: 'white',
@@ -625,13 +785,15 @@ const WeatherData = ({
                         <Image
                           resizeMode={'contain'}
                           source={Constants.Images.Pollen}
-                          style={{margin: 5,
+                          style={{
+                            margin: 5,
                             height: 15,
                             width: 15,
-                            justifyContent:'center',
-                            marginTop:10,
+                            justifyContent: 'center',
+                            marginTop: 10,
                             marginLeft: -5,
-                          marginRight:10}}
+                            marginRight: 10,
+                          }}
                         />
                         <View>
                           <Text style={[, styles.smallCardText]}>Pollen</Text>
@@ -642,7 +804,7 @@ const WeatherData = ({
                                 fontSize: dynamicSize(14.5),
                               },
                             ]}>
-                            {ManulPollen ? ManulPollen.name : 'Low'}
+                            {ManulPollen ? ManulPollen : 'Low'}
                           </Text>
                         </View>
                       </View>
@@ -660,7 +822,7 @@ const WeatherData = ({
                           source={Constants.Images.Edit}
                         />
                       </TouchableOpacity>
-                    </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
@@ -668,7 +830,10 @@ const WeatherData = ({
           </View>
 
           {/* <ProgressBarCustom /> */}
-          <HomeHeader click={()=>setWeatherDurationModal(true)} value={WeatherDuration}/>
+          <HomeHeader
+            click={() => setWeatherDurationModal(true)}
+            value={WeatherDuration}
+          />
           <View style={{marginBottom: 50, alignItems: 'center'}}>
             {swiperIndex == 1 && <BarGraph ShowPollen={true} />}
             <View
@@ -777,7 +942,7 @@ const WeatherData = ({
         EditWeatherType={setManualWeatherType}
       />
       <PopUp
-      permission = {UserData.WeatherPermission}
+        permission={UserData.WeatherPermission}
         image={Constants.Images.WeatherPopUp}
         dataType={'weather'}
         modalVisible={openActionSheet}
@@ -792,19 +957,19 @@ const WeatherData = ({
         verifyDone={() => WeatherPopUpcancelled()}
       />
 
-<AnonymousPopUp
+      <AnonymousPopUp
         modalVisible={AnonymousClick}
         dismissModalHandler={() => AnonymousPopUpcancelled()}
         verifyDone={() => AnonymousPopUpcancelled()}
       />
 
-<WeatherGraphDurationModal
-          data={WeatherDurations}
-          modalVisible={WeatherDurationModal}
-          onChangeText={setWeatherDuration}
-          value={WeatherDuration}
-          dismissModalHandler={() => setWeatherDurationModal(false)}
-        />
+      <WeatherGraphDurationModal
+        data={WeatherDurations}
+        modalVisible={WeatherDurationModal}
+        onChangeText={setWeatherDuration}
+        value={WeatherDuration}
+        dismissModalHandler={() => setWeatherDurationModal(false)}
+      />
     </View>
   );
 };
