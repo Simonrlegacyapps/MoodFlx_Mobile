@@ -59,7 +59,7 @@ const FitnessData = ({
   const [name, setname] = useState('');
   const [ShowAddName, setShowAddName] = useState(false);
   const [FitnessPopUp, setFitnessPopUp] = useState(false);
-  const [AnonymousClick, setAnonymousClick] = useState(false)
+  const [AnonymousClick, setAnonymousClick] = useState(false);
   // console.log(`UserData`, UserData);
 
   const {
@@ -156,9 +156,9 @@ const FitnessData = ({
     setFitnessPopUp(false);
   };
 
-  const AnonymousPopUpcancelled=()=>{
-    setAnonymousClick(false)
-  }
+  const AnonymousPopUpcancelled = () => {
+    setAnonymousClick(false);
+  };
 
   return (
     <View>
@@ -198,8 +198,7 @@ const FitnessData = ({
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              setAnonymousClick(true)}
+            onPress={() => setAnonymousClick(true)}
             style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anonymous</Text>
           </TouchableOpacity>
@@ -478,7 +477,7 @@ const FitnessData = ({
       </ScrollView>
 
       <PopUp
-      permission = {UserData.HealthPermission}
+        permission={UserData.HealthPermission}
         image={Constants.Images.FitnessPopUp}
         dataType={'fitness'}
         modalVisible={openActionSheet}

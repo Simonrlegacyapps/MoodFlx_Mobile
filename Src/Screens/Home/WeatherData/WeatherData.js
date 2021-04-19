@@ -579,11 +579,10 @@ const WeatherData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              swiperIndex == 1
-                ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
-                    3) *
-                  100
-                : 0
+              // swiperIndex == 1
+              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
+              100
+              // : 0
             }
             height={10}
             backgroundColor="#CB9866"

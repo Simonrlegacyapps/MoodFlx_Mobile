@@ -236,7 +236,7 @@ const App = (props) => {
     }
   };
 
-  const CheckForScreenData = () => {
+  const CheckForSleepData = () => {
     console.log(`Implement screen data`);
   };
   // useEffect(() => {
@@ -945,7 +945,7 @@ const App = (props) => {
             dataLow={dataLow}
             Weather={Weather}
             PermScreenTime={PermScreenTime}
-            CheckForWeather={CheckForScreenData}
+            CheckForSleepData={CheckForSleepData}
             MoodCount={MoodCount}
           />
         </View>

@@ -28,6 +28,7 @@ const StarProgress = () => {
         alignSelf: 'center',
         justifyContent: 'space-evenly',
         overflow: 'hidden',
+        marginTop: dynamicSize(18),
       }}
       onLayout={(e) => {
         const newWidth = e.nativeEvent.layout.width - 10;

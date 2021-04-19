@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import StarProgress from '../../../Components/StarProgress/StarProgress';
+import PopUp from '../../../Components/PopUp/PopUp';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -35,7 +36,7 @@ const IndicatorHelper = ({color, text}) => {
 };
 
 const SleepData = ({
-  CheckForScreenData,
+  CheckForSleepData,
   PermScreenTime,
   Weather,
   data,
@@ -43,6 +44,19 @@ const SleepData = ({
   MoodCount,
   swiperIndex,
 }) => {
+  const [openActionSheet, setopenActionSheet] = useState(false);
+  console.log(
+    `mood count in sleep`,
+    MoodCount,
+    swiperIndex,
+    swiperIndex == 3
+      ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) * 100
+      : 0,
+  );
+
+  const VerifyDone = () => {
+    setopenActionSheet(false);
+  };
   return (
     <View>
       <ScrollView
@@ -53,7 +67,7 @@ const SleepData = ({
         <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
-              CheckForScreenData();
+              setopenActionSheet(true);
             }}
             style={{
               flexDirection: 'row',
@@ -76,7 +90,7 @@ const SleepData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              swiperIndex == 3
+              swiperIndex == 2
                 ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
                     3) *
                   100
@@ -169,6 +183,15 @@ const SleepData = ({
           </View>
         )}
       </ScrollView>
+
+      <PopUp
+        permission={false}
+        image={Constants.Images.Sleepimage}
+        dataType={'sleep'}
+        modalVisible={openActionSheet}
+        dismissModalHandler={() => setOpenActionSheet(false)}
+        verifyDone={() => VerifyDone()}
+      />
     </View>
   );
 };
