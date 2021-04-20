@@ -459,7 +459,7 @@ const Linktocompany = ({navigation}) => {
                   height: dynamicSize(80),
                   width: dynamicSize(80),
                   resizeMode: 'contain',
-                  backgroundColor: 'grey',
+                  // backgroundColor: 'grey',
                   // borderRadius: dynamicSize(40),
                 }}
                 source={{
@@ -469,7 +469,7 @@ const Linktocompany = ({navigation}) => {
                 }}
                 // style={{backgroundColor: '#4C5980'}}
               />
-            ) : CompanyDetails && CompanyDetails.logo ? (
+            ) : CompanyDetails && CompanyDetails?.logo ? (
               <View
                 style={{
                   shadowColor: '#ebebeb',
@@ -484,11 +484,11 @@ const Linktocompany = ({navigation}) => {
                     height: dynamicSize(80),
                     width: dynamicSize(80),
                     resizeMode: 'contain',
-                    backgroundColor: 'grey',
+                    // backgroundColor: 'grey',
                     // borderRadius: dynamicSize(40),
                   }}
                   source={{
-                    uri: 'https://super.moodflo.com/' + CompanyDetails.logo,
+                    uri: 'https://super.moodflo.com/' + CompanyDetails?.logo,
                     // UserData?.NameCompany?.company_logo,
                   }}
                   // style={{backgroundColor: '#4C5980'}}
@@ -598,7 +598,7 @@ const Linktocompany = ({navigation}) => {
       )}
 
       <UnlinkConfirmModal
-        CompanyName={CompanyDetails.full_name}
+        CompanyName={CompanyDetails?.full_name}
         modalVisible={UnlinkConfirm}
         dismissModalHandler={() => cancelled()}
         verifyDone={(value) => VerifyDone(value)}
