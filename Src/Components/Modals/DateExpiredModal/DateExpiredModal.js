@@ -33,6 +33,7 @@ const {width} = Dimensions.get('window');
 const DateExpiredModal = ({
   WeatherPopUp,
   FitnessPopUp,
+  SleepPopUp,
   modalVisible,
   dismissModalHandler,
   selectedValue,
@@ -99,6 +100,8 @@ const DateExpiredModal = ({
               ? 'Activity'
               : WeatherPopUp
               ? 'Weather'
+              : SleepPopUp
+              ? 'Sleep'
               : 'Team Pulse'}
           </Text>
           <Text
@@ -121,6 +124,8 @@ const DateExpiredModal = ({
               ? "We hope you like the demo insights into the relationship between your mood and activity. Once you've used MoodFlo long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
               : WeatherPopUp
               ? "We hope you like the demo insights into the relationship between your mood and weather. Once you've used MoodFlo long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
+              : SleepPopUp
+              ? "We hope you like the demo insights into the relationship between your mood and sleep. Once you've used MoodFlo long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
               : 'Too late! Sorry you missed this Team Pulse, watch out for a notification for the next one'}
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
@@ -142,7 +147,9 @@ const DateExpiredModal = ({
                 }}>
                 <Text
                   style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
-                  {FitnessPopUp || WeatherPopUp ? 'Great!' : 'Okay'}
+                  {FitnessPopUp || WeatherPopUp || SleepPopUp
+                    ? 'Great!'
+                    : 'Okay'}
                 </Text>
               </View>
             </TouchableOpacity>

@@ -882,7 +882,10 @@ const WeatherData = ({
             </View>
           </View>
           {swiperIndex == 1 && (
-            <GraphicChart dataOfWeatherGraph={dataOfWeatherGraph} />
+            <GraphicChart
+              dataOfWeatherGraph={dataOfWeatherGraph}
+              fitness={false}
+            />
           )}
           {!UserData.WeatherPermission && (
             <View

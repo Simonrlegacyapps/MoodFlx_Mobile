@@ -32,6 +32,7 @@ import {
   Lat,
   Long,
   Moods,
+  SleepPerm,
   UserDetail,
   UserDivision,
   UserEmail,
@@ -180,6 +181,12 @@ const App: () => React$Node = () => {
     console.log(`WeatherPerm`, WeatherP);
     console.log(`userId`, Id);
     console.log(`Anonymous`, a, a === null ? true : a);
+
+    //Sleep Permission
+    let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
+    let SleepP = await JSON.parse(SleepPer);
+    dispatch(SleepPerm(SleepP));
+    console.log(`Sleep Permission`, SleepP);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));

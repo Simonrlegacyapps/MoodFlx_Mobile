@@ -46,8 +46,15 @@ const GraphBezierCustom = ({
   widthProp,
   abs,
   H,
+  numberOfXAxis,
+  check,
+  fitness,
+  Duration,
 }) => {
-  const scaleX = scaleTime().domain([1, 7]).range([0, widthProp]);
+  // console.log(`numberOfXAxis`, check.length);
+  const scaleX = scaleTime()
+    .domain([1, check && fitness && Duration === 'Daily' ? check.length : 7])
+    .range([0, widthProp]);
   const scaleY = scaleLinear()
     .domain([0, max + 0.1])
     .range([heightProp - verticalPadding, verticalPadding]);

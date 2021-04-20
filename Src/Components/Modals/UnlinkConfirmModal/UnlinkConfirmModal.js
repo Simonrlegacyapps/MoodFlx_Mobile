@@ -39,6 +39,7 @@ const UnlinkConfirmModal = ({
   dataType,
   onChangeText,
   value,
+  CompanyName,
 }: props) => {
   const [color, setcolor] = useState('black');
   const UserData = useSelector((state) => state.First);
@@ -51,7 +52,7 @@ const UnlinkConfirmModal = ({
   //     selectedValue,
   //   );
 
-  // console.log(`value`, value);
+  console.log(`value`, CompanyName);
   return (
     <Modal
       style={styles.modalView}
@@ -130,6 +131,8 @@ const UnlinkConfirmModal = ({
             Are you sure you want to stop providing anonymous insights to{' '}
             {UserData?.NameCompany?.full_name
               ? UserData?.NameCompany?.full_name
+              : CompanyName
+              ? CompanyName
               : 'MoodFlo'}
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>

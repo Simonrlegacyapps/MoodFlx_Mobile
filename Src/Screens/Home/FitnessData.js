@@ -423,6 +423,7 @@ const FitnessData = ({
           </View>
           {/* <GraphBezierCustom /> */}
           <GraphicChart
+            fitness={true}
             day
             zero={zero}
             ones={ones}

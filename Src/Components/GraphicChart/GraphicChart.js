@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -15,6 +15,7 @@ import {
 import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
 import {useSelector} from 'react-redux';
 import GraphBezierCustom from '../GraphBezierCustom/GraphBezierCustom';
+import moment from 'moment';
 
 export const {width: SIZE} = Dimensions.get('window');
 
@@ -37,71 +38,192 @@ const BasicExample = ({
   fours,
   fives,
   dataOfWeatherGraph,
+  fitness,
 }) => {
   const [Duration, setDuration] = useState('Daily');
 
   const UserData = useSelector((state) => state.First);
+  // console.log(`UserData.MainSteps --------->>> `, UserData.MainSteps);
+  // useEffect(() => {
+  //   // dataFunction();
+  // }, []);
+
+  let onez = 0;
+  let two = 0;
+  let three = 0;
+  let four = 0;
+  let five = 0;
+  let six = 0;
+  let seven = 0;
+  let eight = 0;
+  let nine = 0;
+  let ten = 0;
+  let eleven = 0;
+  let twelve = 0;
+  let thirteen = 0;
+  let fourteen = 0;
+  let fifteen = 0;
+  let sixteen = 0;
+  let seventeen = 0;
+  let eighteen = 0;
+  let nineteen = 0;
+  let twenty = 0;
+  let twentyOne = 0;
+  let twentyTwo = 0;
+  let twentyThree = 0;
+  let twentyFour = 0;
+  let dataValue = [];
+
+  const dataFunction = () => {
+    let steps = UserData.MainSteps;
+    // console.log(`steps============`, UserData.MainSteps);
+
+    for (let i in steps) {
+      let date = moment(steps[i].endDate).hour();
+      if (date + 1 === 1) {
+        onez = steps[i].value;
+      } else if (date + 1 === 2) {
+        two = steps[i].value;
+      } else if (date + 1 === 3) {
+        three = steps[i].value;
+      } else if (date + 1 === 4) {
+        four = steps[i].value;
+      } else if (date + 1 === 5) {
+        five = steps[i].value;
+      } else if (date + 1 === 6) {
+        six = steps[i].value;
+      } else if (date + 1 === 7) {
+        seven = steps[i].value;
+      } else if (date + 1 === 8) {
+        eight = steps[i].value;
+      } else if (date + 1 === 9) {
+        nine = steps[i].value;
+      } else if (date + 1 === 10) {
+        ten = steps[i].value;
+      } else if (date + 1 === 11) {
+        eleven = steps[i].value;
+      } else if (date + 1 === 12) {
+        twelve = steps[i].value;
+      } else if (date + 1 === 13) {
+        thirteen = steps[i].value;
+      } else if (date + 1 === 14) {
+        fourteen = steps[i].value;
+      } else if (date + 1 === 15) {
+        fifteen = steps[i].value;
+      } else if (date + 1 === 16) {
+        sixteen = steps[i].value;
+      } else if (date + 1 === 17) {
+        seventeen = steps[i].value;
+      } else if (date + 1 === 18) {
+        eighteen = steps[i].value;
+      } else if (date + 1 === 19) {
+        nineteen = steps[i].value;
+      } else if (date + 1 === 20) {
+        twenty = steps[i].value;
+      } else if (date + 1 === 21) {
+        twentyOne = steps[i].value;
+      } else if (date + 1 === 22) {
+        twentyTwo = steps[i].value;
+      } else if (date + 1 === 23) {
+        twentyThree = steps[i].value;
+      } else if (date + 1 === 24) {
+        twentyFour = steps[i].value;
+      }
+    }
+    // console.log(`dataValue +++++++++++++++=`, dataValue);
+    return (dataValue = [
+      {x: 1, y: onez},
+      {x: 2, y: two},
+      {x: 3, y: three},
+      {x: 4, y: four},
+      {x: 5, y: five},
+      {x: 6, y: six},
+      {x: 7, y: seven},
+      {x: 8, y: eight},
+      {x: 9, y: nine},
+      {x: 10, y: ten},
+      {x: 11, y: eleven},
+      {x: 12, y: twelve},
+      {x: 13, y: thirteen},
+      {x: 14, y: fourteen},
+      {x: 15, y: fifteen},
+      {x: 16, y: sixteen},
+      {x: 17, y: seventeen},
+      {x: 18, y: eighteen},
+      {x: 19, y: nineteen},
+      {x: 20, y: twenty},
+      {x: 21, y: twentyOne},
+      {x: 22, y: twentyTwo},
+      {x: 23, y: twentyThree},
+      {x: 24, y: twentyFour},
+    ]);
+  };
+  // console.log(`dataValue --?`, dataFunction());
+
+  let demoData = [
+    {x: 1, y: 0},
+    {
+      x: 2,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? 1 + UserData.TodayAllSteps[0].two
+            : 0
+          : 0,
+    },
+    {
+      x: 3,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].three
+            : 1
+          : 1,
+    },
+    {
+      x: 4,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].four
+            : 0
+          : 0,
+    },
+    {
+      x: 5,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].five
+            : 0
+          : 0,
+    },
+    {
+      x: 6,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].six
+            : 0
+          : 0,
+    },
+    {
+      x: 7,
+      y:
+        Duration === 'Daily'
+          ? UserData.TodayAllSteps !== null
+            ? UserData.TodayAllSteps[0].seven
+            : 0
+          : 0,
+    },
+  ];
 
   const data =
     dataOfWeatherGraph && Duration === 'Daily'
       ? dataOfWeatherGraph
-      : [
-          {x: 1, y: 0},
-          {
-            x: 2,
-            y:
-              Duration === 'Daily'
-                ? UserData.TodayAllSteps !== null
-                  ? 1 + UserData.TodayAllSteps[0].two
-                  : 0
-                : 0,
-          },
-          {
-            x: 3,
-            y:
-              Duration === 'Daily'
-                ? UserData.TodayAllSteps !== null
-                  ? UserData.TodayAllSteps[0].three
-                  : 1
-                : 1,
-          },
-          {
-            x: 4,
-            y:
-              Duration === 'Daily'
-                ? UserData.TodayAllSteps !== null
-                  ? UserData.TodayAllSteps[0].four
-                  : 0
-                : 0,
-          },
-          {
-            x: 5,
-            y:
-              Duration === 'Daily'
-                ? UserData.TodayAllSteps !== null
-                  ? UserData.TodayAllSteps[0].five
-                  : 0
-                : 0,
-          },
-          {
-            x: 6,
-            y:
-              Duration === 'Daily'
-                ? UserData.TodayAllSteps !== null
-                  ? UserData.TodayAllSteps[0].six
-                  : 0
-                : 0,
-          },
-          {
-            x: 7,
-            y:
-              Duration === 'Daily'
-                ? UserData.TodayAllSteps !== null
-                  ? UserData.TodayAllSteps[0].seven
-                  : 0
-                : 0,
-          },
-        ];
+      : fitness && Duration === 'Daily'
+      ? dataFunction()
+      : demoData;
 
   const max =
     data &&
@@ -202,8 +324,8 @@ const BasicExample = ({
             <View style={styles.lineParent}>
               <View style={styles.LineParentView} />
             </View>
-            <Text style={styles.DayText}>
-              {Duration == 'Daily' ? '0' : 'Mo'}
+            <Text style={[styles.DayText, {left: -10}]}>
+              {Duration == 'Daily' ? '12 AM' : 'Mo'}
             </Text>
           </View>
           <View>
@@ -226,8 +348,8 @@ const BasicExample = ({
             <View style={styles.lineParent}>
               <View style={styles.LineParentView} />
             </View>
-            <Text style={styles.DayText}>
-              {Duration == 'Daily' ? '12' : 'Th'}
+            <Text style={[styles.DayText, {left: -10}]}>
+              {Duration == 'Daily' ? '12 PM' : 'Th'}
             </Text>
           </View>
           <View>
@@ -235,7 +357,7 @@ const BasicExample = ({
               <View style={styles.LineParentView} />
             </View>
             <Text style={styles.DayText}>
-              {Duration == 'Daily' ? '16' : 'Fr'}
+              {Duration == 'Daily' ? '4' : 'Fr'}
             </Text>
           </View>
           <View>
@@ -243,15 +365,15 @@ const BasicExample = ({
               <View style={styles.LineParentView} />
             </View>
             <Text style={styles.DayText}>
-              {Duration == 'Daily' ? '20' : 'Sa'}
+              {Duration == 'Daily' ? '8' : 'Sa'}
             </Text>
           </View>
           <View>
             <View style={styles.lineParent}>
               <View style={styles.LineParentView} />
             </View>
-            <Text style={styles.DayText}>
-              {Duration == 'Daily' ? '24' : 'Sa'}
+            <Text style={[styles.DayText, {left: -10}]}>
+              {Duration == 'Daily' ? '12 AM' : 'Sa'}
             </Text>
           </View>
           {/* <Text style={{width: (SIZE - 70) / 7}}>Tu</Text>
@@ -267,7 +389,10 @@ const BasicExample = ({
               H={4.8}
               stroke="#70DEEC"
               widthProp={widthProp}
+              fitness={fitness}
+              Duration={Duration}
               // W={100}
+              check={dataFunction()}
               data={data}
               max={max}
             />
@@ -302,3 +427,63 @@ const styles = StyleSheet.create({
 });
 
 export default BasicExample;
+
+//Early way if graph in steps
+
+// [
+//   {x: 1, y: 0},
+//   {
+//     x: 2,
+//     y:
+//       Duration === 'Daily'
+//         ? UserData.TodayAllSteps !== null
+//           ? 1 + UserData.TodayAllSteps[0].two
+//           : 0
+//         : 0,
+//   },
+//   {
+//     x: 3,
+//     y:
+//       Duration === 'Daily'
+//         ? UserData.TodayAllSteps !== null
+//           ? UserData.TodayAllSteps[0].three
+//           : 1
+//         : 1,
+//   },
+//   {
+//     x: 4,
+//     y:
+//       Duration === 'Daily'
+//         ? UserData.TodayAllSteps !== null
+//           ? UserData.TodayAllSteps[0].four
+//           : 0
+//         : 0,
+//   },
+//   {
+//     x: 5,
+//     y:
+//       Duration === 'Daily'
+//         ? UserData.TodayAllSteps !== null
+//           ? UserData.TodayAllSteps[0].five
+//           : 0
+//         : 0,
+//   },
+//   {
+//     x: 6,
+//     y:
+//       Duration === 'Daily'
+//         ? UserData.TodayAllSteps !== null
+//           ? UserData.TodayAllSteps[0].six
+//           : 0
+//         : 0,
+//   },
+//   {
+//     x: 7,
+//     y:
+//       Duration === 'Daily'
+//         ? UserData.TodayAllSteps !== null
+//           ? UserData.TodayAllSteps[0].seven
+//           : 0
+//         : 0,
+//   },
+// ];

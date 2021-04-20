@@ -231,7 +231,6 @@ const EditManualWeatherModal = ({
                   </View>
                 </View>
               </TouchableOpacity>
-              {console.log(`TouchTextEdit`, TouchTextEdit)}
               <View style={styles.CardsView}>
                 <TouchableOpacity
                   onPress={() => {

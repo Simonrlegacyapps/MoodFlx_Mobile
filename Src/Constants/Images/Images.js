@@ -28,4 +28,5 @@ export default {
   Pollen: require('../../../assets/newImage/PollenImage/Vector.png'),
   RainyHour: require('../../../assets/newImage/RainyHour/RainyHour.png'),
   Sleepimage: require('../../../assets/newImage/SleepImage/SleepImage.png'),
+  Scale: require('../../../assets/newImage/Scale/Scale.png'),
 };
