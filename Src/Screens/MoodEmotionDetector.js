@@ -91,6 +91,8 @@ const MoodEmotionDetector = ({navigation}) => {
   const [MoodFail, setMoodFail] = useState(false);
   const [SaveConfirm, setSaveConfirm] = useState(false);
   const [SaveName, setSaveName] = useState(null);
+  const [X0, setX0] = useState(0);
+  const [Y0, setY0] = useState(0);
 
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -101,7 +103,7 @@ const MoodEmotionDetector = ({navigation}) => {
   const dispatch = useDispatch();
   const route = useRoute();
   // const {question} = route.params;
-  console.log(`route`, route?.params);
+  // console.log(`route`, route?.params);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -373,7 +375,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[16].icon) // sad
         : 0 < locationX &&
           locationX < fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[2].icon) //flat
         : 0 < locationX &&
@@ -393,7 +395,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[0].icon) //angry
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[3].icon) //Furious
         : fourthWidth < locationX &&
@@ -413,7 +415,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[8].icon) //Excited
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[9].icon) //stoked
         : 2 * fourthWidth < locationX &&
@@ -433,7 +435,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[12].icon) //Excited
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[1].icon) //Happy
         : 3 * fourthWidth < locationX &&
@@ -477,7 +479,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[16].icon) // sad
         : 0 < locationX &&
           locationX < fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[2].icon) //flat
         : 0 < locationX &&
@@ -497,7 +499,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[0].icon) //angry
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[3].icon) //Furious
         : fourthWidth < locationX &&
@@ -517,7 +519,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[8].icon) //Excited
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[9].icon) //stoked
         : 2 * fourthWidth < locationX &&
@@ -537,7 +539,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[12].icon) //Excited
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[1].icon) //Happy
         : 3 * fourthWidth < locationX &&
@@ -568,22 +570,32 @@ const MoodEmotionDetector = ({navigation}) => {
       moveY.toFixed(2) > statusHeight + height / 185 &&
       moveY.toFixed(2) < 4 * fourthHeight + statusHeight
     ) {
+      setX0(dx);
+      setY0(dy);
       setLocationX(moveX.toFixed(2));
       setLocationY(moveY.toFixed(2));
       ReactNativeHapticFeedback.trigger('selection', options);
     }
-    // console.log('moveX, moveY, dx, dy, move', moveY, moveX, dx, dy, y0, x0);
+    console.log('moveX, moveY, dx, dy, move', moveY, moveX, dx, dy, y0, x0);
+    console.log(
+      `object`,
+      locationX,
+      fourthWidth,
+      fourthHeight,
+      locationY,
+      statusHeight,
+    );
     // console.log('dx', dx)
     // console.log('dy', dy)
     if (UserData.AllMoods !== null) {
-      0 < locationX &&
+      0 <= locationX &&
       locationX < fourthWidth &&
-      statusHeight < locationY &&
+      statusHeight <= locationY &&
       locationY < fourthHeight + statusHeight
         ? (word = UserData.AllMoods[16].name) // sad
         : 0 < locationX &&
           locationX < fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[2].name) //flat
         : 0 < locationX &&
@@ -603,7 +615,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[0].name) //angry
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[3].name) //Furious
         : fourthWidth < locationX &&
@@ -623,7 +635,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[8].name) //Excited
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[9].name) //stoked
         : 2 * fourthWidth < locationX &&
@@ -643,7 +655,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[12].name) //Excited
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[1].name) //Happy
         : 3 * fourthWidth < locationX &&
@@ -683,7 +695,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[16].name) // sad
         : 0 < locationX &&
           locationX < fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[2].name) //flat
         : 0 < locationX &&
@@ -703,7 +715,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[0].name) //angry
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[3].name) //Furious
         : fourthWidth < locationX &&
@@ -723,7 +735,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[8].name) //Excited
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[9].name) //stoked
         : 2 * fourthWidth < locationX &&
@@ -743,7 +755,7 @@ const MoodEmotionDetector = ({navigation}) => {
         ? (word = UserData.AllMoods[12].name) //Excited
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
-          fourthHeight < locationY &&
+          fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
         ? (word = UserData.AllMoods[1].name) //Happy
         : 3 * fourthWidth < locationX &&
@@ -840,13 +852,25 @@ const MoodEmotionDetector = ({navigation}) => {
       },
     });
 
+  const findColor = (max1, min1, max2, min2, max3, min3) => {
+    return `rgb(${Math.ceil(
+      ((locationY - 0) / (width - 0)) * (max1 - min1) + min1, //301-120
+    )}, ${Math.ceil(
+      ((locationY - 0) / (width - 0)) * (max2 - min2) + min2, //0-0
+    )},${Math.ceil(
+      ((locationY / 2 - 0) / (width * 2 - 0)) * (max3 - min3) + min3, //11-4
+    )})`;
+  };
+
   const ColorFunctionB1 = () => {
+    // console.log(`locationX, locationY`, locationX, locationY);
     var colorCode = '';
-    0 < locationX &&
+    let a = 145;
+    0 <= locationX &&
     locationX < fourthWidth &&
     statusHeight < locationY &&
     locationY < fourthHeight + statusHeight
-      ? (colorCode = '#BEBFD5')
+      ? (colorCode = findColor(301, 120, 0, 0, 11, 4)) //251, 19,36
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
@@ -923,16 +947,16 @@ const MoodEmotionDetector = ({navigation}) => {
         locationY < 4 * fourthHeight + statusHeight
       ? (colorCode = '#89D881')
       : (colorCode = '#BE7B83'); //purple
-
+    console.log(`colorCode`, colorCode);
     return colorCode;
   };
   const ColorFunctionB2 = () => {
     var colorCode = '';
-    0 < locationX &&
+    0 <= locationX &&
     locationX < fourthWidth &&
     statusHeight < locationY &&
     locationY < fourthHeight + statusHeight
-      ? (colorCode = '#ADADC9')
+      ? (colorCode = findColor(249, 106, 7, 17, 9, 24))
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
@@ -1014,11 +1038,11 @@ const MoodEmotionDetector = ({navigation}) => {
   };
   const ColorFunctionB3 = () => {
     var colorCode = '';
-    0 < locationX &&
+    0 <= locationX &&
     locationX < fourthWidth &&
     statusHeight < locationY &&
     locationY < fourthHeight + statusHeight
-      ? (colorCode = '#8688AF')
+      ? (colorCode = findColor(120, 260, 10, 4, 18, 4))
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
@@ -1100,11 +1124,11 @@ const MoodEmotionDetector = ({navigation}) => {
   };
   const ColorFunctionB4 = () => {
     var colorCode = '';
-    0 < locationX &&
+    0 <= locationX &&
     locationX < fourthWidth &&
     statusHeight < locationY &&
     locationY < fourthHeight + statusHeight
-      ? (colorCode = '#9C9DBE')
+      ? (colorCode = findColor(144, 351, 74, 0, 6, 17))
       : 0 < locationX &&
         locationX < fourthWidth &&
         fourthHeight < locationY &&
@@ -1187,7 +1211,7 @@ const MoodEmotionDetector = ({navigation}) => {
 
   const BottomAndTopBar = () => {
     var colorCode = '';
-    0 < locationX &&
+    0 <= locationX &&
     locationX < fourthWidth &&
     statusHeight < locationY &&
     locationY < fourthHeight + statusHeight
@@ -1329,6 +1353,7 @@ const MoodEmotionDetector = ({navigation}) => {
           style={{
             zIndex: -99999,
             backgroundColor: BottomAndTopBar(),
+            // position: 'relative',
             alignItems: 'center',
             justifyContent: 'center',
             paddingVertical: 15,
@@ -1381,149 +1406,7 @@ const MoodEmotionDetector = ({navigation}) => {
           {/* <View>
             <BubbleIcon />
           </View> */}
-          {UserData.AllMoods !== null && (
-            <View
-              style={[
-                {
-                  zIndex: 9999999,
-                  alignItems: 'center',
-                  position: 'absolute',
-                  top: parseFloat(locationY - 233),
-                  left:
-                    Label?.length >= 8 &&
-                    Label?.length <= 12 &&
-                    Label === 'Slide finger'
-                      ? parseFloat(locationX - 50)
-                      : Label?.length >= 5 && Label?.length <= 6
-                      ? parseFloat(locationX - 45)
-                      : Label?.length > 6 && Label?.length <= 7
-                      ? parseFloat(locationX - 49)
-                      : Label?.length >= 7 && Label?.length <= 8
-                      ? parseFloat(locationX - 47)
-                      : Label?.length >= 8 && Label?.length <= 12
-                      ? parseFloat(locationX - 63)
-                      : parseFloat(locationX - 35),
-                },
-              ]}>
-              {/* <Svg
-                width="115"
-                height="64"
-                viewBox="0 0 115 64"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <G filter="url(#filter0_d)">
-                  <Path'
-                    d="M8 9.99999C8 5.58172 11.5817 2 16 2H99C103.418 2 107 5.58172 107 10V32.4C107 36.8183 103.418 40.4 99 40.4H72.7375C70.9778 40.4 69.2672 40.9802 67.8706 42.0507L58.7167 49.0674C57.9989 49.6176 57.0011 49.6176 56.2833 49.0674L47.1294 42.0507C45.7328 40.9802 44.0222 40.4 42.2625 40.4H16C11.5817 40.4 8 36.8183 8 32.4V9.99999Z"
-                    fill="white"
-                  />
-                </G>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    textAlignVertical: 'center',
-                    paddingTop: 12,
-                  }}>
-                  {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
-                </Text>
-              </Svg> */}
-              <View
-                style={{
-                  zIndex: 9999999,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: 7,
-                  paddingHorizontal: 10,
-                  backgroundColor: 'white',
-                  borderRadius: 8,
-                  overflow: 'hidden',
-                }}>
-                <Text style={{paddingHorizontal: 7, zIndex: 9999999}}>
-                  {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
-                </Text>
-                {Label !== 'Slide finger' && (
-                  <SvgUri
-                    width={20}
-                    height={20}
-                    // viewBox="0 0 24 24"
-                    fill="none"
-                    uri={`https://super.moodflo.com/${
-                      Svgs
-                        ? Svgs
-                        : 'mood_icons/161616176321272238406054abe3bb450.svg'
-                    }`}
-                    // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
-                  />
-                )}
-              </View>
 
-              <Svg
-                style={{marginTop: -4, marginLeft: -12}}
-                width={38}
-                height={25}
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <Path
-                  fill="#fff"
-                  d="M8.5 2.4H28c-.384 0-.75.16-1.011.441l-7.066 7.624a2 2 0 01-2.892.044l-7.604-7.72a1.302 1.302 0 00-.927-.39z"></Path>
-              </Svg>
-            </View>
-          )}
-          <View
-            style={{
-              alignContent: 'center',
-              position: 'absolute',
-              top: parseFloat(locationY - 171),
-              left: parseFloat(locationX - 10),
-              height: 18,
-              width: 18,
-              backgroundColor: 'white',
-              borderRadius: 10,
-              overflow: 'hidden',
-            }}
-          />
-          <View
-            style={{
-              alignContent: 'center',
-              position: 'absolute',
-              top: parseFloat(locationY - 179.5),
-              left: parseFloat(locationX - 18),
-              height: 35,
-              width: 35,
-              backgroundColor: 'white',
-              opacity: 0.6,
-              borderRadius: 18,
-              overflow: 'hidden',
-            }}
-          />
-          <View
-            style={{
-              alignContent: 'center',
-              position: 'absolute',
-              top: parseFloat(locationY - 189),
-              left: parseFloat(locationX - 27),
-              height: 54,
-              width: 54,
-              backgroundColor: 'white',
-              opacity: 0.4,
-              borderRadius: 27,
-              overflow: 'hidden',
-            }}
-          />
-          <View
-            style={{
-              alignContent: 'center',
-              position: 'absolute',
-              top: parseFloat(locationY - 198.5),
-              left: parseFloat(locationX - 37),
-              height: 74,
-              width: 74,
-              backgroundColor: 'white',
-              opacity: 0.2,
-              borderRadius: 37,
-              overflow: 'hidden',
-            }}
-          />
           <Text
             style={{
               position: 'absolute',
@@ -1570,6 +1453,129 @@ const MoodEmotionDetector = ({navigation}) => {
             {...panResponder.panHandlers}
           /> */}
         </View>
+        {UserData.AllMoods !== null && (
+          <View
+            style={[
+              {
+                zIndex: 9999999,
+                alignItems: 'center',
+                position: 'absolute',
+                elevation: 3,
+                top: parseFloat(locationY - 133),
+                left:
+                  Label?.length >= 8 &&
+                  Label?.length <= 12 &&
+                  Label === 'Slide finger'
+                    ? parseFloat(locationX - 50)
+                    : Label?.length >= 5 && Label?.length <= 6
+                    ? parseFloat(locationX - 45)
+                    : Label?.length > 6 && Label?.length <= 7
+                    ? parseFloat(locationX - 49)
+                    : Label?.length >= 7 && Label?.length <= 8
+                    ? parseFloat(locationX - 47)
+                    : Label?.length >= 8 && Label?.length <= 12
+                    ? parseFloat(locationX - 63)
+                    : parseFloat(locationX - 35),
+              },
+            ]}>
+            <View
+              style={{
+                zIndex: 9999999,
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 7,
+                paddingHorizontal: 10,
+                backgroundColor: 'white',
+                borderRadius: 8,
+                overflow: 'hidden',
+              }}>
+              <Text style={{paddingHorizontal: 7, zIndex: 9999999}}>
+                {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
+              </Text>
+              {Label !== 'Slide finger' && (
+                <SvgUri
+                  width={20}
+                  height={20}
+                  // viewBox="0 0 24 24"
+                  fill="none"
+                  uri={`https://super.moodflo.com/${
+                    Svgs
+                      ? Svgs
+                      : 'mood_icons/161616176321272238406054abe3bb450.svg'
+                  }`}
+                  // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+                />
+              )}
+            </View>
+
+            <Svg
+              style={{marginTop: -4, marginLeft: -12}}
+              width={38}
+              height={25}
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <Path
+                fill="#fff"
+                d="M8.5 2.4H28c-.384 0-.75.16-1.011.441l-7.066 7.624a2 2 0 01-2.892.044l-7.604-7.72a1.302 1.302 0 00-.927-.39z"></Path>
+            </Svg>
+          </View>
+        )}
+        <View
+          style={{
+            alignContent: 'center',
+            position: 'absolute',
+            top: parseFloat(locationY - 61),
+            left: parseFloat(locationX - 10),
+            height: 18,
+            width: 18,
+            backgroundColor: 'white',
+            borderRadius: 10,
+            overflow: 'hidden',
+          }}
+        />
+        <View
+          style={{
+            alignContent: 'center',
+            position: 'absolute',
+            top: parseFloat(locationY - 69.5),
+            left: parseFloat(locationX - 18),
+            height: 35,
+            width: 35,
+            backgroundColor: 'white',
+            opacity: 0.6,
+            borderRadius: 18,
+            overflow: 'hidden',
+          }}
+        />
+        <View
+          style={{
+            alignContent: 'center',
+            position: 'absolute',
+            top: parseFloat(locationY - 79),
+            left: parseFloat(locationX - 27),
+            height: 54,
+            width: 54,
+            backgroundColor: 'white',
+            opacity: 0.4,
+            borderRadius: 27,
+            overflow: 'hidden',
+          }}
+        />
+        <View
+          style={{
+            alignContent: 'center',
+            position: 'absolute',
+            top: parseFloat(locationY - 88.5),
+            left: parseFloat(locationX - 37),
+            height: 74,
+            width: 74,
+            backgroundColor: 'white',
+            opacity: 0.2,
+            borderRadius: 37,
+            overflow: 'hidden',
+          }}
+        />
       </View>
 
       {/* Bottom Bar */}
@@ -1719,3 +1725,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+{
+  /* <Svg
+                width="115"
+                height="64"
+                viewBox="0 0 115 64"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <G filter="url(#filter0_d)">
+                  <Path'
+                    d="M8 9.99999C8 5.58172 11.5817 2 16 2H99C103.418 2 107 5.58172 107 10V32.4C107 36.8183 103.418 40.4 99 40.4H72.7375C70.9778 40.4 69.2672 40.9802 67.8706 42.0507L58.7167 49.0674C57.9989 49.6176 57.0011 49.6176 56.2833 49.0674L47.1294 42.0507C45.7328 40.9802 44.0222 40.4 42.2625 40.4H16C11.5817 40.4 8 36.8183 8 32.4V9.99999Z"
+                    fill="white"
+                  />
+                </G>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    textAlignVertical: 'center',
+                    paddingTop: 12,
+                  }}>
+                  {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
+                </Text>
+              </Svg> */
+}

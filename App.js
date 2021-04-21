@@ -229,24 +229,21 @@ const App: () => React$Node = () => {
     console.log('call');
     PushNotificationIOS.addNotificationRequest({
       id: 'First',
-      title: 'MoodFlo', // (required)
-      subtitle: 'Flo would love to know how you feel',
+      title: 'Flo would love to know how you feel', // (required)
       fireDate: new Date(a.setHours(10, 0, 0, 0)), // in 60 secs
       repeats: true,
       // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
     });
     PushNotificationIOS.addNotificationRequest({
       id: 'Second',
-      title: 'MoodFlo', // (required)
-      subtitle: 'Time to check in with Flo',
+      title: 'Time to check in with Flo', // (required)
       fireDate: new Date(a.setHours(13, 0, 0, 0)), // in 60 secs
       repeats: true,
       // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
     });
     PushNotificationIOS.addNotificationRequest({
       id: 'Third',
-      title: 'MoodFlo', // (required)
-      subtitle: "It's Flo time",
+      title: "It's Flo time", // (required)
       fireDate: new Date(a.setHours(16, 0, 0, 0)), // in 60 secs
       repeats: true,
       // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false

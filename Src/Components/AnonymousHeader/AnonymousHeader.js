@@ -94,7 +94,7 @@ const AnonymousHeader = ({backGround}) => {
       .catch((error) => console.log('error', error));
   };
 
-  console.log(`UserData.Anonymous`, UserData.Anonymous);
+  // console.log(`UserData.Anonymous`, UserData.Anonymous);
 
   const Go = async () => {
     await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
@@ -233,6 +233,7 @@ const AnonymousHeader = ({backGround}) => {
   ) : (
     <View
       style={{
+        zIndex: -999999,
         height: 80,
         width: '90%',
         borderRadius: 20,
