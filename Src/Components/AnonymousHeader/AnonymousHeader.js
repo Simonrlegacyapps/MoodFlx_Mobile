@@ -94,7 +94,15 @@ const AnonymousHeader = ({backGround}) => {
       .catch((error) => console.log('error', error));
   };
 
+  // console.log(`UserData.Anonymous`, UserData.Anonymous);
+
+  const Go = async () => {
+    await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
+    setShowAddName(false);
+    dispatch(IsAnonymous(true));
+  };
   useEffect(() => {
+    Go();
     setTimeout(async () => {
       if (UserData?.UserDetails?.full_name === '') {
         await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
@@ -203,18 +211,20 @@ const AnonymousHeader = ({backGround}) => {
         </View>
         <View style={{marginHorizontal: 16}}>
           <ToggleSwitch
+            disabled={true}
             isOn={UserData.Anonymous}
             onColor="#7FE3F0"
             labelStyle={{color: 'black', fontWeight: '900'}}
             size="large"
             onToggle={async (isOn) => {
-              await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
-              dispatch(IsAnonymous(isOn));
-              console.log(`Full name`, UserData?.UserDetails?.full_name);
-              console.log(`UserData.Anonymous === false`, UserData.Anonymous);
-              if (isOn === false && !UserData?.UserDetails?.full_name) {
-                setShowAddName(true);
-              }
+              Go();
+              // await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
+              // dispatch(IsAnonymous(isOn));
+              // console.log(`Full name`, UserData?.UserDetails?.full_name);
+              // console.log(`UserData.Anonymous === false`, UserData.Anonymous);
+              // if (isOn === false && !UserData?.UserDetails?.full_name) {
+              //   setShowAddName(true);
+              // }
             }}
           />
         </View>
@@ -223,6 +233,7 @@ const AnonymousHeader = ({backGround}) => {
   ) : (
     <View
       style={{
+        zIndex: -999999,
         height: 80,
         width: '90%',
         borderRadius: 20,

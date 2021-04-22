@@ -61,7 +61,7 @@ const ActionSheet = ({
           <TouchableOpacity
             onPress={() => selectedValue(2)}
             activeOpacity={0.9}
-            style={styles.buttonsStyle}>
+            style={[styles.buttonsStyle, {borderBottomWidth: 0}]}>
             <Text style={styles.textStyles}>Photo Library</Text>
           </TouchableOpacity>
         </View>

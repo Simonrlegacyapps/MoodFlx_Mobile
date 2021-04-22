@@ -28,6 +28,7 @@ const ProfileGenderModal = ({
   data,
   datePicker,
   date,
+  weatherDrop,
 }: props) => {
   const [color, setcolor] = useState('black');
   return (
@@ -81,18 +82,19 @@ const ProfileGenderModal = ({
               return (
                 <TouchableOpacity
                   onPress={() => {
-                    onChangeText(item.label), dismissModalHandler();
+                    weatherDrop ? onChangeText(item.name) : onChangeText(item),
+                      dismissModalHandler();
                   }}
                   activeOpacity={0.9}
                   style={[
                     styles.buttonsStyle,
                     {
-                      borderBottomWidth: 1,
+                      borderBottomWidth: data.length != index + 1 && 1,
                       minWidth: dynamicSize(190),
                       borderBottomColor: '#D8D8D8',
                     },
                   ]}>
-                  <Text style={styles.textStyles}>{item.label}</Text>
+                  <Text style={styles.textStyles}>{item.name}</Text>
                   <View
                     style={{
                       width: '90%',

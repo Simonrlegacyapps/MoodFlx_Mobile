@@ -9,6 +9,7 @@ import {
   GET_HEALTH_PERM,
   GET_LAT,
   GET_LONG,
+  GET_SLEEP_PERM,
   GET_USER_CALORIES,
   GET_USER_DISTANCE,
   GET_USER_DIVISION,
@@ -43,6 +44,7 @@ const intializedState = {
   UserMoveTime: 0,
   HealthPermission: false,
   WeatherPermission: false,
+  SleepPermission: false,
   AllMoods: null,
   lat: null,
   lon: null,
@@ -108,6 +110,10 @@ export const First = (state = intializedState, action) => {
     case GET_HEALTH_PERM:
       return Object.assign({}, state, {
         HealthPermission: action.payload,
+      });
+    case GET_SLEEP_PERM:
+      return Object.assign({}, state, {
+        SleepPermission: action.payload,
       });
     case GET_ALL_MOODS:
       return Object.assign({}, state, {

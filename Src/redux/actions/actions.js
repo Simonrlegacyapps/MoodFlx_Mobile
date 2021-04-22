@@ -28,6 +28,7 @@ import {
   USER_DETAIL,
   IS_ANONYMOUS,
   COMPANY_NAME,
+  GET_SLEEP_PERM,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -105,6 +106,12 @@ export const HealthPerm = (data) => {
 export const WeatherPerm = (data) => {
   return {
     type: GET_WEATHER_PERM,
+    payload: data,
+  };
+};
+export const SleepPerm = (data) => {
+  return {
+    type: GET_SLEEP_PERM,
     payload: data,
   };
 };

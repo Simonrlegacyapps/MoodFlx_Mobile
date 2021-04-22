@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, Image, Animated, ImageBackground} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  Animated,
+  ImageBackground,
+  Dimensions,
+} from 'react-native';
 import Constants from '../../Constants';
 import {RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
 import {dynamicSize} from '../../Constants/sizeChoose';
@@ -8,8 +15,11 @@ const StarProgress = () => {
   const [Width, setWidth] = useState(0);
   const animatedValue = React.useRef(new Animated.Value(-1000)).current;
   const reactive = React.useRef(new Animated.Value(-1000)).current;
-  const [step, setstep] = useState(6);
+  const [step, setstep] = useState(6.6); // change here for moving the hours bar
   const wid = dynamicSize(300);
+
+  const {width} = Dimensions.get('screen');
+
   useEffect(() => {
     Animated.timing(animatedValue, {
       toValue: reactive,
@@ -28,6 +38,7 @@ const StarProgress = () => {
         alignSelf: 'center',
         justifyContent: 'space-evenly',
         overflow: 'hidden',
+        marginTop: dynamicSize(18),
       }}
       onLayout={(e) => {
         const newWidth = e.nativeEvent.layout.width - 10;
@@ -60,10 +71,10 @@ const StarProgress = () => {
                 color: '#fff',
                 flex: 1,
                 justifyContent: 'center',
-                fontSize: 18,
+                fontSize: 17,
                 fontFamily: RubikRegular,
               }}>
-              {step - 2}Hrs
+              {Math.ceil(step) - 2} Hrs
             </Text>
           </View>
         </ImageBackground>
@@ -124,6 +135,13 @@ const StarProgress = () => {
             style={{height: 32, width: 32}}
           />
         }
+      </View>
+      <View style={{alignItems: 'center', marginTop: 20}}>
+        <Image
+          resizeMode={'contain'}
+          source={Constants.Images.Scale}
+          style={{height: 20, width: width - dynamicSize(110)}}
+        />
       </View>
     </View>
   );

@@ -32,6 +32,7 @@ import {
   Lat,
   Long,
   Moods,
+  SleepPerm,
   UserDetail,
   UserDivision,
   UserEmail,
@@ -41,6 +42,8 @@ import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import moment from 'moment';
 import LightSensor from 'react-native-light-sensor';
+import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -178,6 +181,12 @@ const App: () => React$Node = () => {
     console.log(`WeatherPerm`, WeatherP);
     console.log(`userId`, Id);
     console.log(`Anonymous`, a, a === null ? true : a);
+
+    //Sleep Permission
+    let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
+    let SleepP = await JSON.parse(SleepPer);
+    dispatch(SleepPerm(SleepP));
+    console.log(`Sleep Permission`, SleepP);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));
@@ -211,11 +220,40 @@ const App: () => React$Node = () => {
       })
       .catch((error) => console.log('error', error));
   };
+  useEffect(() => {
+    fp();
+  }, []);
 
+  const fp = () => {
+    let a = new Date();
+    console.log('call');
+    PushNotificationIOS.addNotificationRequest({
+      id: 'First',
+      title: 'Flo would love to know how you feel', // (required)
+      fireDate: new Date(a.setHours(10, 0, 0, 0)), // in 60 secs
+      repeats: true,
+      // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
+    });
+    PushNotificationIOS.addNotificationRequest({
+      id: 'Second',
+      title: 'Time to check in with Flo', // (required)
+      fireDate: new Date(a.setHours(13, 0, 0, 0)), // in 60 secs
+      repeats: true,
+      // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
+    });
+    PushNotificationIOS.addNotificationRequest({
+      id: 'Third',
+      title: "It's Flo time", // (required)
+      fireDate: new Date(a.setHours(16, 0, 0, 0)), // in 60 secs
+      repeats: true,
+      // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
+    });
+  };
   useEffect(() => {
     console.log(`LightSensor`, LightSensor);
     {
-      (UserData.lat == null || UserData.lon == null) &&
+      UserData.WeatherPermission &&
+        (UserData.lat == null || UserData.lon == null) &&
         GetLocation.getCurrentPosition({
           enableHighAccuracy: true,
           timeout: 15000,

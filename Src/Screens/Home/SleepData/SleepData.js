@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -22,27 +22,48 @@ import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import StarProgress from '../../../Components/StarProgress/StarProgress';
+import PopUp from '../../../Components/PopUp/PopUp';
+import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
+import AsyncStorage from '@react-native-community/async-storage';
+import {useDispatch, useSelector} from 'react-redux';
+import {SleepPerm} from '../../../redux/actions/actions';
 
-export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
+export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
-const IndicatorHelper = ({ color, text }) => {
+const IndicatorHelper = ({color, text}) => {
   return (
     <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
+      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
       <Text style={styles.indicatorText}>{text}</Text>
     </View>
   );
 };
 
 const SleepData = ({
-  CheckForScreenData,
+  CheckForSleepData,
   PermScreenTime,
   Weather,
   data,
   dataLow,
   MoodCount,
-  swiperIndex
+  swiperIndex,
 }) => {
+  const [openActionSheet, setopenActionSheet] = useState(false);
+  const [SleepPopUp, setSleepPopUp] = useState(false);
+
+  const UserData = useSelector((state) => state.First);
+  const dispatch = useDispatch();
+  // console.log(`UserData.SleepPermission`, UserData.SleepPermission);
+
+  const VerifyDone = async () => {
+    await AsyncStorage.setItem('GiveSleepPerm', 'true');
+
+    setopenActionSheet(false);
+    let Sp = await AsyncStorage.getItem('GiveSleepPerm');
+    let SleepP = await JSON.parse(Sp);
+    console.log(`SleepPerm`, SleepP);
+    dispatch(SleepPerm(SleepP));
+  };
   return (
     <View>
       <ScrollView
@@ -53,18 +74,18 @@ const SleepData = ({
         <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
-              CheckForScreenData();
+              setopenActionSheet(true);
             }}
             style={{
               flexDirection: 'row',
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{ height: 20, width: 20 }}
+                style={{height: 20, width: 20}}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
+            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
               <Text style={styles.lightText}>Sync your</Text>
               <Text style={styles.normalText}>Sleep data</Text>
             </View>
@@ -75,57 +96,96 @@ const SleepData = ({
         </View>
         <View style={styles.ProgressBarView}>
           <ProgressBar
-            progress={swiperIndex == 3 ?
-              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
-              100
-              : 0}
+            progress={
+              swiperIndex == 2
+                ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
+                    3) *
+                  100
+                : 0
+            }
             height={10}
             backgroundColor="#CB9866"
           />
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={[styles.SmallThinText, { flex: 1 }]}>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={[styles.SmallThinText, {flex: 1}]}>
               Try add 3 moods per day
             </Text>
             <Text
               style={
-                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
+                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
               }>
-              {JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3}/3
+              {JSON.parse(MoodCount) === null ? 0 : JSON.parse(MoodCount)}/3
             </Text>
           </View>
         </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-            SCREEN TIME
-          </Text>
-          <Text style={styles.swiperText}>
-            You're more likely to be{' '}
-            <Text style={{ color: '#5947D0' }}>excited</Text> and{' '}
-            <Text style={{ color: '#5947D0' }}>happy</Text> when you sleep more
-            than <Text style={{ color: '#5947D0' }}>7.5hrs</Text>
-          </Text>
-          <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-            Almost there! Try sleep a bit longer
-          </Text>
-        </View>
+        <View>
+          {
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSleepPopUp(true);
+                }}
+                activeOpacity={1}
+                style={{
+                  // fontSize: SIZE / 14,
+                  // fontWeight: '500',
+                  alignItems: 'center',
+                  width: '100%',
+                }}>
+                <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+                  SLEEP
+                </Text>
+                <Text style={styles.swiperText}>
+                  You're more likely to be{' '}
+                  <Text style={{color: '#5947D0'}}>excited</Text> and{' '}
+                  <Text style={{color: '#5947D0'}}>happy</Text> when you sleep
+                  more than <Text style={{color: '#5947D0'}}>7.5hrs</Text>
+                </Text>
+                <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+                  Almost there! Try sleep a bit longer
+                </Text>
+              </TouchableOpacity>
+              {UserData.SleepPermission && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    zIndex: -234234,
+                    justifyContent: 'center',
+                    top: SIZE / 2.2,
+                  }}>
+                  <Text
+                    style={{
+                      marginTop: -160,
+                      fontWeight: '700',
+                      fontFamily: RubikExtraBold,
+                      fontSize: SIZE / 5.5,
+                      color: '#E0DDED',
+                      transform: [{rotate: '-15deg'}],
+                    }}>
+                    Demo
+                  </Text>
+                </View>
+              )}
+            </View>
+          }
 
-        {/* <ProgressBarCustom /> */}
-        {/* <HomeHeader /> */}
-        <View style={{ marginBottom: 50 }}>
-          {/* <BarGraph /> */}
-          <StarProgress />
-          <View
-            style={{
-              position: 'absolute',
-              alignSelf: 'center',
-              marginTop: 30,
-            }}>
-            {/* <View>
+          {/* <ProgressBarCustom /> */}
+          {/* <HomeHeader /> */}
+          <View style={{marginBottom: 50}}>
+            {/* <BarGraph /> */}
+            <StarProgress />
+            <View
+              style={{
+                position: 'absolute',
+                alignSelf: 'center',
+                marginTop: 30,
+              }}>
+              {/* <View>
               <View>
                 <BezierGraphAuto data={data} color={'#F4227E'} />
               </View>
@@ -133,16 +193,33 @@ const SleepData = ({
                 <BezierGraphAuto data={dataLow} color={'#70DEEC'} />
               </View>
             </View> */}
-          </View>
-          {/* <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+            </View>
+            {/* <View style={{flexDirection: 'row', alignSelf: 'center'}}>
             <IndicatorHelper color={'#7FE3F0'} text={'Min ºC'} />
             <IndicatorHelper color={'#FC4190'} text={'Max ºC'} />
             <IndicatorHelper color={'#7265E3'} text={'Rainfall'} />
             <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
           </View> */}
+          </View>
+          <GraphicChart />
+          {!UserData.SleepPermission && (
+            <TouchableOpacity
+              activeOpacity={0}
+              onPress={async () => {
+                // await AsyncStorage.setItem('GiveHealthPerm', 'true');
+                setopenActionSheet(true);
+              }}
+              style={{
+                position: 'absolute',
+                flex: 1,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'black',
+                opacity: 0,
+              }}></TouchableOpacity>
+          )}
         </View>
-        <GraphicChart />
-        {!PermScreenTime && (
+        {!UserData.SleepPermission && (
           <View
             style={{
               position: 'absolute',
@@ -159,13 +236,29 @@ const SleepData = ({
                 fontFamily: RubikExtraBold,
                 fontSize: 120,
                 color: '#E0DDED',
-                transform: [{ rotate: '-15deg' }],
+                transform: [{rotate: '-15deg'}],
               }}>
               Demo
             </Text>
           </View>
         )}
       </ScrollView>
+
+      <PopUp
+        permission={false}
+        image={Constants.Images.Sleepimage}
+        dataType={'sleep'}
+        modalVisible={openActionSheet}
+        dismissModalHandler={() => setopenActionSheet(false)}
+        verifyDone={() => VerifyDone()}
+      />
+
+      <DateExpiredModal
+        SleepPopUp
+        modalVisible={SleepPopUp}
+        dismissModalHandler={() => setSleepPopUp(false)}
+        verifyDone={() => setSleepPopUp(false)}
+      />
     </View>
   );
 };
@@ -288,7 +381,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
+  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

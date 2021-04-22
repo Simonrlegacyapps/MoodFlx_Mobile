@@ -64,6 +64,7 @@ import {
   GetSteps,
   GetWorkouts,
   HealthPerm,
+  SleepPerm,
   UserCalories,
   UserDistance,
   UserMoodCount,
@@ -236,9 +237,6 @@ const App = (props) => {
     }
   };
 
-  const CheckForScreenData = () => {
-    console.log(`Implement screen data`);
-  };
   // useEffect(() => {
   //   OnAutoSync();
   //   setTimeout(() => {
@@ -274,8 +272,8 @@ const App = (props) => {
             PERMS.StepCount,
             PERMS.Steps,
             // PERMS.BodyTemperature,
-            // PERMS.BloodPressureDiastolic,
-            // PERMS.BloodPressureSystolic,
+            PERMS.BloodPressureDiastolic,
+            PERMS.BloodPressureSystolic,
             PERMS.ActiveEnergyBurned, //
             PERMS.BasalEnergyBurned, //
             PERMS.DistanceWalkingRunning, //
@@ -364,6 +362,7 @@ const App = (props) => {
         AppleHealthKit.getDailyStepCountSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
+            console.log(`results of all steps `, results);
             dispatch(GetSteps(results));
             let total = 0;
             let zero = 0;
@@ -470,14 +469,14 @@ const App = (props) => {
         //   },
         // );
 
-        // AppleHealthKit.getBloodPressureSamples(
-        //   stepsCount,
-        //   async (err: Object, results: Array<Object>) => {
-        //     setBP(results);
+        AppleHealthKit.getBloodPressureSamples(
+          stepsCount,
+          async (err: Object, results: Array<Object>) => {
+            setBP(results);
 
-        //     // console.log('All BP', results);
-        //   },
-        // );
+            console.log('All BP', results);
+          },
+        );
         // Need to check from here for data ================================================================>>>>>>>>>>>>>>>>>>>>
         AppleHealthKit.getActiveEnergyBurned(
           stepsCount,
@@ -507,21 +506,21 @@ const App = (props) => {
           },
         );
 
-        // AppleHealthKit.getHeartRateSamples(
-        //   stepsCount,
-        //   async (err: Object, results: Array<Object>) => {
-        //     setHeartRate(results);
-        //     // console.log('Heart Samples', results);
-        //   },
-        // );
+        AppleHealthKit.getHeartRateSamples(
+          stepsCount,
+          async (err: Object, results: Array<Object>) => {
+            setHeartRate(results);
+            // console.log('Heart Samples', results);
+          },
+        );
 
-        // AppleHealthKit.getSleepSamples(
-        //   stepsCount,
-        //   async (err: Object, results: Array<Object>) => {
-        //     setSleep(results);
-        //     // console.log('Sleep Analysis +++++++++======>>>>', results);
-        //   },
-        // );
+        AppleHealthKit.getSleepSamples(
+          stepsCount,
+          async (err: Object, results: Array<Object>) => {
+            setSleep(results);
+            // console.log('Sleep Analysis +++++++++======>>>>', results);
+          },
+        );
 
         AppleHealthKit.getDateOfBirth(
           null,
@@ -694,19 +693,19 @@ const App = (props) => {
           totalCalories = totalCalories + UserData.MainCalories[l].value;
         }
       }
-      // for (let m in HeartRate) {
-      //   let iteratedate = moment(HeartRate[m].startDate).format('DD-MMM-YYYY');
-      //   if (dates[i] === iteratedate) {
-      //     totalHeartRate = totalHeartRate + HeartRate[m].value;
-      //   }
-      // }
-      // for (let n in BP) {
-      //   let iteratedate = moment(BP[n].startDate).format('DD-MMM-YYYY');
-      //   if (dates[i] === iteratedate) {
-      //     highBp = highBp + BP[n].bloodPressureSystolicValue;
-      //     lowBp = lowBp + BP[n].bloodPressureDiastolicValue;
-      //   }
-      // }
+      for (let m in HeartRate) {
+        let iteratedate = moment(HeartRate[m].startDate).format('DD-MMM-YYYY');
+        if (dates[i] === iteratedate) {
+          totalHeartRate = totalHeartRate + HeartRate[m].value;
+        }
+      }
+      for (let n in BP) {
+        let iteratedate = moment(BP[n].startDate).format('DD-MMM-YYYY');
+        if (dates[i] === iteratedate) {
+          highBp = highBp + BP[n].bloodPressureSystolicValue;
+          lowBp = lowBp + BP[n].bloodPressureDiastolicValue;
+        }
+      }
       for (let r in UserData.MainMoving) {
         let iteratedate = moment(UserData.MainMoving[r].start).format(
           'DD-MMM-YYYY',
@@ -766,6 +765,13 @@ const App = (props) => {
         console.log(`error for weather`, error);
       });
     // }
+  };
+
+  const CheckForSleepData = async () => {
+    console.log(`Implement screen data`);
+    let Wp = await AsyncStorage.getItem('GiveSleepPerm');
+    let WeatherP = await JSON.parse(Wp);
+    dispatch(SleepPerm(WeatherP));
   };
 
   const AddDataToFilter = async () => {
@@ -937,7 +943,7 @@ const App = (props) => {
             CheckForScreenData={CheckForScreenData}
             MoodCount={MoodCount}
           />
-        </View>
+        </View> */}
         <View style={styles.slide3}>
           <SleepData
             swiperIndex={swiperIndex}
@@ -945,10 +951,10 @@ const App = (props) => {
             dataLow={dataLow}
             Weather={Weather}
             PermScreenTime={PermScreenTime}
-            CheckForWeather={CheckForScreenData}
+            CheckForSleepData={CheckForSleepData}
             MoodCount={MoodCount}
           />
-        </View> */}
+        </View>
       </Swiper>
       {Loading && (
         <View

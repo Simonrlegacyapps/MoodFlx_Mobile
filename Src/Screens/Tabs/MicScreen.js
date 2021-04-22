@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -20,9 +20,12 @@ import Svg, {Path, SvgUri} from 'react-native-svg';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
+import AsyncStorage from '@react-native-community/async-storage';
+import {GetUserId, UserEmail} from '../../redux/actions/actions';
+import {useFocusEffect} from '@react-navigation/native';
 
 const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
@@ -31,26 +34,35 @@ const MicScreen = ({navigation}) => {
   const [DateExpired, setDateExpired] = useState(false);
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const dispatch = useDispatch();
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
 
   const onRefresh = React.useCallback(() => {
+    setquestions(null);
     console.log(`refreshed here`);
     getQuestions();
     setRefreshing(true);
     wait(500).then(() => setRefreshing(false));
   }, []);
 
-  const getQuestions = () => {
+  const getQuestions = async () => {
+    let UserId = await AsyncStorage.getItem('UserId');
+    let Id = await JSON.parse(UserId);
+    dispatch(GetUserId(Id));
+    let p = await AsyncStorage.getItem('Email');
+    let e = await JSON.parse(p);
+    console.log(`e`, e);
+    dispatch(UserEmail(e));
     const deviceId = DeviceInfo.getUniqueId();
     var data = JSON.stringify({
       device_id: deviceId,
-      email: UserData.UserEmail,
-      user_id: UserData.UserId,
+      email: e,
+      user_id: Id,
     });
-    // console.log(`data of questions`, data);
+    console.log(`data of questions`, data);
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -64,6 +76,7 @@ const MicScreen = ({navigation}) => {
     fetch('https://admin.moodflo.com/api/getQuestions', requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
+        console.log(`called here`, result);
         // console.log('response of questions', result),
         await setquestions(result.questions);
         setLoading(false);
@@ -71,9 +84,15 @@ const MicScreen = ({navigation}) => {
       .catch((error) => console.log('error', error));
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      getQuestions();
+    }, []),
+  );
+
   useEffect(() => {
     getQuestions();
-  }, []);
+  }, [navigation]);
   // const Questions = [
   //   {
   //     question: 'What do you think of the CEO’s dress sense?',
@@ -108,6 +127,7 @@ const MicScreen = ({navigation}) => {
 
   return (
     <View
+      check={() => onRefresh()}
       style={{
         // alignItems: 'center',
         // justifyContent: 'center',
@@ -197,7 +217,12 @@ const MicScreen = ({navigation}) => {
                   textAlign: 'center',
                   width: dynamicSize(250),
                 }}>
+                {/* <TouchableOpacity onPress={()=>navigation.navigate('LinkCompanyStackNavigation')}><Text style={{textDecorationLine:'underline', fontWeight: 'bold',
+                  fontSize: dynamicSize(18),textAlign: 'center',}}> */}
                 Connect with your company to answer Team Pulses anonymously
+                {/* </Text></TouchableOpacity>   */}
+                {/* <Text style={{alignSelf:'center', textAlign:'center'}}>{" "} */}
+                {/* </Text> */}
               </Text>
             )}
           </Text>

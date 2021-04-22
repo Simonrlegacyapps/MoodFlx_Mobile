@@ -22,12 +22,12 @@ import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 
-export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
+export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
-const IndicatorHelper = ({ color, text }) => {
+const IndicatorHelper = ({color, text}) => {
   return (
     <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
+      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
       <Text style={styles.indicatorText}>{text}</Text>
     </View>
   );
@@ -40,7 +40,7 @@ const ScreenData = ({
   data,
   dataLow,
   MoodCount,
-  swiperIndex
+  swiperIndex,
 }) => {
   return (
     <View>
@@ -59,11 +59,11 @@ const ScreenData = ({
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{ height: 20, width: 20 }}
+                style={{height: 20, width: 20}}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
+            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
               <Text style={styles.lightText}>Sync your</Text>
               <Text style={styles.normalText}>Screen data</Text>
             </View>
@@ -74,20 +74,23 @@ const ScreenData = ({
         </View>
         <View style={styles.ProgressBarView}>
           <ProgressBar
-            progress={swiperIndex == 2 ?
-              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
-              100
-              : 0}
+            progress={
+              swiperIndex == 1
+                ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
+                    3) *
+                  100
+                : 0
+            }
             height={10}
             backgroundColor="#CB9866"
           />
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={[styles.SmallThinText, { flex: 1 }]}>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={[styles.SmallThinText, {flex: 1}]}>
               Try add 3 moods per day
             </Text>
             <Text
               style={
-                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
+                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
               }>
               {JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3}/3
             </Text>
@@ -99,23 +102,23 @@ const ScreenData = ({
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
+          <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
             SCREEN TIME
           </Text>
           <Text style={styles.swiperText}>
-            You become more <Text style={{ color: '#5947D0' }}>tired</Text> and{' '}
-            <Text style={{ color: '#5947D0' }}>anxious</Text> as your screen time{' '}
-            <Text style={{ color: '#5947D0' }}>increased</Text> above{' '}
-            <Text style={{ color: '#5947D0' }}>3hrs</Text> per day
+            You become more <Text style={{color: '#5947D0'}}>tired</Text> and{' '}
+            <Text style={{color: '#5947D0'}}>anxious</Text> as your screen time{' '}
+            <Text style={{color: '#5947D0'}}>increased</Text> above{' '}
+            <Text style={{color: '#5947D0'}}>3hrs</Text> per day
           </Text>
-          <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
+          <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
             Try get less than 3hrs a day
           </Text>
         </View>
 
         {/* <ProgressBarCustom /> */}
         <HomeHeader />
-        <View style={{ marginBottom: 50 }}>
+        <View style={{marginBottom: 50}}>
           <BarGraph />
           <View
             style={{
@@ -142,7 +145,7 @@ const ScreenData = ({
                 fontFamily: RubikExtraBold,
                 fontSize: SIZE / 3.5,
                 color: '#E0DDED',
-                transform: [{ rotate: '-15deg' }],
+                transform: [{rotate: '-15deg'}],
               }}>
               Demo
             </Text>
@@ -271,7 +274,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
+  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

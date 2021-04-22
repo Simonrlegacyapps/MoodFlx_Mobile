@@ -33,6 +33,7 @@ import {useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 import {PHOTO_URL} from '../../Constants/constants';
+import DeviceInfo from 'react-native-device-info';
 
 const Linktocompany = ({navigation}) => {
   const {OTPVerified, setDivision, getDivision} = useSelector(
@@ -50,6 +51,7 @@ const Linktocompany = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [labelShow, setLabelShow] = useState('');
   const [UnlinkConfirm, setUnlinkConfirm] = useState(false);
+  const [CompanyDetails, setCompanyDetails] = useState(null);
 
   const dispatch = useDispatch();
   const route = useRoute();
@@ -74,6 +76,36 @@ const Linktocompany = ({navigation}) => {
         // setSelectedDivisionId(res.data[0].id);
       });
   }, []);
+
+  useEffect(() => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      user_id: UserData.UserId,
+    });
+
+    console.log(`raw of company details`, raw);
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+    {
+      UserData.UserDivision !== null &&
+        fetch('https://admin.moodflo.com/api/getCompanyDetails', requestOptions)
+          .then((response) => response.json())
+          .then((result) => {
+            console.log('getting company details', result);
+            setCompanyDetails(result.companyData);
+          })
+          .catch((error) => console.log('error', error));
+    }
+  }, [UserData.UserDivision]);
 
   const onLink = async (type) => {
     console.log('run');
@@ -304,7 +336,7 @@ const Linktocompany = ({navigation}) => {
               width: dynamicSize(230),
             }}>
             This, and which region you are located, are the only things
-            <Text
+            {/* <Text
               style={{
                 lineHeight: 28,
                 fontWeight: '500',
@@ -315,12 +347,11 @@ const Linktocompany = ({navigation}) => {
 
                 textAlign: 'center',
                 width: dynamicSize(230),
-              }}>
-              {' '}
-              {UserData?.NameCompany?.full_name
-                ? UserData?.NameCompany?.full_name
-                : ''}{' '}
-            </Text>
+              }}> */}{' '}
+            {UserData?.NameCompany?.full_name
+              ? UserData?.NameCompany?.full_name
+              : ''}{' '}
+            {/* </Text> */}
             will know about you
           </Text>
           <TouchableOpacity
@@ -428,8 +459,8 @@ const Linktocompany = ({navigation}) => {
                   height: dynamicSize(80),
                   width: dynamicSize(80),
                   resizeMode: 'contain',
-                  backgroundColor: 'grey',
-                  borderRadius: dynamicSize(40),
+                  // backgroundColor: 'grey',
+                  // borderRadius: dynamicSize(40),
                 }}
                 source={{
                   uri:
@@ -438,6 +469,31 @@ const Linktocompany = ({navigation}) => {
                 }}
                 // style={{backgroundColor: '#4C5980'}}
               />
+            ) : CompanyDetails && CompanyDetails?.logo ? (
+              <View
+                style={{
+                  shadowColor: '#ebebeb',
+                  shadowOffset: {width: 0, height: 2},
+                  shadowOpacity: 0.8,
+                  shadowRadius: 2,
+                  borderRadius: 5,
+                  overflow: 'hidden',
+                }}>
+                <Image
+                  style={{
+                    height: dynamicSize(80),
+                    width: dynamicSize(80),
+                    resizeMode: 'contain',
+                    // backgroundColor: 'grey',
+                    // borderRadius: dynamicSize(40),
+                  }}
+                  source={{
+                    uri: 'https://super.moodflo.com/' + CompanyDetails?.logo,
+                    // UserData?.NameCompany?.company_logo,
+                  }}
+                  // style={{backgroundColor: '#4C5980'}}
+                />
+              </View>
             ) : (
               <Image
                 style={{
@@ -542,6 +598,7 @@ const Linktocompany = ({navigation}) => {
       )}
 
       <UnlinkConfirmModal
+        CompanyName={CompanyDetails?.full_name}
         modalVisible={UnlinkConfirm}
         dismissModalHandler={() => cancelled()}
         verifyDone={(value) => VerifyDone(value)}

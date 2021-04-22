@@ -52,6 +52,7 @@ const ProfileTab = ({navigation}) => {
   const [date, setdate] = useState('');
   const [edit, setedit] = useState(false);
   const [ImageLoading, setImageLoading] = useState(false);
+  const [ComingGenderPronoun, setComingGenderPronoun] = useState(null);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -138,6 +139,26 @@ const ProfileTab = ({navigation}) => {
 
   useEffect(() => {
     getProfileUserData();
+
+    var myHeaders = new Headers();
+    myHeaders.append(
+      'Cookie',
+      '__cfduid=dcc52dc3ea7bfd9948604c5b092925bc81618561732',
+    );
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getGenderPronoun', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        console.log('Gender Pronoun Data', await result),
+          await setComingGenderPronoun(result);
+      })
+      .catch((error) => console.log('error', error));
   }, []);
 
   const imagePostFunction = (imageData) => {
@@ -262,21 +283,18 @@ const ProfileTab = ({navigation}) => {
         ? UserData?.UserDetails?.full_name
         : name,
       pronouns: Pronoun
-        ? Pronoun
+        ? Pronoun.name
         : UserData?.UserDetails?.pronouns
         ? UserData?.UserDetails?.pronouns
-        : Pronoun,
+        : '',
       date_of_birth: UserData?.UserDetails?.date_of_bitrh
         ? UserData?.UserDetails?.date_of_bitrh
         : Birthday,
-      gender:
-        gender == 'Male'
-          ? 1
-          : gender == 'Female'
-          ? 2
-          : gender == 'trans'
-          ? 2
-          : gender,
+      gender: gender
+        ? gender.id
+        : UserData?.UserDetails?.gender
+        ? UserData?.UserDetails?.gender
+        : '',
     });
 
     var requestOptions = {
@@ -294,6 +312,17 @@ const ProfileTab = ({navigation}) => {
         console.log('profile updated', result), getProfileUserData();
       })
       .catch((error) => console.log('error', error));
+  };
+
+  const checkGenderName = (value) => {
+    console.log(`value`, value, ComingGenderPronoun.gender);
+
+    const Id = ComingGenderPronoun.gender.find(({id}) => {
+      console.log(`name`, id, value);
+      return id == value;
+    });
+    console.log(`Id`, Id);
+    return Id.name;
   };
 
   const genderData = [{label: 'Male'}, {label: 'Female'}, {label: 'trans'}];
@@ -376,24 +405,26 @@ const ProfileTab = ({navigation}) => {
             }
             onChangeText={setname}
           />
+          {console.log(`gender`, gender.id)}
           <AddAnswer
             checkedit={UserData?.UserDetails?.gender ? true : false}
             ProfileApiCallHere={ProfileApiCallHere}
-            data={genderData}
+            data={ComingGenderPronoun ? ComingGenderPronoun?.gender : null}
             label={'Gender'}
             navigation={navigation}
             value={
               gender
-                ? gender
-                : UserData?.UserDetails?.gender
-                ? UserData?.UserDetails?.gender == 2
-                  ? 'Female'
-                  : UserData?.UserDetails?.gender == 1
-                  ? 'Male'
-                  : UserData?.UserDetails?.gender == 3
-                  ? 'Trans'
-                  : gender
-                : gender
+                ? gender.name
+                : UserData?.UserDetails?.gender && ComingGenderPronoun
+                ? checkGenderName(UserData?.UserDetails?.gender)
+                : // ? UserData?.UserDetails?.gender == 2
+                  //   ? 'Female'
+                  //   : UserData?.UserDetails?.gender == 1
+                  //   ? 'Male'
+                  //   : UserData?.UserDetails?.gender == 3
+                  //   ? 'Trans'
+                  //   : gender
+                  gender
             }
             onChangeText={setgender}
             popUp
@@ -411,15 +442,15 @@ const ProfileTab = ({navigation}) => {
             checkedit={UserData?.UserDetails?.pronouns ? true : false}
             ProfileApiCallHere={ProfileApiCallHere}
             navigation={navigation}
-            data={PronounData}
+            data={ComingGenderPronoun ? ComingGenderPronoun?.pronoun : null}
             label={'Pronouns'}
             // value={Pronoun}
             value={
               Pronoun
-                ? Pronoun
+                ? Pronoun.name
                 : UserData?.UserDetails?.pronouns
                 ? UserData?.UserDetails?.pronouns
-                : Pronoun
+                : 'He/him'
             }
             gender={gender}
             onChangeText={setPronoun}
