@@ -59,7 +59,7 @@ PushNotification.configure({
    * - if you are not using remote notification or do not have Firebase installed, use this:
    *     requestPermissions: Platform.OS === 'ios'
    */
-  requestPermissions: true,
+  requestPermissions: Platform.OS === 'ios',
 });
 
 const store = createStore(allReducers, applyMiddleware(thunk));

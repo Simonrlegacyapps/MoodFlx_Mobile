@@ -227,7 +227,7 @@ const Linktocompany = ({navigation}) => {
                         setLabelShow(item);
                         setModalVisible(false);
                       }}
-                      key={index}>
+                      key={`${index}`}>
                       <Text
                         style={{
                           textAlign: 'center',

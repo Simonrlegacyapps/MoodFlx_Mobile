@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
+  Platform,
 } from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
@@ -225,6 +226,9 @@ const App: () => React$Node = () => {
   }, []);
 
   const fp = () => {
+    if(Platform.OS === 'android'){
+      return;
+    }
     let a = new Date();
     console.log('call');
     PushNotificationIOS.addNotificationRequest({
@@ -277,7 +281,11 @@ const App: () => React$Node = () => {
           .then(async (res) => {
             // await setGetMoods(res.data);
             await dispatch(Moods(res.data));
-          });
+          })
+          .catch((error) => {
+            // const {code, message} = error;
+            console.log('error', error);
+          });;
     }
     checkStorage();
     getProfileUserData();

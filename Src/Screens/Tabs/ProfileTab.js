@@ -474,7 +474,7 @@ const ProfileTab = ({navigation}) => {
         </View>
         <View
           style={[styles.flatlistContainer, {marginBottom: dynamicSize(56)}]}>
-          <FlatList data={bottomList} renderItem={renderBottomList} />
+          <FlatList data={bottomList} keyExtractor={(item, index) => `${index}`} renderItem={renderBottomList} />
         </View>
       </View>
       <ActionSheet

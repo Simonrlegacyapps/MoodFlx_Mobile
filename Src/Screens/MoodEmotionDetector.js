@@ -192,7 +192,7 @@ const MoodEmotionDetector = ({navigation}) => {
             });
       }
 
-      StatusBarManager.getHeight((statusBarHeight) => {
+      StatusBarManager?.getHeight?.((statusBarHeight) => {
         setStatusVertical(statusBarHeight.height);
       });
     }, 150);
