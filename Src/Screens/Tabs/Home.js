@@ -30,24 +30,9 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import Constants from '../../Constants';
-import ProgressBar from 'react-native-animated-progress';
 import Swiper from 'react-native-swiper';
 import AsyncStorage from '@react-native-community/async-storage';
-import {
-  ChartDot,
-  ChartPath,
-  ChartPathProvider,
-  monotoneCubicInterpolation,
-} from '@rainbow-me/animated-charts';
-import GraphicChart from '../../Components/GraphicChart/GraphicChart';
-import PostRequestApi from '../../apirequest/PostRequestApi';
-import ProgressBarCustom from '../../Components/ProgressBar/ProgressBarCustom';
-import BarGraph from '../../Components/BarChart/BarGraph';
-import {LineChart} from 'react-native-chart-kit';
-import {dynamicSize} from '../../Constants/sizeChoose';
-import BezierGraphAuto from '../../Components/BezierGraphAuto/BezierGraphAuto';
-import HomeHeader from '../../Components/HomeHeader/HomeHeader';
+import RNSamsungHealth from 'rn-samsung-health';
 import {useRoute} from '@react-navigation/native';
 import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
@@ -252,9 +237,9 @@ const App = (props) => {
 
   const OnAutoSync = async () => {
     console.log(`auto sync function called`);
-    const a = moment().subtract(1, 'months').format('DD MMM YYYY');
+    // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
-    console.log('moment() month', new Date(a).toISOString());
+    // console.log('moment() month', new Date(a).toISOString());
     // console.log(
     //   `api.openweathermap.org/data/2.5/weather?lat=${this.state.lat}&lon=${this.state.lng}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
     // );
@@ -570,6 +555,32 @@ const App = (props) => {
       });
       // setLoading(false);
     }
+
+    if (Platform.OS === 'android') {
+      RNSamsungHealth.authorize((err, res) => {
+        console.log(`err`, err);
+        console.log(`res`, res);
+      });
+
+      console.log(`yahan pat`);
+    }
+
+    const health = async () => {
+      // RNSamsungHealth.authorize((err, res) => {
+      //   if (res) {
+      //     // let startDate = new Date().setDate(new Date().getDate() - 30); // 30 days back date
+      //     // let endDate = new Date().getTime(); //today's date
+      //     // let opt = {startDate, endDate};
+      //     // RNSamsungHealth.getDailyStepCount(opt, (err, res) => {
+      //     //   if (err) console.log(err);
+      //     //   if (res) console.log(res);
+      //     // });
+      //   }
+      //   if (err) {
+      //     console.log(`err`, err);
+      //   }
+      // });
+    };
 
     CheckForWeather(lat, long);
   };
