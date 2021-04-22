@@ -32,7 +32,7 @@ import {
 } from '../../Constants/fonts/Fonts';
 import Constants from '../../Constants';
 import ProgressBar from 'react-native-animated-progress';
-import Swiper from 'react-native-swiper';
+import Swiper from '../../Components/Swiper';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   ChartDot,
