@@ -372,42 +372,42 @@ const MoodEmotionDetector = ({navigation}) => {
       locationX < fourthWidth &&
       statusHeight < locationY &&
       locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[16].icon) // sad
+        ? (word = UserData.AllMoods[0].icon) // sad
         : 0 < locationX &&
           locationX < fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[2].icon) //flat
+        ? (word = UserData.AllMoods[1].icon) //flat
         : 0 < locationX &&
           locationX < fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[4].icon) //wired
+        ? (word = UserData.AllMoods[2].icon) //wired
         : 0 < locationX &&
           locationX < fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[14].icon) //anxious
+        ? (word = UserData.AllMoods[3].icon) //anxious
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           statusHeight < locationY &&
           locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[0].icon) //angry
+        ? (word = UserData.AllMoods[4].icon) //angry
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[3].icon) //Furious
+        ? (word = UserData.AllMoods[5].icon) //Rattled
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[5].icon) //Spent
+        ? (word = UserData.AllMoods[6].icon) //Spent
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[11].icon) //Tired
+        ? (word = UserData.AllMoods[7].icon) //Tired
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
           statusHeight < locationY &&
@@ -422,12 +422,12 @@ const MoodEmotionDetector = ({navigation}) => {
           locationX < 3 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[6].icon) //Spent
+        ? (word = UserData.AllMoods[10].icon) //Spent
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[13].icon) //alert
+        ? (word = UserData.AllMoods[11].icon) //alert
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           statusHeight < locationY &&
@@ -437,12 +437,12 @@ const MoodEmotionDetector = ({navigation}) => {
           locationX < 4 * fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[1].icon) //Happy
+        ? (word = UserData.AllMoods[13].icon) //Happy
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[7].icon) //sharp
+        ? (word = UserData.AllMoods[14].icon) //sharp
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
@@ -476,42 +476,42 @@ const MoodEmotionDetector = ({navigation}) => {
       locationX < fourthWidth &&
       statusHeight < locationY &&
       locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[16].icon) // sad
+        ? (word = UserData.AllMoods[0].icon) // sad
         : 0 < locationX &&
           locationX < fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[2].icon) //flat
+        ? (word = UserData.AllMoods[1].icon) //flat
         : 0 < locationX &&
           locationX < fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[4].icon) //wired
+        ? (word = UserData.AllMoods[2].icon) //wired
         : 0 < locationX &&
           locationX < fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[14].icon) //anxious
+        ? (word = UserData.AllMoods[3].icon) //anxious
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           statusHeight < locationY &&
           locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[0].icon) //angry
+        ? (word = UserData.AllMoods[4].icon) //angry
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[3].icon) //Furious
+        ? (word = UserData.AllMoods[5].icon) //Rattled
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[5].icon) //Spent
+        ? (word = UserData.AllMoods[6].icon) //Spent
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[11].icon) //Tired
+        ? (word = UserData.AllMoods[7].icon) //Tired
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
           statusHeight < locationY &&
@@ -526,12 +526,12 @@ const MoodEmotionDetector = ({navigation}) => {
           locationX < 3 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[6].icon) //Spent
+        ? (word = UserData.AllMoods[10].icon) //Spent
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[13].icon) //alert
+        ? (word = UserData.AllMoods[11].icon) //alert
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           statusHeight < locationY &&
@@ -541,12 +541,12 @@ const MoodEmotionDetector = ({navigation}) => {
           locationX < 4 * fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[1].icon) //Happy
+        ? (word = UserData.AllMoods[13].icon) //Happy
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[7].icon) //sharp
+        ? (word = UserData.AllMoods[14].icon) //sharp
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
@@ -588,46 +588,46 @@ const MoodEmotionDetector = ({navigation}) => {
     // console.log('dx', dx)
     // console.log('dy', dy)
     if (UserData.AllMoods !== null) {
-      0 <= locationX &&
+      0 < locationX &&
       locationX < fourthWidth &&
-      statusHeight <= locationY &&
+      statusHeight < locationY &&
       locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[16].name) // sad
+        ? (word = UserData.AllMoods[0].name) // sad
         : 0 < locationX &&
           locationX < fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[2].name) //flat
+        ? (word = UserData.AllMoods[1].name) //flat
         : 0 < locationX &&
           locationX < fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[4].name) //wired
+        ? (word = UserData.AllMoods[2].name) //wired
         : 0 < locationX &&
           locationX < fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[14].name) //anxious
+        ? (word = UserData.AllMoods[3].name) //anxious
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           statusHeight < locationY &&
           locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[0].name) //angry
+        ? (word = UserData.AllMoods[4].name) //angry
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[3].name) //Furious
+        ? (word = UserData.AllMoods[5].name) //Rattled
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[5].name) //Spent
+        ? (word = UserData.AllMoods[6].name) //Spent
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[11].name) //Tired
+        ? (word = UserData.AllMoods[7].name) //Tired
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
           statusHeight < locationY &&
@@ -642,12 +642,12 @@ const MoodEmotionDetector = ({navigation}) => {
           locationX < 3 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[6].name) //Spent
+        ? (word = UserData.AllMoods[10].name) //Spent
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[13].name) //alert
+        ? (word = UserData.AllMoods[11].name) //alert
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           statusHeight < locationY &&
@@ -657,12 +657,12 @@ const MoodEmotionDetector = ({navigation}) => {
           locationX < 4 * fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[1].name) //Happy
+        ? (word = UserData.AllMoods[13].name) //Happy
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[7].name) //sharp
+        ? (word = UserData.AllMoods[14].name) //sharp
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
@@ -692,42 +692,42 @@ const MoodEmotionDetector = ({navigation}) => {
       locationX < fourthWidth &&
       statusHeight < locationY &&
       locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[16].name) // sad
+        ? (word = UserData.AllMoods[0].name) // sad
         : 0 < locationX &&
           locationX < fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[2].name) //flat
+        ? (word = UserData.AllMoods[1].name) //flat
         : 0 < locationX &&
           locationX < fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[4].name) //wired
+        ? (word = UserData.AllMoods[2].name) //wired
         : 0 < locationX &&
           locationX < fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[14].name) //anxious
+        ? (word = UserData.AllMoods[3].name) //anxious
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           statusHeight < locationY &&
           locationY < fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[0].name) //angry
+        ? (word = UserData.AllMoods[4].name) //angry
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[3].name) //Furious
+        ? (word = UserData.AllMoods[5].name) //Rattled
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[5].name) //Spent
+        ? (word = UserData.AllMoods[6].name) //Spent
         : fourthWidth < locationX &&
           locationX < 2 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[11].name) //Tired
+        ? (word = UserData.AllMoods[7].name) //Tired
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
           statusHeight < locationY &&
@@ -742,12 +742,12 @@ const MoodEmotionDetector = ({navigation}) => {
           locationX < 3 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[6].name) //Spent
+        ? (word = UserData.AllMoods[10].name) //Spent
         : 2 * fourthWidth < locationX &&
           locationX < 3 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
           locationY < 4 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[13].name) //alert
+        ? (word = UserData.AllMoods[11].name) //alert
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           statusHeight < locationY &&
@@ -757,12 +757,12 @@ const MoodEmotionDetector = ({navigation}) => {
           locationX < 4 * fourthWidth &&
           fourthHeight + statusHeight < locationY &&
           locationY < 2 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[1].name) //Happy
+        ? (word = UserData.AllMoods[13].name) //Happy
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           2 * fourthHeight + statusHeight < locationY &&
           locationY < 3 * fourthHeight + statusHeight
-        ? (word = UserData.AllMoods[7].name) //sharp
+        ? (word = UserData.AllMoods[14].name) //sharp
         : 3 * fourthWidth < locationX &&
           locationX < 4 * fourthWidth &&
           3 * fourthHeight + statusHeight < locationY &&
