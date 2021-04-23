@@ -1453,8 +1453,8 @@ const MoodEmotionDetector = ({navigation}) => {
             {...panResponder.panHandlers}
           /> */}
         </View>
-        {UserData.AllMoods !== null && (
-          <View style={{ position: 'absolute' }} {...panResponder.panHandlers}>
+        <View style={{position: 'absolute'}} {...panResponder.panHandlers}>
+          {UserData.AllMoods !== null && (
             <View
               style={[
                 {
@@ -1465,18 +1465,18 @@ const MoodEmotionDetector = ({navigation}) => {
                   top: parseFloat(locationY - 133),
                   left:
                     Label?.length >= 8 &&
-                      Label?.length <= 12 &&
-                      Label === 'Slide finger'
+                    Label?.length <= 12 &&
+                    Label === 'Slide finger'
                       ? parseFloat(locationX - 50)
                       : Label?.length >= 5 && Label?.length <= 6
-                        ? parseFloat(locationX - 45)
-                        : Label?.length > 6 && Label?.length <= 7
-                          ? parseFloat(locationX - 49)
-                          : Label?.length >= 7 && Label?.length <= 8
-                            ? parseFloat(locationX - 47)
-                            : Label?.length >= 8 && Label?.length <= 12
-                              ? parseFloat(locationX - 63)
-                              : parseFloat(locationX - 35),
+                      ? parseFloat(locationX - 45)
+                      : Label?.length > 6 && Label?.length <= 7
+                      ? parseFloat(locationX - 49)
+                      : Label?.length >= 7 && Label?.length <= 8
+                      ? parseFloat(locationX - 47)
+                      : Label?.length >= 8 && Label?.length <= 12
+                      ? parseFloat(locationX - 63)
+                      : parseFloat(locationX - 35),
                 },
               ]}>
               <View
@@ -1490,7 +1490,7 @@ const MoodEmotionDetector = ({navigation}) => {
                   borderRadius: 8,
                   overflow: 'hidden',
                 }}>
-                <Text style={{ paddingHorizontal: 7, zIndex: 9999999 }}>
+                <Text style={{paddingHorizontal: 7, zIndex: 9999999}}>
                   {locationX !== 0 && locationY !== 0 && <Text>{Label}</Text>}
                 </Text>
                 {Label !== 'Slide finger' && (
@@ -1499,17 +1499,18 @@ const MoodEmotionDetector = ({navigation}) => {
                     height={20}
                     // viewBox="0 0 24 24"
                     fill="none"
-                    uri={`https://super.moodflo.com/${Svgs
+                    uri={`https://super.moodflo.com/${
+                      Svgs
                         ? Svgs
                         : 'mood_icons/161616176321272238406054abe3bb450.svg'
-                      }`}
-                  // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+                    }`}
+                    // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
                   />
                 )}
               </View>
 
               <Svg
-                style={{ marginTop: -4, marginLeft: -12 }}
+                style={{marginTop: -4, marginLeft: -12}}
                 width={38}
                 height={25}
                 viewBox="0 0 24 24"
@@ -1520,63 +1521,63 @@ const MoodEmotionDetector = ({navigation}) => {
                   d="M8.5 2.4H28c-.384 0-.75.16-1.011.441l-7.066 7.624a2 2 0 01-2.892.044l-7.604-7.72a1.302 1.302 0 00-.927-.39z"></Path>
               </Svg>
             </View>
-          </View>
-        )}
-        <View
-          style={{
-            alignContent: 'center',
-            position: 'absolute',
-            top: parseFloat(locationY - 61),
-            left: parseFloat(locationX - 10),
-            height: 18,
-            width: 18,
-            backgroundColor: 'white',
-            borderRadius: 10,
-            overflow: 'hidden',
-          }}
-        />
-        <View
-          style={{
-            alignContent: 'center',
-            position: 'absolute',
-            top: parseFloat(locationY - 69.5),
-            left: parseFloat(locationX - 18),
-            height: 35,
-            width: 35,
-            backgroundColor: 'white',
-            opacity: 0.6,
-            borderRadius: 18,
-            overflow: 'hidden',
-          }}
-        />
-        <View
-          style={{
-            alignContent: 'center',
-            position: 'absolute',
-            top: parseFloat(locationY - 79),
-            left: parseFloat(locationX - 27),
-            height: 54,
-            width: 54,
-            backgroundColor: 'white',
-            opacity: 0.4,
-            borderRadius: 27,
-            overflow: 'hidden',
-          }}
-        />
-        <View
-          style={{
-            alignContent: 'center',
-            position: 'absolute',
-            top: parseFloat(locationY - 88.5),
-            left: parseFloat(locationX - 37),
-            height: 74,
-            width: 74,
-            backgroundColor: 'white',
-            opacity: 0.2,
-            borderRadius: 37,
-            overflow: 'hidden',
-          }}
-        />
+          )}
+          <View
+            style={{
+              alignContent: 'center',
+              position: 'absolute',
+              top: parseFloat(locationY - 61),
+              left: parseFloat(locationX - 10),
+              height: 18,
+              width: 18,
+              backgroundColor: 'white',
+              borderRadius: 10,
+              overflow: 'hidden',
+            }}
+          />
+          <View
+            style={{
+              alignContent: 'center',
+              position: 'absolute',
+              top: parseFloat(locationY - 69.5),
+              left: parseFloat(locationX - 18),
+              height: 35,
+              width: 35,
+              backgroundColor: 'white',
+              opacity: 0.6,
+              borderRadius: 18,
+              overflow: 'hidden',
+            }}
+          />
+          <View
+            style={{
+              alignContent: 'center',
+              position: 'absolute',
+              top: parseFloat(locationY - 79),
+              left: parseFloat(locationX - 27),
+              height: 54,
+              width: 54,
+              backgroundColor: 'white',
+              opacity: 0.4,
+              borderRadius: 27,
+              overflow: 'hidden',
+            }}
+          />
+          <View
+            style={{
+              alignContent: 'center',
+              position: 'absolute',
+              top: parseFloat(locationY - 88.5),
+              left: parseFloat(locationX - 37),
+              height: 74,
+              width: 74,
+              backgroundColor: 'white',
+              opacity: 0.2,
+              borderRadius: 37,
+              overflow: 'hidden',
+            }}
+          />
+        </View>
       </View>
 
       {/* Bottom Bar */}

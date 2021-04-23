@@ -66,6 +66,7 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "rn-apple-healthkit": "^0.8.0",
+    "rn-samsung-health": "^0.1.7",
     "svg-path-properties": "^1.0.11",
     "toggle-switch-react-native": "^3.2.0"
   },

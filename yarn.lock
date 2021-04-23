@@ -8089,6 +8089,11 @@
   "resolved" "https://registry.npmjs.org/rn-apple-healthkit/-/rn-apple-healthkit-0.8.0.tgz"
   "version" "0.8.0"
 
+"rn-samsung-health@^0.1.7":
+  "integrity" "sha512-Vr/NEO/SAoGzXip6uqbDyc+tbeWTstvVrSn2i/a5ppuPCvEs4nI5rK6VAnjHLW1/id3M7nzCHuFTMQJC6mpqQw=="
+  "resolved" "https://registry.npmjs.org/rn-samsung-health/-/rn-samsung-health-0.1.7.tgz"
+  "version" "0.1.7"
+
 "rsvp@^4.8.4":
   "integrity" "sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA=="
   "resolved" "https://registry.npmjs.org/rsvp/-/rsvp-4.8.5.tgz"
