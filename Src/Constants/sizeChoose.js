@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Platform, Dimensions, PixelRatio } from 'react-native';
 
 const { height, width } = Dimensions.get('window')
 
@@ -8,7 +8,6 @@ export const dynamicSize = (size) => {
     return (percentage * height) / 100
 }
 
-import { Platform, Dimensions, PixelRatio } from 'react-native';
 
 export const PLATFORM = {
   ANDROID: 'android',

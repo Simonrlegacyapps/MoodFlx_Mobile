@@ -4,212 +4,728 @@
  * @flow
  */
 
- import React, { Component } from 'react';
- import {
-   Dimensions,
-   StyleSheet,
-   View,
-   Button,
-   Platform,
-   Image as RNimage,
-   Animated,
-   PanResponder,
-   Text,
- } from 'react-native';
- import imagePath from '../../assets/images';
- import Scroller from './scroller';
- import { getEmotionsTextData, emotionsTextData } from './moodService';
-import { pSBC } from './moodUtils';
-import { iPhoneXPadding, isIphoneX } from '../../Constants/sizeChoose';
- const window = Dimensions.get('window');
- const scrollerWheelSize = 100;
- const scrollerWheelRadius = scrollerWheelSize / 2;
- const screenWidth = Math.floor(window.width);
- const imageSize = screenWidth;
- 
- 
- // import imagePath from '../assets/images';
- 
- export default class MoodDetector extends Component {
-   constructor(props) {
-     super(props);
-     this.state = {
-       color: '#FFFFFF',
-       screenSize: window,
-       toolTipVisible: true,
-       toolTipData: emotionsTextData.exited,
-       left: 0,
-       top: 0,
-       emotionText: '',
-       isSwitchOn: false,
-     };
-     this.state.emotionText = this.state.toolTipData?.text ?? '';
-     this.state.color = this.state.toolTipData?.color ?? '#FFFFFF';
-     this.canvas = null;
-     this.pan = new Animated.ValueXY();
-     this.updatePanResponder();
-     this.panResponder = this.buildPanResponder();
-     this.prevEmotionData = this.state.toolTipData;
-     this.scrollerRef = null;
-     this.count = 1;
-     this.addValue = 1;
-   }
- 
-   buildPanResponder = () => {
-     return PanResponder.create({
-       onStartShouldSetPanResponder: () => true,
-       onMoveShouldSetPanResponder: () => true,
-       onPanResponderGrant: (event, gestureState) => {
-         this.pan.setOffset({
-           x: this.pan.x._value,
-           y: this.pan.y._value
-         });
-       },
-       onPanResponderMove: (event, gestureState) => {
-         // if (DeviceInfo.getSystemVersion() > 8.1) {
-         this.pan.setValue({ x: gestureState.dx, y: gestureState.dy });
-         this.scrollerRef.measureInWindow((x, y, width, height) => {
-             const top = y + scrollerWheelRadius;
-             const left = x + scrollerWheelRadius;
-             const emotionData = getEmotionsTextData(top, left, this.prevEmotionData);
-             if(this.prevEmotionData.text === this.state.toolTipData.text){
-               const color = pSBC(this.count/100, this.state.toolTipData.color)
-              this.setState({
-                toolTipData: emotionData,
-                left,
-                top,
-                emotionText: emotionData?.text ?? '',
-                color
-            });
-            if(this.count === 60){
-              this.addValue = -1;
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Dimensions,
+  StyleSheet,
+  View,
+  Animated,
+  PanResponder,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
+import Scroller from './moodScroller';
+import { getEmotionsTextData, emotionsTextData, scrollerWheelSize, getScrollerOffset, getInitialLocalX, getInitialLocalY, setEmotionsTextData } from './moodService';
+import { pSBC } from './moodUtlis';
+import { dynamicSize, iPhoneXPadding, isIphoneX } from '../../Constants/sizeChoose';
+import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
+import { useDispatch, useSelector } from 'react-redux';
+import CloseIcon from '../../../assets/commonicons/CloseIcon';
+import QuestionMarkIcon from '../../../assets/commonicons/QuestionMarkIcon';
+import moment from 'moment';
+import GetLocation from 'react-native-get-location';
+import PostRequestApi from '../../apirequest/PostRequestApi';
+import DeviceInfo from 'react-native-device-info';
+import VideoModal from '../../Components/VideoModal/VideoModal';
+import AsyncStorage from '@react-native-community/async-storage';
+import {
+  HealthPerm,
+  Lat,
+  Long,
+  Moods,
+  UserDetail,
+  UserDivision,
+  UserEmail,
+  WeatherPerm,
+} from '../../redux/actions/actions';
+import { useRoute } from '@react-navigation/native';
+import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Geocoder from 'react-native-geocoding';
+
+const options = {
+  enableVibrateFallback: true,
+  ignoreAndroidSystemSettings: false,
+};
+function useForceUpdate() {
+  const [value, setValue] = useState(0); // integer state
+  return () => setValue((value) => value + 1); // update the state to force render
+}
+
+const window = Dimensions.get('window');
+const scrollerWheelRadius = scrollerWheelSize / 2;
+const screenWidth = Math.floor(window.width);
+
+
+// import imagePath from '../assets/images';
+
+export default function MoodDetector(props) {
+  // const [locationX, setLocationX] = useState(width / 2); //pan
+  // const [locationY, setLocationY] = useState(height / 2 + height / 80); //pan
+  // const [ShowDraggable, setShowDraggable] = useState(true); //not using
+  // const [Location, setLocation] = useState([]); //not using
+  // const [Moving, setMoving] = useState(false); //not using
+  // const [Anonymous, setAnonymous] = useState(false); //not using
+  // const [Label, setLabel] = useState('Slide finger'); //emotionText
+  // const [startTime, setstartTime] = useState(0); //long press time caluclation to enlarge bubble not using currently
+  // const [EndTime, setEndTime] = useState(0); //long press time caluclation to enlarge bubble not using currently
+  // const [StatusVertical, setStatusVertical] = useState(0); //for status bar height
+  // const [GetMoods, setGetMoods] = useState(null); //not using
+  // const [Svgs, setSvgs] = useState(''); //icon
+  const [lng, setlng] = useState(false); //using in api calls
+  const [lat, setlat] = useState(false); //using in api calls
+  const [Email, setEmail] = useState(null); //using in api calls
+  const [Loading, setLoading] = useState(false); //using in api calls
+  const [MoodFail, setMoodFail] = useState(false); //not using
+  const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
+  const [SaveName, setSaveName] = useState(null); //for modal flag
+  const [X0, setX0] = useState(0); //not using
+  const [Y0, setY0] = useState(0); //not using
+  const [color, setColor] = useState(0); //i am using
+  const [emotionText, setEmotionText] = useState(0); //i am using
+  const [toolTipData, setToolTipData] = useState({  //i am using
+    "top": null,
+    "left": null,
+    "text": "Slide finger",
+    "color": "#A24551",
+    "img": ""
+  }); //i am using
+  const [isModalVisible, setModalVisible] = useState(false);
+  const dispatch = useDispatch();
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+  const UserData = useSelector((state) => state.First);
+
+  const pan = useRef(new Animated.ValueXY());
+  const prevEmotionData = useRef(toolTipData);
+  const scrollerRef = useRef(null);
+  const toolTipRef = useRef(null);
+  const count = useRef(1);
+  const addValue = useRef(1);
+  const toolTipSize = useRef(null);
+  const blocksSize = useRef(null);
+  const scrollerContainerSize = useRef(null);
+  const scrollerContainerRef = useRef(null);
+  const blocksContainerRef = useRef(null);
+  const isInitialPanResponderUpdated = useRef(false);
+  const constrainedX = useRef(pan.current.x.interpolate({
+    inputRange: [0, 250, screenWidth],
+    outputRange: [0, 150, screenWidth],
+    extrapolate: 'clamp',
+  }));
+  const constrainedY = useRef(pan.current.y.interpolate({
+    inputRange: [150, 250, window.height],
+    outputRange: [150, 150, window.height],
+    extrapolate: 'clamp',
+  }));
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      // onPanResponderGrant: (event, gestureState) => {
+      //   pan.current.setOffset({
+      //     x: pan.current.x._value,
+      //     y: pan.current.y._value
+      //   });
+      // },
+      onPanResponderMove: (event, gestureState) => {
+        // pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
+        scrollerRef.current.measureInWindow((x, y, width, height) => {
+          const top = y + scrollerWheelRadius;
+          const left = x + scrollerWheelRadius;
+          const emotionData = getEmotionsTextData(top, left, prevEmotionData.current);
+          if (prevEmotionData.current.text === toolTipData.text) {
+            const color = pSBC(count.current / 100, toolTipData.color);
+            setToolTipData(emotionData);
+            setEmotionText(emotionData?.text ?? '');
+            setColor(color);
+            if (count.current === 60) {
+              addValue.current = -1;
             }
-            if(this.count === 0){
-              this.addValue = 1;
+            if (count.current === 0) {
+              addValue.current = 1;
             }
-            this.count = this.count + this.addValue;
-            console.log('count =>', this.count);
-            console.log('addValue =>', this.addValue);
+            count.current = count.current + addValue.current;
+            console.log('count =>', count.current);
+            console.log('addValue =>', addValue.current);
             console.log('color =>', color);
           } else {
-               this.setState({
-                 toolTipData: emotionData,
-                 left,
-                 top,
-                 emotionText: emotionData?.text ?? '',
-                 color: emotionData?.color
-                });
-                this.count = 1;
-             }
-             this.prevEmotionData = emotionData;
-
-            console.log("++++++ measureInWindow "+width+" "+height+" "+x+" "+y);
-            // this.setState({ vheight: height, vwidth: width, vx: x, vy: y });
+            setToolTipData(emotionData);
+            setEmotionText(emotionData?.text ?? '');
+            setColor(emotionData?.color);
+            count.current = 1;
           }
+          prevEmotionData.current = emotionData;
+
+          console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
+        }
         );
-       },
-       onPanResponderRelease: (event, gesture) => {
-         this.pan.flattenOffset();
-         console.log('onPanResponderRelease screenWidth : ', screenWidth)
-       }
-     });
-   }
- 
-   updatePanResponder = (forceUpdate, isOrientationChange) => {
-     let {
-       xMin,
-       xMax,
-       yMinWithHeader,
-       yMinWithoutHeader,
-       yMaxWithControls,
-       yMaxWithoutControls
-     } = getScrollerOffset(this.state.screenSize);
-     this.constrainedX = this.pan.x.interpolate({
-       inputRange: [xMin, 150, xMax],
-       outputRange: [xMin, 150, xMax],
-       extrapolate: 'clamp',
-     });
-     const yMin = false ? yMinWithHeader : yMinWithoutHeader;
-     const yMax = false ? yMaxWithControls : yMaxWithoutControls;
-     this.constrainedY = this.pan.y.interpolate({
-       inputRange: [yMin, isIphoneX ? 200 : 150, yMax],
-       outputRange: [yMin, isIphoneX ? 200 : 150, yMax],
-       extrapolate: 'clamp',
-     });
-     forceUpdate && this.forceUpdate();
-     (isOrientationChange || !forceUpdate) && this.pan.setValue({ x: getInitialLocalX(this.state.screenSize), y: getInitialLocalY(this.state.screenSize) });
-   }
+      },
+      onPanResponderRelease: (event, gesture) => {
+        pan.current.flattenOffset();
+        console.log('onPanResponderRelease screenWidth : ', screenWidth)
+      },
+      onMoveShouldSetPanResponderCapture: (event, gestureState) => {
+        true;
+      },
+      onPanResponderGrant: (event, gestureState) => true,
+    })
+  ).current;
 
-   rgbToHex(r, g, b) {
-     if (r > 255 || g > 255 || b > 255)
-       throw "Invalid color component";
-     return ((r << 16) | (g << 8) | b).toString(16);
-   }
- 
+  const updatePanResponder = (forceUpdate, isOrientationChange) => {
+    return
+    if (!blocksSize.current || !toolTipSize.current || !scrollerContainerSize.current) {
+      return
+    }
+    isInitialPanResponderUpdated.current = true;
+    const offSetSize = getScrollerOffset(window, scrollerWheelSize, scrollerContainerSize.current, blocksSize.current);
+    let {
+      xMin,
+      xMax,
+      yMin,
+      yMax,
+    } =  offSetSize;
+    console.log('updatePanResponder ', offSetSize)
+    constrainedX.current = pan.current.x.interpolate({
+      inputRange: [xMin, 150, xMax],
+      outputRange: [xMin, 150, xMax],
+      extrapolate: 'clamp',
+    });
+    constrainedY.current = pan.current.y.interpolate({
+      inputRange: [yMin, yMin + 50, yMax],
+      outputRange: [yMin, yMin + 50, yMax],
+      extrapolate: 'clamp',
+    });
+    forceUpdate && forceUpdate();
+    // (isOrientationChange || !forceUpdate) && pan.current.setValue({ 
+    //   x: getInitialLocalX(window, scrollerWheelSize, scrollerContainerSize.current, blocksSize.current),
+    //   y: getInitialLocalY(window, scrollerWheelSize, scrollerContainerSize.current, blocksSize.current)
+    // });
+  }
 
-   onToolTipClose = () => {
-       this.setState({toolTipVisible: false})
-   }
+  // useEffect(() => {
+  //   if (blocksContainerRef.current) {
+  //     blocksContainerRef.current.measureInWindow((x, y, width, height) => {
+  //       setEmotionsTextData(x, y, height, width);
+  //       blocksSize.current = { left: x, top: y, width, height };
+  //       console.log('useEffect blocksSize ', blocksSize.current)
+  //       !isInitialPanResponderUpdated.current && toolTipSize.current && updatePanResponder();
+  //     })
+  //   }
+  // }, []);
 
-   onChangeIsSwitchOn = () => {
-     this.setState((prevState) => ({isSwitchOn: !prevState.isSwitchOn}));
-   }
- 
- 
-   render() {
-     return (
-       <View style={[styles.container, { backgroundColor: this.state.color }]}>
-         
-           <Scroller
-             scrollerStyle={{ ...this.pan.getLayout(), ...{ left: this.constrainedX, top: this.constrainedY } }}
-             scrollerPanResponder={this.panResponder}
-             toolTipVisible={this.state.toolTipVisible}
-             toolTipData={this.state.toolTipData}
-             onToolTipClose={this.onToolTipClose}
-             scrollerRef={(ref) => this.scrollerRef = ref}
-           />
-           {/* <Text>{`left - ${this.state.left} top - ${this.state.top}`}</Text> */}
-           <Text style={{color: '#000000', fontSize: 25, fontWeight: 'bold'}}>{`emotion text - ${this.state.emotionText}`}</Text>
-         {/* {Object.keys(emotionsTextData).map((e, idx) => {
-           
-           )}} */}
-           {Object.keys(emotionsTextData).map((e, idx) => {
-               const {top, left, color, text} = emotionsTextData[e];
-               return (
-                 <>
-                 <Text
-                  style={{
-                    position: 'absolute',
-                    left: left[0],
-                    top: top[0] - (top[1] - top[0]) - 4,
-                    color: '#000000',
-                    fontSize: 14
-                  }}
-                 >{text}</Text>
-                 <View
-                     style={{
-                       position: 'absolute',
-                       left: left[0],
-                       top: top[0],
-                       height: top[1] - top[0],
-                       width: left[1] - left[0],
-                       backgroundColor: color,
-                     }}
-                 />
-                 </>
-               )
-           })}
-       </View>
-     )
-   }
- }
- 
- const styles = StyleSheet.create({
-   container: {
-     flex: 1,
-     width: screenWidth,
-     justifyContent: 'center',
-     alignItems: 'center',
-   },
- })
- 
+  const onBlocksContainerLayout = () => {
+    blocksContainerRef.current.measureInWindow((x, y, width, height) => {
+      setEmotionsTextData(x, y, height, width);
+      blocksSize.current = { left: x, top: y, width, height };
+      console.log('useEffect blocksSize ', blocksSize.current)
+      !isInitialPanResponderUpdated.current && toolTipSize.current && updatePanResponder();
+    })
+  }
+
+  const setToolTipRef = (ref) => {
+    toolTipRef.current = ref;
+    // console.log('toolTipRef current', toolTipRef.current)
+    // console.log('toolTipRef ref', ref)
+    ref?.measureInWindow((x, y, width, height) => {
+      toolTipSize.current = { left: x, top: y, width, height };
+      
+      console.log('toolTipRef x,y,width,height', x, y, width, height)
+      scrollerContainerRef?.current?.measureInWindow((x, y, width, height) => {
+        scrollerContainerSize.current = { left: x, top: y, width, height };
+        console.log('scrollerContainerSize x,y,width,height', x, y, width, height)
+        console.log('scrollerContainerSize scrollerContainerSize.current', scrollerContainerSize.current)
+        !isInitialPanResponderUpdated.current && blocksSize.current && updatePanResponder();
+      })
+
+    })
+  }
+
+  const checkStorage = async () => {
+    await AsyncStorage.setItem('Anonymous', 'true');
+    // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
+    let p = await AsyncStorage.getItem('Email');
+    let d = await AsyncStorage.getItem('Division');
+    let Hp = await AsyncStorage.getItem('GiveHealthPerm');
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
+    let e = await JSON.parse(p);
+    let division = await JSON.parse(d);
+    let HealthP = await JSON.parse(Hp);
+    let WeatherP = await JSON.parse(Wp);
+    console.log(`e`, e);
+    console.log(`division`, division);
+    console.log(`HealthPerm`, HealthP);
+    console.log(`WeatherPerm`, WeatherP);
+    await setEmail(e);
+    dispatch(UserEmail(e));
+    dispatch(UserDivision(division));
+    dispatch(HealthPerm(HealthP));
+    dispatch(WeatherPerm(WeatherP));
+  };
+
+  const getProfileUserData = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData?.UserEmail,
+      user_id: UserData?.UserId,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        // console.log('UserDetailsssssssssssssssss here', await result);
+        await dispatch(UserDetail(result.userData));
+      })
+      .catch((error) => console.log('error', error));
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      checkStorage();
+      getProfileUserData();
+
+      {
+        UserData.WeatherPermission &&
+          (UserData.lat == null || UserData.lon == null) &&
+          GetLocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 15000,
+          })
+            .then((location) => {
+              //   console.log('Success', location);
+              setlat(location.latitude);
+              dispatch(Lat(location.latitude));
+              setlng(location.longitude);
+              dispatch(Long(location.longitude));
+            })
+            .catch((error) => {
+              const {code, message} = error;
+              console.log('error', code, message);
+            });
+      }
+
+    }, 150);
+  }, []);
+
+  const findId = async () => {
+    let p = await AsyncStorage.getItem('MoodCount');
+    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
+    let e = await JSON.parse(p);
+    console.log(`mood count`, e);
+
+    let geocode = null;
+    Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
+    var state_info = '';
+    var city_info = '';
+    var country_info = '';
+    await Geocoder.from({
+      lat: UserData.lat,
+      lng: UserData.lon,
+    })
+      .then((data) => {
+        geocode = data.plus_code.compound_code;
+        const address_list = data.results[0].address_components;
+        for (i = 0; i < address_list.length; i++) {
+          if (address_list[i].types.includes('country')) {
+            country_info = address_list[i].long_name;
+          }
+          if (address_list[i].types.includes('administrative_area_level_1')) {
+            state_info = address_list[i].long_name;
+          }
+          if (address_list[i].types.includes('administrative_area_level_2')) {
+            city_info = address_list[i].long_name;
+          }
+        }
+      })
+      .catch((err) => console.log(`weather api location err`, err));
+
+    const Id = UserData.AllMoods.find(({ name }) => {
+      // console.log(`name`, name);
+      return name === emotionText;
+    });
+    console.log(`Id`, Id);
+
+    console.log(`lat, lng`, UserData.lat, UserData.lon);
+    const deviceId = DeviceInfo.getUniqueId();
+    if (Id === undefined) {
+      console.log(`fail`);
+      setMoodFail(true);
+    } else {
+      setLoading(true);
+      console.log(`not fail`);
+      console.log(`Id`, Id.id);
+      const params = {
+        mood_id: Id.id,
+        device_id: deviceId,
+        lat: UserData.lat,
+        long: UserData.lon,
+        email: Email,
+        city: city_info,
+        state: state_info,
+        country: country_info,
+      };
+
+      if (route?.params?.question != undefined) {
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json');
+
+        var raw = JSON.stringify({
+          device_id: deviceId,
+          email: UserData.UserEmail,
+          pulse_question_id: route?.params?.question,
+          mood_id: Id.id,
+          is_anonymous: !UserData.Anonymous ? 0 : 1,
+          user_id: UserData.UserId,
+        });
+
+        console.log(`params for updating answer`, raw);
+
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow',
+        };
+
+        fetch('https://admin.moodflo.com/api/updateAnswer', requestOptions)
+          .then((response) => response.json())
+          .then((result) => {
+            console.log('quesstion updated', result), setLoading(false);
+            navigation.navigate('HomeScreen', { screen: 'MicScreen' });
+          })
+          .catch((error) => {
+            console.log('error', error), setLoading(false);
+          });
+      } else {
+        console.log(`params for mood update`, params);
+        PostRequestApi('moodUpdate', params)
+          .then((resp) => {
+            if (resp.status == 200) {
+              AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
+              console.log(
+                'Success Message of respose mood ✅ ✅ ✅ ✅',
+                resp.data,
+              );
+              setLoading(false);
+              // navigation.navigate('VerifyEmail', {
+              //   code: resp.data.otp,
+              //   mail: value,
+              //   deviceID: deviceId,
+              // });
+              {
+                route?.params?.question != undefined
+                  ? navigation.navigate('HomeScreen', { screen: 'MicScreen' })
+                  : navigation.replace('HomeScreen', {
+                    lat: lat,
+                    long: lng,
+                    screen: 'Home',
+                  });
+              }
+
+              // navigation.replace('HomeScreen', {
+              //   lat: UserData.lat,
+              //   long: UserData.lon,
+              // });
+
+              console.log(`params`, params);
+            }
+          })
+          .catch((err) => {
+            console.log(`params for err of mood`, params);
+            console.log('err of response mood❌ ❌ ❌ ❌', err);
+            setLoading(false);
+          });
+      }
+    }
+  };
+
+  const savingDataWithName = () => {
+    // navigation.replace('HomeScreen');
+
+    if (!UserData.Anonymous) {
+      setSaveConfirm(true);
+    } else {
+      findId();
+    }
+  };
+
+  const verifyDone = (value) => {
+    console.log(`value-->`, value);
+
+    if (value === 'Yes') {
+      setSaveConfirm(false);
+      FindId();
+    } else {
+      setSaveConfirm(false);
+    }
+  };
+
+  const cancelled = () => {
+    setSaveConfirm(false);
+  };
+
+  const renderBlocks = () => (
+    <View
+      ref={blocksContainerRef}
+      onLayout={onBlocksContainerLayout}
+      style={[
+        styles.childViewStyle,
+        {
+          backgroundColor: 'green',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          flex: 1,
+        },
+      ]}>
+      <View
+        style={{
+          height: '50%',
+          width: '50%',
+          backgroundColor: pSBC(0.75, color),
+        }}
+      />
+      <View
+        style={{
+          height: '50%',
+          width: '50%',
+          backgroundColor: pSBC(0.50, color),
+        }}
+      />
+      <View
+        style={{
+          height: '50%',
+          width: '50%',
+          backgroundColor: color,
+        }}
+      />
+      <View
+        style={{
+          height: '50%',
+          width: '50%',
+          backgroundColor: pSBC(0.25, color),
+        }}
+      />
+      <Text
+        // ref={(ref) => this.passiveCalm = ref}
+        style={{
+          position: 'absolute',
+          color: '#fff',
+          bottom: 8,
+          //  left: width / 2.4,
+        }}>
+        Passive/Calm
+          </Text>
+      <Text
+        // ref={(ref) => this.negative = ref}
+        style={{
+          position: 'absolute',
+          color: '#fff',
+          flex: 1,
+          justifyContent: 'center',
+          //  top: height / 3.05,
+          left: 6,
+        }}>
+        Negative
+         </Text>
+      <Text
+        // ref={(ref) => this.activeAroused = ref}
+        style={{
+          position: 'absolute',
+          color: '#fff',
+          //  left: width / 2.56,
+          top: 8,
+        }}>
+        Active/Aroused
+          </Text>
+      <Text
+        // ref={(ref) => this.positive = ref}
+        style={{
+          position: 'absolute',
+          color: '#fff',
+          right: 6,
+          //  top: height / 3.05,
+        }}>
+        Positive
+          </Text>
+    </View>
+  )
+
+  const renderBottomBar = (color) => (
+    <View
+      style={{
+        backgroundColor: color,
+        // alignItems: 'center',
+        // justifyContent: 'center',
+        paddingVertical: 15,
+      }}>
+      <View
+        style={{
+          height: 80,
+          alignItems: 'flex-end',
+          justifyContent: 'space-around',
+          flexDirection: 'row',
+        }}>
+        <TouchableOpacity
+          style={{ marginLeft: 12 }}
+          onPress={
+            () => props.navigation.navigate('HomeScreen', { lat: lat, long: lng })
+            // navigation.replace('HomeScreen', {
+            //   lat: UserData.lat,
+            //   long: UserData.lon,
+            // })
+          }>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <CloseIcon width={dynamicSize(52)} height={dynamicSize(52)} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setModalVisible(true);
+          }}>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          />
+          <QuestionMarkIcon
+            width={dynamicSize(52)}
+            height={dynamicSize(52)}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          disabled={
+            UserData.AllMoods && emotionText !== 'Slide finger' ? false : true
+          }
+          onPress={() => savingDataWithName()}
+          style={{
+            height: dynamicSize(52),
+            width: dynamicSize(197),
+            backgroundColor: emotionText === 'Slide finger' ? 'grey' : 'white',
+            borderRadius: 17,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <View />
+          <Text style={{ textAlign: 'center', fontSize: 18 }}>Save</Text>
+        </TouchableOpacity>
+        {/* {MoodFail && (
+          <Text style={styles.ErrorText}>Please select a mood</Text>
+        )} */}
+      </View>
+    </View>
+  )
+
+
+  const topBottomColor = pSBC(0.60, color);
+
+  return (
+    <View style={[styles.container,
+      //  { backgroundColor: color }
+    ]}
+    >
+      <TouchableOpacity
+        disabled={true}
+        style={{
+          zIndex: -99999,
+          backgroundColor: topBottomColor,
+          // position: 'relative',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: 15,
+        }}>
+        <AnonymousHeader />
+      </TouchableOpacity>
+      {renderBlocks()}
+      {renderBottomBar(topBottomColor)}
+
+      <Scroller
+        scrollerStyle={{ ...pan.current.getLayout(),
+           ...{ left: constrainedX.current, top: constrainedY.current } 
+          }}
+        scrollerPanResponder={panResponder}
+        toolTipData={toolTipData}
+        emotionText={emotionText}
+        setToolTipRef={setToolTipRef}
+        isAllMoodsDataAvailable={UserData.AllMoods !== null}
+        scrollerRef={(ref) => scrollerRef.current = ref}
+        setScrollerContainerRef={scrollerContainerRef}
+      />
+
+      <VideoModal
+        ModalVisible={isModalVisible}
+        dismissModalHandler={closeModal}
+      />
+
+      <SaveConfirmModal
+        value={SaveName}
+        onChangeText={setSaveName}
+        modalVisible={SaveConfirm}
+        dismissModalHandler={cancelled}
+        verifyDone={(value) => verifyDone(value)}
+      />
+
+      {Loading && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'black',
+            opacity: 0.2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: screenWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  childViewStyle: {
+    flex: 1,
+    overflow: 'hidden',
+    backgroundColor: '#F5FCFF',
+    borderStyle: 'solid',
+  },
+  ErrorText: {
+    fontWeight: '300',
+    letterSpacing: 0.2,
+    fontSize: 12,
+    marginTop: 0,
+    marginLeft: screenWidth / 3,
+    // marginRight: 62,
+    textAlign: 'center',
+    color: 'red',
+    position: 'absolute',
+    alignSelf: 'flex-start',
+    justifyContent: 'center',
+  },
+})
+

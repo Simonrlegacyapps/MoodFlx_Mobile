@@ -72,27 +72,27 @@ const {width, height} = Dimensions.get('screen');
 const MoodEmotionDetector = ({navigation}) => {
   // console.log(`width and height`, width, height);
   // console.log(`statusBarHeight`, statusBarHeight);
-  const [locationX, setLocationX] = useState(width / 2);
-  const [locationY, setLocationY] = useState(height / 2 + height / 80);
-  const [ShowDraggable, setShowDraggable] = useState(true);
-  const [Location, setLocation] = useState([]);
-  const [Moving, setMoving] = useState(false);
-  const [Anonymous, setAnonymous] = useState(false);
-  const [Label, setLabel] = useState('Slide finger');
-  const [startTime, setstartTime] = useState(0);
-  const [EndTime, setEndTime] = useState(0);
-  const [StatusVertical, setStatusVertical] = useState(0);
-  const [GetMoods, setGetMoods] = useState(null);
-  const [Svgs, setSvgs] = useState('');
-  const [lng, setlng] = useState(false);
-  const [lat, setlat] = useState(false);
-  const [Email, setEmail] = useState(null);
-  const [Loading, setLoading] = useState(false);
-  const [MoodFail, setMoodFail] = useState(false);
-  const [SaveConfirm, setSaveConfirm] = useState(false);
-  const [SaveName, setSaveName] = useState(null);
-  const [X0, setX0] = useState(0);
-  const [Y0, setY0] = useState(0);
+  const [locationX, setLocationX] = useState(width / 2); //pan
+  const [locationY, setLocationY] = useState(height / 2 + height / 80); //pan
+  const [ShowDraggable, setShowDraggable] = useState(true); //not using
+  const [Location, setLocation] = useState([]); //not using
+  const [Moving, setMoving] = useState(false); //not using
+  const [Anonymous, setAnonymous] = useState(false); //not using
+  const [Label, setLabel] = useState('Slide finger'); //emotionText
+  const [startTime, setstartTime] = useState(0); //long press time caluclation to enlarge bubble not using currently
+  const [EndTime, setEndTime] = useState(0); //long press time caluclation to enlarge bubble not using currently
+  const [StatusVertical, setStatusVertical] = useState(0); //for status bar height
+  const [GetMoods, setGetMoods] = useState(null); //not using
+  const [Svgs, setSvgs] = useState(''); //icon
+  const [lng, setlng] = useState(false); //using in api calls
+  const [lat, setlat] = useState(false); //using in api calls
+  const [Email, setEmail] = useState(null); //using in api calls
+  const [Loading, setLoading] = useState(false); //using in api calls
+  const [MoodFail, setMoodFail] = useState(false); //not using
+  const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
+  const [SaveName, setSaveName] = useState(null); //for modal flag
+  const [X0, setX0] = useState(0); //not using
+  const [Y0, setY0] = useState(0); //not using
 
   const [isModalVisible, setModalVisible] = useState(false);
 
