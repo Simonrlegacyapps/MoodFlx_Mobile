@@ -2,11 +2,11 @@ import {
   Dimensions
 } from 'react-native';
 import { horizontalScale, iPhoneXPadding, isIphoneX, verticalScale } from '../../Constants/sizeChoose';
-const { width, height } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export const scrollerWheelSize = horizontalScale(74);
-height - 132
-width - 93.75
+// height - 132
+// width - 93.75
 
 let emotionsTextData = {
   "sad": {  //0
@@ -126,32 +126,35 @@ let emotionsTextData = {
 
 
 export const setEmotionsTextData = (top, left, height, width) => {
-  if(!top || !left || !height || !width){
+  console.log('setEmotionTextData called');
+  console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
+  if (top === undefined || left === undefined || height === undefined || width === undefined) {
     return;
   }
   const blockWidth = width / 4;
   const blockHeight = height / 4;
+  console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' blockWidth: ', blockWidth, 'blockHeight: ', blockHeight, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
   const [h1, h2, h3, h4, h5] = [top, top + blockHeight, top + (blockHeight * 2), top + (blockHeight * 3), top + height];
   const [w1, w2, w3, w4, w5] = [left, left + blockWidth, left + (blockWidth * 2), left + (blockWidth * 3), left + width]
   function getTopForIndex(idx) {
-    if(idx === 0 || idx === 4 || idx === 8 || idx === 12){
+    if (idx === 0 || idx === 4 || idx === 8 || idx === 12) {
       return [h1, h2];
-    } else if(idx === 1 || idx === 5 || idx === 9 || idx === 13){
+    } else if (idx === 1 || idx === 5 || idx === 9 || idx === 13) {
       return [h2, h3];
-    } else if(idx === 2 || idx === 6 || idx === 10 || idx === 14){
+    } else if (idx === 2 || idx === 6 || idx === 10 || idx === 14) {
       return [h3, h4];
-    } else if(idx === 3 || idx === 7 || idx === 11 || idx === 15){
+    } else if (idx === 3 || idx === 7 || idx === 11 || idx === 15) {
       return [h4, h5];
     }
   }
   function getLeftForIndex(idx) {
-    if(idx === 0 || idx === 1 || idx === 2 || idx === 3){
+    if (idx === 0 || idx === 1 || idx === 2 || idx === 3) {
       return [w1, w2];
-    } else if(idx === 4 || idx === 5 || idx === 6 || idx === 7){
+    } else if (idx === 4 || idx === 5 || idx === 6 || idx === 7) {
       return [w2, w3];
-    } else if(idx === 8 || idx === 9 || idx === 10 || idx === 11){
+    } else if (idx === 8 || idx === 9 || idx === 10 || idx === 11) {
       return [w3, w4];
-    } else if(idx === 12 || idx === 13 || idx === 14 || idx === 15){
+    } else if (idx === 12 || idx === 13 || idx === 14 || idx === 15) {
       return [w4, w5];
     }
   }
@@ -159,10 +162,11 @@ export const setEmotionsTextData = (top, left, height, width) => {
     emotionsTextData[e].top = getTopForIndex(idx);
     emotionsTextData[e].left = getLeftForIndex(idx);
   })
-
+  console.log('emotionTextData', emotionsTextData);
 }
 
 export const getEmotionsTextData = (top, left, emotionData = null, userData) => {
+  // console.log('top: ', top, 'left: ', left,)
   if (top >= emotionsTextData.sad.top[0] && top <= emotionsTextData.sad.top[1] && left >= emotionsTextData.sad.left[0] && left <= emotionsTextData.sad.left[1]) {
     return { ...emotionsTextData.sad, img: userData?.AllMoods?.[0]?.icon };
   }
@@ -234,15 +238,18 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
   const extraVerticalPadding = isLandscape && Platform.OS === 'android' ? 0 : 0;
   const paddingHorizontal = isLandscape ? getLandscapePaddingHorizontal() : getPortraitPaddingHorizontal();
   const paddingVertical = isLandscape ? getLandscapePaddingVertical() : getPortraitPaddingVertical();
-  console.log('getScrollerOffset scrollContainerSize', scrollerContainerSize)
-  console.log('getScrollerOffset blocksSize', blocksSize)
-  console.log('getScrollerOffset scrollerWheelSize', scrollerWheelSize)
+  // console.log('getScrollerOffset scrollContainerSize', scrollerContainerSize)
+  // console.log('getScrollerOffset blocksSize', blocksSize)
+  // console.log('getScrollerOffset scrollerWheelSize', scrollerWheelSize)
   const yMin = blocksSize?.top;
   const yMax = (blocksSize?.top ?? 0) + (blocksSize?.height ?? 0) - (scrollerContainerSize?.height ?? 0);
   const xMin = 0;
   const xMax = screenSize.width - scrollerWheelSize - paddingHorizontal;
-  const initialX = xMax / 2;
-  const initialY = yMax / 2;
+  const intitialXOne = (screenWidth / 2) + (scrollerWheelSize / 2);
+  // const initialX = intitialXOne - (screenWidth - (intitialXOne * 2)) ;
+  // const initialX = Math.round(Math.round(screenWidth)/2) - Math.round(Math.round(scrollerWheelSize)/2);
+  const initialX = (screenWidth / 2) + (scrollerWheelSize / 2) + horizontalScale(11)
+  const initialY = (yMax / 2) + scrollerContainerSize.height - verticalScale(7);
   return {
     xMin,
     xMax,

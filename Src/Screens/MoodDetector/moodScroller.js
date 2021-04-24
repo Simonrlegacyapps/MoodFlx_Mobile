@@ -17,7 +17,7 @@ import Svg, { Path, SvgUri, G } from 'react-native-svg';
 import { horizontalScale } from '../../Constants/sizeChoose';
 import { scrollerWheelSize } from './moodService';
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
 export default function MoodScroller({
   scrollerStyle,
@@ -26,58 +26,28 @@ export default function MoodScroller({
   isAllMoodsDataAvailable,
   scrollerRef,
   emotionText,
-  setToolTipRef,
-  setScrollerContainerRef
+  toolTipRef,
+  onToolTipLayout,
+  scrollerContainerRef,
+  onLayoutScrollerContainer
 }) {
 
   return (
     <>
-      <Animated.View 
-        ref={setScrollerContainerRef}
-        style={{position: 'absolute'}}
+      <Animated.View
+        ref={scrollerContainerRef}
+        onLayout={onLayoutScrollerContainer}
+        style={[styles.container, scrollerStyle]}
         {...scrollerPanResponder.panHandlers}
-        >
+      >
         {isAllMoodsDataAvailable && (
           <View
-            ref={setToolTipRef}
-            style={[
-              {
-                zIndex: 9999999,
-                alignItems: 'center',
-                position: 'absolute',
-                top: height/2,
-                left: width/2
-                //   position: 'absolute',
-              //   elevation: 3,
-              //   top: parseFloat(locationY - 133),
-              //   left:
-              //     Label?.length >= 8 &&
-              //       Label?.length <= 12 &&
-              //       Label === 'Slide finger'
-              //       ? parseFloat(locationX - 50)
-              //       : Label?.length >= 5 && Label?.length <= 6
-              //         ? parseFloat(locationX - 45)
-              //         : Label?.length > 6 && Label?.length <= 7
-              //           ? parseFloat(locationX - 49)
-              //           : Label?.length >= 7 && Label?.length <= 8
-              //             ? parseFloat(locationX - 47)
-              //             : Label?.length >= 8 && Label?.length <= 12
-              //               ? parseFloat(locationX - 63)
-              //               : parseFloat(locationX - 35),
-              },
-            ]}>
+            ref={toolTipRef}
+            onLayout={onToolTipLayout}
+            style={styles.toolTipView}>
             <View
-              style={{
-                zIndex: 9999999,
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 7,
-                paddingHorizontal: 10,
-                backgroundColor: 'white',
-                borderRadius: 8,
-                // overflow: 'hidden',
-              }}>
-              <Text style={{ paddingHorizontal: 7, zIndex: 9999999 }}>
+              style={styles.toolTipTextView}>
+              <Text style={styles.toolTipText}>
                 <Text>{emotionText}</Text>
               </Text>
               {emotionText !== 'Slide finger' && (
@@ -87,8 +57,8 @@ export default function MoodScroller({
                   // viewBox="0 0 24 24"
                   fill="none"
                   uri={`https://super.moodflo.com/${toolTipData?.img
-                      ? toolTipData.img
-                      : 'mood_icons/161616176321272238406054abe3bb450.svg'
+                    ? toolTipData.img
+                    : 'mood_icons/161616176321272238406054abe3bb450.svg'
                     }`}
                 // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
                 />
@@ -109,9 +79,8 @@ export default function MoodScroller({
           </View>
         )}
         <Animated.View
-          style={[styles.circle1, scrollerStyle]}
+          style={[styles.circle1]}
           ref={scrollerRef}
-          {...scrollerPanResponder.panHandlers}
         >
           <View style={styles.circle2} >
             <View style={styles.circle3} >
@@ -127,45 +96,45 @@ export default function MoodScroller({
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    left: 200,
-    top: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 999,
+    top: height / 2,
+    left: width / 2,
+    alignItems: 'center'
   },
   circle1: {
-    position: 'absolute',
-    opacity: 0.5,
+    //  position: 'absolute',
+    // opacity: 0.2,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgb(255,255,255)',
+    backgroundColor: 'rgba(255,255,255, 0.2)',
     height: scrollerWheelSize,
     width: scrollerWheelSize,
     borderRadius: scrollerWheelSize / 2,
     zIndex: 5
   },
   circle2: {
-    position: 'absolute',
-    backgroundColor: 'rgb(255,255,255)',
+    // position: 'absolute',
+    backgroundColor: 'rgba(255,255,255, 0.4)',
     justifyContent: 'center',
     alignItems: 'center',
     height: scrollerWheelSize * 0.75,
     width: scrollerWheelSize * 0.75,
     borderRadius: (scrollerWheelSize * 0.75) / 2,
+    // opacity: 0.4,
     zIndex: 10,
   },
   circle3: {
-    position: 'absolute',
-    backgroundColor: 'rgb(255,255,255)',
+    // position: 'absolute',
+    backgroundColor: 'rgba(255,255,255, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
     height: scrollerWheelSize * 0.5,
     width: scrollerWheelSize * 0.5,
     borderRadius: (scrollerWheelSize * 0.5) / 2,
+    // opacity: 0.6,
     zIndex: 15,
   },
   circle4: {
-    position: 'absolute',
+    // position: 'absolute',
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -175,15 +144,21 @@ const styles = StyleSheet.create({
     zIndex: 20,
   },
   toolTipView: {
+    zIndex: 30,
+    alignItems: 'center',
+    margin: -10
+  },
+  toolTipTextView: {
+    zIndex: 5,
     flexDirection: 'row',
-    paddingVertical: 6,
-    paddingHorizontal: 10
+    alignItems: 'center',
+    padding: 7,
+    paddingHorizontal: 10,
+    backgroundColor: 'white',
+    borderRadius: 8,
   },
   toolTipText: {
-    fontSize: 14,
-    color: '#4C5980',
-    fontWeight: '500',
-    marginRight: 10
+    paddingHorizontal: 7
   },
   toolTipImg: {
     height: 21,

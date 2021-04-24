@@ -81,15 +81,16 @@ export default function MoodDetector(props) {
   const [SaveName, setSaveName] = useState(null); //for modal flag
   const [X0, setX0] = useState(0); //not using
   const [Y0, setY0] = useState(0); //not using
-  const [color, setColor] = useState(0); //i am using
-  const [emotionText, setEmotionText] = useState(0); //i am using
-  const [toolTipData, setToolTipData] = useState({  //i am using
+  const [blocksContainerSize, setBlocksContainerSize] = useState(null) //i am using
+  let [toolTipData, setToolTipData] = useState({  //i am using
     "top": null,
     "left": null,
     "text": "Slide finger",
     "color": "#A24551",
     "img": ""
   }); //i am using
+  const [emotionText, setEmotionText] = useState(toolTipData.text); //i am using
+  const [color, setColor] = useState(toolTipData.color); //i am using
   const [isModalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
   const closeModal = () => {
@@ -124,27 +125,29 @@ export default function MoodDetector(props) {
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      // onPanResponderGrant: (event, gestureState) => {
-      //   pan.current.setOffset({
-      //     x: pan.current.x._value,
-      //     y: pan.current.y._value
-      //   });
-      // },
+      onPanResponderGrant: (event, gestureState) => {
+        pan.current.setOffset({
+          x: pan.current.x._value,
+          y: pan.current.y._value
+        });
+      },
       onPanResponderMove: (event, gestureState) => {
-        // pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
+        pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
         scrollerRef.current.measureInWindow((x, y, width, height) => {
           const top = y + scrollerWheelRadius;
           const left = x + scrollerWheelRadius;
           const emotionData = getEmotionsTextData(top, left, prevEmotionData.current);
+          console.log('onPanResponderMove prevEmotionData.current.text', prevEmotionData.current.text)
+          console.log('onPanResponderMove toolTipData.text', toolTipData.text)
           if (prevEmotionData.current.text === toolTipData.text) {
             const color = pSBC(count.current / 100, toolTipData.color);
-            setToolTipData(emotionData);
+            setToolTipData(Object.assign(toolTipData, { ...emotionData }));
             setEmotionText(emotionData?.text ?? '');
             setColor(color);
-            if (count.current === 60) {
+            if (count.current > 60) {
               addValue.current = -1;
             }
-            if (count.current === 0) {
+            if (count.current < 0) {
               addValue.current = 1;
             }
             count.current = count.current + addValue.current;
@@ -154,29 +157,25 @@ export default function MoodDetector(props) {
           } else {
             setToolTipData(emotionData);
             setEmotionText(emotionData?.text ?? '');
-            setColor(emotionData?.color);
+            setColor(pSBC(-0.5, color, emotionData?.color));
+            // setColor(emotionData?.color);
             count.current = 1;
           }
           prevEmotionData.current = emotionData;
 
-          console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
+          // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
         }
         );
       },
       onPanResponderRelease: (event, gesture) => {
         pan.current.flattenOffset();
-        console.log('onPanResponderRelease screenWidth : ', screenWidth)
+        // console.log('onPanResponderRelease screenWidth : ', screenWidth)
       },
-      onMoveShouldSetPanResponderCapture: (event, gestureState) => {
-        true;
-      },
-      onPanResponderGrant: (event, gestureState) => true,
     })
   ).current;
 
   const updatePanResponder = (forceUpdate, isOrientationChange) => {
-    return
-    if (!blocksSize.current || !toolTipSize.current || !scrollerContainerSize.current) {
+    if (!blocksSize.current || !scrollerContainerSize.current) {
       return
     }
     isInitialPanResponderUpdated.current = true;
@@ -186,7 +185,9 @@ export default function MoodDetector(props) {
       xMax,
       yMin,
       yMax,
-    } =  offSetSize;
+      initialX,
+      initialY,
+    } = offSetSize;
     console.log('updatePanResponder ', offSetSize)
     constrainedX.current = pan.current.x.interpolate({
       inputRange: [xMin, 150, xMax],
@@ -199,47 +200,44 @@ export default function MoodDetector(props) {
       extrapolate: 'clamp',
     });
     forceUpdate && forceUpdate();
-    // (isOrientationChange || !forceUpdate) && pan.current.setValue({ 
-    //   x: getInitialLocalX(window, scrollerWheelSize, scrollerContainerSize.current, blocksSize.current),
-    //   y: getInitialLocalY(window, scrollerWheelSize, scrollerContainerSize.current, blocksSize.current)
-    // });
+    (isOrientationChange || !forceUpdate) && pan.current.setValue({
+      x: initialX,
+      y: initialY
+    });
   }
 
-  // useEffect(() => {
-  //   if (blocksContainerRef.current) {
-  //     blocksContainerRef.current.measureInWindow((x, y, width, height) => {
-  //       setEmotionsTextData(x, y, height, width);
-  //       blocksSize.current = { left: x, top: y, width, height };
-  //       console.log('useEffect blocksSize ', blocksSize.current)
-  //       !isInitialPanResponderUpdated.current && toolTipSize.current && updatePanResponder();
-  //     })
-  //   }
-  // }, []);
-
   const onBlocksContainerLayout = () => {
+    if (blocksSize.current) {
+      return;
+    }
     blocksContainerRef.current.measureInWindow((x, y, width, height) => {
-      setEmotionsTextData(x, y, height, width);
-      blocksSize.current = { left: x, top: y, width, height };
-      console.log('useEffect blocksSize ', blocksSize.current)
-      !isInitialPanResponderUpdated.current && toolTipSize.current && updatePanResponder();
+      setEmotionsTextData(y, x, height, width);
+      const size = { left: x, top: y, width, height };
+      blocksSize.current = size;
+      setBlocksContainerSize(size)
+      // console.log('useEffect blocksSize ', blocksSize.current)
+      !isInitialPanResponderUpdated.current && scrollerContainerSize.current && updatePanResponder();
     })
   }
 
-  const setToolTipRef = (ref) => {
-    toolTipRef.current = ref;
-    // console.log('toolTipRef current', toolTipRef.current)
-    // console.log('toolTipRef ref', ref)
-    ref?.measureInWindow((x, y, width, height) => {
+  const onToolTipLayout = () => {
+    if (toolTipSize.current) {
+      return;
+    }
+    toolTipRef?.current?.measureInWindow((x, y, width, height) => {
       toolTipSize.current = { left: x, top: y, width, height };
-      
-      console.log('toolTipRef x,y,width,height', x, y, width, height)
-      scrollerContainerRef?.current?.measureInWindow((x, y, width, height) => {
-        scrollerContainerSize.current = { left: x, top: y, width, height };
-        console.log('scrollerContainerSize x,y,width,height', x, y, width, height)
-        console.log('scrollerContainerSize scrollerContainerSize.current', scrollerContainerSize.current)
-        !isInitialPanResponderUpdated.current && blocksSize.current && updatePanResponder();
-      })
+    })
+  }
 
+  const onLayoutScrollerContainer = () => {
+    if (scrollerContainerSize.current) {
+      return;
+    }
+    scrollerContainerRef?.current?.measureInWindow((x, y, width, height) => {
+      scrollerContainerSize.current = { left: x, top: y, width, height };
+      // console.log('scrollerContainerSize x,y,width,height', x, y, width, height)
+      // console.log('scrollerContainerSize scrollerContainerSize.current', scrollerContainerSize.current)
+      !isInitialPanResponderUpdated.current && blocksSize.current && updatePanResponder();
     })
   }
 
@@ -313,7 +311,7 @@ export default function MoodDetector(props) {
               dispatch(Long(location.longitude));
             })
             .catch((error) => {
-              const {code, message} = error;
+              const { code, message } = error;
               console.log('error', code, message);
             });
       }
@@ -478,91 +476,130 @@ export default function MoodDetector(props) {
     setSaveConfirm(false);
   };
 
-  const renderBlocks = () => (
-    <View
-      ref={blocksContainerRef}
-      onLayout={onBlocksContainerLayout}
-      style={[
-        styles.childViewStyle,
-        {
-          backgroundColor: 'green',
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          flex: 1,
-        },
-      ]}>
-      <View
-        style={{
-          height: '50%',
-          width: '50%',
-          backgroundColor: pSBC(0.75, color),
-        }}
-      />
-      <View
-        style={{
-          height: '50%',
-          width: '50%',
-          backgroundColor: pSBC(0.50, color),
-        }}
-      />
-      <View
-        style={{
-          height: '50%',
-          width: '50%',
-          backgroundColor: color,
-        }}
-      />
-      <View
-        style={{
-          height: '50%',
-          width: '50%',
-          backgroundColor: pSBC(0.25, color),
-        }}
-      />
-      <Text
-        // ref={(ref) => this.passiveCalm = ref}
-        style={{
-          position: 'absolute',
-          color: '#fff',
-          bottom: 8,
-          //  left: width / 2.4,
-        }}>
-        Passive/Calm
+  const renderBlocks = () => {
+    return (
+      < View
+        ref={blocksContainerRef}
+        onLayout={onBlocksContainerLayout}
+        style={
+          [
+            styles.childViewStyle,
+            {
+              backgroundColor: 'green',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              flex: 1,
+            },
+          ]} >
+        <View
+          style={{
+            height: '50%',
+            width: '50%',
+            backgroundColor: pSBC(0.75, color),
+          }}
+        />
+        <View
+          style={{
+            height: '50%',
+            width: '50%',
+            backgroundColor: pSBC(0.50, color),
+          }}
+        />
+        <View
+          style={{
+            height: '50%',
+            width: '50%',
+            backgroundColor: color,
+          }}
+        />
+        <View
+          style={{
+            height: '50%',
+            width: '50%',
+            backgroundColor: pSBC(0.25, color),
+          }}
+        />
+        <View
+          style={{
+            width: '100%',
+            alignItems: 'center',
+            position: 'absolute',
+            bottom: 8,
+            zIndex: 1,
+          }}
+        >
+          <Text
+            // ref={(ref) => this.passiveCalm = ref}
+            style={{
+              color: '#fff',
+              //  left: width / 2.4,
+            }}>
+            Passive/Calm
           </Text>
-      <Text
-        // ref={(ref) => this.negative = ref}
-        style={{
-          position: 'absolute',
-          color: '#fff',
-          flex: 1,
-          justifyContent: 'center',
-          //  top: height / 3.05,
-          left: 6,
-        }}>
-        Negative
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            hieght: blocksContainerSize?.height,
+            top: blocksContainerSize ? (blocksContainerSize.height / 2) - 6 : undefined,
+            alignItems: 'center',
+            position: 'absolute',
+            left: 6,
+            zIndex: 2,
+          }}
+        >
+          <Text
+            // ref={(ref) => this.negative = ref}
+            style={{
+              color: '#fff',
+              lineHeight: 12,
+              // flex: 1,
+              // justifyContent: 'center',
+              //  top: height / 3.05,
+            }}>
+            Negative
          </Text>
-      <Text
-        // ref={(ref) => this.activeAroused = ref}
-        style={{
-          position: 'absolute',
-          color: '#fff',
-          //  left: width / 2.56,
-          top: 8,
-        }}>
-        Active/Aroused
+        </View>
+        <View
+          style={{
+            width: '100%',
+            alignItems: 'center',
+            position: 'absolute',
+            top: 8,
+            zIndex: 4,
+          }}
+        >
+          <Text
+            // ref={(ref) => this.activeAroused = ref}
+            style={{
+              color: '#fff',
+              //  left: width / 2.56,
+            }}>
+            Active/Aroused
           </Text>
-      <Text
-        // ref={(ref) => this.positive = ref}
-        style={{
-          position: 'absolute',
-          color: '#fff',
-          right: 6,
-          //  top: height / 3.05,
-        }}>
-        Positive
+        </View>
+        <View
+          style={{
+            hieght: '100%',
+            justifyContent: 'center',
+            position: 'absolute',
+            top: blocksContainerSize ? (blocksContainerSize.height / 2) - 6 : undefined,
+            right: 6,
+          }}
+        >
+          <Text
+            // ref={(ref) => this.positive = ref}
+            style={{
+              color: '#fff',
+              //  top: height / 3.05,
+              lineHeight: 12,
+            }}>
+            Positive
           </Text>
-    </View>
-  )
+        </View>
+      </View >
+    )
+  }
 
   const renderBottomBar = (color) => (
     <View
@@ -570,6 +607,7 @@ export default function MoodDetector(props) {
         backgroundColor: color,
         // alignItems: 'center',
         // justifyContent: 'center',
+        width: '100%',
         paddingVertical: 15,
       }}>
       <View
@@ -650,6 +688,7 @@ export default function MoodDetector(props) {
           // position: 'relative',
           alignItems: 'center',
           justifyContent: 'center',
+          width: '100%',
           paddingVertical: 15,
         }}>
         <AnonymousHeader />
@@ -658,16 +697,19 @@ export default function MoodDetector(props) {
       {renderBottomBar(topBottomColor)}
 
       <Scroller
-        scrollerStyle={{ ...pan.current.getLayout(),
-           ...{ left: constrainedX.current, top: constrainedY.current } 
-          }}
+        scrollerStyle={{
+          ...pan.current.getLayout(),
+          ...{ left: constrainedX.current, top: constrainedY.current }
+        }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
         emotionText={emotionText}
-        setToolTipRef={setToolTipRef}
+        toolTipRef={toolTipRef}
+        onToolTipLayout={onToolTipLayout}
         isAllMoodsDataAvailable={UserData.AllMoods !== null}
         scrollerRef={(ref) => scrollerRef.current = ref}
-        setScrollerContainerRef={scrollerContainerRef}
+        scrollerContainerRef={scrollerContainerRef}
+        onLayoutScrollerContainer={onLayoutScrollerContainer}
       />
 
       <VideoModal
