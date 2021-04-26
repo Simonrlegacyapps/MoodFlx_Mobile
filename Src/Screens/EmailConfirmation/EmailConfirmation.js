@@ -145,7 +145,7 @@ const EmailConfirmation = ({navigation}) => {
             returnKeyType={'done'}
             autoCorrect={false}
             autoCapitalize={'none'}
-            autoCompleteType={false}
+            autoCompleteType={'off'}
             placeholder={'example@work-mail.com'}
             placeholderTextColor={'#8A8BAB'}
             onSubmitEditing={() => submit()}
