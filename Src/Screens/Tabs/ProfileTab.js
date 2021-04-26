@@ -450,7 +450,7 @@ const ProfileTab = ({navigation}) => {
                 ? Pronoun.name
                 : UserData?.UserDetails?.pronouns
                 ? UserData?.UserDetails?.pronouns
-                : 'He/him'
+                : Pronoun.name
             }
             gender={gender}
             onChangeText={setPronoun}
@@ -474,7 +474,11 @@ const ProfileTab = ({navigation}) => {
         </View>
         <View
           style={[styles.flatlistContainer, {marginBottom: dynamicSize(56)}]}>
-          <FlatList data={bottomList} keyExtractor={(item, index) => `${index}`} renderItem={renderBottomList} />
+          <FlatList
+            data={bottomList}
+            keyExtractor={(item, index) => `${index}`}
+            renderItem={renderBottomList}
+          />
         </View>
       </View>
       <ActionSheet

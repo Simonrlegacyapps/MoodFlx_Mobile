@@ -45,6 +45,7 @@ import SaveConfirmModal from '../Components/Modals/SaveConfirmModal/SaveConfirmM
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
 import BubbleIcon from '../../assets/emotionsicons/Bubble';
+import GoogleFit, {Scopes} from 'react-native-google-fit';
 
 const options = {
   enableVibrateFallback: true,
@@ -110,6 +111,38 @@ const MoodEmotionDetector = ({navigation}) => {
   };
 
   const UserData = useSelector((state) => state.First);
+
+  const checkGoogleFitStatus = () => {
+    GoogleFit.checkIsAuthorized().then(() => {
+      console.log('GoogleFit GoogleFit.isAuthorized: ', GoogleFit.isAuthorized); // Then you can simply refer to `GoogleFit.isAuthorized` boolean.
+      if (!GoogleFit.isAuthorized) {
+        const options = {
+          scopes: [
+            Scopes.FITNESS_ACTIVITY_READ,
+            Scopes.FITNESS_ACTIVITY_WRITE,
+            Scopes.FITNESS_BODY_READ,
+            Scopes.FITNESS_BODY_WRITE,
+          ],
+        };
+        GoogleFit.authorize(options)
+          .then((authResult) => {
+            if (authResult.success) {
+              // dispatch("AUTH_SUCCESS");
+              console.log('GoogleFit authorize AUTH_SUCCESS');
+            } else {
+              console.log('GoogleFit authorize AUTH_DENIED');
+            }
+            console.log('GoogleFit authorize authResult: ', authResult);
+          })
+          .catch((error) => {
+            console.log('GoogleFit authorize AUTH_ERROR: ', error);
+          });
+      }
+    });
+  };
+  useEffect(() => {
+    checkGoogleFitStatus();
+  }, []);
 
   const checkStorage = async () => {
     await AsyncStorage.setItem('Anonymous', 'true');
@@ -947,7 +980,7 @@ const MoodEmotionDetector = ({navigation}) => {
         locationY < 4 * fourthHeight + statusHeight
       ? (colorCode = '#89D881')
       : (colorCode = '#BE7B83'); //purple
-    console.log(`colorCode`, colorCode);
+    // console.log(`colorCode`, colorCode);
     return colorCode;
   };
   const ColorFunctionB2 = () => {

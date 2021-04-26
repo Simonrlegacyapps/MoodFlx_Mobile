@@ -29,6 +29,8 @@ const ProfileGenderModal = ({
   datePicker,
   date,
   weatherDrop,
+  profiltab,
+  apicall,
 }: props) => {
   const [color, setcolor] = useState('black');
   return (

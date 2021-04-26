@@ -143,7 +143,7 @@ const MicScreen = ({navigation}) => {
           // justifyContent: 'center',
           flex: 1,
           backgroundColor: 'white',
-          marginBottom: 60,
+          // paddingBottom: 60,
         }}>
         <View
           style={{
@@ -164,7 +164,7 @@ const MicScreen = ({navigation}) => {
           />
         </View>
         <Image style={{marginTop: -10}} source={Constants.Images.Circles} />
-        <View style={{marginHorizontal: 15}}>
+        <View style={{marginHorizontal: 15, paddingBottom: 90}}>
           <Text style={styles.normalText}>Team Pulse</Text>
           <Text style={styles.BigText}>
             {UserData.UserEmail ? (
@@ -278,7 +278,9 @@ const MicScreen = ({navigation}) => {
                           fontFamily: RubikLight,
                           color: '#9C9EB9',
                         }}>
-                        Anonymous feedback
+                        {item.is_anonymous === 0
+                          ? 'Answered by you'
+                          : 'Anonymous feedback'}
                       </Text>
                     </View>
                   )}
