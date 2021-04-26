@@ -8,6 +8,14 @@ export const scrollerWheelSize = 74;
 // height - 132
 // width - 93.75
 
+export const initialEmotionTextData = {  //i am using
+  "top": null,
+  "left": null,
+  "text": "Slide finger",
+  "color": "#bfcfdc",
+  "img": ""
+}
+
 let emotionsTextData = {
   "sad": {  //0
     "top": [verticalScale(169), verticalScale(301)],
