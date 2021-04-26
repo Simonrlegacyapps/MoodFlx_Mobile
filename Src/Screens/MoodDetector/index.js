@@ -55,7 +55,7 @@ const screenWidth = Math.floor(window.width);
 
 // import imagePath from '../assets/images';
 
-export default function MoodDetector({navigation}) {
+export default function MoodDetector({ navigation }) {
   // const [locationX, setLocationX] = useState(width / 2); //pan
   // const [locationY, setLocationY] = useState(height / 2 + height / 80); //pan
   // const [ShowDraggable, setShowDraggable] = useState(true); //not using
@@ -114,7 +114,7 @@ export default function MoodDetector({navigation}) {
           x: pan.current.x._value,
           y: pan.current.y._value
         });
-        pan.current.setValue({x: 0, y: 0});
+        pan.current.setValue({ x: 0, y: 0 });
       },
       onPanResponderMove: (event, gestureState) => {
         pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
@@ -177,12 +177,12 @@ export default function MoodDetector({navigation}) {
       extrapolate: 'clamp',
     });
     constrainedY.current = pan.current.y.interpolate({
-      inputRange: [yMin, (yMax + yMin)/2, yMax],
-      outputRange: [yMin, (yMax + yMin)/2, yMax],
+      inputRange: [yMin, (yMax + yMin) / 2, yMax],
+      outputRange: [yMin, (yMax + yMin) / 2, yMax],
       extrapolate: 'clamp',
     });
     forceUpdate && forceUpdate();
-    if(pan.current.x._value === initialX && pan.current.y._value === initialY){
+    if (pan.current.x._value === initialX && pan.current.y._value === initialY) {
       return
     }
     (isOrientationChange || !forceUpdate) && pan.current.setValue({
@@ -452,7 +452,7 @@ export default function MoodDetector({navigation}) {
 
     if (value === 'Yes') {
       setSaveConfirm(false);
-      FindId();
+      findId();
     } else {
       setSaveConfirm(false);
     }
@@ -606,7 +606,7 @@ export default function MoodDetector({navigation}) {
         <TouchableOpacity
           style={{ marginLeft: 12 }}
           onPress={
-            () => props.navigation.navigate('HomeScreen', { lat: lat, long: lng })
+            () => navigation.navigate('HomeScreen', { lat: lat, long: lng })
             // navigation.replace('HomeScreen', {
             //   lat: UserData.lat,
             //   long: UserData.lon,
