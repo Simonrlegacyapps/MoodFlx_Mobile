@@ -7,10 +7,11 @@ import {
   PanResponder,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
   Button,
 } from 'react-native';
 import Scroller from './moodScroller';
-import { getEmotionsTextData, emotionsTextData, scrollerWheelSize, getScrollerOffset, getInitialLocalX, getInitialLocalY, setEmotionsTextData } from './moodService';
+import { getEmotionsTextData, emotionsTextData, scrollerWheelSize, getScrollerOffset, getInitialLocalX, getInitialLocalY, setEmotionsTextData, initialEmotionTextData } from './moodService';
 import { pSBC } from './moodUtlis';
 import { dynamicSize, iPhoneXPadding, isIphoneX } from '../../Constants/sizeChoose';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
@@ -37,7 +38,6 @@ import { useRoute } from '@react-navigation/native';
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
 // import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
-import GoogleFit, { Scopes } from 'react-native-google-fit'
 
 const options = {
   enableVibrateFallback: true,
@@ -52,39 +52,10 @@ const window = Dimensions.get('window');
 const scrollerWheelRadius = scrollerWheelSize / 2;
 const screenWidth = Math.floor(window.width);
 
-const checkGoogleFitStatus = () => {
-  GoogleFit.checkIsAuthorized().then(() => {
-    console.log('GoogleFit GoogleFit.isAuthorized: ', GoogleFit.isAuthorized) // Then you can simply refer to `GoogleFit.isAuthorized` boolean.
-    if (!GoogleFit.isAuthorized) {
-      const options = {
-        scopes: [
-          Scopes.FITNESS_ACTIVITY_READ,
-          Scopes.FITNESS_ACTIVITY_WRITE,
-          Scopes.FITNESS_BODY_READ,
-          Scopes.FITNESS_BODY_WRITE,
-        ],
-      }
-      GoogleFit.authorize(options)
-        .then(authResult => {
-          if (authResult.success) {
-            // dispatch("AUTH_SUCCESS");
-            console.log('GoogleFit authorize AUTH_SUCCESS')
-          } else {
-            console.log('GoogleFit authorize AUTH_DENIED')
-          }
-          console.log('GoogleFit authorize authResult: ', authResult);
-        })
-        .catch(error => {
-          console.log('GoogleFit authorize AUTH_ERROR: ', error);
-        })
-    }
-  })
-}
-
 
 // import imagePath from '../assets/images';
 
-export default function MoodDetector(props) {
+export default function MoodDetector({navigation}) {
   // const [locationX, setLocationX] = useState(width / 2); //pan
   // const [locationY, setLocationY] = useState(height / 2 + height / 80); //pan
   // const [ShowDraggable, setShowDraggable] = useState(true); //not using
@@ -107,17 +78,13 @@ export default function MoodDetector(props) {
   const [X0, setX0] = useState(0); //not using
   const [Y0, setY0] = useState(0); //not using
   const [blocksContainerSize, setBlocksContainerSize] = useState(null) //i am using
-  let [toolTipData, setToolTipData] = useState({  //i am using
-    "top": null,
-    "left": null,
-    "text": "Slide finger",
-    "color": "#A24551",
-    "img": ""
-  }); //i am using
+  let [toolTipData, setToolTipData] = useState(initialEmotionTextData); //i am usin
   const [emotionText, setEmotionText] = useState(toolTipData.text); //i am using
   const [color, setColor] = useState(toolTipData.color); //i am using
   const [isModalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
+  const route = useRoute();
+
   const closeModal = () => {
     setModalVisible(false);
   };
@@ -672,7 +639,7 @@ export default function MoodDetector(props) {
           disabled={
             UserData.AllMoods && emotionText !== 'Slide finger' ? false : true
           }
-          onPress={() => savingDataWithName()}
+          onPress={savingDataWithName}
           style={{
             height: dynamicSize(52),
             width: dynamicSize(197),
@@ -758,7 +725,6 @@ export default function MoodDetector(props) {
           <ActivityIndicator size="large" />
         </View>
       )}
-       <Button title="Test Google Fit Authorization" onPress={checkGoogleFitStatus}/>
 
     </View>
   )
