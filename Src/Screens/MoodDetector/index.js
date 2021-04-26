@@ -7,6 +7,7 @@ import {
   PanResponder,
   Text,
   TouchableOpacity,
+  Button,
 } from 'react-native';
 import Scroller from './moodScroller';
 import { getEmotionsTextData, emotionsTextData, scrollerWheelSize, getScrollerOffset, getInitialLocalX, getInitialLocalY, setEmotionsTextData } from './moodService';
@@ -50,6 +51,35 @@ function useForceUpdate() {
 const window = Dimensions.get('window');
 const scrollerWheelRadius = scrollerWheelSize / 2;
 const screenWidth = Math.floor(window.width);
+
+const checkGoogleFitStatus = () => {
+  GoogleFit.checkIsAuthorized().then(() => {
+    console.log('GoogleFit GoogleFit.isAuthorized: ', GoogleFit.isAuthorized) // Then you can simply refer to `GoogleFit.isAuthorized` boolean.
+    if (!GoogleFit.isAuthorized) {
+      const options = {
+        scopes: [
+          Scopes.FITNESS_ACTIVITY_READ,
+          Scopes.FITNESS_ACTIVITY_WRITE,
+          Scopes.FITNESS_BODY_READ,
+          Scopes.FITNESS_BODY_WRITE,
+        ],
+      }
+      GoogleFit.authorize(options)
+        .then(authResult => {
+          if (authResult.success) {
+            // dispatch("AUTH_SUCCESS");
+            console.log('GoogleFit authorize AUTH_SUCCESS')
+          } else {
+            console.log('GoogleFit authorize AUTH_DENIED')
+          }
+          console.log('GoogleFit authorize authResult: ', authResult);
+        })
+        .catch(error => {
+          console.log('GoogleFit authorize AUTH_ERROR: ', error);
+        })
+    }
+  })
+}
 
 
 // import imagePath from '../assets/images';
@@ -728,6 +758,8 @@ export default function MoodDetector(props) {
           <ActivityIndicator size="large" />
         </View>
       )}
+       <Button title="Test Google Fit Authorization" onPress={checkGoogleFitStatus}/>
+
     </View>
   )
 }
