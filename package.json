@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "start": "react-native start",
+    "android": "npx react-native run-android",
+    "ios": "npx react-native run-ios",
+    "start": "npx react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "release": "npx react-native run-android --variant=release"
   },
   "dependencies": {
     "@rainbow-me/animated-charts": "^1.0.0-alpha.5",
@@ -39,6 +40,7 @@
     "react-native-geolocation-service": "^5.2.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-get-location": "^2.0.0",
+    "react-native-google-fit": "^0.16.2",
     "react-native-haptic-feedback": "^1.11.0",
     "react-native-image-crop-picker": "^0.36.0",
     "react-native-light-sensor": "^1.0.1",

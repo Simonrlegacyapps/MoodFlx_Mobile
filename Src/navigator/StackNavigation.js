@@ -1,11 +1,12 @@
 import React from 'react';
 import HomeScreen from '../Screens/HomeScreen';
-import {createStackNavigator} from '@react-navigation/stack';
-import MoodEmotionDetector from '../Screens/MoodEmotionDetector';
+import { createStackNavigator } from '@react-navigation/stack';
+// import MoodEmotionDetector from '../Screens/MoodEmotionDetector';
+import MoodEmotionDetector from '../Screens/MoodDetector';
 import MoodEmotionDetectorTouch from '../Screens/MoodEmotionDetectorTouch';
 import EmailConfirmation from '../Screens/EmailConfirmation/EmailConfirmation';
 import VerifyEmail from '../Screens/VerifyEmail/VerifyEmail';
-import {Animated, Easing} from 'react-native';
+import { Animated, Easing } from 'react-native';
 import ButtonCheck from '../Screens/ButtonCheck/ButtonCheck';
 
 const Stack = createStackNavigator();
@@ -30,22 +31,22 @@ const StackNavigation = () => {
       <Stack.Screen
         name="HomeScreen"
         component={HomeScreen}
-        options={{header: () => null}}
+        options={{ header: () => null }}
       />
       <Stack.Screen
         name="EmailConfirmation"
         component={EmailConfirmation}
-        options={{header: () => null}}
+        options={{ header: () => null }}
       />
       <Stack.Screen
         name="VerifyEmail"
         component={VerifyEmail}
-        options={{header: () => null}}
+        options={{ header: () => null }}
       />
       <Stack.Screen
         name="buttonCheck"
         component={ButtonCheck}
-        options={{header: () => null}}
+        options={{ header: () => null }}
       />
     </Stack.Navigator>
   );

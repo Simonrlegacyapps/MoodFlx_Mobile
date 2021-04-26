@@ -30,7 +30,8 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import Swiper from 'react-native-swiper';
+import Swiper from '../../Components/Swiper';
+// import Swiper from 'react-native-swiper';
 import AsyncStorage from '@react-native-community/async-storage';
 import RNSamsungHealth from 'rn-samsung-health';
 import {useRoute} from '@react-navigation/native';
