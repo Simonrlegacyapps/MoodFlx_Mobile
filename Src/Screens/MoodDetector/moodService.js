@@ -4,7 +4,7 @@ import {
 import { horizontalScale, iPhoneXPadding, isIphoneX, verticalScale } from '../../Constants/sizeChoose';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-export const scrollerWheelSize = horizontalScale(74);
+export const scrollerWheelSize = 74;
 // height - 132
 // width - 93.75
 
@@ -162,7 +162,7 @@ export const setEmotionsTextData = (top, left, height, width) => {
     emotionsTextData[e].top = getTopForIndex(idx);
     emotionsTextData[e].left = getLeftForIndex(idx);
   })
-  console.log('emotionTextData', emotionsTextData);
+  // console.log('emotionTextData', emotionsTextData);
 }
 
 export const getEmotionsTextData = (top, left, emotionData = null, userData) => {
@@ -233,23 +233,32 @@ const getPortraitPaddingVertical = () => {
   return (isIphoneXFlag ? (iPhoneXPadding.portrait.paddingBottom + iPhoneXPadding.portrait.paddingTop) : 0);
 }
 
-export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scrollerContainerSize, blocksSize) => {
+export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scrollerContainerSize, toolTipSize, blocksSize) => {
   const isLandscape = screenSize.width > screenSize.height;
-  const extraVerticalPadding = isLandscape && Platform.OS === 'android' ? 0 : 0;
+  const extraVerticalPadding = Platform.OS === 'android' ? verticalScale(0) : 0;
   const paddingHorizontal = isLandscape ? getLandscapePaddingHorizontal() : getPortraitPaddingHorizontal();
   const paddingVertical = isLandscape ? getLandscapePaddingVertical() : getPortraitPaddingVertical();
+  const paddingTop = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingTop : iPhoneXPadding.portrait.paddingTop) : 0;
+  const paddingBottom = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingBottom : iPhoneXPadding.portrait.paddingBottom) : 0;
   // console.log('getScrollerOffset scrollContainerSize', scrollerContainerSize)
   // console.log('getScrollerOffset blocksSize', blocksSize)
   // console.log('getScrollerOffset scrollerWheelSize', scrollerWheelSize)
-  const yMin = blocksSize?.top;
-  const yMax = (blocksSize?.top ?? 0) + (blocksSize?.height ?? 0) - (scrollerContainerSize?.height ?? 0);
+  // scrollerContainerSize.height = 117.1;
+  // scrollerContainerSize.width = 104.7;
+  console.log('getScrollerOffset => screenSize: ', screenSize, ' scrollerWheelSize: ', scrollerWheelSize, ' scrollerContainerSize: ', scrollerContainerSize, ' toolTipSize: ', toolTipSize, ' blocksSize: ', blocksSize);
+  console.log('getScrollerOffset paddingTop', paddingTop)
+  console.log('getScrollerOffset paddingVertical', paddingVertical)
+  const scrollerHeight = toolTipSize.height + scrollerWheelSize - 10;
+  const scrollerWidth = toolTipSize.width > scrollerWheelSize ? toolTipSize.width : scrollerWheelSize;
+  console.log('getScrollerOffset scrollerHeight', scrollerHeight)
+  const yMin = blocksSize?.top - paddingTop - extraVerticalPadding;
+  const yMax = yMin + (blocksSize?.height ?? 0) - scrollerHeight;
   const xMin = 0;
   const xMax = screenSize.width - scrollerWheelSize - paddingHorizontal;
-  const intitialXOne = (screenWidth / 2) + (scrollerWheelSize / 2);
-  // const initialX = intitialXOne - (screenWidth - (intitialXOne * 2)) ;
-  // const initialX = Math.round(Math.round(screenWidth)/2) - Math.round(Math.round(scrollerWheelSize)/2);
-  const initialX = (screenWidth / 2) + (scrollerWheelSize / 2) + horizontalScale(11)
-  const initialY = (yMax / 2) + scrollerContainerSize.height - verticalScale(7);
+  const initialX = ((blocksSize.width - blocksSize.left) / 2) - (scrollerWidth / 2);
+  // const initialY = (((blocksSize.top + (blocksSize.height / 2)) - scrollerContainerSize.height) + (scrollerWheelSize / 2)) - paddingTop;
+  // const initialY = yMin
+  const initialY = yMin + (blocksSize.height / 2) - scrollerHeight + (scrollerWheelSize / 2);
   return {
     xMin,
     xMax,
@@ -258,11 +267,4 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
     initialX,
     initialY
   }
-}
-
-export const getInitialLocalY = (screenSize = window, scrollerWheelSize, scrollerContainerSize, blocksSize) => {
-  return getScrollerOffset(screenSize, scrollerWheelSize, scrollerContainerSize, blocksSize).initialY;
-}
-export const getInitialLocalX = (screenSize = window, scrollerWheelSize, scrollerContainerSize, blocksSize) => {
-  return getScrollerOffset(screenSize, scrollerWheelSize, scrollerContainerSize, blocksSize).initialX;
 }

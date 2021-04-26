@@ -48,7 +48,7 @@ export default function MoodScroller({
             <View
               style={styles.toolTipTextView}>
               <Text style={styles.toolTipText}>
-                <Text>{emotionText}</Text>
+              {emotionText}
               </Text>
               {emotionText !== 'Slide finger' && (
                 <SvgUri
@@ -98,7 +98,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: height / 2,
     left: width / 2,
-    alignItems: 'center'
+    alignItems: 'center',
+    // backgroundColor: '#000000'
   },
   circle1: {
     //  position: 'absolute',
@@ -146,7 +147,8 @@ const styles = StyleSheet.create({
   toolTipView: {
     zIndex: 30,
     alignItems: 'center',
-    margin: -10
+    marginBottom: -10,
+
   },
   toolTipTextView: {
     zIndex: 5,
@@ -158,7 +160,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   toolTipText: {
-    paddingHorizontal: 7
+    paddingHorizontal: 7,
+    lineHeight: 18,
+    fontSize: 14
   },
   toolTipImg: {
     height: 21,

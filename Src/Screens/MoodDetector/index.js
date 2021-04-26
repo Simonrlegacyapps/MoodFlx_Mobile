@@ -1,9 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Dimensions,
@@ -40,8 +34,9 @@ import {
 } from '../../redux/actions/actions';
 import { useRoute } from '@react-navigation/native';
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
+import GoogleFit, { Scopes } from 'react-native-google-fit'
 
 const options = {
   enableVibrateFallback: true,
@@ -110,16 +105,8 @@ export default function MoodDetector(props) {
   const scrollerContainerRef = useRef(null);
   const blocksContainerRef = useRef(null);
   const isInitialPanResponderUpdated = useRef(false);
-  const constrainedX = useRef(pan.current.x.interpolate({
-    inputRange: [0, 250, screenWidth],
-    outputRange: [0, 150, screenWidth],
-    extrapolate: 'clamp',
-  }));
-  const constrainedY = useRef(pan.current.y.interpolate({
-    inputRange: [150, 250, window.height],
-    outputRange: [150, 150, window.height],
-    extrapolate: 'clamp',
-  }));
+  const constrainedX = useRef(null);
+  const constrainedY = useRef(null);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -130,6 +117,7 @@ export default function MoodDetector(props) {
           x: pan.current.x._value,
           y: pan.current.y._value
         });
+        pan.current.setValue({x: 0, y: 0});
       },
       onPanResponderMove: (event, gestureState) => {
         pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
@@ -137,17 +125,15 @@ export default function MoodDetector(props) {
           const top = y + scrollerWheelRadius;
           const left = x + scrollerWheelRadius;
           const emotionData = getEmotionsTextData(top, left, prevEmotionData.current);
-          console.log('onPanResponderMove prevEmotionData.current.text', prevEmotionData.current.text)
-          console.log('onPanResponderMove toolTipData.text', toolTipData.text)
           if (prevEmotionData.current.text === toolTipData.text) {
             const color = pSBC(count.current / 100, toolTipData.color);
             setToolTipData(Object.assign(toolTipData, { ...emotionData }));
             setEmotionText(emotionData?.text ?? '');
             setColor(color);
-            if (count.current > 60) {
+            if (count.current === 60) {
               addValue.current = -1;
             }
-            if (count.current < 0) {
+            if (count.current === 0) {
               addValue.current = 1;
             }
             count.current = count.current + addValue.current;
@@ -155,10 +141,9 @@ export default function MoodDetector(props) {
             console.log('addValue =>', addValue.current);
             console.log('color =>', color);
           } else {
-            setToolTipData(emotionData);
+            setToolTipData(Object.assign(toolTipData, { ...emotionData }));
             setEmotionText(emotionData?.text ?? '');
-            setColor(pSBC(-0.5, color, emotionData?.color));
-            // setColor(emotionData?.color);
+            setColor(emotionData?.color);
             count.current = 1;
           }
           prevEmotionData.current = emotionData;
@@ -175,11 +160,11 @@ export default function MoodDetector(props) {
   ).current;
 
   const updatePanResponder = (forceUpdate, isOrientationChange) => {
-    if (!blocksSize.current || !scrollerContainerSize.current) {
+    if (!blocksSize.current || !scrollerContainerSize.current || !toolTipSize.current) {
       return
     }
     isInitialPanResponderUpdated.current = true;
-    const offSetSize = getScrollerOffset(window, scrollerWheelSize, scrollerContainerSize.current, blocksSize.current);
+    const offSetSize = getScrollerOffset(window, scrollerWheelSize, scrollerContainerSize.current, toolTipSize.current, blocksSize.current);
     let {
       xMin,
       xMax,
@@ -195,11 +180,14 @@ export default function MoodDetector(props) {
       extrapolate: 'clamp',
     });
     constrainedY.current = pan.current.y.interpolate({
-      inputRange: [yMin, yMin + 50, yMax],
-      outputRange: [yMin, yMin + 50, yMax],
+      inputRange: [yMin, (yMax + yMin)/2, yMax],
+      outputRange: [yMin, (yMax + yMin)/2, yMax],
       extrapolate: 'clamp',
     });
     forceUpdate && forceUpdate();
+    if(pan.current.x._value === initialX && pan.current.y._value === initialY){
+      return
+    }
     (isOrientationChange || !forceUpdate) && pan.current.setValue({
       x: initialX,
       y: initialY
@@ -216,7 +204,7 @@ export default function MoodDetector(props) {
       blocksSize.current = size;
       setBlocksContainerSize(size)
       // console.log('useEffect blocksSize ', blocksSize.current)
-      !isInitialPanResponderUpdated.current && scrollerContainerSize.current && updatePanResponder();
+      !isInitialPanResponderUpdated.current && updatePanResponder();
     })
   }
 
@@ -226,6 +214,7 @@ export default function MoodDetector(props) {
     }
     toolTipRef?.current?.measureInWindow((x, y, width, height) => {
       toolTipSize.current = { left: x, top: y, width, height };
+      !isInitialPanResponderUpdated.current && updatePanResponder();
     })
   }
 
@@ -237,7 +226,7 @@ export default function MoodDetector(props) {
       scrollerContainerSize.current = { left: x, top: y, width, height };
       // console.log('scrollerContainerSize x,y,width,height', x, y, width, height)
       // console.log('scrollerContainerSize scrollerContainerSize.current', scrollerContainerSize.current)
-      !isInitialPanResponderUpdated.current && blocksSize.current && updatePanResponder();
+      !isInitialPanResponderUpdated.current && updatePanResponder();
     })
   }
 
@@ -699,7 +688,7 @@ export default function MoodDetector(props) {
       <Scroller
         scrollerStyle={{
           ...pan.current.getLayout(),
-          ...{ left: constrainedX.current, top: constrainedY.current }
+          ...(constrainedX.current !== null && constrainedY.current !== null) ? { left: constrainedX.current, top: constrainedY.current } : {}
         }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
