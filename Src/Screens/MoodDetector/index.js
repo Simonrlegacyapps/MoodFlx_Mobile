@@ -118,36 +118,7 @@ export default function MoodDetector({ navigation }) {
       },
       onPanResponderMove: (event, gestureState) => {
         pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
-        scrollerRef.current.measureInWindow((x, y, width, height) => {
-          const top = y + scrollerWheelRadius;
-          const left = x + scrollerWheelRadius;
-          const emotionData = getEmotionsTextData(top, left, prevEmotionData.current);
-          if (prevEmotionData.current.text === toolTipData.text) {
-            const color = pSBC(count.current / 100, toolTipData.color);
-            setToolTipData(Object.assign(toolTipData, { ...emotionData }));
-            setEmotionText(emotionData?.text ?? '');
-            setColor(color);
-            if (count.current === 60) {
-              addValue.current = -1;
-            }
-            if (count.current === 0) {
-              addValue.current = 1;
-            }
-            count.current = count.current + addValue.current;
-            console.log('count =>', count.current);
-            console.log('addValue =>', addValue.current);
-            console.log('color =>', color);
-          } else {
-            setToolTipData(Object.assign(toolTipData, { ...emotionData }));
-            setEmotionText(emotionData?.text ?? '');
-            setColor(emotionData?.color);
-            count.current = 1;
-          }
-          prevEmotionData.current = emotionData;
-
-          // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
-        }
-        );
+        onPanResponderMove(event, gestureState);
       },
       onPanResponderRelease: (event, gesture) => {
         pan.current.flattenOffset();
@@ -155,6 +126,50 @@ export default function MoodDetector({ navigation }) {
       },
     })
   ).current;
+
+  const onPanResponderMove = (event, gestureState) => {
+    scrollerRef.current.measureInWindow((x, y, width, height) => {
+      const top = y + scrollerWheelRadius;
+      const left = x + scrollerWheelRadius;
+      const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, UserData);
+      if (prevEmotionData.current.text === emotionData.text) {
+        const color = pSBC(count.current / 100, toolTipData.color);
+        setToolTipData(Object.assign(toolTipData, { ...emotionData }));
+        setEmotionText(emotionData?.text ?? '');
+        setColor(color);
+        if (count.current === 60) {
+          addValue.current = -1;
+        }
+        if (count.current === 0) {
+          addValue.current = 1;
+        }
+        count.current = count.current + addValue.current;
+        // console.log('count =>', count.current);
+        // console.log('addValue =>', addValue.current);
+        // console.log('color =>', color);
+      } else {
+        // console.log('Mood Changed new Mood=> ', emotionData)
+        // console.log('Mood Changed prev Mood=> ', prevEmotionData.current)
+        updateOffset();
+        setToolTipData(Object.assign(toolTipData, { ...emotionData }));
+        setEmotionText(emotionData?.text ?? '');
+        setColor(emotionData?.color);
+        count.current = 1;
+      }
+      prevEmotionData.current = emotionData;
+
+      // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
+    }
+    );
+  }
+
+  const updateOffset = () => {
+    isInitialPanResponderUpdated.current = false;
+    scrollerContainerSize.current = null;
+    toolTipSize.current = null;
+    onToolTipLayout();
+    onLayoutScrollerContainer();
+  }
 
   const updatePanResponder = (forceUpdate, isOrientationChange) => {
     if (!blocksSize.current || !scrollerContainerSize.current || !toolTipSize.current) {
@@ -185,7 +200,7 @@ export default function MoodDetector({ navigation }) {
     if (pan.current.x._value === initialX && pan.current.y._value === initialY) {
       return
     }
-    (isOrientationChange || !forceUpdate) && pan.current.setValue({
+    (isOrientationChange || !forceUpdate) && emotionText === initialEmotionTextData.text && pan.current.setValue({
       x: initialX,
       y: initialY
     });

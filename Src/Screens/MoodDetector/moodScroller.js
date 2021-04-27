@@ -56,9 +56,10 @@ export default function MoodScroller({
                   height={20}
                   // viewBox="0 0 24 24"
                   fill="none"
-                  uri={`https://super.moodflo.com/${toolTipData?.img
-                    ? toolTipData.img
-                    : 'mood_icons/161616176321272238406054abe3bb450.svg'
+                  uri={`https://super.moodflo.com/${
+                    toolTipData?.img
+                      ? toolTipData.img
+                      : 'mood_icons/161616176321272238406054abe3bb450.svg'
                     }`}
                 // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
                 />
@@ -160,9 +161,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   toolTipText: {
-    paddingHorizontal: 7,
-    lineHeight: 18,
-    fontSize: 14
+    paddingRight: 7,
+    lineHeight: 23,
+    fontSize: horizontalScale(14)
   },
   toolTipImg: {
     height: 21,
