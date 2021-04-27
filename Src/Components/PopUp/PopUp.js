@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  Linking,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {useSelector} from 'react-redux';
@@ -109,12 +110,26 @@ const PopUp = ({
               {
                 fontSize: 10,
                 textAlign: 'center',
-                paddingVertical: 12,
+
                 paddingBottom: 24,
+                alignSelf: 'center',
               },
             ]}>
-            {' '}
-            Terms & Conditions • Privacy Policy
+            <TouchableOpacity
+              onPress={() =>
+                Linking.canOpenURL('moodflo.com/terms&conditions')
+              }>
+              <Text style={{fontSize: 12, paddingTop: 12}}>
+                {' '}
+                Terms & Conditions
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={{fontSize: 12, paddingTop: 12}}>
+                {' '}
+                • Privacy Policy
+              </Text>
+            </TouchableOpacity>
           </Text>
         </View>
         {/* <TouchableOpacity
@@ -197,8 +212,8 @@ const styles = StyleSheet.create({
   },
   smallText: {
     fontFamily: RubikLight,
-    paddingHorizontal: 12,
-    paddingBottom: 10,
+    // paddingHorizontal: 12,
+    // paddingBottom: 10,
     //   paddingVertical:10
   },
   bigText: {

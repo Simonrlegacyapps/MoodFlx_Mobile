@@ -12,6 +12,8 @@ target 'MoodFlo' do
 
   pod 'RCTAppleHealthKit', :path => '../node_modules/rn-apple-healthkit'
 
+  pod 'RNCClipboard', :path => '../node_modules/@react-native-community/clipboard'
+
   target 'MoodFloTests' do
     inherit! :complete
     # Pods for testing

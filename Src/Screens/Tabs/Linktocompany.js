@@ -27,7 +27,11 @@ import {
 } from '../../redux/actions/actions';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
-import {RubikBlack, RubikRegular} from '../../Constants/fonts/Fonts';
+import {
+  RubikBlack,
+  RubikMedium,
+  RubikRegular,
+} from '../../Constants/fonts/Fonts';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -294,7 +298,7 @@ const Linktocompany = ({navigation}) => {
                   fontWeight: '500',
                   fontSize: dynamicSize(15),
                   color: '#FFFFFF',
-                  fontFamily: RubikBlack,
+                  fontFamily: RubikMedium,
                 }}>
                 Connect Now
               </Text>

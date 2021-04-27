@@ -1,4 +1,6 @@
 rootProject.name = 'MoodFlo'
+include ':@react-native-community_clipboard'
+project(':@react-native-community_clipboard').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/clipboard/android')
 include ':react-native-google-fit'
 project(':react-native-google-fit').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-google-fit/android')
 include ':react-native-splash-screen'
