@@ -36,12 +36,12 @@ import {
 } from '../../redux/actions/actions';
 import { useRoute } from '@react-navigation/native';
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
-// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
 
 const options = {
   enableVibrateFallback: true,
-  ignoreAndroidSystemSettings: false,
+  ignoreAndroidSystemSettings: true,
 };
 function useForceUpdate() {
   const [value, setValue] = useState(0); // integer state
@@ -51,7 +51,6 @@ function useForceUpdate() {
 const window = Dimensions.get('window');
 const scrollerWheelRadius = scrollerWheelSize / 2;
 const screenWidth = Math.floor(window.width);
-
 
 // import imagePath from '../assets/images';
 
@@ -91,7 +90,7 @@ export default function MoodDetector({ navigation }) {
   const UserData = useSelector((state) => state.First);
 
   const pan = useRef(new Animated.ValueXY());
-  const prevEmotionData = useRef(toolTipData);
+  const prevEmotionData = useRef({});
   const scrollerRef = useRef(null);
   const toolTipRef = useRef(null);
   const count = useRef(1);
@@ -104,11 +103,38 @@ export default function MoodDetector({ navigation }) {
   const isInitialPanResponderUpdated = useRef(false);
   const constrainedX = useRef(null);
   const constrainedY = useRef(null);
+  const offsetSize = useRef(null);
+
+  const touchPanResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: (event, gestureState) => true,
+      onStartShouldSetPanResponderCapture:
+        (event, gestureState) => true,
+      onMoveShouldSetPanResponder: (event, gestureState) => false,
+      onMoveShouldSetPanResponderCapture:
+        (event, gestureState) => false,
+      onPanResponderGrant: (event, gestureState) => false,
+      onPanResponderMove: (event, gestureState) => false,
+      onPanResponderRelease: (event, gestureState) => {
+        const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
+        const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
+        if(offsetSize.current){
+          const panX = offsetSize.current.xMin + x;
+          const panY = offsetSize.current.yMin + y;
+          pan.current.setValue({ x: panX, y: panY });
+          const left = blocksSize.current.left + x;
+          const top = blocksSize.current.top + y;
+          // updateColorData(x, y);
+          updateColorData(left, top);
+        }
+      },
+    })
+  ).current;
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (evt, gestureState) => { return Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1 },//true,
       onPanResponderGrant: (event, gestureState) => {
         pan.current.setOffset({
           x: pan.current.x._value,
@@ -118,43 +144,60 @@ export default function MoodDetector({ navigation }) {
       },
       onPanResponderMove: (event, gestureState) => {
         pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
-        scrollerRef.current.measureInWindow((x, y, width, height) => {
-          const top = y + scrollerWheelRadius;
-          const left = x + scrollerWheelRadius;
-          const emotionData = getEmotionsTextData(top, left, prevEmotionData.current);
-          if (prevEmotionData.current.text === toolTipData.text) {
-            const color = pSBC(count.current / 100, toolTipData.color);
-            setToolTipData(Object.assign(toolTipData, { ...emotionData }));
-            setEmotionText(emotionData?.text ?? '');
-            setColor(color);
-            if (count.current === 60) {
-              addValue.current = -1;
-            }
-            if (count.current === 0) {
-              addValue.current = 1;
-            }
-            count.current = count.current + addValue.current;
-            console.log('count =>', count.current);
-            console.log('addValue =>', addValue.current);
-            console.log('color =>', color);
-          } else {
-            setToolTipData(Object.assign(toolTipData, { ...emotionData }));
-            setEmotionText(emotionData?.text ?? '');
-            setColor(emotionData?.color);
-            count.current = 1;
-          }
-          prevEmotionData.current = emotionData;
-
-          // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
-        }
-        );
+        onPanResponderMove();
       },
-      onPanResponderRelease: (event, gesture) => {
+      onPanResponderRelease: (event, gestureState) => {
         pan.current.flattenOffset();
         // console.log('onPanResponderRelease screenWidth : ', screenWidth)
       },
     })
   ).current;
+
+  const onPanResponderMove = (touchX, touchY) => {
+    scrollerRef.current.measureInWindow((x, y, width, height) => {
+      const left = x + scrollerWheelRadius;
+      const top = y + scrollerWheelRadius;
+      
+      updateColorData(left, top);
+      // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
+    }
+    );
+  }
+  const updateColorData = (x, y) => {
+    const left = x;
+    const top = y;
+      const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, UserData);
+      // console.log('emotionData => ', emotionData);
+      if (prevEmotionData?.current?.text === emotionData.text) {
+        const color = pSBC(count.current / 100, toolTipData.color);
+        setToolTipData(Object.assign(toolTipData, { ...emotionData }));
+        setEmotionText(emotionData?.text ?? '');
+        setColor(color);
+        if (count.current === 40) {
+          addValue.current = -1;
+        }
+        if (count.current === 0) {
+          addValue.current = 1;
+        }
+        count.current = count.current + addValue.current;
+      } else {
+        updateOffset();
+        setToolTipData(Object.assign(toolTipData, { ...emotionData }));
+        setEmotionText(emotionData?.text ?? '');
+        const color = pSBC(count.current / 100, emotionData.color);
+        setColor(color);
+        // count.current = 1;
+      }
+      prevEmotionData.current = emotionData;
+  }
+
+  const updateOffset = () => {
+    isInitialPanResponderUpdated.current = false;
+    scrollerContainerSize.current = null;
+    toolTipSize.current = null;
+    onToolTipLayout();
+    onLayoutScrollerContainer();
+  }
 
   const updatePanResponder = (forceUpdate, isOrientationChange) => {
     if (!blocksSize.current || !scrollerContainerSize.current || !toolTipSize.current) {
@@ -171,6 +214,7 @@ export default function MoodDetector({ navigation }) {
       initialY,
     } = offSetSize;
     console.log('updatePanResponder ', offSetSize)
+    offsetSize.current = offSetSize;
     constrainedX.current = pan.current.x.interpolate({
       inputRange: [xMin, 150, xMax],
       outputRange: [xMin, 150, xMax],
@@ -185,7 +229,7 @@ export default function MoodDetector({ navigation }) {
     if (pan.current.x._value === initialX && pan.current.y._value === initialY) {
       return
     }
-    (isOrientationChange || !forceUpdate) && pan.current.setValue({
+    (isOrientationChange || !forceUpdate) && emotionText === initialEmotionTextData.text && pan.current.setValue({
       x: initialX,
       y: initialY
     });
@@ -465,8 +509,9 @@ export default function MoodDetector({ navigation }) {
   const renderBlocks = () => {
     return (
       < View
-        ref={blocksContainerRef}
-        onLayout={onBlocksContainerLayout}
+      ref={blocksContainerRef}
+      onLayout={onBlocksContainerLayout}
+      {...touchPanResponder.panHandlers}
         style={
           [
             styles.childViewStyle,
@@ -478,6 +523,7 @@ export default function MoodDetector({ navigation }) {
             },
           ]} >
         <View
+          pointerEvents="none"
           style={{
             height: '50%',
             width: '50%',
@@ -485,6 +531,7 @@ export default function MoodDetector({ navigation }) {
           }}
         />
         <View
+          pointerEvents="none"
           style={{
             height: '50%',
             width: '50%',
@@ -492,6 +539,7 @@ export default function MoodDetector({ navigation }) {
           }}
         />
         <View
+          pointerEvents="none"
           style={{
             height: '50%',
             width: '50%',
@@ -499,6 +547,7 @@ export default function MoodDetector({ navigation }) {
           }}
         />
         <View
+          pointerEvents="none"
           style={{
             height: '50%',
             width: '50%',
@@ -739,6 +788,7 @@ const styles = StyleSheet.create({
   },
   childViewStyle: {
     flex: 1,
+    width: '100%',
     overflow: 'hidden',
     backgroundColor: '#F5FCFF',
     borderStyle: 'solid',
