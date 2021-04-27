@@ -36,12 +36,12 @@ import {
 } from '../../redux/actions/actions';
 import { useRoute } from '@react-navigation/native';
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
-// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
 
 const options = {
   enableVibrateFallback: true,
-  ignoreAndroidSystemSettings: false,
+  ignoreAndroidSystemSettings: true,
 };
 function useForceUpdate() {
   const [value, setValue] = useState(0); // integer state
@@ -157,6 +157,7 @@ export default function MoodDetector({ navigation }) {
     scrollerRef.current.measureInWindow((x, y, width, height) => {
       const left = x + scrollerWheelRadius;
       const top = y + scrollerWheelRadius;
+      
       updateColorData(left, top);
       // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
     }

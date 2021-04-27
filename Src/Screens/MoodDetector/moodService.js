@@ -1,6 +1,7 @@
 import {
   Dimensions
 } from 'react-native';
+import { hapticsConfigs } from '../../Constants/constants';
 import { horizontalScale, iPhoneXPadding, isIphoneX, verticalScale } from '../../Constants/sizeChoose';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -276,4 +277,32 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
     initialX,
     initialY
   }
+}
+
+export const getHapticStats = (y, blocksSize, offsetSize) => {
+  if(y < offsetSize.yMin){
+    return;
+  } else if(y > offsetSize.yMax){
+    return;
+  }
+  const yPosInBlock = y - offsetSize.yMin;
+  const blockSizeHalf = blocksSize.height / 2
+  const percentage = (100 * yPosInBlock ) / blockSizeHalf;
+  let hapticType = '';
+  if(percentage > 0 && percentage <= 30){
+    hapticType = hapticsConfigs.car.light;
+  } else if(percentage > 30 && percentage <= 60) {
+    hapticType = hapticsConfigs.car.medium;
+  } else if(percentage > 60 && percentage <= 90) {
+    hapticType = hapticsConfigs.car.high;
+  } else if(percentage < 0 && percentage >= -30) {
+    hapticType = hapticsConfigs.heartBeat.light;
+  } else if(percentage < -30 && percentage >= -60) {
+    hapticType = hapticsConfigs.heartBeat.medium;
+  } else if(percentage < -60 && percentage >= -90) {
+    hapticType = hapticsConfigs.heartBeat.high;
+  }
+  console.log('getHapticStats percentage', percentage);
+  console.log('getHapticStats hapticType', hapticType);
+  return hapticType;
 }
