@@ -134,14 +134,14 @@ let emotionsTextData = {
 
 
 export const setEmotionsTextData = (top, left, height, width) => {
-  console.log('setEmotionTextData called');
-  console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
+  // console.log('setEmotionTextData called');
+  // console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
   if (top === undefined || left === undefined || height === undefined || width === undefined) {
     return;
   }
   const blockWidth = width / 4;
   const blockHeight = height / 4;
-  console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' blockWidth: ', blockWidth, 'blockHeight: ', blockHeight, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
+  // console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' blockWidth: ', blockWidth, 'blockHeight: ', blockHeight, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
   const [h1, h2, h3, h4, h5] = [top, top + blockHeight, top + (blockHeight * 2), top + (blockHeight * 3), top + height];
   const [w1, w2, w3, w4, w5] = [left, left + blockWidth, left + (blockWidth * 2), left + (blockWidth * 3), left + width]
   function getTopForIndex(idx) {
@@ -172,13 +172,13 @@ export const setEmotionsTextData = (top, left, height, width) => {
     emotionsTextData[e].top = [parseFloat(y1.toFixed(2)), parseFloat(y2.toFixed(2))];
     emotionsTextData[e].left = [parseFloat(x1.toFixed(2)), parseFloat(x2.toFixed(2))];
   })
-  console.log('emotionTextData', emotionsTextData);
+  // console.log('emotionTextData', emotionsTextData);
 }
 
 export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
-  // console.log('top: ', top, 'left: ', left,)
   let top = parseFloat(y.toFixed(2))
   let left = parseFloat(x.toFixed(2))
+  // console.log('top: ', top, 'left: ', left,)
   if (top > emotionsTextData.sad.top[0] && top < emotionsTextData.sad.top[1] && left > emotionsTextData.sad.left[0] && left < emotionsTextData.sad.left[1]) {
     return { ...emotionsTextData.sad, img: userData?.AllMoods?.[0]?.icon };
   }
@@ -254,9 +254,9 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
   const paddingBottom = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingBottom : iPhoneXPadding.portrait.paddingBottom) : 0;
   // scrollerContainerSize.height = 117.1;
   // scrollerContainerSize.width = 104.7;
-  console.log('getScrollerOffset => screenSize: ', screenSize, ' scrollerWheelSize: ', scrollerWheelSize, ' scrollerContainerSize: ', scrollerContainerSize, ' toolTipSize: ', toolTipSize, ' blocksSize: ', blocksSize);
-  console.log('getScrollerOffset paddingTop', paddingTop)
-  console.log('getScrollerOffset paddingVertical', paddingVertical)
+  // console.log('getScrollerOffset => screenSize: ', screenSize, ' scrollerWheelSize: ', scrollerWheelSize, ' scrollerContainerSize: ', scrollerContainerSize, ' toolTipSize: ', toolTipSize, ' blocksSize: ', blocksSize);
+  // console.log('getScrollerOffset paddingTop', paddingTop)
+  // console.log('getScrollerOffset paddingVertical', paddingVertical)
   const toolTipHeight = toolTipSize.height - 10;
   const scrollerHeight = toolTipHeight + scrollerWheelSize;
   const scrollerWidth = toolTipSize.width > scrollerWheelSize ? toolTipSize.width : scrollerWheelSize;
@@ -267,7 +267,7 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
   const xMin = 0 - scrollerWidth / 2;
   const xMax = screenSize.width - (scrollerWidth/2) - paddingHorizontal;
   const initialX = ((blocksSize.width - blocksSize.left) / 2) - (scrollerWidth / 2);
-  const initialY = yMin + (blocksSize.height / 2) - scrollerHeight + (scrollerWheelSize / 2);
+  const initialY = yMin + (blocksSize.height / 2);
   return {
     xMin,
     xMax,
