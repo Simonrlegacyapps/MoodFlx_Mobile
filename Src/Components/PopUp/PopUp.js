@@ -116,9 +116,7 @@ const PopUp = ({
               },
             ]}>
             <TouchableOpacity
-              onPress={() =>
-                Linking.canOpenURL('moodflo.com/terms&conditions')
-              }>
+              onPress={() => Linking.openURL('https://www.google.com/')}>
               <Text style={{fontSize: 12, paddingTop: 12}}>
                 {' '}
                 Terms & Conditions
