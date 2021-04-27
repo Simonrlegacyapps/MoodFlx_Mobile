@@ -179,7 +179,7 @@ const Linktocompany = ({navigation}) => {
   };
   // console.log(`UserData.NameCompany`, UserData.NameCompany);
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: 'white'}}>
       {/* {console.log('REDUX DATA ==============>', getDivision[0].id)} */}
       <View>
         <Modal
@@ -365,6 +365,9 @@ const Linktocompany = ({navigation}) => {
               alignItems: 'center',
               justifyContent: 'center',
               flexDirection: 'row',
+              shadowColor: 'black',
+              shadowOffset: {height: 2},
+              shadowOpacity: 0.3,
             }}>
             <Text
               style={{
@@ -457,7 +460,7 @@ const Linktocompany = ({navigation}) => {
               <Image
                 style={{
                   height: dynamicSize(80),
-                  width: dynamicSize(80),
+                  width: dynamicSize(122),
                   resizeMode: 'contain',
                   // backgroundColor: 'grey',
                   // borderRadius: dynamicSize(40),

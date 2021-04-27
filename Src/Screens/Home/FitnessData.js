@@ -567,12 +567,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#8A8BAB',
     fontFamily: RubikLight,
-    lineHeight: 12,
-    marginVertical: 5,
+    // lineHeight: 12,
+    // marginVertical: 5,
   },
   normalText: {
     fontSize: 16,
-    lineHeight: 16,
+    marginTop: 4,
+    // lineHeight: 16,
     fontFamily: RubikRegular,
   },
   ColoredText: {

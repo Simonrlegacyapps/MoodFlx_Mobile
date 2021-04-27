@@ -183,11 +183,13 @@ const App = (props) => {
     console.log(`mood count again`, e);
     let HealthP = await JSON.parse(p);
     dispatch(HealthPerm(HealthP));
+    console.log(`HealthP`, HealthP != null);
     if (HealthP != null) {
-      console.log('good to go for API in async');
       await OnAutoSync();
       const steps_data = await UserData.MainSteps;
+      console.log(`steps_data`, steps_data, UserData.MainSteps);
       if (steps_data !== null) {
+        console.log('good to go for API in async here at top');
         setLoading(UserData.HealthPermission ? true : false);
         setcallOneTime('second');
         // console.log(`UserData.MainSteps`, UserData.MainSteps);
@@ -209,12 +211,13 @@ const App = (props) => {
     console.log(`mood count again`, e);
     let HealthP = await JSON.parse(p);
     dispatch(HealthPerm(HealthP));
+
     if (HealthP != null) {
-      console.log('good to go for API in async');
+      console.log('good to go for API in async here at top');
       await OnAutoSync();
       await UserData.MainSteps;
+      console.log(`UserData.MainSteps`, UserData.MainSteps);
       if (UserData.MainSteps !== null) {
-        // console.log(`UserData.MainSteps`, UserData.MainSteps);
         filterDates();
         filterSteps();
         AddDataToFilter();
@@ -249,10 +252,10 @@ const App = (props) => {
       const healthKitOptions = {
         permissions: {
           read: [
-            PERMS.DateOfBirth,
-            PERMS.Weight,
-            PERMS.Height,
-            PERMS.BodyMassIndex,
+            // PERMS.DateOfBirth,
+            // PERMS.Weight,
+            // PERMS.Height,
+            // PERMS.BodyMassIndex,
             // PERMS.LeanBodyMass,
             // PERMS.BodyFatPercentage,
             PERMS.StepCount,
@@ -261,11 +264,10 @@ const App = (props) => {
             PERMS.BloodPressureDiastolic,
             PERMS.BloodPressureSystolic,
             PERMS.ActiveEnergyBurned, //
-            PERMS.BasalEnergyBurned, //
+            // PERMS.BasalEnergyBurned, //
             PERMS.DistanceWalkingRunning, //
             PERMS.HeartRate,
             PERMS.SleepAnalysis,
-            PERMS.DateOfBirth,
             // PERMS.FlightsClimbed,
             PERMS.DistanceCycling,
             PERMS.Workout,
@@ -300,50 +302,6 @@ const App = (props) => {
           setDateOfBirth(results);
           //  console.log('age', results);
         });
-
-        // Get Latest Weight
-        AppleHealthKit.getLatestWeight(
-          null,
-          async (err: string, results: Object) => {
-            setLatestWeight(results);
-            //  console.log('weight', results);
-          },
-        );
-
-        // AppleHealthKit.getHeightSamples(
-        //   stepsCount,
-        //   async (err: string, results: Object) => {
-        //     setallHeights(results);
-        //     // console.log('All height', results);
-        //   },
-        // );
-
-        AppleHealthKit.getLatestHeight(
-          null,
-          async (err: string, results: Object) => {
-            // console.log('height', results);
-
-            setHeight(results);
-          },
-        );
-
-        // AppleHealthKit.getLatestBmi(
-        //   null,
-        //   async (err: string, results: Object) => {
-        //     // console.log('BMI', results);
-
-        //     setBMI(results);
-        //   },
-        // );
-
-        // AppleHealthKit.getBodyTemperatureSamples(
-        //   stepsCount,
-        //   async (err: Object, results: Array<Object>) => {
-        //     settemp(results);
-
-        //     // console.log('All body temp', results);
-        //   },
-        // );
 
         AppleHealthKit.getDailyStepCountSamples(
           stepsCount,
@@ -428,33 +386,6 @@ const App = (props) => {
             // console.log('All steps ++++', results, total);
           },
         );
-        // AppleHealthKit.getStepCount(
-        //   stepsCount,
-        //   async (err: Object, results: Array<Object>) => {
-        //     setsteps(results);
-
-        //     // console.log('Today steps ++++', results);
-        //   },
-        // );
-
-        // AppleHealthKit.getBodyFatPercentageSamples(
-        //   stepsCount,
-        //   async (err: string, results: Object) => {
-        //     setBodyFatPerc(results);
-
-        //     // console.log(' All Body Fat % ', results);
-        //   },
-        // );
-
-        // AppleHealthKit.getWeightSamples(
-        //   stepsCount,
-        //   async (err: Object, results: Array<Object>) => {
-        //     setWeight(results);
-
-        //     // console.log(' All Body Weight ', results);
-        //   },
-        // );
-
         AppleHealthKit.getBloodPressureSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
@@ -791,8 +722,8 @@ const App = (props) => {
     Fsteps.push();
 
     console.log(`Fsteps at last`, Fsteps);
-    // console.log(`walkTime at last`, WalkTime);
-    // console.log(`Workouts at last`, Workouts);
+    console.log(`walkTime at last`, WalkTime > 0);
+    console.log(`Fsteps at last`, Fsteps > 0);
     if (Fsteps.length > 0 && WalkTime.length > 0) {
       // console.log('good to go for API');
       // const data = {
