@@ -11,7 +11,7 @@ import {
   Button,
 } from 'react-native';
 import Scroller from './moodScroller';
-import { getEmotionsTextData, emotionsTextData, scrollerWheelSize, getScrollerOffset, getInitialLocalX, getInitialLocalY, setEmotionsTextData, initialEmotionTextData } from './moodService';
+import { getEmotionsTextData, scrollerWheelSize, getScrollerOffset, setEmotionsTextData, initialEmotionTextData, getHapticStats } from './moodService';
 import { pSBC } from './moodUtlis';
 import { dynamicSize, iPhoneXPadding, isIphoneX } from '../../Constants/sizeChoose';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
@@ -39,7 +39,7 @@ import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfi
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
 
-const options = {
+const hapticOptions = {
   enableVibrateFallback: true,
   ignoreAndroidSystemSettings: true,
 };
@@ -100,22 +100,16 @@ export default function MoodDetector({ navigation }) {
   const scrollerContainerSize = useRef(null);
   const scrollerContainerRef = useRef(null);
   const blocksContainerRef = useRef(null);
-  const isInitialPanResponderUpdated = useRef(false);
+  const isInitialPanResponderUpdated = useRef(null);
   const constrainedX = useRef(null);
   const constrainedY = useRef(null);
   const offsetSize = useRef(null);
+  const timeoutId = useRef(null);
 
   const touchPanResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (event, gestureState) => true,
-      onStartShouldSetPanResponderCapture:
-        (event, gestureState) => true,
-      onMoveShouldSetPanResponder: (event, gestureState) => false,
-      onMoveShouldSetPanResponderCapture:
-        (event, gestureState) => false,
-      onPanResponderGrant: (event, gestureState) => false,
-      onPanResponderMove: (event, gestureState) => false,
-      onPanResponderRelease: (event, gestureState) => {
+      onStartShouldSetPanResponderCapture: (event, gestureState) => {
         const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
         const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
         if(offsetSize.current){
@@ -127,6 +121,24 @@ export default function MoodDetector({ navigation }) {
           // updateColorData(x, y);
           updateColorData(left, top);
         }
+        return true;
+      },
+      onMoveShouldSetPanResponder: (event, gestureState) => false,
+      onMoveShouldSetPanResponderCapture:
+        (event, gestureState) => false,
+      onPanResponderGrant: (event, gestureState) => false,
+      onPanResponderMove: (event, gestureState) => false,
+      onPanResponderRelease: (event, gestureState) => {
+        // const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
+        // const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
+        // if(offsetSize.current){
+        //   const panX = offsetSize.current.xMin + x;
+        //   const panY = offsetSize.current.yMin + y;
+        //   pan.current.setValue({ x: panX, y: panY });
+        //   const left = blocksSize.current.left + x;
+        //   const top = blocksSize.current.top + y;
+        //   updateColorData(left, top);
+        // }
       },
     })
   ).current;
@@ -144,7 +156,8 @@ export default function MoodDetector({ navigation }) {
       },
       onPanResponderMove: (event, gestureState) => {
         pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
-        onPanResponderMove();
+        // console.log('pan.current.getLayout => ', pan.current.getLayout());
+        onPanResponderMove(event, gestureState);
       },
       onPanResponderRelease: (event, gestureState) => {
         pan.current.flattenOffset();
@@ -153,20 +166,34 @@ export default function MoodDetector({ navigation }) {
     })
   ).current;
 
-  const onPanResponderMove = (touchX, touchY) => {
+  const onPanResponderMove = (event, gestureState) => {
     scrollerRef.current.measureInWindow((x, y, width, height) => {
       const left = x + scrollerWheelRadius;
       const top = y + scrollerWheelRadius;
-      
-      updateColorData(left, top);
+      const { hapticType, timeInterval } = getHapticStats(top, blocksSize.current, offsetSize.current);
+      if(!timeoutId.current && hapticType && timeInterval) {
+        timeoutId.current = setTimeout(() => {
+          ReactNativeHapticFeedback.trigger(hapticType, hapticOptions);
+          if(timeoutId.current){
+            clearTimeout(timeoutId.current)
+            timeoutId.current = null;
+          }
+        }, (timeInterval * 1000));
+      } else if(timeInterval === -1){
+        if(timeoutId.current){
+          clearTimeout(timeoutId.current)
+          timeoutId.current = null;
+        }
+      }
+      updateColorData(left, top, gestureState);
       // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
     }
     );
   }
-  const updateColorData = (x, y) => {
+  const updateColorData = (x, y, gestureState) => {
     const left = x;
     const top = y;
-      const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, UserData);
+      const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, UserData, gestureState);
       // console.log('emotionData => ', emotionData);
       if (prevEmotionData?.current?.text === emotionData.text) {
         const color = pSBC(count.current / 100, toolTipData.color);
@@ -203,6 +230,7 @@ export default function MoodDetector({ navigation }) {
     if (!blocksSize.current || !scrollerContainerSize.current || !toolTipSize.current) {
       return
     }
+    const isInitialUpdate = (isInitialPanResponderUpdated.current === null);
     isInitialPanResponderUpdated.current = true;
     const offSetSize = getScrollerOffset(window, scrollerWheelSize, scrollerContainerSize.current, toolTipSize.current, blocksSize.current);
     let {
@@ -229,7 +257,7 @@ export default function MoodDetector({ navigation }) {
     if (pan.current.x._value === initialX && pan.current.y._value === initialY) {
       return
     }
-    (isOrientationChange || !forceUpdate) && emotionText === initialEmotionTextData.text && pan.current.setValue({
+    (isOrientationChange || !forceUpdate) && emotionText === initialEmotionTextData.text && isInitialUpdate && pan.current.setValue({
       x: initialX,
       y: initialY
     });
