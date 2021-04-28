@@ -100,7 +100,7 @@ export default function MoodDetector({ navigation }) {
   const scrollerContainerSize = useRef(null);
   const scrollerContainerRef = useRef(null);
   const blocksContainerRef = useRef(null);
-  const isInitialPanResponderUpdated = useRef(false);
+  const isInitialPanResponderUpdated = useRef(null);
   const constrainedX = useRef(null);
   const constrainedY = useRef(null);
   const offsetSize = useRef(null);
@@ -230,6 +230,7 @@ export default function MoodDetector({ navigation }) {
     if (!blocksSize.current || !scrollerContainerSize.current || !toolTipSize.current) {
       return
     }
+    const isInitialUpdate = (isInitialPanResponderUpdated.current === null);
     isInitialPanResponderUpdated.current = true;
     const offSetSize = getScrollerOffset(window, scrollerWheelSize, scrollerContainerSize.current, toolTipSize.current, blocksSize.current);
     let {
@@ -256,7 +257,7 @@ export default function MoodDetector({ navigation }) {
     if (pan.current.x._value === initialX && pan.current.y._value === initialY) {
       return
     }
-    (isOrientationChange || !forceUpdate) && emotionText === initialEmotionTextData.text && pan.current.setValue({
+    (isOrientationChange || !forceUpdate) && emotionText === initialEmotionTextData.text && isInitialUpdate && pan.current.setValue({
       x: initialX,
       y: initialY
     });
