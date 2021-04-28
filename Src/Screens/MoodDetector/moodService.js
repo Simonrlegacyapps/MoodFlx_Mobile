@@ -170,15 +170,17 @@ export const setEmotionsTextData = (top, left, height, width) => {
   Object.keys(emotionsTextData).forEach((e, idx) => {
     let [y1, y2] = getTopForIndex(idx);
     let [x1, x2] = getLeftForIndex(idx);
-    emotionsTextData[e].top = [parseFloat(y1.toFixed(2)), parseFloat(y2.toFixed(2))];
-    emotionsTextData[e].left = [parseFloat(x1.toFixed(2)), parseFloat(x2.toFixed(2))];
+    emotionsTextData[e].top = [Math.round(y1), Math.round(y2)];
+    emotionsTextData[e].left = [Math.round(x1), Math.round(x2)];
+    // emotionsTextData[e].top = [parseFloat(y1.toFixed(2)), parseFloat(y2.toFixed(2))];
+    // emotionsTextData[e].left = [parseFloat(x1.toFixed(2)), parseFloat(x2.toFixed(2))];
   })
   // console.log('emotionTextData', emotionsTextData);
 }
 
-export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
-  let top = parseFloat(y.toFixed(2))
-  let left = parseFloat(x.toFixed(2))
+export const getEmotionsTextData = (y, x, emotionData = null, userData, gestureState) => {
+  let top = Math.round(y);
+  let left = Math.round(x);
   // console.log('top: ', top, 'left: ', left,)
   if (top > emotionsTextData.sad.top[0] && top < emotionsTextData.sad.top[1] && left > emotionsTextData.sad.left[0] && left < emotionsTextData.sad.left[1]) {
     return { ...emotionsTextData.sad, img: userData?.AllMoods?.[0]?.icon };
@@ -190,6 +192,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     return { ...emotionsTextData.wired, img: userData?.AllMoods?.[2]?.icon };
   }
   if (top > emotionsTextData.anxious.top[0] && top < emotionsTextData.anxious.top[1] && left > emotionsTextData.anxious.left[0] && left < emotionsTextData.anxious.left[1]) {
+    // console.log('anxious left: ', left, ' anxious: ', emotionsTextData.anxious, ' gestureState: ', gestureState)
     return { ...emotionsTextData.anxious, img: userData?.AllMoods?.[3]?.icon };
   }
   if (top > emotionsTextData.angry.top[0] && top < emotionsTextData.angry.top[1] && left > emotionsTextData.angry.left[0] && left < emotionsTextData.angry.left[1]) {
@@ -202,9 +205,11 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     return { ...emotionsTextData.spent, img: userData?.AllMoods?.[6]?.icon };
   }
   if (top > emotionsTextData.tired.top[0] && top < emotionsTextData.tired.top[1] && left > emotionsTextData.tired.left[0] && left < emotionsTextData.tired.left[1]) {
+    // console.log('tired left: ', left, ' tired: ', emotionsTextData.tired, ' gestureState: ', gestureState)
     return { ...emotionsTextData.tired, img: userData?.AllMoods?.[7]?.icon };
   }
   if (top > emotionsTextData.pumped.top[0] && top < emotionsTextData.pumped.top[1] && left > emotionsTextData.pumped.left[0] && left < emotionsTextData.pumped.left[1]) {
+    // console.log('pumped left: ', left, ' pumped: ', emotionsTextData.pumped, ' gestureState: ', gestureState)
     return { ...emotionsTextData.pumped, img: userData?.AllMoods?.[8]?.icon };
   }
   if (top > emotionsTextData.stoked.top[0] && top < emotionsTextData.stoked.top[1] && left > emotionsTextData.stoked.left[0] && left < emotionsTextData.stoked.left[1]) {
@@ -217,6 +222,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     return { ...emotionsTextData.alert, img: userData?.AllMoods?.[11]?.icon };
   }
   if (top > emotionsTextData.exited.top[0] && top < emotionsTextData.exited.top[1] && left > emotionsTextData.exited.left[0] && left < emotionsTextData.exited.left[1]) {
+    // console.log('exited left: ', left, ' exited: ', emotionsTextData.exited, ' gestureState: ', gestureState)
     return { ...emotionsTextData.exited, img: userData?.AllMoods?.[12]?.icon };
   }
   if (top > emotionsTextData.happy.top[0] && top < emotionsTextData.happy.top[1] && left > emotionsTextData.happy.left[0] && left < emotionsTextData.happy.left[1]) {
@@ -262,7 +268,7 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
   const scrollerHeight = toolTipHeight + scrollerWheelSize;
   const scrollerWidth = toolTipSize.width > scrollerWheelSize ? toolTipSize.width : scrollerWheelSize;
   const bubbleCenterOffsetTop = toolTipHeight + (scrollerWheelSize / 2);
-  console.log('getScrollerOffset scrollerHeight', scrollerHeight)
+  // console.log('getScrollerOffset scrollerHeight', scrollerHeight)
   const yMin = blocksSize?.top - paddingTop - extraVerticalPadding - bubbleCenterOffsetTop;
   const yMax = yMin + (blocksSize?.height ?? 0);
   const xMin = 0 - scrollerWidth / 2;
@@ -280,29 +286,37 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
 }
 
 export const getHapticStats = (y, blocksSize, offsetSize) => {
-  if(y < offsetSize.yMin){
-    return;
-  } else if(y > offsetSize.yMax){
-    return;
-  }
-  const yPosInBlock = y - offsetSize.yMin;
-  const blockSizeHalf = blocksSize.height / 2
-  const percentage = (100 * yPosInBlock ) / blockSizeHalf;
   let hapticType = '';
+  let timeInterval = -1;
+  if(y < blocksSize.top){
+    return { hapticType, timeInterval };
+  } else if(y > (blocksSize.top + blocksSize.height)){
+    return { hapticType, timeInterval };
+  }
+  const yPosInBlock = y - blocksSize.top;
+  const blockSizeHalf = blocksSize.height / 2;
+  const percentage = 100 - Math.round((yPosInBlock / blockSizeHalf ) * 100);
   if(percentage > 0 && percentage <= 30){
     hapticType = hapticsConfigs.car.light;
+    timeInterval = 0.5;
   } else if(percentage > 30 && percentage <= 60) {
     hapticType = hapticsConfigs.car.medium;
+    timeInterval = 0.5;
   } else if(percentage > 60 && percentage <= 90) {
     hapticType = hapticsConfigs.car.high;
+    timeInterval = 0.5;
   } else if(percentage < 0 && percentage >= -30) {
     hapticType = hapticsConfigs.heartBeat.light;
+    timeInterval = 1;
   } else if(percentage < -30 && percentage >= -60) {
     hapticType = hapticsConfigs.heartBeat.medium;
+    timeInterval = 1;
   } else if(percentage < -60 && percentage >= -90) {
     hapticType = hapticsConfigs.heartBeat.high;
+    timeInterval = 1;
   }
-  console.log('getHapticStats percentage', percentage);
-  console.log('getHapticStats hapticType', hapticType);
-  return hapticType;
+  // console.log('getHapticStats percentage', percentage);
+  // console.log('getHapticStats hapticType', hapticType);
+  // console.log('getHapticStats timeInterval', timeInterval);
+  return { hapticType, timeInterval };
 }
