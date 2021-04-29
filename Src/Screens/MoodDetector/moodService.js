@@ -299,36 +299,37 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
 export const getHapticStats = (y, blocksSize, offsetSize) => {
   let hapticType = '';
   let timeInterval = -1;
+  let percentage = 0;
   if(y < blocksSize.top){
-    return { hapticType, timeInterval };
+    return { hapticType, timeInterval, percentage };
   } else if(y > (blocksSize.top + blocksSize.height)){
-    return { hapticType, timeInterval };
+    return { hapticType, timeInterval, percentage };
   }
   const yPosInBlock = y - blocksSize.top;
   const blockSizeHalf = blocksSize.height / 2;
-  const percentage = 100 - Math.round((yPosInBlock / blockSizeHalf ) * 100);
-  if(percentage > 0 && percentage <= 30){
+  percentage = 100 - Math.round((yPosInBlock / blockSizeHalf ) * 100);
+  if(percentage > 0 && percentage <= 27){
     hapticType = hapticsConfigs.car.light;
-    timeInterval = 0.2;
-  } else if(percentage > 30 && percentage <= 60) {
+    timeInterval = 0.4;
+  } else if(percentage > 27 && percentage <= 54) {
     hapticType = hapticsConfigs.car.medium;
-    timeInterval = 0.2;
-  } else if(percentage > 60 && percentage <= 90) {
-    hapticType = hapticsConfigs.car.high;
-    timeInterval = 0.2;
-  } else if(percentage < 0 && percentage >= -30) {
+    timeInterval = 0.4;
+  } else if(percentage > 54 && percentage <= 100) {
+    // hapticType = hapticsConfigs.car.high;
+    hapticType = hapticsConfigs.car.medium;
+    timeInterval = 0.4;
+  } else if(percentage < 0 && percentage >= -27) {
     hapticType = hapticsConfigs.heartBeat.light;
-    timeInterval = 0.5;
-  } else if(percentage < -30 && percentage >= -60) {
+    timeInterval = 0.8;
+  } else if(percentage < -27 && percentage >= -54) {
     hapticType = hapticsConfigs.heartBeat.medium;
-    timeInterval = 0.5;
-  } else if(percentage < -60 && percentage >= -90) {
+    timeInterval = 0.8;
+  } else if(percentage < -54 && percentage >= -100) {
     hapticType = hapticsConfigs.heartBeat.high;
-    timeInterval = 0.5;
+    timeInterval = 0.8;
   }
   // console.log('getHapticStats percentage', percentage);
   // console.log('getHapticStats hapticType', hapticType);
   // console.log('getHapticStats timeInterval', timeInterval);
-  return { hapticType, timeInterval };
+  return { hapticType, timeInterval, percentage };
 }
-

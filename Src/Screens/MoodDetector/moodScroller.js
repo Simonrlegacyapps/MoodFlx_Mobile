@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import Svg, { Path, SvgUri, G } from 'react-native-svg';
 import { horizontalScale } from '../../Constants/sizeChoose';
-import { getScrollerWheelSize, regularWheelSize } from './moodService';
+import { getScrollerWheelSize, initialEmotionTextData, regularWheelSize } from './moodService';
 
 const { height, width } = Dimensions.get('window');
 
@@ -32,6 +32,9 @@ export default function MoodScroller({
   onLayoutScrollerContainer,
 }) {
   const wheelSize = getScrollerWheelSize();
+  if(emotionText === initialEmotionTextData.text && scrollerStyle?.left === 0){
+    return null;
+  }
 
   return (
     <>

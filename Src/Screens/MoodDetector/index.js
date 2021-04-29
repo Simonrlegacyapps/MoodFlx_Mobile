@@ -68,18 +68,6 @@ const screenWidth = Math.floor(window.width);
 // import imagePath from '../assets/images';
 
 export default function MoodDetector({ navigation }) {
-  // const [locationX, setLocationX] = useState(width / 2); //pan
-  // const [locationY, setLocationY] = useState(height / 2 + height / 80); //pan
-  // const [ShowDraggable, setShowDraggable] = useState(true); //not using
-  // const [Location, setLocation] = useState([]); //not using
-  // const [Moving, setMoving] = useState(false); //not using
-  // const [Anonymous, setAnonymous] = useState(false); //not using
-  // const [Label, setLabel] = useState('Slide finger'); //emotionText
-  // const [startTime, setstartTime] = useState(0); //long press time caluclation to enlarge bubble not using currently
-  // const [EndTime, setEndTime] = useState(0); //long press time caluclation to enlarge bubble not using currently
-  // const [StatusVertical, setStatusVertical] = useState(0); //for status bar height
-  // const [GetMoods, setGetMoods] = useState(null); //not using
-  // const [Svgs, setSvgs] = useState(''); //icon
   const [lng, setlng] = useState(false); //using in api calls
   const [lat, setlat] = useState(false); //using in api calls
   const [Email, setEmail] = useState(null); //using in api calls
@@ -87,13 +75,13 @@ export default function MoodDetector({ navigation }) {
   const [MoodFail, setMoodFail] = useState(false); //not using
   const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
   const [SaveName, setSaveName] = useState(null); //for modal flag
-  const [X0, setX0] = useState(0); //not using
-  const [Y0, setY0] = useState(0); //not using
-  const [blocksContainerSize, setBlocksContainerSize] = useState(null) //i am using
-  let [toolTipData, setToolTipData] = useState(initialEmotionTextData); //i am usin
-  const [emotionText, setEmotionText] = useState(toolTipData.text); //i am using
-  const [color, setColor] = useState(toolTipData.color); //i am using
+  const [blocksContainerSize, setBlocksContainerSize] = useState(null);
+  let [toolTipData, setToolTipData] = useState(initialEmotionTextData);
+  const [emotionText, setEmotionText] = useState(toolTipData.text);
+  const [color, setColor] = useState(toolTipData.color);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isHapticsEnabled, setisHapticsEnabled] = useState(false);
+  const [hapticPosition, setHapticPosition] = useState(0);
   const dispatch = useDispatch();
   const route = useRoute();
   const forceUpdate = useForceUpdate();
@@ -119,11 +107,11 @@ export default function MoodDetector({ navigation }) {
   const constrainedY = useRef(null);
   const offsetSize = useRef(null);
   const hapticTimeoutId = useRef(null);
+  const hapticsData = useRef(null);
   const mediumPressTimeoutId = useRef(null);
   const longPressTimeoutId = useRef(null);
   const previousWheelCenter = useRef(null);
   const newScrollerContainerPosition = useRef(null);
-  const diableHaptics = useRef(null);
   const userData = useRef(UserData);
 
   const panResponder = useRef(
@@ -132,6 +120,7 @@ export default function MoodDetector({ navigation }) {
         return true;
       },
       onStartShouldSetPanResponderCapture: (event, gestureState) => {
+        setisHapticsEnabled(true);
         const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
         const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
         if (offsetSize.current) {
@@ -152,6 +141,8 @@ export default function MoodDetector({ navigation }) {
           y: pan.current.y._value
         });
         pan.current.setValue({ x: 0, y: 0 });
+        console.log('onPanResponderGrant gesture started');
+        setisHapticsEnabled(true);
         // clearLongPressTimeouts({mediumPressTimeoutId, longPressTimeoutId});
         // mediumPressTimeoutId.current = setTimeout(() => {
         //   updateOffsetOnChangeWheelSize(mediumWheelSize, () => {
@@ -179,6 +170,7 @@ export default function MoodDetector({ navigation }) {
       },
       onPanResponderRelease: (event, gestureState) => {
         pan.current.flattenOffset();
+        setisHapticsEnabled(false);
         // clearLongPressTimeouts({mediumPressTimeoutId, longPressTimeoutId, resetWheelSize: true});
         // console.log('onPanResponderRelease screenWidth : ', screenWidth)
       },
@@ -214,6 +206,7 @@ export default function MoodDetector({ navigation }) {
     const top = y;
     previousWheelCenter.current = { left, top };
     const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, userData.current);
+    hapticsData.current = getHapticStats(top, blocksSize.current, offsetSize.current);
     // console.log('emotionData => ', emotionData);
     if (prevEmotionData?.current?.text === emotionData.text) {
       const color = pSBC(count.current / 100, toolTipData.color);
@@ -440,6 +433,50 @@ export default function MoodDetector({ navigation }) {
       userData.current = UserData;
     }
   }, [UserData])
+
+  const playHaptics = (isEnabled) => {
+    if (isEnabled) {
+      let { hapticType, timeInterval, percentage } = hapticsData.current;
+      console.log('playHaptics isEnabled: ', isEnabled, hapticsData.current); 
+      const interval = (100 - (Math.abs(percentage))) / 1000;
+      console.log('playHaptics interval: ', interval)
+      if(hapticTimeoutId.current){
+        clearTimeout(hapticTimeoutId.current);
+        hapticTimeoutId.current = null;
+      }
+      hapticTimeoutId.current = setTimeout(() => {
+        if (hapticType && timeInterval !== -1 && percentage !== 0) {
+          ReactNativeHapticFeedback.trigger(hapticType, hapticOptions);
+        }
+        playHaptics(isEnabled);
+      }, interval * 1000);
+    } else {
+      if (hapticTimeoutId.current) {
+        clearInterval(hapticTimeoutId.current)
+        hapticTimeoutId.current = null;
+      }
+    }
+  }
+
+  useEffect(() => {
+    console.log('isHapticsEnabled =>', isHapticsEnabled, hapticsData.current);
+    playHaptics(isHapticsEnabled);
+    // if (isHapticsEnabled && !hapticTimeoutId.current) {
+    //   hapticTimeoutId.current = setInterval(() => {
+    //     const { hapticType, timeInterval } = hapticsData.current;
+    //     if (hapticType && timeInterval !== -1) {
+    //       ReactNativeHapticFeedback.trigger(hapticType, hapticOptions);
+    //     }
+    //   }, (timeInterval * 1000));
+    // } else {
+    //   if (hapticTimeoutId.current) {
+    //     clearInterval(hapticTimeoutId.current)
+    //     hapticTimeoutId.current = null;
+    //   }
+    // }
+
+    // return () => hapticTimeoutId.current && clearInterval(hapticTimeoutId.current);
+  }, [isHapticsEnabled])
 
   const findId = async () => {
     let p = await AsyncStorage.getItem('MoodCount');
