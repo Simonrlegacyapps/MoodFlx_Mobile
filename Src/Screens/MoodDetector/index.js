@@ -91,7 +91,7 @@ export default function MoodDetector({ navigation }) {
   };
   const UserData = useSelector((state) => state.First);
 
-  const pan = useRef(new Animated.ValueXY());
+  const pan = useRef(new Animated.ValueXY({x: screenWidth/2, y: window.height/2}));
   const prevEmotionData = useRef({});
   const scrollerRef = useRef(null);
   const toolTipRef = useRef(null);
@@ -181,7 +181,6 @@ export default function MoodDetector({ navigation }) {
     scrollerRef.current.measureInWindow((x, y, width, height) => {
       const left = x + scrollerWheelRadius;
       const top = y + scrollerWheelRadius;
-      const { hapticType, timeInterval } = getHapticStats(top, blocksSize.current, offsetSize.current);
       // if(!hapticTimeoutId.current && hapticType && timeInterval) {
       //   hapticTimeoutId.current = setTimeout(() => {
       //     ReactNativeHapticFeedback.trigger(hapticType, hapticOptions);
@@ -206,7 +205,11 @@ export default function MoodDetector({ navigation }) {
     const top = y;
     previousWheelCenter.current = { left, top };
     const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, userData.current);
-    hapticsData.current = getHapticStats(top, blocksSize.current, offsetSize.current);
+    const hapticsDataObj = getHapticStats(top, blocksSize.current, offsetSize.current);
+    if(hapticsDataObj?.timeInterval !== -1){
+      hapticsData.current = hapticsDataObj;
+    }
+
     // console.log('emotionData => ', emotionData);
     if (prevEmotionData?.current?.text === emotionData.text) {
       const color = pSBC(count.current / 100, toolTipData.color);
@@ -277,7 +280,7 @@ export default function MoodDetector({ navigation }) {
     onLayoutScrollerContainer();
   }
 
-  const updatePanResponder = (forceUpdate, isOrientationChange) => {
+  const updatePanResponder = () => {
     if (!blocksSize.current || !scrollerContainerSize.current || !toolTipSize.current) {
       return
     }
@@ -304,11 +307,10 @@ export default function MoodDetector({ navigation }) {
       outputRange: [yMin, (yMax + yMin) / 2, yMax],
       extrapolate: 'clamp',
     });
-    forceUpdate && forceUpdate();
     if (pan.current.x._value === initialX && pan.current.y._value === initialY) {
       return
     }
-    (isOrientationChange || !forceUpdate) && emotionText === initialEmotionTextData.text && isInitialUpdate && pan.current.setValue({
+    (emotionText === initialEmotionTextData.text) && isInitialUpdate && pan.current.setValue({
       x: initialX,
       y: initialY
     });
@@ -436,10 +438,15 @@ export default function MoodDetector({ navigation }) {
 
   const playHaptics = (isEnabled) => {
     if (isEnabled) {
-      let { hapticType, timeInterval, percentage } = hapticsData.current;
-      console.log('playHaptics isEnabled: ', isEnabled, hapticsData.current); 
-      const interval = (100 - (Math.abs(percentage))) / 1000;
-      console.log('playHaptics interval: ', interval)
+      const data = hapticsData.current ?? {};
+      let { hapticType, timeInterval, percentage } = data;
+      let interval = 0.1
+      if(percentage){
+        interval = (100 - (Math.abs(percentage))) / 1000;
+      }
+      // console.log('playHaptics isEnabled: ', isEnabled, hapticsData.current); 
+      // console.log('playHaptics interval: ', interval)
+      console.log('playHaptics timeInterval: ', timeInterval)
       if(hapticTimeoutId.current){
         clearTimeout(hapticTimeoutId.current);
         hapticTimeoutId.current = null;
@@ -449,7 +456,7 @@ export default function MoodDetector({ navigation }) {
           ReactNativeHapticFeedback.trigger(hapticType, hapticOptions);
         }
         playHaptics(isEnabled);
-      }, interval * 1000);
+      }, timeInterval * 1000);
     } else {
       if (hapticTimeoutId.current) {
         clearInterval(hapticTimeoutId.current)
@@ -859,11 +866,10 @@ export default function MoodDetector({ navigation }) {
       </TouchableOpacity>
       {renderBlocks()}
       {renderBottomBar(topBottomColor)}
-
       <Scroller
         scrollerStyle={{
           ...pan.current.getLayout(),
-          ...newScrollerContainerPosition.current !== null ? newScrollerContainerPosition.current : {},
+          // ...newScrollerContainerPosition.current !== null ? newScrollerContainerPosition.current : {},
           ...(constrainedX.current !== null && constrainedY.current !== null) ? { left: constrainedX.current, top: constrainedY.current } : {}
         }}
         scrollerPanResponder={panResponder}
