@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import Svg, { Path, SvgUri, G } from 'react-native-svg';
 import { horizontalScale } from '../../Constants/sizeChoose';
-import { scrollerWheelSize } from './moodService';
+import { getScrollerWheelSize, regularWheelSize } from './moodService';
 
 const { height, width } = Dimensions.get('window');
 
@@ -29,8 +29,9 @@ export default function MoodScroller({
   toolTipRef,
   onToolTipLayout,
   scrollerContainerRef,
-  onLayoutScrollerContainer
+  onLayoutScrollerContainer,
 }) {
+  const wheelSize = getScrollerWheelSize();
 
   return (
     <>
@@ -39,6 +40,7 @@ export default function MoodScroller({
         onLayout={onLayoutScrollerContainer}
         style={[styles.container, scrollerStyle]}
         {...scrollerPanResponder.panHandlers}
+        pointerEvents="none"
       >
         {isAllMoodsDataAvailable && (
           <View
@@ -80,12 +82,28 @@ export default function MoodScroller({
           </View>
         )}
         <Animated.View
-          style={[styles.circle1]}
+          style={[styles.circle1, {
+            height: wheelSize,
+            width: wheelSize,
+            borderRadius: wheelSize / 2,
+          }]}
           ref={scrollerRef}
         >
-          <View style={styles.circle2} >
-            <View style={styles.circle3} >
-              <View style={styles.circle4} />
+          <View style={[styles.circle2, {
+            height: wheelSize * 0.75,
+            width: wheelSize * 0.75,
+            borderRadius: (wheelSize * 0.75) / 2,
+          }]} >
+            <View style={[styles.circle3, {
+              height: wheelSize * 0.5,
+              width: wheelSize * 0.5,
+              borderRadius: (wheelSize * 0.5) / 2,
+            }]} >
+              <View style={[styles.circle4, {
+                height: wheelSize * 0.25,
+                width: wheelSize * 0.25,
+                borderRadius: (wheelSize * 0.25) / 2,
+              }]} />
             </View>
           </View>
         </Animated.View>
@@ -108,9 +126,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255, 0.2)',
-    height: scrollerWheelSize,
-    width: scrollerWheelSize,
-    borderRadius: scrollerWheelSize / 2,
+    height: getScrollerWheelSize(),
+    width: getScrollerWheelSize(),
+    borderRadius: getScrollerWheelSize() / 2,
     zIndex: 5
   },
   circle2: {
@@ -118,9 +136,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255, 0.4)',
     justifyContent: 'center',
     alignItems: 'center',
-    height: scrollerWheelSize * 0.75,
-    width: scrollerWheelSize * 0.75,
-    borderRadius: (scrollerWheelSize * 0.75) / 2,
+    height: getScrollerWheelSize() * 0.75,
+    width: getScrollerWheelSize() * 0.75,
+    borderRadius: (getScrollerWheelSize() * 0.75) / 2,
     // opacity: 0.4,
     zIndex: 10,
   },
@@ -129,9 +147,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
-    height: scrollerWheelSize * 0.5,
-    width: scrollerWheelSize * 0.5,
-    borderRadius: (scrollerWheelSize * 0.5) / 2,
+    height: getScrollerWheelSize() * 0.5,
+    width: getScrollerWheelSize() * 0.5,
+    borderRadius: (getScrollerWheelSize() * 0.5) / 2,
     // opacity: 0.6,
     zIndex: 15,
   },
@@ -140,9 +158,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-    height: scrollerWheelSize * 0.25,
-    width: scrollerWheelSize * 0.25,
-    borderRadius: (scrollerWheelSize * 0.25) / 2,
+    height: getScrollerWheelSize() * 0.25,
+    width: getScrollerWheelSize() * 0.25,
+    borderRadius: (getScrollerWheelSize() * 0.25) / 2,
     zIndex: 20,
   },
   toolTipView: {

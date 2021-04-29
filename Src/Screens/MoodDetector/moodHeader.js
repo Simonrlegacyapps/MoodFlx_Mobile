@@ -15,7 +15,6 @@
  import { Switch } from 'react-native-switch';
 //  import imagePath from '../../assets/images';
 import { horizontalScale } from '../../Constants/sizeChoose';
- const scrollerWheelSize = 100;
  
  export default function EmotionsHeader({
    scrollerStyle,

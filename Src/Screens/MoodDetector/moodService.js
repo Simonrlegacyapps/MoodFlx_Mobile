@@ -5,7 +5,18 @@ import { hapticsConfigs } from '../../Constants/constants';
 import { horizontalScale, iPhoneXPadding, isIphoneX, verticalScale } from '../../Constants/sizeChoose';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-export const scrollerWheelSize = 74;
+export const regularWheelSize = 74
+export const mediumWheelSize = regularWheelSize * 2.5;
+export const largeWheelSize = regularWheelSize * 3.5;
+let scrollerWheelSize = regularWheelSize;
+export const mediumPressDuration = 1.5;
+export const longPressDuration = 2.5;
+
+export const setScrollerWheelSize = (size) => {
+  scrollerWheelSize = size
+}
+
+export const getScrollerWheelSize = (size) => scrollerWheelSize;
 // height - 132
 // width - 93.75
 
@@ -298,25 +309,26 @@ export const getHapticStats = (y, blocksSize, offsetSize) => {
   const percentage = 100 - Math.round((yPosInBlock / blockSizeHalf ) * 100);
   if(percentage > 0 && percentage <= 30){
     hapticType = hapticsConfigs.car.light;
-    timeInterval = 0.5;
+    timeInterval = 0.2;
   } else if(percentage > 30 && percentage <= 60) {
     hapticType = hapticsConfigs.car.medium;
-    timeInterval = 0.5;
+    timeInterval = 0.2;
   } else if(percentage > 60 && percentage <= 90) {
     hapticType = hapticsConfigs.car.high;
-    timeInterval = 0.5;
+    timeInterval = 0.2;
   } else if(percentage < 0 && percentage >= -30) {
     hapticType = hapticsConfigs.heartBeat.light;
-    timeInterval = 1;
+    timeInterval = 0.5;
   } else if(percentage < -30 && percentage >= -60) {
     hapticType = hapticsConfigs.heartBeat.medium;
-    timeInterval = 1;
+    timeInterval = 0.5;
   } else if(percentage < -60 && percentage >= -90) {
     hapticType = hapticsConfigs.heartBeat.high;
-    timeInterval = 1;
+    timeInterval = 0.5;
   }
   // console.log('getHapticStats percentage', percentage);
   // console.log('getHapticStats hapticType', hapticType);
   // console.log('getHapticStats timeInterval', timeInterval);
   return { hapticType, timeInterval };
 }
+
