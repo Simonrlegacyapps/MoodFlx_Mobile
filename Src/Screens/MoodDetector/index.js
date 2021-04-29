@@ -206,8 +206,8 @@ export default function MoodDetector({ navigation }) {
     previousWheelCenter.current = { left, top };
     const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, userData.current);
     const hapticsDataObj = getHapticStats(top, blocksSize.current, offsetSize.current);
+    hapticsData.current = hapticsDataObj;
     if(hapticsDataObj?.timeInterval !== -1){
-      hapticsData.current = hapticsDataObj;
     }
 
     // console.log('emotionData => ', emotionData);

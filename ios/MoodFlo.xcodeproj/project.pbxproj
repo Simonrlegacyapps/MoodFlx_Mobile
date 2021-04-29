@@ -840,7 +840,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.moodflo.org;
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.MoodFlo;
 				PRODUCT_NAME = MoodFlo;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -864,7 +864,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.moodflo.org;
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.MoodFlo;
 				PRODUCT_NAME = MoodFlo;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
