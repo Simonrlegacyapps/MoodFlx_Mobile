@@ -189,7 +189,7 @@ export const setEmotionsTextData = (top, left, height, width) => {
   // console.log('emotionTextData', emotionsTextData);
 }
 
-export const getEmotionsTextData = (y, x, emotionData = null, userData, gestureState) => {
+export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
   let top = Math.round(y);
   let left = Math.round(x);
   // console.log('top: ', top, 'left: ', left,)

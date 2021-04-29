@@ -123,6 +123,8 @@ export default function MoodDetector({ navigation }) {
   const longPressTimeoutId = useRef(null);
   const previousWheelCenter = useRef(null);
   const newScrollerContainerPosition = useRef(null);
+  const diableHaptics = useRef(null);
+  const userData = useRef(UserData);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -211,7 +213,7 @@ export default function MoodDetector({ navigation }) {
     const left = x;
     const top = y;
     previousWheelCenter.current = { left, top };
-    const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, UserData, gestureState);
+    const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, userData.current);
     // console.log('emotionData => ', emotionData);
     if (prevEmotionData?.current?.text === emotionData.text) {
       const color = pSBC(count.current / 100, toolTipData.color);
@@ -432,6 +434,12 @@ export default function MoodDetector({ navigation }) {
 
     }, 150);
   }, []);
+
+  useEffect(() => {
+    if(Array.isArray(UserData?.AllMoods) && (UserData.AllMoods.length > 0)) {
+      userData.current = UserData;
+    }
+  }, [UserData])
 
   const findId = async () => {
     let p = await AsyncStorage.getItem('MoodCount');
@@ -830,6 +838,7 @@ export default function MoodDetector({ navigation }) {
         scrollerRef={(ref) => scrollerRef.current = ref}
         scrollerContainerRef={scrollerContainerRef}
         onLayoutScrollerContainer={onLayoutScrollerContainer}
+        // toolTipSize={toolTipSize.current}
       />
 
       <VideoModal
