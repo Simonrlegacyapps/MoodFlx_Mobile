@@ -166,15 +166,19 @@ const MicScreen = ({navigation}) => {
         <Image style={{marginTop: -10}} source={Constants.Images.Circles} />
         <View style={{marginHorizontal: 15, paddingBottom: 90}}>
           <Text style={styles.normalText}>Team Pulse</Text>
-          <Text style={styles.BigText}>
+          <Text>
             {UserData.UserEmail ? (
               questions && questions.length > 0 ? (
-                'Have your say as a collective'
+                <Text style={styles.BigText}>
+                  Have your say as a collective
+                </Text>
               ) : (
-                <View>
+                <Text
+                  style={{textAlign: 'center', alignSelf: 'center', flex: 1}}>
                   <Text
                     numberOfLines={4}
                     style={{
+                      alignSelf: 'center',
                       lineHeight: 28,
                       fontWeight: '500',
                       fontSize: dynamicSize(18),
@@ -186,6 +190,7 @@ const MicScreen = ({navigation}) => {
                     }}>
                     Anonymously answer Team Pulses with how you feel.
                   </Text>
+                  {'\n'}
                   <Text
                     numberOfLines={4}
                     style={{
@@ -202,7 +207,7 @@ const MicScreen = ({navigation}) => {
                     You'll get a notification when a Team Pulse is available,
                     stay tuned!
                   </Text>
-                </View>
+                </Text>
               )
             ) : (
               <Text

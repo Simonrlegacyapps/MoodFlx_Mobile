@@ -10,6 +10,7 @@ import {
   Dimensions,
   TextInput,
   Keyboard,
+  Platform,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
@@ -67,6 +68,8 @@ const EditManualWeatherModal = ({
   //   );
 
   // console.log(`value`, value);
+
+  const {width} = Dimensions.get('window');
 
   let data = [
     {name: 'Low', id: 'Low'},
@@ -154,7 +157,7 @@ const EditManualWeatherModal = ({
                   setTouchTextEdit('Temp');
                 }}
                 style={{
-                  width: dynamicSize(250),
+                  width: width / 1.5,
                   backgroundColor: 'white',
                   margin: dynamicSize(10),
                   borderRadius: 15,
@@ -167,11 +170,13 @@ const EditManualWeatherModal = ({
                     paddingLeft: 8,
                     overflow: 'hidden',
                   }}>
-                  <Image
-                    resizeMode={'contain'}
-                    source={Constants.Images.Rain}
-                    style={{margin: 10, marginHorizontal: 14}}
-                  />
+                  <TouchableOpacity onPress={() => setOpenWeatherType(true)}>
+                    <Image
+                      resizeMode={'contain'}
+                      source={Constants.Images.Rain}
+                      style={{margin: 10, marginHorizontal: 14}}
+                    />
+                  </TouchableOpacity>
                   <View>
                     <TouchableOpacity
                       style={{flexDirection: 'row'}}
@@ -195,7 +200,13 @@ const EditManualWeatherModal = ({
                         source={Constants.Images.dropDownTwo}
                       />
                     </TouchableOpacity>
-                    <View style={{flexDirection: 'row'}}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        // backgroundColor: 'red',
+                        flex: 1,
+                        alignItems: 'center',
+                      }}>
                       <TextInput
                         // onSubmitEditing={Keyboard.dismiss()}
                         autoFocus={
@@ -204,6 +215,7 @@ const EditManualWeatherModal = ({
                             : false
                         }
                         placeholder={Temp}
+                        value={Temp}
                         onChangeText={(text) => {
                           EditTemp(text);
                         }}
@@ -215,14 +227,14 @@ const EditManualWeatherModal = ({
                             borderBottomWidth: 1,
                           },
                         ]}>
-                        {Math.round(Weather ? Weather.main.temp : '0')}
+                        {/* {Math.round(Weather ? Weather.main.temp : '0')} */}
                       </TextInput>
                       <Text
                         style={[
                           {
                             fontFamily: RubikMedium,
                             fontSize: dynamicSize(34),
-                            borderBottomWidth: 1,
+                            // borderBottomWidth: 1,
                           },
                         ]}>
                         ºC
@@ -254,7 +266,13 @@ const EditManualWeatherModal = ({
                             : 'Low'}
                         </Text>
                       </TouchableOpacity>
-                      <View style={{flexDirection: 'row'}}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          // flex: 1,
+                          marginTop: Platform.OS === 'android' && -11,
+                          alignItems: 'center',
+                        }}>
                         <TextInput
                           autoFocus={
                             !!TouchTextEdit && TouchTextEdit === 'Hours'
@@ -262,21 +280,20 @@ const EditManualWeatherModal = ({
                               : false
                           }
                           placeholder={Hour}
+                          value={hours ? hours : '1'}
                           onChangeText={(text) => {
                             EditHour(text);
                           }}
                           keyboardType={'decimal-pad'}
                           style={[
-                            ,
                             {
                               fontFamily: RubikMedium,
                               fontSize: 18,
                               borderBottomWidth: 1,
+                              // backgroundColor: 'blue',
                               // width: 14,
                             },
-                          ]}>
-                          {hours ? hours : 1}
-                        </TextInput>
+                          ]}></TextInput>
                         <Text
                           style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
                           {' '}
@@ -292,7 +309,7 @@ const EditManualWeatherModal = ({
                     setOpenPollen(true);
                   }}
                   style={{
-                    width: dynamicSize(120),
+                    width: width / 3.3,
                     backgroundColor: 'white',
                     borderRadius: 15,
                     paddingRight: 2,
@@ -322,6 +339,8 @@ const EditManualWeatherModal = ({
                           style={[
                             ,
                             {
+                              marginTop: 10,
+                              marginLeft: Pollen === 'Medium' ? -8 : 0,
                               fontFamily: RubikMedium,
                               fontSize: dynamicSize(16),
                             },
@@ -336,6 +355,7 @@ const EditManualWeatherModal = ({
                             marginHorizontal: 5,
                             justifyContent: 'center',
                             alignSelf: 'center',
+                            marginTop: 8,
                           }}
                           source={Constants.Images.dropDownTwo}
                         />
@@ -517,7 +537,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card2View: {
-    width: dynamicSize(115),
+    width: width / 3.3,
     backgroundColor: 'white',
     borderRadius: 15,
     marginRight: 15,
@@ -541,8 +561,8 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     color: '#8A8BAB',
     fontSize: 16,
-    marginTop: 0,
-    minWidth: dynamicSize(20),
+    // marginTop: 0,
+    // minWidth: dynamicSize(20),
   },
   SmallThinText: {
     paddingVertical: 12,
