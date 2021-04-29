@@ -308,25 +308,28 @@ export const getHapticStats = (y, blocksSize, offsetSize) => {
   const yPosInBlock = y - blocksSize.top;
   const blockSizeHalf = blocksSize.height / 2;
   percentage = 100 - Math.round((yPosInBlock / blockSizeHalf ) * 100);
+  let interval = (100 - (Math.abs(percentage))) / 1000;
+  let fifteenPercent = ((interval * 1000) * 15) / 100;
   if(percentage > 0 && percentage <= 27){
     hapticType = hapticsConfigs.car.light;
-    timeInterval = 0.4;
+    timeInterval = ((0.2 * 1000) + (interval * 1000)) / 1000;;
   } else if(percentage > 27 && percentage <= 54) {
     hapticType = hapticsConfigs.car.medium;
-    timeInterval = 0.4;
+    timeInterval = ((0.2 * 1000) + (interval * 1000)) / 1000;;
   } else if(percentage > 54 && percentage <= 100) {
     // hapticType = hapticsConfigs.car.high;
     hapticType = hapticsConfigs.car.medium;
-    timeInterval = 0.4;
+    timeInterval = ((0.01 * 1000) + (interval * 1000)) / 1000;;
+    // timeInterval = ((interval * 1000) + fifteenPercent) / 1000;
   } else if(percentage < 0 && percentage >= -27) {
     hapticType = hapticsConfigs.heartBeat.light;
-    timeInterval = 0.8;
+    timeInterval = ((0.7 * 1000) + (interval * 1000)) / 1000;
   } else if(percentage < -27 && percentage >= -54) {
-    hapticType = hapticsConfigs.heartBeat.medium;
-    timeInterval = 0.8;
+    hapticType = hapticsConfigs.heartBeat.light;
+    timeInterval = ((0.6 * 1000) + (interval * 1000)) / 1000;
   } else if(percentage < -54 && percentage >= -100) {
-    hapticType = hapticsConfigs.heartBeat.high;
-    timeInterval = 0.8;
+    hapticType = hapticsConfigs.heartBeat.light;
+    timeInterval = ((0.5 * 1000) + (interval * 1000)) / 1000;
   }
   // console.log('getHapticStats percentage', percentage);
   // console.log('getHapticStats hapticType', hapticType);
