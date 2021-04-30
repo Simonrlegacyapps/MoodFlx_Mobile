@@ -76,8 +76,8 @@ export default function MoodDetector({ navigation }) {
   const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
   const [SaveName, setSaveName] = useState(null); //for modal flag
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
-  let [toolTipData, setToolTipData] = useState(initialEmotionTextData);
-  const [emotionText, setEmotionText] = useState(toolTipData.text);
+  let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
+  const [emotionText, setEmotionText] = useState(initialEmotionTextData.text);
   const [color, setColor] = useState(toolTipData.color);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isHapticsEnabled, setisHapticsEnabled] = useState(false);
