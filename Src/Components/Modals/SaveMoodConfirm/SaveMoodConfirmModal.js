@@ -77,7 +77,7 @@ const SaveMoodConfirmModal = ({
           <Text
             style={{
               //   fontWeight: '500',
-              //   letterSpacing: 1,
+              //   letterSpacing: 
               fontFamily: RubikRegular,
 
               fontSize: dynamicSize(18),
