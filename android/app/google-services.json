@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "241040459952",
+    "project_id": "moodflo-604d6",
+    "storage_bucket": "moodflo-604d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241040459952:android:8056a65111baeb24979375",
+        "android_client_info": {
+          "package_name": "com.moodflo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241040459952-ecs9mnr30akq9bt7624mvm30uf4avg5o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwZpeZ-hXntgUKSQo7V8rF_FQfxpYoI-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241040459952-ecs9mnr30akq9bt7624mvm30uf4avg5o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "241040459952-8n58iiocffldj7kr06fu3getcibbhgkp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "moodFlo.ios"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241040459952:android:0fe6126d50041893979375",
+        "android_client_info": {
+          "package_name": "moodFlo.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241040459952-ecs9mnr30akq9bt7624mvm30uf4avg5o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwZpeZ-hXntgUKSQo7V8rF_FQfxpYoI-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241040459952-ecs9mnr30akq9bt7624mvm30uf4avg5o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "241040459952-8n58iiocffldj7kr06fu3getcibbhgkp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "moodFlo.ios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

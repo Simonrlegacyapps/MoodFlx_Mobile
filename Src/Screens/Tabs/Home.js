@@ -58,6 +58,7 @@ import {
   UserSteps,
   WeatherPerm,
 } from '../../redux/actions/actions';
+import messaging, {firebase} from '@react-native-firebase/messaging';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -159,14 +160,22 @@ const App = (props) => {
 
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     // InteractionManager.runAfterInteractions(() => {
-  //     console.log(`Hiiiiiiii Loooooooooo`);
-  //     checkStorage();
-  //     // });
-  //   }, 200);
-  // }, []);
+  const mainToken = async () => {
+    firebase.initializeApp();
+    const fcmToken = await messaging().getToken();
+    console.log(`fcmToken`, fcmToken);
+  };
+
+  useEffect(() => {
+    mainToken();
+
+    // const data = {
+    //   device_token: fcmToken,
+    //   platform: Platform.OS,
+    //   enable_notification: true,
+    //   id: userData.id
+    // }
+  }, []);
 
   useEffect(() => {
     if (callOneTime === 'one') {
