@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -48,6 +48,7 @@ import {
   WeatherPerm,
 } from '../../redux/actions/actions';
 import { useRoute } from '@react-navigation/native';
+import SaveMoodConfirmModal from '../../Components/Modals/SaveMoodConfirm/SaveMoodConfirmModal';
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
@@ -75,6 +76,7 @@ export default function MoodDetector({ navigation }) {
   const [MoodFail, setMoodFail] = useState(false); //not using
   const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
   const [SaveName, setSaveName] = useState(null); //for modal flag
+  const [isSaveMoodConfirmModalVisible, setIsSaveMoodConfirmModalVisible] = useState(false); //for modal flag
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
   let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
   const [emotionText, setEmotionText] = useState(initialEmotionTextData.text);
@@ -485,6 +487,18 @@ export default function MoodDetector({ navigation }) {
     // return () => hapticTimeoutId.current && clearInterval(hapticTimeoutId.current);
   }, [isHapticsEnabled])
 
+  const showMoodSaveConfirmModal = (onClose) => {
+    setIsSaveMoodConfirmModalVisible(true);
+    const id = setTimeout(() => {
+      setIsSaveMoodConfirmModalVisible(false);
+      const closeId = setTimeout(() => {
+        onClose?.();
+        clearTimeout(closeId);
+      }, 100);
+      clearTimeout(id);
+    }, 1000)
+  }
+
   const findId = async () => {
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
@@ -568,8 +582,11 @@ export default function MoodDetector({ navigation }) {
         fetch('https://admin.moodflo.com/api/updateAnswer', requestOptions)
           .then((response) => response.json())
           .then((result) => {
-            console.log('quesstion updated', result), setLoading(false);
-            navigation.navigate('HomeScreen', { screen: 'MicScreen' });
+            console.log('quesstion updated', result);
+            setLoading(false);
+            showMoodSaveConfirmModal(() => {
+              navigation.navigate('HomeScreen', { screen: 'MicScreen' });
+            });
           })
           .catch((error) => {
             console.log('error', error), setLoading(false);
@@ -591,13 +608,19 @@ export default function MoodDetector({ navigation }) {
               //   deviceID: deviceId,
               // });
               {
-                route?.params?.question != undefined
-                  ? navigation.navigate('HomeScreen', { screen: 'MicScreen' })
-                  : navigation.replace('HomeScreen', {
-                    lat: lat,
-                    long: lng,
-                    screen: 'Home',
+                if(route?.params?.question != undefined) {
+                  showMoodSaveConfirmModal(() => {
+                    navigation.navigate('HomeScreen', { screen: 'MicScreen' })
                   });
+                } else {
+                  showMoodSaveConfirmModal(() => {
+                    navigation.replace('HomeScreen', {
+                      lat: lat,
+                      long: lng,
+                      screen: 'Home',
+                    });
+                  });
+                }
               }
 
               // navigation.replace('HomeScreen', {
@@ -641,6 +664,10 @@ export default function MoodDetector({ navigation }) {
   const cancelled = () => {
     setSaveConfirm(false);
   };
+
+  const dismissSaveMoodConfirmModal = useCallback(() => {
+    setIsSaveMoodConfirmModalVisible(false);
+  }, []);
 
   const renderBlocks = () => {
     return (
@@ -895,6 +922,11 @@ export default function MoodDetector({ navigation }) {
         modalVisible={SaveConfirm}
         dismissModalHandler={cancelled}
         verifyDone={(value) => verifyDone(value)}
+      />
+
+      <SaveMoodConfirmModal
+        modalVisible={isSaveMoodConfirmModalVisible}
+        dismissModalHandler={dismissSaveMoodConfirmModal}
       />
 
       {Loading && (
