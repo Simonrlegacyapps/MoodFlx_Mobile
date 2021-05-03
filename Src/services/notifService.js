@@ -19,7 +19,7 @@ export default class NotifService {
     });
     const self = this;
     PushNotification.getChannels(function(channels) {
-        if(channels.indexOf("Channel One") === -1){
+        if(channels.indexOf("channel-one-id") === -1){
             self.createDefaultChannels();
         }
       console.log('channels', channels);
@@ -37,7 +37,7 @@ export default class NotifService {
         importance: 4, // (optional) default: 4. Int value of the Android notification importance
         vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
       },
-      (created) => console.log(`createChannel 'default-channel-id' returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+      (created) => console.log(`createChannel 'channel-one-id' returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
     );
     // PushNotification.createChannel(
     //   {
@@ -148,6 +148,7 @@ export default class NotifService {
       playSound: !!soundName, // (optional) default: true
       soundName: soundName ? soundName : 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
       number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
+      repeatType: "day",
     });
   }
 

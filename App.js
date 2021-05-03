@@ -227,23 +227,23 @@ const App: () => React$Node = () => {
   }, []);
 
   const fp = () => {
-    let a = new Date();
+    let  a = new Date();
     if(Platform.OS === 'android'){
       notifService.scheduleNotif({
-        id: 'First',
+        id: 1,
         time: new Date(a.setHours(10, 0, 0, 0)),
         title: 'Flo would love to know how you feel',
-      })
+      });
       notifService.scheduleNotif({
-        id: 'Second',
+        id: 2,
         time: new Date(a.setHours(13, 0, 0, 0)),
         title: 'Flo would love to know how you feel',
-      })
+      });
       notifService.scheduleNotif({
-        id: 'Third',
+        id: 3,
         time: new Date(a.setHours(16, 0, 0, 0)),
         title: 'Flo would love to know how you feel',
-      })
+      });
       return;
     }
     console.log('call');
