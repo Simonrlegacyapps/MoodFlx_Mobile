@@ -31,9 +31,7 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import Swiper from '../../Components/Swiper';
-// import Swiper from 'react-native-swiper';
 import AsyncStorage from '@react-native-community/async-storage';
-import RNSamsungHealth from 'rn-samsung-health';
 import {useRoute} from '@react-navigation/native';
 import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
@@ -497,14 +495,6 @@ const App = (props) => {
       // setLoading(false);
     }
 
-    if (Platform.OS === 'android') {
-      RNSamsungHealth.authorize((err, res) => {
-        console.log(`err`, err);
-        console.log(`res`, res);
-      });
-
-      console.log(`yahan pat`);
-    }
 
     const health = async () => {
       // RNSamsungHealth.authorize((err, res) => {

@@ -6,6 +6,7 @@ import {
   TextInput,
   Image,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import Constants from '../../Constants';
@@ -21,6 +22,7 @@ import {
 import {useRoute} from '@react-navigation/native';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import AsyncStorage from '@react-native-community/async-storage';
+// import messaging, {firebase} from '@react-native-firebase/messaging';
 
 const VerifyEmail = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
@@ -34,10 +36,13 @@ const VerifyEmail = ({navigation}) => {
   const {code, mail, deviceID} = route.params;
   // console.log('code ye hai ', code);
   const onLink = () => {
+    // const fcmToken = await messaging().getToken();
     const params = {
       email: mail,
       otp: Code,
       device_id: deviceID,
+      // device_token: fcmToken,
+      // device_type: Platform.OS === 'ios' ? 'ios' : 'android'
     };
     setLoading(true);
     {

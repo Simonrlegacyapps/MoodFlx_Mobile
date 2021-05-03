@@ -10,7 +10,8 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
-import ProgressBar from 'react-native-animated-progress';
+// import ProgressBar from 'react-native-animated-progress';
+import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import Constants from '../../Constants';
 import {
