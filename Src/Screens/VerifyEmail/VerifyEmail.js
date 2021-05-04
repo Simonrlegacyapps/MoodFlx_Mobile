@@ -22,7 +22,7 @@ import {
 import {useRoute} from '@react-navigation/native';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import AsyncStorage from '@react-native-community/async-storage';
-// import messaging, {firebase} from '@react-native-firebase/messaging';
+import messaging, {firebase} from '@react-native-firebase/messaging';
 
 const VerifyEmail = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
@@ -35,14 +35,14 @@ const VerifyEmail = ({navigation}) => {
 
   const {code, mail, deviceID} = route.params;
   // console.log('code ye hai ', code);
-  const onLink = () => {
-    // const fcmToken = await messaging().getToken();
+  const onLink = async () => {
+    const fcmToken = await messaging().getToken();
     const params = {
       email: mail,
       otp: Code,
       device_id: deviceID,
-      // device_token: fcmToken,
-      // device_type: Platform.OS === 'ios' ? 'ios' : 'android'
+      device_token: fcmToken,
+      device_type: Platform.OS === 'ios' ? 'ios' : 'android',
     };
     setLoading(true);
     {

@@ -428,7 +428,6 @@ export default function MoodDetector({ navigation }) {
               console.log('error', code, message);
             });
       }
-
     }, 150);
   }, []);
 
