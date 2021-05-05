@@ -15,8 +15,8 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import ProgressBar from 'react-native-animated-progress';
-import ProgressBarCustom from '../../../Components/ProgressBar/ProgressBarCustom';
+// import ProgressBar from 'react-native-animated-progress';
+import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
 import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';

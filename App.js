@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   StatusBar,
@@ -8,8 +8,8 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
+  Platform,
 } from 'react-native';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
 import AppIntroSlider from 'react-native-app-intro-slider';
@@ -41,9 +41,10 @@ import {
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import moment from 'moment';
-import LightSensor from 'react-native-light-sensor';
+// import LightSensor from 'react-native-light-sensor';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import NotifService from './Src/services/notifService';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -91,6 +92,7 @@ const Images = [
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState('');
+  const notifService = useRef(new NotifService).current;
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -225,7 +227,25 @@ const App: () => React$Node = () => {
   }, []);
 
   const fp = () => {
-    let a = new Date();
+    let  a = new Date();
+    if(Platform.OS === 'android'){
+      notifService.scheduleNotif({
+        id: 1,
+        time: new Date(a.setHours(10, 0, 0, 0)),
+        title: 'Flo would love to know how you feel',
+      });
+      notifService.scheduleNotif({
+        id: 2,
+        time: new Date(a.setHours(13, 0, 0, 0)),
+        title: 'Flo would love to know how you feel',
+      });
+      notifService.scheduleNotif({
+        id: 3,
+        time: new Date(a.setHours(16, 0, 0, 0)),
+        title: 'Flo would love to know how you feel',
+      });
+      return;
+    }
     console.log('call');
     PushNotificationIOS.addNotificationRequest({
       id: 'First',
@@ -250,7 +270,7 @@ const App: () => React$Node = () => {
     });
   };
   useEffect(() => {
-    console.log(`LightSensor`, LightSensor);
+    // console.log(`LightSensor`, LightSensor);
     {
       UserData.WeatherPermission &&
         (UserData.lat == null || UserData.lon == null) &&
@@ -277,7 +297,11 @@ const App: () => React$Node = () => {
           .then(async (res) => {
             // await setGetMoods(res.data);
             await dispatch(Moods(res.data));
-          });
+          })
+          .catch((error) => {
+            // const {code, message} = error;
+            console.log('error', error);
+          });;
     }
     checkStorage();
     getProfileUserData();

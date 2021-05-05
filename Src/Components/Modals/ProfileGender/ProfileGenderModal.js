@@ -29,6 +29,8 @@ const ProfileGenderModal = ({
   datePicker,
   date,
   weatherDrop,
+  profiltab,
+  apicall,
 }: props) => {
   const [color, setcolor] = useState('black');
   return (
@@ -89,7 +91,7 @@ const ProfileGenderModal = ({
                   style={[
                     styles.buttonsStyle,
                     {
-                      borderBottomWidth: data.length != index + 1 && 1,
+                      borderBottomWidth: data.length != index + 1 ? 1 : 0,
                       minWidth: dynamicSize(190),
                       borderBottomColor: '#D8D8D8',
                     },

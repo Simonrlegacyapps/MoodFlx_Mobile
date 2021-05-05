@@ -15,8 +15,8 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import ProgressBar from 'react-native-animated-progress';
-import ProgressBarCustom from '../../../Components/ProgressBar/ProgressBarCustom';
+// import ProgressBar from 'react-native-animated-progress';
+import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
 import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
@@ -351,12 +351,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#8A8BAB',
     fontFamily: RubikLight,
-    lineHeight: 12,
-    marginVertical: 5,
+    // lineHeight: 12,
+    // marginVertical: 5,
   },
   normalText: {
     fontSize: 16,
-    lineHeight: 16,
+    marginTop: 4,
+    // lineHeight: 16,
     fontFamily: RubikRegular,
   },
   ColoredText: {

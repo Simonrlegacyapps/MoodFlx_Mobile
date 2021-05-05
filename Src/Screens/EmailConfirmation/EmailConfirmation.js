@@ -34,11 +34,12 @@ const EmailConfirmation = ({navigation}) => {
     };
     setLoading(true);
     setAPIfail(false);
+    console.log(`params of email confirmation`, params);
     PostRequestApi('linkToCompany', params)
       .then((resp) => {
         if (resp.status == 200 && resp.data.success == true) {
           setLoading(false);
-          console.log('otp', resp.data);
+          console.log('otp on email confirmation', resp.data);
           navigation.navigate('VerifyEmail', {
             code: resp.data.otp,
             mail: value,
@@ -145,7 +146,7 @@ const EmailConfirmation = ({navigation}) => {
             returnKeyType={'done'}
             autoCorrect={false}
             autoCapitalize={'none'}
-            autoCompleteType={false}
+            autoCompleteType={'off'}
             placeholder={'example@work-mail.com'}
             placeholderTextColor={'#8A8BAB'}
             onSubmitEditing={() => submit()}

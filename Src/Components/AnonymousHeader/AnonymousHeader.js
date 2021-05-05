@@ -125,6 +125,9 @@ const AnonymousHeader = ({backGround}) => {
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 20,
+        shadowColor: 'black',
+        shadowOffset: {height: 2},
+        shadowOpacity: 0.3,
       }}>
       <AddNameModal
         dataType={'weather'}

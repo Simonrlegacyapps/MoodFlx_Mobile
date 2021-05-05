@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, View, Dimensions, TouchableOpacity} from 'react-native';
+import {Image, View, Dimensions} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from './Tabs/Home';
 import Linktocompany from './Tabs/Linktocompany';
@@ -16,6 +16,7 @@ import LinkActive from '../../assets/tabicons/LinkActive';
 import LinkIcon from '../../assets/tabicons/LinkIcon';
 import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation';
 import MoodEmotionDetector from './MoodEmotionDetector';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const Tab = createBottomTabNavigator();
 const WIDTH = Dimensions.get('screen').width;
@@ -45,12 +46,12 @@ const HomeScreen = ({navigation, route}) => {
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
-                  activeOpacity={1}
                   onPress={() =>
-                    navigation.navigate('MoodEmotionDetector', {
+                    navigation.replace('MoodEmotionDetector', {
                       question: undefined,
                     })
-                  }>
+                  }
+                  activeOpacity={1}>
                   <Image
                     style={{
                       marginBottom: 75,
@@ -71,6 +72,7 @@ const HomeScreen = ({navigation, route}) => {
           },
         })}
         tabBarOptions={{
+          // keyboardHidesTabBar: true,
           showLabel: false,
           style: {
             backgroundColor: 'transparent',
@@ -111,8 +113,15 @@ const HomeScreen = ({navigation, route}) => {
           // backgroundColor: 'grey',
           bottom: 0,
           shadowColor: 'black',
-          shadowOffset: {height: 2},
+          // shadowOffset: {height: 2},
           shadowOpacity: 0.3,
+
+          shadowOffset: {
+            width: 0,
+            height: 3,
+          },
+          // shadowOpacity: 0.27,
+          shadowRadius: 4.65,
         }}>
         <Image
           resizeMode={'stretch'}

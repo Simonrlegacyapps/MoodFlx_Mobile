@@ -30,24 +30,8 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import Constants from '../../Constants';
-import ProgressBar from 'react-native-animated-progress';
-import Swiper from 'react-native-swiper';
+import Swiper from '../../Components/Swiper';
 import AsyncStorage from '@react-native-community/async-storage';
-import {
-  ChartDot,
-  ChartPath,
-  ChartPathProvider,
-  monotoneCubicInterpolation,
-} from '@rainbow-me/animated-charts';
-import GraphicChart from '../../Components/GraphicChart/GraphicChart';
-import PostRequestApi from '../../apirequest/PostRequestApi';
-import ProgressBarCustom from '../../Components/ProgressBar/ProgressBarCustom';
-import BarGraph from '../../Components/BarChart/BarGraph';
-import {LineChart} from 'react-native-chart-kit';
-import {dynamicSize} from '../../Constants/sizeChoose';
-import BezierGraphAuto from '../../Components/BezierGraphAuto/BezierGraphAuto';
-import HomeHeader from '../../Components/HomeHeader/HomeHeader';
 import {useRoute} from '@react-navigation/native';
 import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
@@ -72,6 +56,7 @@ import {
   UserSteps,
   WeatherPerm,
 } from '../../redux/actions/actions';
+import messaging, {firebase} from '@react-native-firebase/messaging';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -173,14 +158,22 @@ const App = (props) => {
 
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     // InteractionManager.runAfterInteractions(() => {
-  //     console.log(`Hiiiiiiii Loooooooooo`);
-  //     checkStorage();
-  //     // });
-  //   }, 200);
-  // }, []);
+  const mainToken = async () => {
+    firebase.initializeApp();
+    const fcmToken = await messaging().getToken();
+    console.log(`fcmToken`, fcmToken);
+  };
+
+  useEffect(() => {
+    mainToken();
+
+    // const data = {
+    //   device_token: fcmToken,
+    //   platform: Platform.OS,
+    //   enable_notification: true,
+    //   id: userData.id
+    // }
+  }, []);
 
   useEffect(() => {
     if (callOneTime === 'one') {
@@ -197,11 +190,13 @@ const App = (props) => {
     console.log(`mood count again`, e);
     let HealthP = await JSON.parse(p);
     dispatch(HealthPerm(HealthP));
+    console.log(`HealthP`, HealthP != null);
     if (HealthP != null) {
-      console.log('good to go for API in async');
       await OnAutoSync();
       const steps_data = await UserData.MainSteps;
+      console.log(`steps_data`, steps_data, UserData.MainSteps);
       if (steps_data !== null) {
+        console.log('good to go for API in async here at top');
         setLoading(UserData.HealthPermission ? true : false);
         setcallOneTime('second');
         // console.log(`UserData.MainSteps`, UserData.MainSteps);
@@ -223,12 +218,13 @@ const App = (props) => {
     console.log(`mood count again`, e);
     let HealthP = await JSON.parse(p);
     dispatch(HealthPerm(HealthP));
+
     if (HealthP != null) {
-      console.log('good to go for API in async');
+      console.log('good to go for API in async here at top');
       await OnAutoSync();
       await UserData.MainSteps;
+      console.log(`UserData.MainSteps`, UserData.MainSteps);
       if (UserData.MainSteps !== null) {
-        // console.log(`UserData.MainSteps`, UserData.MainSteps);
         filterDates();
         filterSteps();
         AddDataToFilter();
@@ -252,9 +248,9 @@ const App = (props) => {
 
   const OnAutoSync = async () => {
     console.log(`auto sync function called`);
-    const a = moment().subtract(1, 'months').format('DD MMM YYYY');
+    // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
-    console.log('moment() month', new Date(a).toISOString());
+    // console.log('moment() month', new Date(a).toISOString());
     // console.log(
     //   `api.openweathermap.org/data/2.5/weather?lat=${this.state.lat}&lon=${this.state.lng}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
     // );
@@ -263,10 +259,10 @@ const App = (props) => {
       const healthKitOptions = {
         permissions: {
           read: [
-            PERMS.DateOfBirth,
-            PERMS.Weight,
-            PERMS.Height,
-            PERMS.BodyMassIndex,
+            // PERMS.DateOfBirth,
+            // PERMS.Weight,
+            // PERMS.Height,
+            // PERMS.BodyMassIndex,
             // PERMS.LeanBodyMass,
             // PERMS.BodyFatPercentage,
             PERMS.StepCount,
@@ -275,11 +271,10 @@ const App = (props) => {
             PERMS.BloodPressureDiastolic,
             PERMS.BloodPressureSystolic,
             PERMS.ActiveEnergyBurned, //
-            PERMS.BasalEnergyBurned, //
+            // PERMS.BasalEnergyBurned, //
             PERMS.DistanceWalkingRunning, //
             PERMS.HeartRate,
             PERMS.SleepAnalysis,
-            PERMS.DateOfBirth,
             // PERMS.FlightsClimbed,
             PERMS.DistanceCycling,
             PERMS.Workout,
@@ -314,50 +309,6 @@ const App = (props) => {
           setDateOfBirth(results);
           //  console.log('age', results);
         });
-
-        // Get Latest Weight
-        AppleHealthKit.getLatestWeight(
-          null,
-          async (err: string, results: Object) => {
-            setLatestWeight(results);
-            //  console.log('weight', results);
-          },
-        );
-
-        // AppleHealthKit.getHeightSamples(
-        //   stepsCount,
-        //   async (err: string, results: Object) => {
-        //     setallHeights(results);
-        //     // console.log('All height', results);
-        //   },
-        // );
-
-        AppleHealthKit.getLatestHeight(
-          null,
-          async (err: string, results: Object) => {
-            // console.log('height', results);
-
-            setHeight(results);
-          },
-        );
-
-        // AppleHealthKit.getLatestBmi(
-        //   null,
-        //   async (err: string, results: Object) => {
-        //     // console.log('BMI', results);
-
-        //     setBMI(results);
-        //   },
-        // );
-
-        // AppleHealthKit.getBodyTemperatureSamples(
-        //   stepsCount,
-        //   async (err: Object, results: Array<Object>) => {
-        //     settemp(results);
-
-        //     // console.log('All body temp', results);
-        //   },
-        // );
 
         AppleHealthKit.getDailyStepCountSamples(
           stepsCount,
@@ -442,33 +393,6 @@ const App = (props) => {
             // console.log('All steps ++++', results, total);
           },
         );
-        // AppleHealthKit.getStepCount(
-        //   stepsCount,
-        //   async (err: Object, results: Array<Object>) => {
-        //     setsteps(results);
-
-        //     // console.log('Today steps ++++', results);
-        //   },
-        // );
-
-        // AppleHealthKit.getBodyFatPercentageSamples(
-        //   stepsCount,
-        //   async (err: string, results: Object) => {
-        //     setBodyFatPerc(results);
-
-        //     // console.log(' All Body Fat % ', results);
-        //   },
-        // );
-
-        // AppleHealthKit.getWeightSamples(
-        //   stepsCount,
-        //   async (err: Object, results: Array<Object>) => {
-        //     setWeight(results);
-
-        //     // console.log(' All Body Weight ', results);
-        //   },
-        // );
-
         AppleHealthKit.getBloodPressureSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
@@ -570,6 +494,24 @@ const App = (props) => {
       });
       // setLoading(false);
     }
+
+
+    const health = async () => {
+      // RNSamsungHealth.authorize((err, res) => {
+      //   if (res) {
+      //     // let startDate = new Date().setDate(new Date().getDate() - 30); // 30 days back date
+      //     // let endDate = new Date().getTime(); //today's date
+      //     // let opt = {startDate, endDate};
+      //     // RNSamsungHealth.getDailyStepCount(opt, (err, res) => {
+      //     //   if (err) console.log(err);
+      //     //   if (res) console.log(res);
+      //     // });
+      //   }
+      //   if (err) {
+      //     console.log(`err`, err);
+      //   }
+      // });
+    };
 
     CheckForWeather(lat, long);
   };
@@ -779,8 +721,8 @@ const App = (props) => {
     Fsteps.push();
 
     console.log(`Fsteps at last`, Fsteps);
-    // console.log(`walkTime at last`, WalkTime);
-    // console.log(`Workouts at last`, Workouts);
+    console.log(`walkTime at last`, WalkTime > 0);
+    console.log(`Fsteps at last`, Fsteps > 0);
     if (Fsteps.length > 0 && WalkTime.length > 0) {
       // console.log('good to go for API');
       // const data = {
