@@ -15,8 +15,8 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import ProgressBar from 'react-native-animated-progress';
-import ProgressBarCustom from '../../../Components/ProgressBar/ProgressBarCustom';
+// import ProgressBar from 'react-native-animated-progress';
+import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
 import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
@@ -25,7 +25,6 @@ import moment from 'moment';
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import Geocoder from 'react-native-geocoding';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import AsyncStorage from '@react-native-community/async-storage';
 import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
 import PopUp from '../../../Components/PopUp/PopUp';
