@@ -16,6 +16,7 @@
 		16B7472354AF498A989EBC24 /* Rubik-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D1809BF6DD824C91BBAA3583 /* Rubik-Bold.ttf */; };
 		17EE349F80E94A9F9E81582E /* Rubik-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B122875F7C8F437D8DE83DC1 /* Rubik-ExtraBold.ttf */; };
 		18217A31F5B245DBBD6882EC /* Rubik-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 61B67AA48684412AB9063198 /* Rubik-BlackItalic.ttf */; };
+		1922D4ED2642730A00CBD43A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */; };
 		2C10DEE89E1EFCF9426961F7 /* libPods-MoodFlo-MoodFloTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20882D955B333096F3B6DF18 /* libPods-MoodFlo-MoodFloTests.a */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -26,7 +27,6 @@
 		6222F7D571C24B368A31F1C2 /* Rubik-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CF0E358314B0428FA1143D9C /* Rubik-ExtraBoldItalic.ttf */; };
 		814CF568EA0BA6F99861D33B /* libPods-MoodFlo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 764090E074593472C3F11609 /* libPods-MoodFlo.a */; };
 		B072706AD2FF429F880D0FC9 /* Rubik-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 603118161DEB423AB458B5A4 /* Rubik-MediumItalic.ttf */; };
-		B97A1BD2263C246000677E0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B97A1BD1263C246000677E0C /* GoogleService-Info.plist */; };
 		CF7CE0F025F9E8FE00E73988 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */; };
 		CF7CE0FF25FB70DB00E73988 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF7CE0FE25FB70DB00E73988 /* HealthKit.framework */; };
 		D5B5CB973A4043099C3111D3 /* Rubik-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1E2AAE695526452EAEE414C0 /* Rubik-Medium.ttf */; };
@@ -70,6 +70,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MoodFlo/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = MoodFlo/main.m; sourceTree = "<group>"; };
 		145FFD024E29D2E69DD6A0E8 /* Pods-MoodFlo-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-tvOS.release.xcconfig"; path = "Target Support Files/Pods-MoodFlo-tvOS/Pods-MoodFlo-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1E2AAE695526452EAEE414C0 /* Rubik-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Medium.ttf"; path = "../assets/fonts/Rubik-Medium.ttf"; sourceTree = "<group>"; };
 		20882D955B333096F3B6DF18 /* libPods-MoodFlo-MoodFloTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MoodFlo-MoodFloTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E47B1E0B4A5D006451C7 /* MoodFlo-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MoodFlo-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,7 +101,6 @@
 		B122875F7C8F437D8DE83DC1 /* Rubik-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-ExtraBold.ttf"; path = "../assets/fonts/Rubik-ExtraBold.ttf"; sourceTree = "<group>"; };
 		B4D0CEEB2046D85B29956AA9 /* libPods-MoodFlo-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MoodFlo-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B71E9C53FDF44BD7A3218A3A /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
-		B97A1BD1263C246000677E0C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BA92150FAD0FA384741BC250 /* libPods-MoodFlo-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MoodFlo-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAD1852DEA9E42BF8F408C24 /* Rubik-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-SemiBold.ttf"; path = "../assets/fonts/Rubik-SemiBold.ttf"; sourceTree = "<group>"; };
 		C59CF3739FF64CE49FDFCFA1 /* Rubik-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Regular.ttf"; path = "../assets/fonts/Rubik-Regular.ttf"; sourceTree = "<group>"; };
@@ -175,13 +175,13 @@
 		13B07FAE1A68108700A75B9A /* MoodFlo */ = {
 			isa = PBXGroup;
 			children = (
+				1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */,
 				CF7CE0FD25FB70DA00E73988 /* MoodFlo.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				B97A1BD1263C246000677E0C /* GoogleService-Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */,
 			);
@@ -299,7 +299,6 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				F7D5AD61938D7044661BC93B /* [CP] Embed Pods Frameworks */,
 				759A703C85C04F9022E55F6E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -322,7 +321,6 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				82260FF63F0D1C76F2634735 /* [CP] Embed Pods Frameworks */,
 				2D85ED93A849324D791548C4 /* [CP] Copy Pods Resources */,
 				3EADDC260B7C2C4695140883 /* [CP-User] [RNFB] Core Configuration */,
 			);
@@ -445,8 +443,8 @@
 				4BAA1CCB1AAF4908A8710D96 /* Rubik-Italic.ttf in Resources */,
 				F00B65B9AFDB48C6875AB2EE /* Rubik-Light.ttf in Resources */,
 				DA5B050E2C014B76A79A4565 /* Rubik-LightItalic.ttf in Resources */,
+				1922D4ED2642730A00CBD43A /* GoogleService-Info.plist in Resources */,
 				D5B5CB973A4043099C3111D3 /* Rubik-Medium.ttf in Resources */,
-				B97A1BD2263C246000677E0C /* GoogleService-Info.plist in Resources */,
 				B072706AD2FF429F880D0FC9 /* Rubik-MediumItalic.ttf in Resources */,
 				DE0FDA1E82A1408C9792AE3B /* Rubik-Regular.ttf in Resources */,
 				5A9CBE314A754C3DA8F06F95 /* Rubik-SemiBold.ttf in Resources */,
@@ -669,24 +667,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MoodFlo-MoodFloTests/Pods-MoodFlo-MoodFloTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		82260FF63F0D1C76F2634735 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MoodFlo/Pods-MoodFlo-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MoodFlo/Pods-MoodFlo-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		93F526B4EAA6072CACF8DDE0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -729,24 +709,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F7D5AD61938D7044661BC93B /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MoodFlo-MoodFloTests/Pods-MoodFlo-MoodFloTests-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MoodFlo-MoodFloTests/Pods-MoodFlo-MoodFloTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
