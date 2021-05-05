@@ -228,21 +228,38 @@ const App: () => React$Node = () => {
 
   const fp = () => {
     let  a = new Date();
+    // let first = new Date(new Date().setHours(10, 0, 0, 0)).getTime();
+    // let second = new Date(new Date().setHours(13, 0, 0, 0)).getTime();
+    // let third = new Date(new Date().setHours(16, 0, 0, 0)).getTime();
+    // if(moment().isBefore(first, 'second')){
+    //   first = moment(first).add(1, 'days').toDate();
+    //   console.log('first =>', first.toLocaleString());
+    // }
+    // if(moment().isBefore(second, 'second')){
+    //   second = moment(second).add(1, 'days').toDate();
+    //   console.log('second =>', second.toLocaleString());
+    // }
+    // if(moment().isBefore(third, 'second')){
+    //   third = moment(third).add(1, 'days').toDate();
+    //   console.log('third =>', third.toLocaleString());
+    // }
+    // return
     if(Platform.OS === 'android'){
+      // return;
       notifService.scheduleNotif({
         id: 1,
-        time: new Date(a.setHours(10, 0, 0, 0)),
+        time: new Date(a.setHours(13, 28, 0, 0)),
         title: 'Flo would love to know how you feel',
       });
       notifService.scheduleNotif({
         id: 2,
-        time: new Date(a.setHours(13, 0, 0, 0)),
-        title: 'Flo would love to know how you feel',
+        time: new Date(a.setHours(13, 28, 30, 0)),
+        title: 'Time to check in with Flo',
       });
       notifService.scheduleNotif({
         id: 3,
-        time: new Date(a.setHours(16, 0, 0, 0)),
-        title: 'Flo would love to know how you feel',
+        time: new Date(a.setHours(13, 28, 45, 0)),
+        title: "It's Flo time",
       });
       return;
     }

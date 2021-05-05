@@ -1,5 +1,6 @@
 import PushNotification from 'react-native-push-notification';
 // import NotificationHandler from './NotificationHandler';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class NotifService {
 //   constructor(onRegister, onNotification) {
@@ -150,6 +151,19 @@ export default class NotifService {
       number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
       repeatType: "day",
     });
+  }
+
+  static async getDeviceToken() {
+    let fcmToken = '';
+    try {
+      const value = await AsyncStorage.getItem('device_token');
+      if(value !== null) {
+        fcmToken = value;
+      }
+    } catch(e) {
+      console.log('error getting device_token from storage', error);
+    }
+    return fcmToken;
   }
 
   checkPermission(cbk) {
