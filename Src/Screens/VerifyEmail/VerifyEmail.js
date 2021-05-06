@@ -23,6 +23,7 @@ import {useRoute} from '@react-navigation/native';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import AsyncStorage from '@react-native-community/async-storage';
 import messaging, {firebase} from '@react-native-firebase/messaging';
+import NotifService from '../../services/notifService';
 
 const VerifyEmail = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
@@ -36,13 +37,16 @@ const VerifyEmail = ({navigation}) => {
   const {code, mail, deviceID} = route.params;
   // console.log('code ye hai ', code);
   const onLink = async () => {
-    const fcmToken = await messaging().getToken();
+    let fcmToken = await NotifService.getDeviceToken();
+    console.log('fcmToken', fcmToken);
     const params = {
       email: mail,
       otp: Code,
       device_id: deviceID,
-      device_token: fcmToken,
-      device_type: Platform.OS === 'ios' ? 'ios' : 'android',
+      device_token: 'cYdfDaXPQ4mcxuDz2FyDA-:APA91bGmEAILWVgyykPImmYaK9S_CzRCgv7Av8HTQRjrUjf7KHWy4rDhUr95q5Mf3U_Czwr2RwEp1ZR7Eg_6mAaLcWFZsLqRVqxLghgJm6rvqHN2WN_oVJL87GD7VppqlzLCXY3fbXk9',
+      device_type: 'android',
+      // device_token: fcmToken,
+      // device_type: Platform.OS === 'ios' ? 'ios' : 'android',
     };
     setLoading(true);
     {
