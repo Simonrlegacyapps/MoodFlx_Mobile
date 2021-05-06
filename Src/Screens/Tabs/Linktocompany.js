@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -10,9 +10,9 @@ import {
   View,
 } from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import Constants from '../../Constants';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Division,
   getDivisions,
@@ -25,7 +25,7 @@ import {
   UserEmail,
   WeatherPerm,
 } from '../../redux/actions/actions';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import { dynamicSize } from '../../Constants/sizeChoose';
 import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
 import {
   RubikBlack,
@@ -33,18 +33,18 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import PostRequestApi from '../../apirequest/PostRequestApi';
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
-import {PHOTO_URL} from '../../Constants/constants';
+import { PHOTO_URL } from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
 
-const Linktocompany = ({navigation}) => {
-  const {OTPVerified, setDivision, getDivision} = useSelector(
+const Linktocompany = ({ navigation }) => {
+  const { OTPVerified, setDivision, getDivision } = useSelector(
     (state) => state.First,
   );
 
-  const {width, height} = Dimensions.get('window');
+  const { width, height } = Dimensions.get('window');
 
   const [Linked, setLinked] = useState('Link');
   const [selectedDivisionId, setSelectedDivisionId] = useState('');
@@ -69,6 +69,7 @@ const Linktocompany = ({navigation}) => {
   //   UserData.UserEmail,
   //   UserData.UserDivision,
   // );
+
 
   useEffect(() => {
     fetch('https://admin.moodflo.com/api/getDivision')
@@ -160,30 +161,38 @@ const Linktocompany = ({navigation}) => {
   };
 
   const VerifyDone = async (type) => {
+    const params = {
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+    };
     console.log('verify', type);
-
-    if (type === 'Yes') {
-      dispatch(OTP_Verify(false));
-      dispatch(Division(null));
-      await AsyncStorage.removeItem('UserId');
-      await AsyncStorage.removeItem('Anonymous');
-      await AsyncStorage.removeItem('Email');
-      await AsyncStorage.removeItem('Division');
-      await AsyncStorage.removeItem('Email');
-      dispatch(UserDivision(null));
-      dispatch(UserEmail(null));
-      dispatch(GetUserId(null));
-      dispatch(IsAnonymous(true));
-      dispatch(UserDetail(null));
-      setUnlinkConfirm(false);
-    } else {
-      setUnlinkConfirm(false);
-    }
+      if (type === 'Yes') {
+        PostRequestApi('unlinkToCompany', params)
+        .then(async (resp) => {})
+        .catch((err) => {
+          console.log('unlink api failed error: ', err);
+        })
+        dispatch(OTP_Verify(false));
+        dispatch(Division(null));
+        await AsyncStorage.removeItem('UserId');
+        await AsyncStorage.removeItem('Anonymous');
+        await AsyncStorage.removeItem('Email');
+        await AsyncStorage.removeItem('Division');
+        await AsyncStorage.removeItem('Email');
+        dispatch(UserDivision(null));
+        dispatch(UserEmail(null));
+        dispatch(GetUserId(null));
+        dispatch(IsAnonymous(true));
+        dispatch(UserDetail(null));
+        setUnlinkConfirm(false);
+      } else {
+        setUnlinkConfirm(false);
+      }
     // setLinked(type);
   };
   // console.log(`UserData.NameCompany`, UserData.NameCompany);
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       {/* {console.log('REDUX DATA ==============>', getDivision[0].id)} */}
       <View>
         <Modal
@@ -263,8 +272,8 @@ const Linktocompany = ({navigation}) => {
       <AnonymousHeader backGround />
       {!UserData.UserDivision && !UserData.UserEmail && (
         <View
-          style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(95)}}>
-          <Text style={{fontWeight: '500', fontSize: dynamicSize(24)}}>
+          style={{ flex: 1, alignItems: 'center', marginTop: dynamicSize(95) }}>
+          <Text style={{ fontWeight: '500', fontSize: dynamicSize(24) }}>
             Connect to a company
           </Text>
           <Text
@@ -307,7 +316,7 @@ const Linktocompany = ({navigation}) => {
         </View>
       )}
       {UserData.UserEmail && UserData.UserDivision === null && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
           {APIfail && (
             <Text
               style={{
@@ -324,7 +333,7 @@ const Linktocompany = ({navigation}) => {
               Sever Error: Please try again
             </Text>
           )}
-          <Text style={{fontWeight: '500', fontSize: dynamicSize(24)}}>
+          <Text style={{ fontWeight: '500', fontSize: dynamicSize(24) }}>
             What division are you in?
           </Text>
           <Text
@@ -370,7 +379,7 @@ const Linktocompany = ({navigation}) => {
               justifyContent: 'center',
               flexDirection: 'row',
               shadowColor: 'black',
-              shadowOffset: {height: 2},
+              shadowOffset: { height: 2 },
               shadowOpacity: 0.3,
             }}>
             <Text
@@ -386,7 +395,7 @@ const Linktocompany = ({navigation}) => {
             </Text>
             <Image
               resizeMode={'contain'}
-              style={{marginHorizontal: dynamicSize(16), height: 15, width: 15}}
+              style={{ marginHorizontal: dynamicSize(16), height: 15, width: 15 }}
               source={Constants.Images.DropDown}
             />
 
@@ -444,7 +453,7 @@ const Linktocompany = ({navigation}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
                 Done
               </Text>
             </View>
@@ -452,7 +461,7 @@ const Linktocompany = ({navigation}) => {
         </View>
       )}
       {UserData.UserDivision !== null && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
           </Text> */}
@@ -474,13 +483,13 @@ const Linktocompany = ({navigation}) => {
                     'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
                   // UserData?.NameCompany?.company_logo,
                 }}
-                // style={{backgroundColor: '#4C5980'}}
+              // style={{backgroundColor: '#4C5980'}}
               />
             ) : CompanyDetails && CompanyDetails?.logo ? (
               <View
                 style={{
                   shadowColor: '#ebebeb',
-                  shadowOffset: {width: 0, height: 2},
+                  shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.8,
                   shadowRadius: 2,
                   borderRadius: 5,
@@ -498,7 +507,7 @@ const Linktocompany = ({navigation}) => {
                     uri: 'https://super.moodflo.com/' + CompanyDetails?.logo,
                     // UserData?.NameCompany?.company_logo,
                   }}
-                  // style={{backgroundColor: '#4C5980'}}
+                // style={{backgroundColor: '#4C5980'}}
                 />
               </View>
             ) : (
@@ -515,7 +524,7 @@ const Linktocompany = ({navigation}) => {
                     'https://admin.launchnet.works/images/logo/ic_mood_logo.jpg',
                   // UserData?.NameCompany?.company_logo,
                 }}
-                // style={{backgroundColor: '#4C5980'}}
+              // style={{backgroundColor: '#4C5980'}}
               />
             )}
           </View>

@@ -9,7 +9,7 @@ import {
   TextInput,
 } from 'react-native';
 import Svg, {Path, Defs, LinearGradient, Stop} from 'react-native-svg';
-import * as path from 'svg-path-properties';
+// import * as path from 'svg-path-properties';
 import * as shape from 'd3-shape';
 
 import {scaleTime, scaleLinear, scaleQuantile} from 'd3-scale';

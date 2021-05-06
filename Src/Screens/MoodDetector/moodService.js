@@ -113,12 +113,12 @@ let emotionsTextData = {
     "color": "#E0C400",
     "img": ""
   },
-  "exited": {  //12
+  "excited": {  //12
     "top": [verticalScale(169), verticalScale(301)],
     "left": [horizontalScale(281.25), horizontalScale(375)],
-    "text": "Exited",
+    "text": "Excited",
     "color": "#72A602",
-    "img": "exited"
+    "img": ""
   },
   "happy": {  //13
     "top": [verticalScale(302), verticalScale(433)],
@@ -232,9 +232,9 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
   if (top > emotionsTextData.alert.top[0] && top < emotionsTextData.alert.top[1] && left > emotionsTextData.alert.left[0] && left < emotionsTextData.alert.left[1]) {
     return { ...emotionsTextData.alert, img: userData?.AllMoods?.[11]?.icon };
   }
-  if (top > emotionsTextData.exited.top[0] && top < emotionsTextData.exited.top[1] && left > emotionsTextData.exited.left[0] && left < emotionsTextData.exited.left[1]) {
-    // console.log('exited left: ', left, ' exited: ', emotionsTextData.exited, ' gestureState: ', gestureState)
-    return { ...emotionsTextData.exited, img: userData?.AllMoods?.[12]?.icon };
+  if (top > emotionsTextData.excited.top[0] && top < emotionsTextData.excited.top[1] && left > emotionsTextData.excited.left[0] && left < emotionsTextData.excited.left[1]) {
+    // console.log('excited left: ', left, ' excited: ', emotionsTextData.excited, ' gestureState: ', gestureState)
+    return { ...emotionsTextData.excited, img: userData?.AllMoods?.[12]?.icon };
   }
   if (top > emotionsTextData.happy.top[0] && top < emotionsTextData.happy.top[1] && left > emotionsTextData.happy.left[0] && left < emotionsTextData.happy.left[1]) {
     return { ...emotionsTextData.happy, img: userData?.AllMoods?.[13]?.icon };

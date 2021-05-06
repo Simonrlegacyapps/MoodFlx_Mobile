@@ -7,21 +7,27 @@ import thunk from 'redux-thunk';
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware} from 'redux';
 import allReducers from './Src/redux/reducers';
-import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import PushNotification from "react-native-push-notification";
-
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import PushNotification from 'react-native-push-notification';
+import AsyncStorage from '@react-native-community/async-storage';
+import NotifService from './Src/services/notifService';
 
 // Must be outside of any component LifeCycle (such as `componentDidMount`).
 PushNotification.configure({
   // (optional) Called when Token is generated (iOS and Android)
-  onRegister: function (token) {
-    console.log("TOKEN:", token);
+  onRegister: async function (token) {
+    console.log('TOKEN:', token);
+    try {
+      await AsyncStorage.setItem('device_token', token.token);
+    } catch (e) {
+      console.log('error saving device token in async storage');
+    }
   },
 
   // (required) Called when a remote is received or opened, or local notification is opened
   onNotification: function (notification) {
-    console.log("NOTIFICATION:", notification);
-
+    console.log('NOTIFICATION:', notification);
+    NotifService.setLatestNotificationData(notification);
     // process the notification
 
     // (required) Called when a remote is received or opened, or local notification is opened
@@ -30,14 +36,14 @@ PushNotification.configure({
 
   // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
   onAction: function (notification) {
-    console.log("ACTION:", notification.action);
-    console.log("NOTIFICATION:", notification);
+    console.log('ACTION:', notification.action);
+    console.log('NOTIFICATION:', notification);
 
     // process the action
   },
 
   // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-  onRegistrationError: function(err) {
+  onRegistrationError: function (err) {
     console.error(err.message, err);
   },
 

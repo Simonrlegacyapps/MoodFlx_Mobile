@@ -279,8 +279,8 @@ const EditManualWeatherModal = ({
                               ? true
                               : false
                           }
-                          placeholder={Hour}
-                          value={hours ? hours : '1'}
+                          placeholder={""}
+                          value={Hour}
                           onChangeText={(text) => {
                             EditHour(text);
                           }}
