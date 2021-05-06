@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import {AppRegistry} from 'react-native';
+import {AppRegistry, Platform} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 import thunk from 'redux-thunk';
@@ -17,17 +17,19 @@ PushNotification.configure({
   // (optional) Called when Token is generated (iOS and Android)
   onRegister: async function (token) {
     console.log("TOKEN:", token);
-    try {
-      await AsyncStorage.setItem('device_token', token.token)
-    } catch (e) {
-      console.log('error saving device token in async storage');
+    if(Platform.OS === 'android') {
+      try {
+        await AsyncStorage.setItem('device_token', token.token)
+      } catch (e) {
+        console.log('error saving device token in async storage');
+      }
     }
   },
 
   // (required) Called when a remote is received or opened, or local notification is opened
   onNotification: function (notification) {
     console.log("NOTIFICATION:", notification);
-    
+
     // process the notification
 
     // (required) Called when a remote is received or opened, or local notification is opened

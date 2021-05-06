@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   StatusBar,
@@ -10,21 +10,21 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-community/async-storage';
-import {ScaledSheet} from 'react-native-size-matters';
+import { ScaledSheet } from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import thunk from 'redux-thunk';
-import {Provider, useDispatch, useSelector} from 'react-redux';
-import {createStore, applyMiddleware} from 'redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
 import allReducers from './Src/redux/reducers';
 import ImageOne from './assets/OnBoarding/ImageOne';
 import FastImage from 'react-native-fast-image';
 import Carousel from 'react-native-snap-carousel';
 import One from './assets/OnBoarding/ImageOne.svg';
-import {SvgCssUri, SvgUri, SvgXml} from 'react-native-svg';
+import { SvgCssUri, SvgUri, SvgXml } from 'react-native-svg';
 import {
   GetUserId,
   HealthPerm,
@@ -47,7 +47,7 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
 const slides = [
   {
@@ -227,13 +227,13 @@ const App: () => React$Node = () => {
   }, []);
 
   const fp = () => {
+    // return
     notifService.scheduleMoodFloLocalNotif();
-    return
-    if(Platform.OS === 'android'){
-      return;
+    return;
+    if (Platform.OS === 'android') {
     }
     console.log('call');
-    let  a = new Date();
+    let a = new Date();
     PushNotificationIOS.addNotificationRequest({
       id: 'First',
       title: 'Flo would love to know how you feel', // (required)
@@ -273,7 +273,7 @@ const App: () => React$Node = () => {
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
-            const {code, message} = error;
+            const { code, message } = error;
             console.log('error', code, message);
           });
     }
@@ -294,7 +294,7 @@ const App: () => React$Node = () => {
     getProfileUserData();
   }, []);
 
-  const renderItems = ({item, index}, parallaxProps) => {
+  const renderItems = ({ item, index }, parallaxProps) => {
     // console.log('item', item.img);
     // console.log('ShowWelcome--', ShowWelcome);
     return (
@@ -304,7 +304,7 @@ const App: () => React$Node = () => {
             source={item.img}
             height={'100%'}
             width={'100%'}
-            style={{height: '100%', width: '100%'}}
+            style={{ height: '100%', width: '100%' }}
           />
         </View>
       </>
@@ -328,7 +328,7 @@ const App: () => React$Node = () => {
       {/* <Provider store={store}> */}
       {ShowWelcome === false ? (
         <NavigationContainer>
-          <SafeAreaView style={{flex: 1}}>
+          <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
               <StackNavigation />
             </View>
@@ -390,7 +390,7 @@ const styles = ScaledSheet.create({
     fontWeight: '600',
     color: 'white',
   },
-  welcomeTextWrapper: {position: 'absolute', top: '15%', alignSelf: 'center'},
+  welcomeTextWrapper: { position: 'absolute', top: '15%', alignSelf: 'center' },
   welRenderWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
