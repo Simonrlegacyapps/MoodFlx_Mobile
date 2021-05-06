@@ -52,6 +52,7 @@ import SaveMoodConfirmModal from '../../Components/Modals/SaveMoodConfirm/SaveMo
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
+import NotifService from '../../services/notifService';
 
 const hapticOptions = {
   enableVibrateFallback: true,
@@ -606,21 +607,21 @@ export default function MoodDetector({ navigation }) {
               //   mail: value,
               //   deviceID: deviceId,
               // });
-              {
-                if(route?.params?.question != undefined) {
-                  showMoodSaveConfirmModal(() => {
-                    navigation.navigate('HomeScreen', { screen: 'MicScreen' })
+              if (route?.params?.question != undefined) {
+                showMoodSaveConfirmModal(() => {
+                  navigation.navigate('HomeScreen', { screen: 'MicScreen' })
+                });
+              } else {
+                showMoodSaveConfirmModal(() => {
+                  navigation.replace('HomeScreen', {
+                    lat: lat,
+                    long: lng,
+                    screen: 'Home',
                   });
-                } else {
-                  showMoodSaveConfirmModal(() => {
-                    navigation.replace('HomeScreen', {
-                      lat: lat,
-                      long: lng,
-                      screen: 'Home',
-                    });
-                  });
-                }
+                });
               }
+              const notifService = new NotifService();
+              notifService.checkTimeAndUpdateNotif();
 
               // navigation.replace('HomeScreen', {
               //   lat: UserData.lat,
