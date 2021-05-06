@@ -23,17 +23,10 @@ target 'MoodFlo' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
-<<<<<<< Updated upstream
-  use_flipper!
-  post_install do |installer|
-    flipper_post_install(installer)
-  end
-=======
   # use_flipper!({ 'Flipper-Folly' => '2.3.0' })
   # post_install do |installer|
   #   flipper_post_install(installer)
   # end
->>>>>>> Stashed changes
 end
 
 target 'MoodFlo-tvOS' do
