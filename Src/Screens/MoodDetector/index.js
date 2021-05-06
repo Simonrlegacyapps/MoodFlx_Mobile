@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -25,10 +25,14 @@ import {
   mediumWheelSize,
   largeWheelSize,
 } from './moodService';
-import { pSBC } from './moodUtlis';
-import { dynamicSize, iPhoneXPadding, isIphoneX } from '../../Constants/sizeChoose';
+import {pSBC} from './moodUtlis';
+import {
+  dynamicSize,
+  iPhoneXPadding,
+  isIphoneX,
+} from '../../Constants/sizeChoose';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import CloseIcon from '../../../assets/commonicons/CloseIcon';
 import QuestionMarkIcon from '../../../assets/commonicons/QuestionMarkIcon';
 import moment from 'moment';
@@ -47,11 +51,14 @@ import {
   UserEmail,
   WeatherPerm,
 } from '../../redux/actions/actions';
-import { useRoute } from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import SaveMoodConfirmModal from '../../Components/Modals/SaveMoodConfirm/SaveMoodConfirmModal';
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
+import NotificationQuestion from '../../Components/Modals/NotificationQuestion/NotificationQuestion';
+import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 const hapticOptions = {
   enableVibrateFallback: true,
@@ -68,7 +75,7 @@ const screenWidth = Math.floor(window.width);
 
 // import imagePath from '../assets/images';
 
-export default function MoodDetector({ navigation }) {
+export default function MoodDetector({navigation}) {
   const [lng, setlng] = useState(false); //using in api calls
   const [lat, setlat] = useState(false); //using in api calls
   const [Email, setEmail] = useState(null); //using in api calls
@@ -76,7 +83,14 @@ export default function MoodDetector({ navigation }) {
   const [MoodFail, setMoodFail] = useState(false); //not using
   const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
   const [SaveName, setSaveName] = useState(null); //for modal flag
-  const [isSaveMoodConfirmModalVisible, setIsSaveMoodConfirmModalVisible] = useState(false); //for modal flag
+  const [
+    isSaveMoodConfirmModalVisible,
+    setIsSaveMoodConfirmModalVisible,
+  ] = useState(false); //for modal flag
+  const [
+    isNotificationQuestionModalVisible,
+    setIsNotificationQuestionModalVisible,
+  ] = useState(true); //for remote question flag
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
   let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
   const [emotionText, setEmotionText] = useState(initialEmotionTextData.text);
@@ -93,7 +107,9 @@ export default function MoodDetector({ navigation }) {
   };
   const UserData = useSelector((state) => state.First);
 
-  const pan = useRef(new Animated.ValueXY({x: screenWidth/2, y: window.height/2}));
+  const pan = useRef(
+    new Animated.ValueXY({x: screenWidth / 2, y: window.height / 2}),
+  );
   const prevEmotionData = useRef({});
   const scrollerRef = useRef(null);
   const toolTipRef = useRef(null);
@@ -128,21 +144,23 @@ export default function MoodDetector({ navigation }) {
         if (offsetSize.current) {
           const panX = offsetSize.current.xMin + x;
           const panY = offsetSize.current.yMin + y;
-          pan.current.setValue({ x: panX, y: panY });
+          pan.current.setValue({x: panX, y: panY});
           const left = blocksSize.current.left + x;
           const top = blocksSize.current.top + y;
           updateColorData(left, top);
         }
         return true;
       },
-      onMoveShouldSetPanResponder: (evt, gestureState) => { return Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1 },//true,
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1;
+      }, //true,
       // onMoveShouldSetPanResponder: (evt, gestureState) => true,//true,
       onPanResponderGrant: (event, gestureState) => {
         pan.current.setOffset({
           x: pan.current.x._value,
-          y: pan.current.y._value
+          y: pan.current.y._value,
         });
-        pan.current.setValue({ x: 0, y: 0 });
+        pan.current.setValue({x: 0, y: 0});
         console.log('onPanResponderGrant gesture started');
         setisHapticsEnabled(true);
         // clearLongPressTimeouts({mediumPressTimeoutId, longPressTimeoutId});
@@ -163,7 +181,7 @@ export default function MoodDetector({ navigation }) {
         // }, longPressDuration * 1000);
       },
       onPanResponderMove: (event, gestureState) => {
-        pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
+        pan.current.setValue({x: gestureState.dx, y: gestureState.dy});
         // console.log('pan.current.getLayout => ', pan.current.getLayout());
         onPanResponderMove(event, gestureState);
         // if(Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1){
@@ -176,7 +194,7 @@ export default function MoodDetector({ navigation }) {
         // clearLongPressTimeouts({mediumPressTimeoutId, longPressTimeoutId, resetWheelSize: true});
         // console.log('onPanResponderRelease screenWidth : ', screenWidth)
       },
-    })
+    }),
   ).current;
 
   const onPanResponderMove = (event, gestureState) => {
@@ -199,23 +217,31 @@ export default function MoodDetector({ navigation }) {
       // }
       updateColorData(left, top, gestureState);
       // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
-    }
-    );
-  }
+    });
+  };
   const updateColorData = (x, y, gestureState) => {
     const left = x;
     const top = y;
-    previousWheelCenter.current = { left, top };
-    const emotionData = getEmotionsTextData(top, left, prevEmotionData.current, userData.current);
-    const hapticsDataObj = getHapticStats(top, blocksSize.current, offsetSize.current);
+    previousWheelCenter.current = {left, top};
+    const emotionData = getEmotionsTextData(
+      top,
+      left,
+      prevEmotionData.current,
+      userData.current,
+    );
+    const hapticsDataObj = getHapticStats(
+      top,
+      blocksSize.current,
+      offsetSize.current,
+    );
     hapticsData.current = hapticsDataObj;
-    if(hapticsDataObj?.timeInterval !== -1){
+    if (hapticsDataObj?.timeInterval !== -1) {
     }
 
     // console.log('emotionData => ', emotionData);
     if (prevEmotionData?.current?.text === emotionData.text) {
       const color = pSBC(count.current / 100, toolTipData.color);
-      setToolTipData(Object.assign(toolTipData, { ...emotionData }));
+      setToolTipData(Object.assign(toolTipData, {...emotionData}));
       setEmotionText(emotionData?.text ?? '');
       setColor(color);
       if (count.current === 40) {
@@ -227,33 +253,48 @@ export default function MoodDetector({ navigation }) {
       count.current = count.current + addValue.current;
     } else {
       updateOffset();
-      setToolTipData(Object.assign(toolTipData, { ...emotionData }));
+      setToolTipData(Object.assign(toolTipData, {...emotionData}));
       setEmotionText(emotionData?.text ?? '');
       const color = pSBC(count.current / 100, emotionData.color);
       setColor(color);
       // count.current = 1;
     }
     prevEmotionData.current = emotionData;
-  }
+  };
 
   const updateOffsetOnChangeWheelSize = (newWheelSize, onUpdate) => {
     if (!scrollerContainerRef.current && scrollerContainerSize.current) {
       return;
     }
     scrollerContainerRef?.current?.measureInWindow((x, y, width, height) => {
-      const toolTipHeight = scrollerContainerSize.current.height - getScrollerWheelSize();
-      const xOffset = scrollerContainerSize.current.width > newWheelSize ? 0 : ((getScrollerWheelSize() - newWheelSize) / 2);
-      const yOffset = scrollerContainerSize.current.height > (newWheelSize + toolTipHeight) ? 0 : (scrollerContainerSize.current.height - (toolTipHeight + newWheelSize));
+      const toolTipHeight =
+        scrollerContainerSize.current.height - getScrollerWheelSize();
+      const xOffset =
+        scrollerContainerSize.current.width > newWheelSize
+          ? 0
+          : (getScrollerWheelSize() - newWheelSize) / 2;
+      const yOffset =
+        scrollerContainerSize.current.height > newWheelSize + toolTipHeight
+          ? 0
+          : scrollerContainerSize.current.height -
+            (toolTipHeight + newWheelSize);
 
-      newScrollerContainerPosition.current = { left: x + xOffset, top: y + yOffset };
+      newScrollerContainerPosition.current = {
+        left: x + xOffset,
+        top: y + yOffset,
+      };
       // console.log('newScrollerContainerPosition xOffset', xOffset);
       // console.log('newScrollerContainerPosition yOffset', yOffset);
       // console.log('newScrollerContainerPosition', scrollerContainerSize.current);
       onUpdate?.();
-    })
-  }
+    });
+  };
 
-  const clearLongPressTimeouts = ({ mediumPressTimeoutId, longPressTimeoutId, resetWheelSize }) => {
+  const clearLongPressTimeouts = ({
+    mediumPressTimeoutId,
+    longPressTimeoutId,
+    resetWheelSize,
+  }) => {
     if (mediumPressTimeoutId?.current) {
       clearTimeout(mediumPressTimeoutId.current);
       mediumPressTimeoutId.current = null;
@@ -272,7 +313,7 @@ export default function MoodDetector({ navigation }) {
         clearTimeout(timeoutId);
       }, 1 * 1000);
     }
-  }
+  };
 
   const updateOffset = () => {
     isInitialPanResponderUpdated.current = false;
@@ -280,24 +321,27 @@ export default function MoodDetector({ navigation }) {
     toolTipSize.current = null;
     onToolTipLayout();
     onLayoutScrollerContainer();
-  }
+  };
 
   const updatePanResponder = () => {
-    if (!blocksSize.current || !scrollerContainerSize.current || !toolTipSize.current) {
-      return
+    if (
+      !blocksSize.current ||
+      !scrollerContainerSize.current ||
+      !toolTipSize.current
+    ) {
+      return;
     }
-    const isInitialUpdate = (isInitialPanResponderUpdated.current === null);
+    const isInitialUpdate = isInitialPanResponderUpdated.current === null;
     isInitialPanResponderUpdated.current = true;
-    const offSetSize = getScrollerOffset(window, getScrollerWheelSize(), scrollerContainerSize.current, toolTipSize.current, blocksSize.current);
-    let {
-      xMin,
-      xMax,
-      yMin,
-      yMax,
-      initialX,
-      initialY,
-    } = offSetSize;
-    console.log('updatePanResponder ', offSetSize)
+    const offSetSize = getScrollerOffset(
+      window,
+      getScrollerWheelSize(),
+      scrollerContainerSize.current,
+      toolTipSize.current,
+      blocksSize.current,
+    );
+    let {xMin, xMax, yMin, yMax, initialX, initialY} = offSetSize;
+    console.log('updatePanResponder ', offSetSize);
     offsetSize.current = offSetSize;
     constrainedX.current = pan.current.x.interpolate({
       inputRange: [xMin, 150, xMax],
@@ -309,14 +353,19 @@ export default function MoodDetector({ navigation }) {
       outputRange: [yMin, (yMax + yMin) / 2, yMax],
       extrapolate: 'clamp',
     });
-    if (pan.current.x._value === initialX && pan.current.y._value === initialY) {
-      return
+    if (
+      pan.current.x._value === initialX &&
+      pan.current.y._value === initialY
+    ) {
+      return;
     }
-    (emotionText === initialEmotionTextData.text) && isInitialUpdate && pan.current.setValue({
-      x: initialX,
-      y: initialY
-    });
-  }
+    emotionText === initialEmotionTextData.text &&
+      isInitialUpdate &&
+      pan.current.setValue({
+        x: initialX,
+        y: initialY,
+      });
+  };
 
   const onBlocksContainerLayout = () => {
     if (blocksSize.current) {
@@ -324,35 +373,35 @@ export default function MoodDetector({ navigation }) {
     }
     blocksContainerRef.current.measureInWindow((x, y, width, height) => {
       setEmotionsTextData(y, x, height, width);
-      const size = { left: x, top: y, width, height };
+      const size = {left: x, top: y, width, height};
       blocksSize.current = size;
-      setBlocksContainerSize(size)
+      setBlocksContainerSize(size);
       // console.log('useEffect blocksSize ', blocksSize.current)
       !isInitialPanResponderUpdated.current && updatePanResponder();
-    })
-  }
+    });
+  };
 
   const onToolTipLayout = () => {
     if (toolTipSize.current) {
       return;
     }
     toolTipRef?.current?.measureInWindow((x, y, width, height) => {
-      toolTipSize.current = { left: x, top: y, width, height };
+      toolTipSize.current = {left: x, top: y, width, height};
       !isInitialPanResponderUpdated.current && updatePanResponder();
-    })
-  }
+    });
+  };
 
   const onLayoutScrollerContainer = () => {
     if (scrollerContainerSize.current) {
       return;
     }
     scrollerContainerRef?.current?.measureInWindow((x, y, width, height) => {
-      scrollerContainerSize.current = { left: x, top: y, width, height };
+      scrollerContainerSize.current = {left: x, top: y, width, height};
       // console.log('scrollerContainerSize x,y,width,height', x, y, width, height)
       // console.log('scrollerContainerSize scrollerContainerSize.current', scrollerContainerSize.current)
       !isInitialPanResponderUpdated.current && updatePanResponder();
-    })
-  }
+    });
+  };
 
   const checkStorage = async () => {
     await AsyncStorage.setItem('Anonymous', 'true');
@@ -405,6 +454,16 @@ export default function MoodDetector({ navigation }) {
   };
 
   useEffect(() => {
+    // let okay = PushNotification.configure({onNotification({message, userInteraction, data, foreground})})
+    // PushNotificationIOS.getDeliveredNotifications((e) => {
+    //   console.log(`e of notification and try here`, e);
+    // });
+    // console.log(`okay`, okay);
+  }, []);
+
+  useEffect(() => {}, []);
+
+  useEffect(() => {
     setTimeout(() => {
       checkStorage();
       getProfileUserData();
@@ -424,7 +483,7 @@ export default function MoodDetector({ navigation }) {
               dispatch(Long(location.longitude));
             })
             .catch((error) => {
-              const { code, message } = error;
+              const {code, message} = error;
               console.log('error', code, message);
             });
       }
@@ -432,23 +491,23 @@ export default function MoodDetector({ navigation }) {
   }, []);
 
   useEffect(() => {
-    if(Array.isArray(UserData?.AllMoods) && (UserData.AllMoods.length > 0)) {
+    if (Array.isArray(UserData?.AllMoods) && UserData.AllMoods.length > 0) {
       userData.current = UserData;
     }
-  }, [UserData])
+  }, [UserData]);
 
   const playHaptics = (isEnabled) => {
     if (isEnabled) {
       const data = hapticsData.current ?? {};
-      let { hapticType, timeInterval, percentage } = data;
-      let interval = 0.1
-      if(percentage){
-        interval = (100 - (Math.abs(percentage))) / 1000;
+      let {hapticType, timeInterval, percentage} = data;
+      let interval = 0.1;
+      if (percentage) {
+        interval = (100 - Math.abs(percentage)) / 1000;
       }
-      // console.log('playHaptics isEnabled: ', isEnabled, hapticsData.current); 
+      // console.log('playHaptics isEnabled: ', isEnabled, hapticsData.current);
       // console.log('playHaptics interval: ', interval)
-      console.log('playHaptics timeInterval: ', timeInterval)
-      if(hapticTimeoutId.current){
+      console.log('playHaptics timeInterval: ', timeInterval);
+      if (hapticTimeoutId.current) {
         clearTimeout(hapticTimeoutId.current);
         hapticTimeoutId.current = null;
       }
@@ -460,11 +519,11 @@ export default function MoodDetector({ navigation }) {
       }, timeInterval * 1000);
     } else {
       if (hapticTimeoutId.current) {
-        clearInterval(hapticTimeoutId.current)
+        clearInterval(hapticTimeoutId.current);
         hapticTimeoutId.current = null;
       }
     }
-  }
+  };
 
   useEffect(() => {
     console.log('isHapticsEnabled =>', isHapticsEnabled, hapticsData.current);
@@ -484,7 +543,7 @@ export default function MoodDetector({ navigation }) {
     // }
 
     // return () => hapticTimeoutId.current && clearInterval(hapticTimeoutId.current);
-  }, [isHapticsEnabled])
+  }, [isHapticsEnabled]);
 
   const showMoodSaveConfirmModal = (onClose) => {
     setIsSaveMoodConfirmModalVisible(true);
@@ -495,8 +554,10 @@ export default function MoodDetector({ navigation }) {
         clearTimeout(closeId);
       }, 100);
       clearTimeout(id);
-    }, 1000)
-  }
+    }, 1000);
+  };
+
+  console.log(`route?.params?.question`, route?.params?.question);
 
   const findId = async () => {
     let p = await AsyncStorage.getItem('MoodCount');
@@ -530,7 +591,7 @@ export default function MoodDetector({ navigation }) {
       })
       .catch((err) => console.log(`weather api location err`, err));
 
-    const Id = UserData.AllMoods.find(({ name }) => {
+    const Id = UserData.AllMoods.find(({name}) => {
       // console.log(`name`, name);
       return name === emotionText;
     });
@@ -584,7 +645,7 @@ export default function MoodDetector({ navigation }) {
             console.log('quesstion updated', result);
             setLoading(false);
             showMoodSaveConfirmModal(() => {
-              navigation.navigate('HomeScreen', { screen: 'MicScreen' });
+              navigation.navigate('HomeScreen', {screen: 'MicScreen'});
             });
           })
           .catch((error) => {
@@ -607,9 +668,9 @@ export default function MoodDetector({ navigation }) {
               //   deviceID: deviceId,
               // });
               {
-                if(route?.params?.question != undefined) {
+                if (route?.params?.question != undefined) {
                   showMoodSaveConfirmModal(() => {
-                    navigation.navigate('HomeScreen', { screen: 'MicScreen' })
+                    navigation.navigate('HomeScreen', {screen: 'MicScreen'});
                   });
                 } else {
                   showMoodSaveConfirmModal(() => {
@@ -660,6 +721,14 @@ export default function MoodDetector({ navigation }) {
     }
   };
 
+  const verifyNotificationQuestion = (value) => {
+    if (value === 'Yes') {
+      setIsNotificationQuestionModalVisible(false);
+    } else {
+      setIsNotificationQuestionModalVisible(false);
+    }
+  };
+
   const cancelled = () => {
     setSaveConfirm(false);
   };
@@ -668,22 +737,25 @@ export default function MoodDetector({ navigation }) {
     setIsSaveMoodConfirmModalVisible(false);
   }, []);
 
+  const dismissNotificationQuestionModal = useCallback(() => {
+    setIsNotificationQuestionModalVisible(false);
+  }, []);
+
   const renderBlocks = () => {
     return (
-      < View
+      <View
         ref={blocksContainerRef}
         onLayout={onBlocksContainerLayout}
         {...panResponder.panHandlers}
-        style={
-          [
-            styles.childViewStyle,
-            {
-              backgroundColor: 'green',
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              flex: 1,
-            },
-          ]} >
+        style={[
+          styles.childViewStyle,
+          {
+            backgroundColor: 'green',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            flex: 1,
+          },
+        ]}>
         <View
           pointerEvents="none"
           style={{
@@ -697,7 +769,7 @@ export default function MoodDetector({ navigation }) {
           style={{
             height: '50%',
             width: '50%',
-            backgroundColor: pSBC(0.50, color),
+            backgroundColor: pSBC(0.5, color),
           }}
         />
         <View
@@ -723,8 +795,7 @@ export default function MoodDetector({ navigation }) {
             position: 'absolute',
             bottom: 8,
             zIndex: 1,
-          }}
-        >
+          }}>
           <Text
             // ref={(ref) => this.passiveCalm = ref}
             style={{
@@ -738,13 +809,14 @@ export default function MoodDetector({ navigation }) {
           style={{
             flexDirection: 'row',
             hieght: blocksContainerSize?.height,
-            top: blocksContainerSize ? (blocksContainerSize.height / 2) - 6 : undefined,
+            top: blocksContainerSize
+              ? blocksContainerSize.height / 2 - 6
+              : undefined,
             alignItems: 'center',
             position: 'absolute',
             left: 6,
             zIndex: 2,
-          }}
-        >
+          }}>
           <Text
             // ref={(ref) => this.negative = ref}
             style={{
@@ -755,7 +827,7 @@ export default function MoodDetector({ navigation }) {
               //  top: height / 3.05,
             }}>
             Negative
-         </Text>
+          </Text>
         </View>
         <View
           style={{
@@ -764,8 +836,7 @@ export default function MoodDetector({ navigation }) {
             position: 'absolute',
             top: 8,
             zIndex: 4,
-          }}
-        >
+          }}>
           <Text
             // ref={(ref) => this.activeAroused = ref}
             style={{
@@ -780,10 +851,11 @@ export default function MoodDetector({ navigation }) {
             hieght: '100%',
             justifyContent: 'center',
             position: 'absolute',
-            top: blocksContainerSize ? (blocksContainerSize.height / 2) - 6 : undefined,
+            top: blocksContainerSize
+              ? blocksContainerSize.height / 2 - 6
+              : undefined,
             right: 6,
-          }}
-        >
+          }}>
           <Text
             // ref={(ref) => this.positive = ref}
             style={{
@@ -794,9 +866,9 @@ export default function MoodDetector({ navigation }) {
             Positive
           </Text>
         </View>
-      </View >
-    )
-  }
+      </View>
+    );
+  };
 
   const renderBottomBar = (color) => (
     <View
@@ -815,9 +887,9 @@ export default function MoodDetector({ navigation }) {
           flexDirection: 'row',
         }}>
         <TouchableOpacity
-          style={{ marginLeft: 12 }}
+          style={{marginLeft: 12}}
           onPress={
-            () => navigation.navigate('HomeScreen', { lat: lat, long: lng })
+            () => navigation.navigate('HomeScreen', {lat: lat, long: lng})
             // navigation.replace('HomeScreen', {
             //   lat: UserData.lat,
             //   long: UserData.lon,
@@ -841,10 +913,7 @@ export default function MoodDetector({ navigation }) {
               alignItems: 'center',
             }}
           />
-          <QuestionMarkIcon
-            width={dynamicSize(52)}
-            height={dynamicSize(52)}
-          />
+          <QuestionMarkIcon width={dynamicSize(52)} height={dynamicSize(52)} />
         </TouchableOpacity>
         <TouchableOpacity
           disabled={
@@ -860,23 +929,23 @@ export default function MoodDetector({ navigation }) {
             alignItems: 'center',
           }}>
           <View />
-          <Text style={{ textAlign: 'center', fontSize: 18 }}>Save</Text>
+          <Text style={{textAlign: 'center', fontSize: 18}}>Save</Text>
         </TouchableOpacity>
         {/* {MoodFail && (
           <Text style={styles.ErrorText}>Please select a mood</Text>
         )} */}
       </View>
     </View>
-  )
+  );
 
-
-  const topBottomColor = pSBC(0.60, color);
+  const topBottomColor = pSBC(0.6, color);
 
   return (
-    <View style={[styles.container,
-      //  { backgroundColor: color }
-    ]}
-    >
+    <View
+      style={[
+        styles.container,
+        //  { backgroundColor: color }
+      ]}>
       <TouchableOpacity
         disabled={true}
         style={{
@@ -896,7 +965,9 @@ export default function MoodDetector({ navigation }) {
         scrollerStyle={{
           ...pan.current.getLayout(),
           // ...newScrollerContainerPosition.current !== null ? newScrollerContainerPosition.current : {},
-          ...(constrainedX.current !== null && constrainedY.current !== null) ? { left: constrainedX.current, top: constrainedY.current } : {}
+          ...(constrainedX.current !== null && constrainedY.current !== null
+            ? {left: constrainedX.current, top: constrainedY.current}
+            : {}),
         }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
@@ -904,7 +975,7 @@ export default function MoodDetector({ navigation }) {
         toolTipRef={toolTipRef}
         onToolTipLayout={onToolTipLayout}
         isAllMoodsDataAvailable={UserData.AllMoods !== null}
-        scrollerRef={(ref) => scrollerRef.current = ref}
+        scrollerRef={(ref) => (scrollerRef.current = ref)}
         scrollerContainerRef={scrollerContainerRef}
         onLayoutScrollerContainer={onLayoutScrollerContainer}
         // toolTipSize={toolTipSize.current}
@@ -928,6 +999,12 @@ export default function MoodDetector({ navigation }) {
         dismissModalHandler={dismissSaveMoodConfirmModal}
       />
 
+      <NotificationQuestion
+        modalVisible={isNotificationQuestionModalVisible}
+        dismissModalHandler={dismissNotificationQuestionModal}
+        verifyDone={(value) => verifyNotificationQuestion(value)}
+      />
+
       {Loading && (
         <View
           style={{
@@ -942,9 +1019,8 @@ export default function MoodDetector({ navigation }) {
           <ActivityIndicator size="large" />
         </View>
       )}
-
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -974,5 +1050,4 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     justifyContent: 'center',
   },
-})
-
+});
