@@ -5,7 +5,7 @@ import {dynamicSize} from '../../Constants/sizeChoose';
 import CustomProgressBar from '../ProgressBar/ProgressBarCustom';
 import moment from 'moment';
 
-const BarGraph = ({ShowPollen}) => {
+const BarGraph = ({ShowPollen, TopLabels}) => {
   const [Pollen, setPollen] = useState('Low');
 
   const lines = [
@@ -49,44 +49,48 @@ const BarGraph = ({ShowPollen}) => {
       {/* <Text>Look Bar</Text> */}
       {/* Left bar */}
       <View style={{flexDirection: 'column', height: 250}}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginHorizontal: dynamicSize(15),
-          }}>
+        {TopLabels ? (
+          <View></View>
+        ) : (
           <View
             style={{
-              flexDirection: 'column',
-              alignSelf: 'center',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginHorizontal: dynamicSize(15),
             }}>
-            <Text
+            <View
               style={{
-                marginHorizontal: 6,
-                textAlign: 'center',
-                fontFamily: RubikRegular,
-                fontSize: 16,
+                flexDirection: 'column',
+                alignSelf: 'center',
               }}>
-              Cº
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'column',
-              //   flex: 1,
-              alignSelf: 'center',
-            }}>
-            <Text
+              <Text
+                style={{
+                  marginHorizontal: 6,
+                  textAlign: 'center',
+                  fontFamily: RubikRegular,
+                  fontSize: 16,
+                }}>
+                ºC
+              </Text>
+            </View>
+            <View
               style={{
-                fontSize: 16,
-                marginHorizontal: 6,
-                textAlign: 'center',
-                fontFamily: RubikRegular,
+                flexDirection: 'column',
+                //   flex: 1,
+                alignSelf: 'center',
               }}>
-              Hrs
-            </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  marginHorizontal: 6,
+                  textAlign: 'center',
+                  fontFamily: RubikRegular,
+                }}>
+                Hrs
+              </Text>
+            </View>
           </View>
-        </View>
+        )}
         <View style={{flex: 1}}>
           {lines &&
             lines.length > 0 &&
