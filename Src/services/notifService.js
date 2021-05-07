@@ -1,29 +1,77 @@
 import PushNotification from 'react-native-push-notification';
 // import NotificationHandler from './NotificationHandler';
+import AsyncStorage from '@react-native-community/async-storage';
+import moment from 'moment';
+import { Platform } from 'react-native';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 export default class NotifService {
-//   constructor(onRegister, onNotification) {
+  static notifData = Platform.OS === 'android' ? {
+    "one": {
+      "id": 1,
+      "title": "Flo would love to know how you feel",
+      "timeInHour": 10,
+    },
+    "two": {
+      "id": 2,
+      "title": "Time to check in with Flo",
+      "timeInHour": 13,
+    },
+    "three": {
+      "id": 3,
+      "title": "It's Flo time",
+      "timeInHour": 16,
+    },
+  } : {
+    "one": {
+      "id": "First",
+      "title": "Flo would love to know how you feel",
+      "timeInHour": 10,
+    },
+    "two": {
+      "id": "Second",
+      "title": "Time to check in with Flo",
+      "timeInHour": 13,
+    },
+    "three": {
+      "id": "Third",
+      "title": "It's Flo time",
+      "timeInHour": 16,
+    },
+  };
+
+  static latestNotificationData = null;
+
   constructor() {
     this.lastId = 0;
     // this.lastChannelCounter = 0;
 
-    
     // NotificationHandler.attachRegister(onRegister);
     // NotificationHandler.attachNotification(onNotification);
-    
+
     // Clear badge number at start
     PushNotification.getApplicationIconBadgeNumber(function (number) {
-        if (number > 0) {
-            PushNotification.setApplicationIconBadgeNumber(0);
-        }
+      if (number > 0) {
+        PushNotification.setApplicationIconBadgeNumber(0);
+      }
     });
     const self = this;
-    PushNotification.getChannels(function(channels) {
-        if(channels.indexOf("channel-one-id") === -1){
-            self.createDefaultChannels();
-        }
+    PushNotification.getChannels(function (channels) {
+      if (channels.indexOf("channel-one-id") === -1) {
+        self.createDefaultChannels();
+      }
       console.log('channels', channels);
     });
+  }
+
+  static setLatestNotificationData(data) {
+    if(data) {
+      NotifService.latestNotificationData = data;
+    }
+  }
+
+  static getLatestNotificationData() {
+    return NotifService.latestNotificationData;
   }
 
 
@@ -52,20 +100,20 @@ export default class NotifService {
     // );
   }
 
-//   createOrUpdateChannel() {
-//     this.lastChannelCounter++;
-//     PushNotification.createChannel(
-//       {
-//         channelId: "custom-channel-id", // (required)
-//         channelName: `Custom channel - Counter: ${this.lastChannelCounter}`, // (required)
-//         channelDescription: `A custom channel to categorise your custom notifications. Updated at: ${Date.now()}`, // (optional) default: undefined.
-//         soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
-//         importance: 4, // (optional) default: 4. Int value of the Android notification importance
-//         vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
-//       },
-//       (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
-//     );
-//   }
+  //   createOrUpdateChannel() {
+  //     this.lastChannelCounter++;
+  //     PushNotification.createChannel(
+  //       {
+  //         channelId: "custom-channel-id", // (required)
+  //         channelName: `Custom channel - Counter: ${this.lastChannelCounter}`, // (required)
+  //         channelDescription: `A custom channel to categorise your custom notifications. Updated at: ${Date.now()}`, // (optional) default: undefined.
+  //         soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+  //         importance: 4, // (optional) default: 4. Int value of the Android notification importance
+  //         vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+  //       },
+  //       (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+  //     );
+  //   }
 
   popInitialNotification() {
     PushNotification.popInitialNotification((notification) => console.log('InitialNotication:', notification));
@@ -85,71 +133,246 @@ export default class NotifService {
       color: 'red', // (optional) default: system default
       vibrate: true, // (optional) default: true
       vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
-    //   tag: 'some_tag', // (optional) add tag to message
-    //   group: 'group', // (optional) add group to message
+      //   tag: 'some_tag', // (optional) add tag to message
+      //   group: 'group', // (optional) add group to message
       groupSummary: false, // (optional) set this notification to be the group summary for a group of notifications, default: false
       ongoing: false, // (optional) set whether this is an "ongoing" notification
-    //   actions: ['Yes', 'No'], // (Android only) See the doc for notification actions to know more
+      //   actions: ['Yes', 'No'], // (Android only) See the doc for notification actions to know more
       invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
-      
+
       when: null, // (optionnal) Add a timestamp pertaining to the notification (usually the time the event occurred). For apps targeting Build.VERSION_CODES.N and above, this time is not shown anymore by default and must be opted into by using `showWhen`, default: null.
       usesChronometer: false, // (optional) Show the `when` field as a stopwatch. Instead of presenting `when` as a timestamp, the notification will show an automatically updating display of the minutes and seconds since when. Useful when showing an elapsed time (like an ongoing phone call), default: false.
       timeoutAfter: null, // (optional) Specifies a duration in milliseconds after which this notification should be canceled, if it is not already canceled, default: null
 
       /* iOS only properties */
       category: '', // (optional) default: empty string
-      
+
       /* iOS and Android properties */
       id: id ?? this.lastId, // (optional) Valid unique 32 bit integer specified as string. default: Autogenerated Unique ID
       title: 'Local Notification', // (optional)
       message: 'My Notification Message', // (required)
       userInfo: { screen: 'home' }, // (optional) default: {} (using null throws a JSON value '<null>' error)
-    //   playSound: !!soundName, // (optional) default: true
+      //   playSound: !!soundName, // (optional) default: true
       soundName: soundName ? soundName : 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
       number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
     });
   }
 
-  scheduleNotif({soundName, id, time, title, message}) {
-    this.lastId++;
-    PushNotification.localNotificationSchedule({
-      date: time, // in 30 secs
+  scheduleNotif({ soundName, id, time, title, message }) {
+    if (Platform.OS === 'android') {
+      this.lastId++;
+      PushNotification.localNotificationSchedule({
+        date: time, // in 30 secs
 
-      /* Android Only Properties */
-      channelId: 'channel-one-id',
-      ticker: 'My Notification Ticker', // (optional)
-      autoCancel: true, // (optional) default: true
-      largeIcon: 'ic_launcher', // (optional) default: "ic_launcher"
-      smallIcon: 'ic_notification', // (optional) default: "ic_notification" with fallback for "ic_launcher"
-    //   bigText: 'My big text that will be shown when notification is expanded', // (optional) default: "message" prop
-    //   subText: 'This is a subText', // (optional) default: none
-    //   color: 'blue', // (optional) default: system default
-      vibrate: true, // (optional) default: true
-      vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
-    //   tag: 'some_tag', // (optional) add tag to message
-    //   group: 'group', // (optional) add group to message
-      groupSummary: false, // (optional) set this notification to be the group summary for a group of notifications, default: false
-      ongoing: false, // (optional) set whether this is an "ongoing" notification
-    //   actions: ['Yes', 'No'], // (Android only) See the doc for notification actions to know more
-      invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+        /* Android Only Properties */
+        channelId: 'channel-one-id',
+        ticker: 'My Notification Ticker', // (optional)
+        autoCancel: true, // (optional) default: true
+        largeIcon: 'ic_launcher', // (optional) default: "ic_launcher"
+        smallIcon: 'ic_notification', // (optional) default: "ic_notification" with fallback for "ic_launcher"
+        //   bigText: 'My big text that will be shown when notification is expanded', // (optional) default: "message" prop
+        //   subText: 'This is a subText', // (optional) default: none
+        //   color: 'blue', // (optional) default: system default
+        vibrate: true, // (optional) default: true
+        vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
+        //   tag: 'some_tag', // (optional) add tag to message
+        //   group: 'group', // (optional) add group to message
+        groupSummary: false, // (optional) set this notification to be the group summary for a group of notifications, default: false
+        ongoing: false, // (optional) set whether this is an "ongoing" notification
+        //   actions: ['Yes', 'No'], // (Android only) See the doc for notification actions to know more
+        invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
 
-      when: null, // (optionnal) Add a timestamp pertaining to the notification (usually the time the event occurred). For apps targeting Build.VERSION_CODES.N and above, this time is not shown anymore by default and must be opted into by using `showWhen`, default: null.
-      usesChronometer: false, // (optional) Show the `when` field as a stopwatch. Instead of presenting `when` as a timestamp, the notification will show an automatically updating display of the minutes and seconds since when. Useful when showing an elapsed time (like an ongoing phone call), default: false.
-      timeoutAfter: null, // (optional) Specifies a duration in milliseconds after which this notification should be canceled, if it is not already canceled, default: null
-    
-      /* iOS only properties */
-      category: '', // (optional) default: empty string
-      
-      /* iOS and Android properties */
-      id: this.lastId, // (optional) Valid unique 32 bit integer specified as string. default: Autogenerated Unique ID
-      title: title ?? 'Scheduled Notification', // (optional)
-      message: message ?? '', // (required)
-    //   userInfo: { sceen: "home" }, // (optional) default: {} (using null throws a JSON value '<null>' error)
-      playSound: !!soundName, // (optional) default: true
-      soundName: soundName ? soundName : 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
-      number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
-      repeatType: "day",
+        when: null, // (optionnal) Add a timestamp pertaining to the notification (usually the time the event occurred). For apps targeting Build.VERSION_CODES.N and above, this time is not shown anymore by default and must be opted into by using `showWhen`, default: null.
+        usesChronometer: false, // (optional) Show the `when` field as a stopwatch. Instead of presenting `when` as a timestamp, the notification will show an automatically updating display of the minutes and seconds since when. Useful when showing an elapsed time (like an ongoing phone call), default: false.
+        timeoutAfter: null, // (optional) Specifies a duration in milliseconds after which this notification should be canceled, if it is not already canceled, default: null
+
+        /* iOS only properties */
+        category: '', // (optional) default: empty string
+
+        /* iOS and Android properties */
+        // id: this.lastId, // (optional) Valid unique 32 bit integer specified as string. default: Autogenerated Unique ID
+        id: (id !== undefined) ? id : this.lastId, // (optional) Valid unique 32 bit integer specified as string. default: Autogenerated Unique ID
+        title: title ?? 'Scheduled Notification', // (optional)
+        message: message ?? '', // (required)
+        //   userInfo: { sceen: "home" }, // (optional) default: {} (using null throws a JSON value '<null>' error)
+        playSound: !!soundName, // (optional) default: true
+        soundName: soundName ? soundName : 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
+        number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
+        repeatType: "day",
+      });
+    } else {
+      if (id !== undefined && title !== undefined && time !== undefined) {
+        console.log('id', id, title, time);
+        PushNotificationIOS.addNotificationRequest({
+          id: id,
+          title: title,
+          fireDate: time,
+          repeats: true,
+        })
+      }
+    }
+  }
+
+  static async getDeviceToken() {
+    let fcmToken = '';
+    try {
+      const value = await AsyncStorage.getItem('device_token');
+      if (value !== null) {
+        fcmToken = value;
+      }
+    } catch (e) {
+      console.log('error getting device_token from storage', error);
+    }
+    return fcmToken;
+  }
+
+  scheduleMoodFloLocalNotif() {
+    this.getScheduledLocalNotifications((notif) => {
+      console.log('scheduleMoodFloLocalNotif before update: ', JSON.stringify(notif));
+
+      let isOne = false;
+      let isTwo = false;
+      let isThree = false;
+      Array.isArray(notif) && notif.forEach((e) => {
+        if (Platform.OS === 'android') {
+          if (e.id === NotifService.notifData.one.id && e.title === NotifService.notifData.one.title) {
+            isOne = true;
+          } else if (e.id === NotifService.notifData.three.id && e.title === NotifService.notifData.three.title) {
+            isTwo = true
+          } else if (e.id === NotifService.notifData.three.id && e.title === NotifService.notifData.three.title) {
+            isThree = true
+          } else if (e.id !== undefined && typeof e.id === 'number') {
+            this.cancelNotif(e.id);
+          }
+        } else {
+          if (e.alertTitle === NotifService.notifData.one.title) {
+            isOne = true;
+          } else if (e.alertTitle === NotifService.notifData.three.title) {
+            isTwo = true
+          } else if (e.alertTitle === NotifService.notifData.three.title) {
+            isThree = true
+          } else {
+            // this.cancelNotif(e.id);
+          }
+        }
+      })
+      if (!isOne) {
+        this.scheduleMoodFloNotifWithId(NotifService.notifData.one.id)
+      }
+      if (!isTwo) {
+        this.scheduleMoodFloNotifWithId(NotifService.notifData.two.id)
+      }
+      if (!isThree) {
+        this.scheduleMoodFloNotifWithId(NotifService.notifData.three.id)
+      }
+      this.getScheduledLocalNotifications((notifications) => {
+        console.log('scheduleMoodFloLocalNotif after update: ', JSON.stringify(notifications));
+      });
     });
+  }
+
+  checkTimeAndUpdateNotif() {
+    const now = moment();
+    let time = null;
+
+    let first = new Date(new Date().setHours(NotifService.notifData.one.timeInHour, 0, 0, 0));
+    const firstTime = moment(first.getTime());
+    let firstDuration = Math.ceil(moment.duration(firstTime.diff(now)).asMinutes());
+
+    let second = new Date(new Date().setHours(NotifService.notifData.two.timeInHour, 0, 0, 0));
+    const secondTime = moment(second.getTime());
+    let secondDuration = Math.ceil(moment.duration(secondTime.diff(now)).asMinutes());
+
+    let third = new Date(new Date().setHours(NotifService.notifData.three.timeInHour, 0, 0, 0));
+    // let third = new Date(new Date().setHours(15, 19, 0, 0));
+    const thirdTime = moment(third.getTime());
+    let thirdDuration = Math.ceil(moment.duration(thirdTime.diff(now)).asMinutes());
+
+    if (firstDuration > 0 && firstDuration < 120) {
+      this.cancelNotif(NotifService.notifData.one.id)
+      time = firstTime.add(1, 'days').toDate();
+      this.scheduleNotif({
+        id: NotifService.notifData.one.id,
+        time: time,
+        title: NotifService.notifData.one.title,
+      });
+    } else if (secondDuration > 0 && secondDuration < 120) {
+      this.cancelNotif(NotifService.notifData.two.id);
+      time = secondTime.add(1, 'days').toDate();
+      this.scheduleNotif({
+        id: NotifService.notifData.two.id,
+        time: time,
+        title: NotifService.notifData.two.title,
+      });
+    } else if (thirdDuration > 0 && thirdDuration < 120) {
+      this.cancelNotif(NotifService.notifData.three.id);
+      time = thirdTime.add(1, 'days').toDate();
+      this.scheduleNotif({
+        id: NotifService.notifData.three.id,
+        time: time,
+        title: NotifService.notifData.three.title,
+      });
+    }
+    this.getScheduledLocalNotifications((notif) => {
+      console.log('checkTimeAndUpdateNotif scheduledNotification: ', JSON.stringify(notif));
+    });
+  }
+
+  scheduleMoodFloNotifWithId(id) {
+    if (id === NotifService.notifData.one.id) {
+      let first = new Date(new Date().setHours(NotifService.notifData.one.timeInHour, 0, 0, 0));
+      if (moment().isAfter(first.getTime(), 'second')) {
+        first = moment(first.getTime()).add(1, 'days').toDate();
+      }
+      this.scheduleNotif({
+        id: NotifService.notifData.one.id,
+        time: first,
+        title: NotifService.notifData.one.title,
+      });
+    } else if (id === NotifService.notifData.two.id) {
+      let second = new Date(new Date().setHours(NotifService.notifData.two.timeInHour, 0, 0, 0));
+      if (moment().isAfter(second.getTime(), 'second')) {
+        second = moment(second.getTime()).add(1, 'days').toDate();
+      }
+      this.scheduleNotif({
+        id: NotifService.notifData.two.id,
+        time: second,
+        title: NotifService.notifData.two.title,
+      });
+    } else if (id === NotifService.notifData.three.id) {
+      let third = new Date(new Date().setHours(NotifService.notifData.three.timeInHour, 0, 0, 0));
+      // let third = new Date(new Date().setHours(15, 29, 30, 0));
+      if (moment().isAfter(third.getTime(), 'second')) {
+        third = moment(third.getTime()).add(1, 'days').toDate();
+      }
+      this.scheduleNotif({
+        id: NotifService.notifData.three.id,
+        time: third,
+        title: NotifService.notifData.three.title,
+      });
+    }
+  }
+
+  checkAndScheduleNotif(id) {
+    this.getScheduledLocalNotifications((notif) => {
+      let isScheduled = false;
+      Array.isArray(notif) && notif.forEach((e) => {
+        if (e.id === id) {
+          let isFlagSet = false;
+          if (e.id === NotifService.notifData.one.id && e.title !== NotifService.notifData.one.title ||
+            e.id === NotifService.notifData.two.id && e.title !== NotifService.notifData.two.title ||
+            e.id === NotifService.notifData.three.id && e.title !== NotifService.notifData.three.title) {
+            this.cancelNotif(id)
+            isScheduled = false;
+            isFlagSet = true;
+          }
+          isScheduled = isFlagSet ? isScheduled : true;
+        }
+      })
+      if (!isScheduled) {
+        this.scheduleMoodFloNotifWithId(id);
+      }
+    })
   }
 
   checkPermission(cbk) {
@@ -161,7 +384,14 @@ export default class NotifService {
   }
 
   cancelNotif(id) {
-    PushNotification.cancelLocalNotifications({id: '' + (id ?? this.lastId)});
+    if (id === undefined) {
+      return;
+    }
+    if (Platform.OS === 'android') {
+      PushNotification.cancelLocalNotifications({ id: '' + (id) });
+    } else {
+      PushNotificationIOS.removeDeliveredNotifications(id);
+    }
   }
 
   cancelAll() {
@@ -173,7 +403,11 @@ export default class NotifService {
   }
 
   getScheduledLocalNotifications(callback) {
-    PushNotification.getScheduledLocalNotifications(callback);
+    if (Platform.OS === 'android') {
+      PushNotification.getScheduledLocalNotifications(callback);
+    } else {
+      PushNotificationIOS.getScheduledLocalNotifications(callback);
+    }
   }
 
   getDeliveredNotifications(callback) {

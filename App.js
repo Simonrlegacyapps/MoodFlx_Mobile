@@ -92,7 +92,7 @@ const Images = [
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState('');
-  const notifService = useRef(new NotifService).current;
+  const notifService = useRef(new NotifService()).current;
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -227,26 +227,13 @@ const App: () => React$Node = () => {
   }, []);
 
   const fp = () => {
-    let  a = new Date();
-    if(Platform.OS === 'android'){
-      notifService.scheduleNotif({
-        id: 1,
-        time: new Date(a.setHours(10, 0, 0, 0)),
-        title: 'Flo would love to know how you feel',
-      });
-      notifService.scheduleNotif({
-        id: 2,
-        time: new Date(a.setHours(13, 0, 0, 0)),
-        title: 'Flo would love to know how you feel',
-      });
-      notifService.scheduleNotif({
-        id: 3,
-        time: new Date(a.setHours(16, 0, 0, 0)),
-        title: 'Flo would love to know how you feel',
-      });
+    notifService.scheduleMoodFloLocalNotif();
+
+    if (Platform.OS === 'android') {
       return;
     }
     console.log('call');
+    let a = new Date();
     PushNotificationIOS.addNotificationRequest({
       id: 'First',
       title: 'Flo would love to know how you feel', // (required)
@@ -301,7 +288,7 @@ const App: () => React$Node = () => {
           .catch((error) => {
             // const {code, message} = error;
             console.log('error', error);
-          });;
+          });
     }
     checkStorage();
     getProfileUserData();

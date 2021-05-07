@@ -57,6 +57,7 @@ import {
   WeatherPerm,
 } from '../../redux/actions/actions';
 import messaging, {firebase} from '@react-native-firebase/messaging';
+import LightData from '../Home/LightData/LightData';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -129,6 +130,8 @@ const App = (props) => {
   const [swiperIndex, setSwiperIndex] = useState(0);
   const [callOneTime, setcallOneTime] = useState('one');
   const [TryWeather, setTryWeather] = useState(null);
+  const [ScreenDataPermModal, setScreenDataPermModal] = useState(false);
+  const [LightDataPermModal, setLightDataPermModal] = useState(false);
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
   const {lat, long} = route.params.cord;
@@ -159,13 +162,37 @@ const App = (props) => {
   const dispatch = useDispatch();
 
   const mainToken = async () => {
-    firebase.initializeApp();
+    // firebase.initializeApp();
     const fcmToken = await messaging().getToken();
-    console.log(`fcmToken`, fcmToken);
+    console.log(`fcmToken home`, fcmToken);
   };
 
   useEffect(() => {
     mainToken();
+
+    // messaging()
+    //   .requestPermission({
+    //     provisional: true,
+    //   })
+    //   .then((authStatus) => {
+    //     const enabled =
+    //       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    //       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    //     if (enabled) {
+    //       console.log('Authorization status:', authStatus);
+    //     } else {
+    //       console.log('not Authorization status:', authStatus);
+    //     }
+    //   });
+
+    // const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+    //   console.log(`remoteMessage`, remoteMessage);
+    //   return unsubscribe;
+    // });
+
+    // messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+    //   console.log('Message handled in the background!', remoteMessage);
+    // });
 
     // const data = {
     //   device_token: fcmToken,
@@ -495,7 +522,6 @@ const App = (props) => {
       // setLoading(false);
     }
 
-
     const health = async () => {
       // RNSamsungHealth.authorize((err, res) => {
       //   if (res) {
@@ -711,9 +737,25 @@ const App = (props) => {
 
   const CheckForSleepData = async () => {
     console.log(`Implement screen data`);
-    let Wp = await AsyncStorage.getItem('GiveSleepPerm');
+    let Wp = await Sleep.getItem('GiveSleepPerm');
     let WeatherP = await JSON.parse(Wp);
     dispatch(SleepPerm(WeatherP));
+  };
+
+  const CheckForScreenData = async () => {
+    console.log(`Implement screen data`);
+    setScreenDataPermModal(true);
+    // let Wp = await AsyncStorage.getItem('GiveSleepPerm');
+    // let WeatherP = await JSON.parse(Wp);
+    // dispatch(SleepPerm(WeatherP));
+  };
+
+  const CheckForLightData = async () => {
+    console.log(`Implement Light data`);
+    setLightDataPermModal(true);
+    // let Wp = await AsyncStorage.getItem('GiveSleepPerm');
+    // let WeatherP = await JSON.parse(Wp);
+    // dispatch(SleepPerm(WeatherP));
   };
 
   const AddDataToFilter = async () => {
@@ -875,17 +917,17 @@ const App = (props) => {
           )} */}
         </View>
 
-        {/* <View style={styles.slide3}>
+        <View style={styles.slide3}>
           <ScreenData
             swiperIndex={swiperIndex}
-            data={data}
-            dataLow={dataLow}
+            // data={data}
+            // dataLow={dataLow}
             Weather={Weather}
             PermScreenTime={PermScreenTime}
             CheckForScreenData={CheckForScreenData}
             MoodCount={MoodCount}
           />
-        </View> */}
+        </View>
         <View style={styles.slide3}>
           <SleepData
             swiperIndex={swiperIndex}
@@ -894,6 +936,17 @@ const App = (props) => {
             Weather={Weather}
             PermScreenTime={PermScreenTime}
             CheckForSleepData={CheckForSleepData}
+            MoodCount={MoodCount}
+          />
+        </View>
+        <View style={styles.slide3}>
+          <LightData
+            swiperIndex={swiperIndex}
+            // data={data}
+            // dataLow={dataLow}
+            Weather={Weather}
+            PermScreenTime={PermScreenTime}
+            CheckForLightData={CheckForLightData}
             MoodCount={MoodCount}
           />
         </View>

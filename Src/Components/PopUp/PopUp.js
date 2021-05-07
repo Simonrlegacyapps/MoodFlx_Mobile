@@ -34,6 +34,7 @@ const PopUp = ({
   verifyDone,
   image,
   dataType,
+  ComingUp,
 }: props) => {
   const [color, setcolor] = useState('black');
 
@@ -100,7 +101,7 @@ const PopUp = ({
                 justifyContent: 'center',
               }}>
               <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
-                {permission ? 'Great!' : 'Next'}
+                {permission ? 'Great!' : ComingUp ? 'Coming soon' : 'Next'}
               </Text>
             </View>
           </TouchableOpacity>
@@ -210,6 +211,8 @@ const styles = StyleSheet.create({
   },
   smallText: {
     fontFamily: RubikLight,
+    paddingVertical: 10,
+    paddingLeft: 5,
     // paddingHorizontal: 12,
     // paddingBottom: 10,
     //   paddingVertical:10

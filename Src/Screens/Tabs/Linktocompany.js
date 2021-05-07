@@ -166,33 +166,28 @@ const Linktocompany = ({ navigation }) => {
       user_id: UserData.UserId,
     };
     console.log('verify', type);
-    PostRequestApi('unlinkToCompany', params)
-      .then(async (resp) => {
-        if (resp.status == 200) {
-          console.log(`Unlink Api success`);
-          dispatch(OTP_Verify(false));
-          dispatch(Division(null));
-          await AsyncStorage.removeItem('UserId');
-          await AsyncStorage.removeItem('Anonymous');
-          await AsyncStorage.removeItem('Email');
-          await AsyncStorage.removeItem('Division');
-          await AsyncStorage.removeItem('Email');
-          dispatch(UserDivision(null));
-          dispatch(UserEmail(null));
-          dispatch(GetUserId(null));
-          dispatch(IsAnonymous(true));
-          dispatch(UserDetail(null));
-          setUnlinkConfirm(false);
-        } else {
-          console.log(`Api Failed`, params);
-          setUnlinkConfirm(false);
-        }
-      })
-      .catch((err) => {
-        console.log('unlink api failed error: ', err);
-        // setLoading(false);
+      if (type === 'Yes') {
+        PostRequestApi('unlinkToCompany', params)
+        .then(async (resp) => {})
+        .catch((err) => {
+          console.log('unlink api failed error: ', err);
+        })
+        dispatch(OTP_Verify(false));
+        dispatch(Division(null));
+        await AsyncStorage.removeItem('UserId');
+        await AsyncStorage.removeItem('Anonymous');
+        await AsyncStorage.removeItem('Email');
+        await AsyncStorage.removeItem('Division');
+        await AsyncStorage.removeItem('Email');
+        dispatch(UserDivision(null));
+        dispatch(UserEmail(null));
+        dispatch(GetUserId(null));
+        dispatch(IsAnonymous(true));
+        dispatch(UserDetail(null));
         setUnlinkConfirm(false);
-      })
+      } else {
+        setUnlinkConfirm(false);
+      }
     // setLinked(type);
   };
   // console.log(`UserData.NameCompany`, UserData.NameCompany);
