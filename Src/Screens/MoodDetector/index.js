@@ -56,6 +56,9 @@ import SaveMoodConfirmModal from '../../Components/Modals/SaveMoodConfirm/SaveMo
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
+import NotificationQuestion from '../../Components/Modals/NotificationQuestion/NotificationQuestion';
+import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from '../../services/notifService';
 
 const hapticOptions = {
@@ -85,6 +88,11 @@ export default function MoodDetector({navigation}) {
     isSaveMoodConfirmModalVisible,
     setIsSaveMoodConfirmModalVisible,
   ] = useState(false); //for modal flag
+  const [
+    isNotificationQuestionModalVisible,
+    setIsNotificationQuestionModalVisible,
+  ] = useState(false); //for remote question flag
+  const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
   let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
   const [emotionText, setEmotionText] = useState(initialEmotionTextData.text);
@@ -92,6 +100,7 @@ export default function MoodDetector({navigation}) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isHapticsEnabled, setisHapticsEnabled] = useState(false);
   const [hapticPosition, setHapticPosition] = useState(0);
+  const [NotifData, setNotifData] = useState(null);
   const dispatch = useDispatch();
   const route = useRoute();
   const forceUpdate = useForceUpdate();
@@ -449,11 +458,20 @@ export default function MoodDetector({navigation}) {
 
   useEffect(() => {
     console.log(`tesst`);
-    const data = NotifService.getLatestNotificationData();
+    // setTimeout(() => {
+    PushNotification.configure({
+      onNotification: function (notification) {
+        setNotifData(notification);
+        setIsNotificationQuestionModalVisible(true);
+        console.log('NOTIFICATION: HOME', notification);
+      },
+    });
+    // const data = NotifService.getLatestNotificationData();
     // data.finish((e) => {
     //   console.log(`e of test notif`, e);
     // });
-    console.log(`data`, data);
+    // console.log(`data fro notification`, data);
+    // }, 1000);
   }, []);
 
   useEffect(() => {
@@ -550,6 +568,8 @@ export default function MoodDetector({navigation}) {
     }, 1000);
   };
 
+  console.log(`route?.params?.question`, route?.params?.question);
+
   const findId = async () => {
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
@@ -608,14 +628,16 @@ export default function MoodDetector({navigation}) {
         country: country_info,
       };
 
-      if (route?.params?.question != undefined) {
+      if (route?.params?.question != undefined || QuestionID !== null) {
         var myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
 
         var raw = JSON.stringify({
           device_id: deviceId,
           email: UserData.UserEmail,
-          pulse_question_id: route?.params?.question,
+          pulse_question_id: route?.params?.question
+            ? route?.params?.question
+            : QuestionID,
           mood_id: Id.id,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
@@ -712,12 +734,25 @@ export default function MoodDetector({navigation}) {
     }
   };
 
+  const verifyNotificationQuestion = (value) => {
+    if (value === 'Yes') {
+      setIsNotificationQuestionModalVisible(false);
+      setQuestionID(NotifData?.data?.id);
+    } else {
+      setIsNotificationQuestionModalVisible(false);
+    }
+  };
+
   const cancelled = () => {
     setSaveConfirm(false);
   };
 
   const dismissSaveMoodConfirmModal = useCallback(() => {
     setIsSaveMoodConfirmModalVisible(false);
+  }, []);
+
+  const dismissNotificationQuestionModal = useCallback(() => {
+    setIsNotificationQuestionModalVisible(false);
   }, []);
 
   const renderBlocks = () => {
@@ -976,6 +1011,13 @@ export default function MoodDetector({navigation}) {
       <SaveMoodConfirmModal
         modalVisible={isSaveMoodConfirmModalVisible}
         dismissModalHandler={dismissSaveMoodConfirmModal}
+      />
+
+      <NotificationQuestion
+        question={NotifData}
+        modalVisible={isNotificationQuestionModalVisible}
+        dismissModalHandler={dismissNotificationQuestionModal}
+        verifyDone={(value) => verifyNotificationQuestion(value)}
       />
 
       {Loading && (
