@@ -30,8 +30,8 @@ export default function MoodScroller({
   onToolTipLayout,
   scrollerContainerRef,
   onLayoutScrollerContainer,
+  wheelSize,
 }) {
-  const wheelSize = getScrollerWheelSize();
   if(emotionText === initialEmotionTextData.text && scrollerStyle?.left === 0){
     return null;
   }

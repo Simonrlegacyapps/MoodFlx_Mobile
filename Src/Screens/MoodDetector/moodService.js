@@ -283,7 +283,7 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
   const yMin = blocksSize?.top - paddingTop - extraVerticalPadding - bubbleCenterOffsetTop;
   const yMax = yMin + (blocksSize?.height ?? 0);
   const xMin = 0 - scrollerWidth / 2;
-  const xMax = screenSize.width - (scrollerWidth/2) - paddingHorizontal;
+  const xMax = screenSize.width - (scrollerWidth / 2) - paddingHorizontal;
   const initialX = ((blocksSize.width - blocksSize.left) / 2) - (scrollerWidth / 2);
   const initialY = yMin + (blocksSize.height / 2);
   return {
@@ -292,7 +292,11 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
     yMin,
     yMax,
     initialX,
-    initialY
+    initialY,
+    scrollerWidth,
+    toolTipHeight,
+    scrollerHeight,
+    bubbleCenterOffsetTop
   }
 }
 
@@ -300,34 +304,34 @@ export const getHapticStats = (y, blocksSize, offsetSize) => {
   let hapticType = '';
   let timeInterval = -1;
   let percentage = 0;
-  if(y < blocksSize.top){
+  if (y < blocksSize.top) {
     return { hapticType, timeInterval, percentage };
-  } else if(y > (blocksSize.top + blocksSize.height)){
+  } else if (y > (blocksSize.top + blocksSize.height)) {
     return { hapticType, timeInterval, percentage };
   }
   const yPosInBlock = y - blocksSize.top;
   const blockSizeHalf = blocksSize.height / 2;
-  percentage = 100 - Math.round((yPosInBlock / blockSizeHalf ) * 100);
+  percentage = 100 - Math.round((yPosInBlock / blockSizeHalf) * 100);
   let interval = (100 - (Math.abs(percentage))) / 1000;
   let fifteenPercent = ((interval * 1000) * 15) / 100;
-  if(percentage > 0 && percentage <= 27){
+  if (percentage > 0 && percentage <= 27) {
     hapticType = hapticsConfigs.car.light;
     timeInterval = ((0.2 * 1000) + (interval * 1000)) / 1000;;
-  } else if(percentage > 27 && percentage <= 54) {
+  } else if (percentage > 27 && percentage <= 54) {
     hapticType = hapticsConfigs.car.medium;
     timeInterval = ((0.2 * 1000) + (interval * 1000)) / 1000;;
-  } else if(percentage > 54 && percentage <= 100) {
+  } else if (percentage > 54 && percentage <= 100) {
     // hapticType = hapticsConfigs.car.high;
     hapticType = hapticsConfigs.car.medium;
     timeInterval = ((0.01 * 1000) + (interval * 1000)) / 1000;;
     // timeInterval = ((interval * 1000) + fifteenPercent) / 1000;
-  } else if(percentage < 0 && percentage >= -27) {
+  } else if (percentage < 0 && percentage >= -27) {
     hapticType = hapticsConfigs.heartBeat.light;
     timeInterval = ((0.7 * 1000) + (interval * 1000)) / 1000;
-  } else if(percentage < -27 && percentage >= -54) {
+  } else if (percentage < -27 && percentage >= -54) {
     hapticType = hapticsConfigs.heartBeat.light;
     timeInterval = ((0.6 * 1000) + (interval * 1000)) / 1000;
-  } else if(percentage < -54 && percentage >= -100) {
+  } else if (percentage < -54 && percentage >= -100) {
     hapticType = hapticsConfigs.heartBeat.light;
     timeInterval = ((0.5 * 1000) + (interval * 1000)) / 1000;
   }
