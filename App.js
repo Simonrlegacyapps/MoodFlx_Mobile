@@ -222,8 +222,33 @@ const App: () => React$Node = () => {
       })
       .catch((error) => console.log('error', error));
   };
+
+  const requestNotificationPermissions = async () => {
+    notifService.requestPermissions()
+    .then(e => {
+      console.log('requestNotificationPermissions: ', e);
+      if(e.authorizationStatus !== 0){
+        fp();
+      }
+    })
+    .catch(error => {
+      console.log('requestNotificationPermissions error: ', error);
+    })
+  }
+
   useEffect(() => {
-    fp();
+    if (Platform.OS === 'android') {
+      fp();
+    } else {
+      notifService.checkPermission((res) => {
+        console.log('checkPermission data => ', res);
+        if(res.authorizationStatus !== 0){
+          fp();
+        } else {
+          requestNotificationPermissions();
+        }
+      });
+    }
   }, []);
 
   const fp = () => {
