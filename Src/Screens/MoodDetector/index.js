@@ -21,7 +21,7 @@ import {
   getScrollerWheelSize,
   mediumPressDuration,
   longPressDuration,
-  setScrollerWheelSize,
+  // setScrollerWheelSize,
   mediumWheelSize,
   largeWheelSize,
 } from './moodService';
@@ -94,12 +94,13 @@ export default function MoodDetector({navigation}) {
   ] = useState(false); //for remote question flag
   const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
-  let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
+  let [toolTipData, setToolTipData] = useState({ ...initialEmotionTextData });
   const [emotionText, setEmotionText] = useState(initialEmotionTextData.text);
   const [color, setColor] = useState(toolTipData.color);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isHapticsEnabled, setisHapticsEnabled] = useState(false);
   const [hapticPosition, setHapticPosition] = useState(0);
+  const [wheelSize, setWheelSize] = useState(getScrollerWheelSize());
   const [NotifData, setNotifData] = useState(null);
   const dispatch = useDispatch();
   const route = useRoute();
@@ -166,22 +167,48 @@ export default function MoodDetector({navigation}) {
         pan.current.setValue({x: 0, y: 0});
         console.log('onPanResponderGrant gesture started');
         setisHapticsEnabled(true);
-        // clearLongPressTimeouts({mediumPressTimeoutId, longPressTimeoutId});
-        // mediumPressTimeoutId.current = setTimeout(() => {
-        //   updateOffsetOnChangeWheelSize(mediumWheelSize, () => {
-        //     setScrollerWheelSize(mediumWheelSize);
-        //     forceUpdate();
-        //   });
 
-        //   // clearLongPressTimeouts({mediumPressTimeoutId});
-        // }, mediumPressDuration * 1000);
-        // longPressTimeoutId.current = setTimeout(() => {
-        //   updateOffsetOnChangeWheelSize(largeWheelSize, () => {
-        //     setScrollerWheelSize(largeWheelSize);
-        //     forceUpdate();
-        //   });
-        //   // clearLongPressTimeouts({longPressTimeoutId});
-        // }, longPressDuration * 1000);
+        //enlarge buubble on long press
+        // if (toolTipData.text === 'Excited') {
+        //   const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
+        //   const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
+        //   let newScrollerWidth = offsetSize.current.scrollerWidth > mediumWheelSize ? offsetSize.current.scrollerWidth : mediumWheelSize;
+        //   let panX = offsetSize.current.xMin + (offsetSize.current.scrollerWidth / 2) - (newScrollerWidth / 2) + x;
+        //   let panY = offsetSize.current.yMin + offsetSize.current.bubbleCenterOffsetTop - (offsetSize.current.toolTipHeight + (mediumWheelSize / 2)) + y;
+        //   clearLongPressTimeouts({ mediumPressTimeoutId, longPressTimeoutId });
+        //   mediumPressTimeoutId.current = setTimeout(() => {
+        //     updateOffsetOnChangeWheelSize(mediumWheelSize, () => {
+        //       if (offsetSize.current) {     
+        //         pan.current.setOffset({
+        //           x: pan.current.x._value,
+        //           y: pan.current.y._value
+        //         });
+        //         pan.current.setValue({ x: 0, y: 0 });
+        //         pan.current.setValue({ x: panX, y: panY });
+        //       }
+        //       setWheelSize(mediumWheelSize);
+        //     });
+
+        //     clearLongPressTimeouts({ mediumPressTimeoutId });
+        //   }, mediumPressDuration * 1000);
+        //   longPressTimeoutId.current = setTimeout(() => {
+        //     updateOffsetOnChangeWheelSize(largeWheelSize, () => {
+        //       newScrollerWidth = offsetSize.current.scrollerWidth > largeWheelSize ? offsetSize.current.scrollerWidth : largeWheelSize;
+        //       if (offsetSize.current) {
+        //         pan.current.setOffset({
+        //           x: panX,
+        //           y: panY
+        //         });
+        //         panX = offsetSize.current.xMin + (offsetSize.current.scrollerWidth / 2) - (newScrollerWidth / 2) + x;
+        //         panY = offsetSize.current.yMin + offsetSize.current.bubbleCenterOffsetTop - (offsetSize.current.toolTipHeight + (largeWheelSize / 2)) + y;
+        //         pan.current.setValue({ x: 0, y: 0 });
+        //         pan.current.setValue({ x: panX, y: panY });
+        //       }
+        //       setWheelSize(largeWheelSize);
+        //     });
+        //     clearLongPressTimeouts({ longPressTimeoutId });
+        //   }, longPressDuration * 1000);
+        // }
       },
       onPanResponderMove: (event, gestureState) => {
         pan.current.setValue({x: gestureState.dx, y: gestureState.dy});
@@ -194,7 +221,7 @@ export default function MoodDetector({navigation}) {
       onPanResponderRelease: (event, gestureState) => {
         pan.current.flattenOffset();
         setisHapticsEnabled(false);
-        // clearLongPressTimeouts({mediumPressTimeoutId, longPressTimeoutId, resetWheelSize: true});
+        // clearLongPressTimeouts({ mediumPressTimeoutId, longPressTimeoutId, resetWheelSize: true });
         // console.log('onPanResponderRelease screenWidth : ', screenWidth)
       },
     }),
@@ -310,8 +337,7 @@ export default function MoodDetector({navigation}) {
     if (resetWheelSize) {
       const timeoutId = setTimeout(() => {
         updateOffsetOnChangeWheelSize(regularWheelSize, () => {
-          setScrollerWheelSize(regularWheelSize);
-          forceUpdate();
+          setWheelSize(regularWheelSize);
         });
         clearTimeout(timeoutId);
       }, 1 * 1000);
@@ -502,7 +528,7 @@ export default function MoodDetector({navigation}) {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(UserData?.AllMoods) && UserData.AllMoods.length > 0) {
+    if (Array.isArray(UserData?.AllMoods) && (UserData.AllMoods.length > 0)) {
       userData.current = UserData;
     }
   }, [UserData]);
@@ -657,9 +683,7 @@ export default function MoodDetector({navigation}) {
           .then((result) => {
             console.log('quesstion updated', result);
             setLoading(false);
-            showMoodSaveConfirmModal(() => {
-              navigation.navigate('HomeScreen', {screen: 'MicScreen'});
-            });
+            navigation.navigate('HomeScreen', { screen: 'MicScreen' });
           })
           .catch((error) => {
             console.log('error', error), setLoading(false);
@@ -979,20 +1003,19 @@ export default function MoodDetector({navigation}) {
         scrollerStyle={{
           ...pan.current.getLayout(),
           // ...newScrollerContainerPosition.current !== null ? newScrollerContainerPosition.current : {},
-          ...(constrainedX.current !== null && constrainedY.current !== null
-            ? {left: constrainedX.current, top: constrainedY.current}
-            : {}),
+          ...(constrainedX.current !== null && constrainedY.current !== null && wheelSize === regularWheelSize) ? { left: constrainedX.current, top: constrainedY.current } : {}
         }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
         emotionText={emotionText}
         toolTipRef={toolTipRef}
+        wheelSize={wheelSize}
         onToolTipLayout={onToolTipLayout}
         isAllMoodsDataAvailable={UserData.AllMoods !== null}
         scrollerRef={(ref) => (scrollerRef.current = ref)}
         scrollerContainerRef={scrollerContainerRef}
         onLayoutScrollerContainer={onLayoutScrollerContainer}
-        // toolTipSize={toolTipSize.current}
+      // toolTipSize={toolTipSize.current}
       />
 
       <VideoModal
