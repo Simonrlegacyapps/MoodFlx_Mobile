@@ -159,13 +159,37 @@ const App = (props) => {
   const dispatch = useDispatch();
 
   const mainToken = async () => {
-    firebase.initializeApp();
+    // firebase.initializeApp();
     const fcmToken = await messaging().getToken();
     console.log(`fcmToken home`, fcmToken);
   };
 
   useEffect(() => {
     mainToken();
+
+    // messaging()
+    //   .requestPermission({
+    //     provisional: true,
+    //   })
+    //   .then((authStatus) => {
+    //     const enabled =
+    //       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    //       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    //     if (enabled) {
+    //       console.log('Authorization status:', authStatus);
+    //     } else {
+    //       console.log('not Authorization status:', authStatus);
+    //     }
+    //   });
+
+    // const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+    //   console.log(`remoteMessage`, remoteMessage);
+    //   return unsubscribe;
+    // });
+
+    // messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+    //   console.log('Message handled in the background!', remoteMessage);
+    // });
 
     // const data = {
     //   device_token: fcmToken,
@@ -713,6 +737,13 @@ const App = (props) => {
     let Wp = await AsyncStorage.getItem('GiveSleepPerm');
     let WeatherP = await JSON.parse(Wp);
     dispatch(SleepPerm(WeatherP));
+  };
+
+  const CheckForScreenData = async () => {
+    console.log(`Implement screen data`);
+    // let Wp = await AsyncStorage.getItem('GiveSleepPerm');
+    // let WeatherP = await JSON.parse(Wp);
+    // dispatch(SleepPerm(WeatherP));
   };
 
   const AddDataToFilter = async () => {

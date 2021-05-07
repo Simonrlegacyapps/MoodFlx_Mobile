@@ -873,7 +873,12 @@ const WeatherData = ({
                 </View>
               )}
             </View>
-            <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignSelf: 'center',
+                marginTop: 15,
+              }}>
               <IndicatorHelper color={'#7FE3F0'} text={'Min ºC'} />
               <IndicatorHelper color={'#FC4190'} text={'Max ºC'} />
               <IndicatorHelper color={'#7265E3'} text={'Rainfall'} />

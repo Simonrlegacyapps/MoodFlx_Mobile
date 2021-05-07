@@ -643,7 +643,7 @@ export default function MoodDetector({navigation}) {
           user_id: UserData.UserId,
         });
 
-        console.log(`params for updating answer`, raw);
+        console.log(`params for updating answer --------------->`, raw);
 
         var requestOptions = {
           method: 'POST',
