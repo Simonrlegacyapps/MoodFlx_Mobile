@@ -92,7 +92,7 @@ const Images = [
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState('');
-  const notifService = useRef(new NotifService).current;
+  const notifService = useRef(new NotifService()).current;
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -252,34 +252,7 @@ const App: () => React$Node = () => {
   }, []);
 
   const fp = () => {
-    // return
     notifService.scheduleMoodFloLocalNotif();
-    return;
-    if (Platform.OS === 'android') {
-    }
-    console.log('call');
-    let a = new Date();
-    PushNotificationIOS.addNotificationRequest({
-      id: 'First',
-      title: 'Flo would love to know how you feel', // (required)
-      fireDate: new Date(a.setHours(10, 0, 0, 0)), // in 60 secs
-      repeats: true,
-      // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
-    });
-    PushNotificationIOS.addNotificationRequest({
-      id: 'Second',
-      title: 'Time to check in with Flo', // (required)
-      fireDate: new Date(a.setHours(13, 0, 0, 0)), // in 60 secs
-      repeats: true,
-      // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
-    });
-    PushNotificationIOS.addNotificationRequest({
-      id: 'Third',
-      title: "It's Flo time", // (required)
-      fireDate: new Date(a.setHours(16, 0, 0, 0)), // in 60 secs
-      repeats: true,
-      // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
-    });
   };
   useEffect(() => {
     // console.log(`LightSensor`, LightSensor);
@@ -313,7 +286,7 @@ const App: () => React$Node = () => {
           .catch((error) => {
             // const {code, message} = error;
             console.log('error', error);
-          });;
+          });
     }
     checkStorage();
     getProfileUserData();
