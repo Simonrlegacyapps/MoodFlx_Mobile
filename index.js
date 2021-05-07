@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import {AppRegistry} from 'react-native';
+import {AppRegistry, Platform} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 import thunk from 'redux-thunk';
@@ -10,6 +10,7 @@ import allReducers from './Src/redux/reducers';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 import AsyncStorage from '@react-native-community/async-storage';
+import NotifService from './Src/services/notifService';
 
 // Must be outside of any component LifeCycle (such as `componentDidMount`).
 PushNotification.configure({
@@ -25,8 +26,8 @@ PushNotification.configure({
 
   // (required) Called when a remote is received or opened, or local notification is opened
   onNotification: function (notification) {
-    console.log('NOTIFICATION: getting', notification);
-
+    // console.log('NOTIFICATION:', notification);
+    NotifService.setLatestNotificationData(notification);
     // process the notification
 
     // (required) Called when a remote is received or opened, or local notification is opened
@@ -64,7 +65,7 @@ PushNotification.configure({
    * - if you are not using remote notification or do not have Firebase installed, use this:
    *     requestPermissions: Platform.OS === 'ios'
    */
-  requestPermissions: Platform.OS === 'ios',
+  requestPermissions: false,
 });
 
 const store = createStore(allReducers, applyMiddleware(thunk));

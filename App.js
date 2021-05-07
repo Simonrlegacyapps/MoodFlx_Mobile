@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   StatusBar,
@@ -10,21 +10,21 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-community/async-storage';
-import {ScaledSheet} from 'react-native-size-matters';
+import { ScaledSheet } from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import thunk from 'redux-thunk';
-import {Provider, useDispatch, useSelector} from 'react-redux';
-import {createStore, applyMiddleware} from 'redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
 import allReducers from './Src/redux/reducers';
 import ImageOne from './assets/OnBoarding/ImageOne';
 import FastImage from 'react-native-fast-image';
 import Carousel from 'react-native-snap-carousel';
 import One from './assets/OnBoarding/ImageOne.svg';
-import {SvgCssUri, SvgUri, SvgXml} from 'react-native-svg';
+import { SvgCssUri, SvgUri, SvgXml } from 'react-native-svg';
 import {
   GetUserId,
   HealthPerm,
@@ -47,7 +47,7 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
 const slides = [
   {
@@ -92,7 +92,7 @@ const Images = [
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState('');
-  const notifService = useRef(new NotifService).current;
+  const notifService = useRef(new NotifService()).current;
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -222,69 +222,37 @@ const App: () => React$Node = () => {
       })
       .catch((error) => console.log('error', error));
   };
+
+  const requestNotificationPermissions = async () => {
+    notifService.requestPermissions()
+    .then(e => {
+      console.log('requestNotificationPermissions: ', e);
+      if(e.authorizationStatus !== 0){
+        fp();
+      }
+    })
+    .catch(error => {
+      console.log('requestNotificationPermissions error: ', error);
+    })
+  }
+
   useEffect(() => {
-    fp();
+    if (Platform.OS === 'android') {
+      fp();
+    } else {
+      notifService.checkPermission((res) => {
+        console.log('checkPermission data => ', res);
+        if(res.authorizationStatus !== 0){
+          fp();
+        } else {
+          requestNotificationPermissions();
+        }
+      });
+    }
   }, []);
 
   const fp = () => {
-    let  a = new Date();
-    // let first = new Date(new Date().setHours(10, 0, 0, 0)).getTime();
-    // let second = new Date(new Date().setHours(13, 0, 0, 0)).getTime();
-    // let third = new Date(new Date().setHours(16, 0, 0, 0)).getTime();
-    // if(moment().isBefore(first, 'second')){
-    //   first = moment(first).add(1, 'days').toDate();
-    //   console.log('first =>', first.toLocaleString());
-    // }
-    // if(moment().isBefore(second, 'second')){
-    //   second = moment(second).add(1, 'days').toDate();
-    //   console.log('second =>', second.toLocaleString());
-    // }
-    // if(moment().isBefore(third, 'second')){
-    //   third = moment(third).add(1, 'days').toDate();
-    //   console.log('third =>', third.toLocaleString());
-    // }
-    // return
-    if(Platform.OS === 'android'){
-      // return;
-      notifService.scheduleNotif({
-        id: 1,
-        time: new Date(a.setHours(13, 28, 0, 0)),
-        title: 'Flo would love to know how you feel',
-      });
-      notifService.scheduleNotif({
-        id: 2,
-        time: new Date(a.setHours(13, 28, 30, 0)),
-        title: 'Time to check in with Flo',
-      });
-      notifService.scheduleNotif({
-        id: 3,
-        time: new Date(a.setHours(13, 28, 45, 0)),
-        title: "It's Flo time",
-      });
-      return;
-    }
-    console.log('call');
-    PushNotificationIOS.addNotificationRequest({
-      id: 'First',
-      title: 'Flo would love to know how you feel', // (required)
-      fireDate: new Date(a.setHours(10, 0, 0, 0)), // in 60 secs
-      repeats: true,
-      // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
-    });
-    PushNotificationIOS.addNotificationRequest({
-      id: 'Second',
-      title: 'Time to check in with Flo', // (required)
-      fireDate: new Date(a.setHours(13, 0, 0, 0)), // in 60 secs
-      repeats: true,
-      // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
-    });
-    PushNotificationIOS.addNotificationRequest({
-      id: 'Third',
-      title: "It's Flo time", // (required)
-      fireDate: new Date(a.setHours(16, 0, 0, 0)), // in 60 secs
-      repeats: true,
-      // allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
-    });
+    notifService.scheduleMoodFloLocalNotif();
   };
   useEffect(() => {
     // console.log(`LightSensor`, LightSensor);
@@ -303,7 +271,7 @@ const App: () => React$Node = () => {
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
-            const {code, message} = error;
+            const { code, message } = error;
             console.log('error', code, message);
           });
     }
@@ -318,13 +286,13 @@ const App: () => React$Node = () => {
           .catch((error) => {
             // const {code, message} = error;
             console.log('error', error);
-          });;
+          });
     }
     checkStorage();
     getProfileUserData();
   }, []);
 
-  const renderItems = ({item, index}, parallaxProps) => {
+  const renderItems = ({ item, index }, parallaxProps) => {
     // console.log('item', item.img);
     // console.log('ShowWelcome--', ShowWelcome);
     return (
@@ -334,7 +302,7 @@ const App: () => React$Node = () => {
             source={item.img}
             height={'100%'}
             width={'100%'}
-            style={{height: '100%', width: '100%'}}
+            style={{ height: '100%', width: '100%' }}
           />
         </View>
       </>
@@ -358,7 +326,7 @@ const App: () => React$Node = () => {
       {/* <Provider store={store}> */}
       {ShowWelcome === false ? (
         <NavigationContainer>
-          <SafeAreaView style={{flex: 1}}>
+          <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
               <StackNavigation />
             </View>
@@ -420,7 +388,7 @@ const styles = ScaledSheet.create({
     fontWeight: '600',
     color: 'white',
   },
-  welcomeTextWrapper: {position: 'absolute', top: '15%', alignSelf: 'center'},
+  welcomeTextWrapper: { position: 'absolute', top: '15%', alignSelf: 'center' },
   welRenderWrapper: {
     justifyContent: 'center',
     alignItems: 'center',

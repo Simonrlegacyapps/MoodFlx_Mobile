@@ -21,7 +21,7 @@ import {
   getScrollerWheelSize,
   mediumPressDuration,
   longPressDuration,
-  setScrollerWheelSize,
+  // setScrollerWheelSize,
   mediumWheelSize,
   largeWheelSize,
 } from './moodService';
@@ -59,6 +59,7 @@ import Geocoder from 'react-native-geocoding';
 import NotificationQuestion from '../../Components/Modals/NotificationQuestion/NotificationQuestion';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import NotifService from '../../services/notifService';
 
 const hapticOptions = {
   enableVibrateFallback: true,
@@ -90,14 +91,17 @@ export default function MoodDetector({navigation}) {
   const [
     isNotificationQuestionModalVisible,
     setIsNotificationQuestionModalVisible,
-  ] = useState(true); //for remote question flag
+  ] = useState(false); //for remote question flag
+  const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
-  let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
+  let [toolTipData, setToolTipData] = useState({ ...initialEmotionTextData });
   const [emotionText, setEmotionText] = useState(initialEmotionTextData.text);
   const [color, setColor] = useState(toolTipData.color);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isHapticsEnabled, setisHapticsEnabled] = useState(false);
   const [hapticPosition, setHapticPosition] = useState(0);
+  const [wheelSize, setWheelSize] = useState(getScrollerWheelSize());
+  const [NotifData, setNotifData] = useState(null);
   const dispatch = useDispatch();
   const route = useRoute();
   const forceUpdate = useForceUpdate();
@@ -163,22 +167,48 @@ export default function MoodDetector({navigation}) {
         pan.current.setValue({x: 0, y: 0});
         console.log('onPanResponderGrant gesture started');
         setisHapticsEnabled(true);
-        // clearLongPressTimeouts({mediumPressTimeoutId, longPressTimeoutId});
-        // mediumPressTimeoutId.current = setTimeout(() => {
-        //   updateOffsetOnChangeWheelSize(mediumWheelSize, () => {
-        //     setScrollerWheelSize(mediumWheelSize);
-        //     forceUpdate();
-        //   });
 
-        //   // clearLongPressTimeouts({mediumPressTimeoutId});
-        // }, mediumPressDuration * 1000);
-        // longPressTimeoutId.current = setTimeout(() => {
-        //   updateOffsetOnChangeWheelSize(largeWheelSize, () => {
-        //     setScrollerWheelSize(largeWheelSize);
-        //     forceUpdate();
-        //   });
-        //   // clearLongPressTimeouts({longPressTimeoutId});
-        // }, longPressDuration * 1000);
+        //enlarge buubble on long press
+        // if (toolTipData.text === 'Excited') {
+        //   const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
+        //   const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
+        //   let newScrollerWidth = offsetSize.current.scrollerWidth > mediumWheelSize ? offsetSize.current.scrollerWidth : mediumWheelSize;
+        //   let panX = offsetSize.current.xMin + (offsetSize.current.scrollerWidth / 2) - (newScrollerWidth / 2) + x;
+        //   let panY = offsetSize.current.yMin + offsetSize.current.bubbleCenterOffsetTop - (offsetSize.current.toolTipHeight + (mediumWheelSize / 2)) + y;
+        //   clearLongPressTimeouts({ mediumPressTimeoutId, longPressTimeoutId });
+        //   mediumPressTimeoutId.current = setTimeout(() => {
+        //     updateOffsetOnChangeWheelSize(mediumWheelSize, () => {
+        //       if (offsetSize.current) {     
+        //         pan.current.setOffset({
+        //           x: pan.current.x._value,
+        //           y: pan.current.y._value
+        //         });
+        //         pan.current.setValue({ x: 0, y: 0 });
+        //         pan.current.setValue({ x: panX, y: panY });
+        //       }
+        //       setWheelSize(mediumWheelSize);
+        //     });
+
+        //     clearLongPressTimeouts({ mediumPressTimeoutId });
+        //   }, mediumPressDuration * 1000);
+        //   longPressTimeoutId.current = setTimeout(() => {
+        //     updateOffsetOnChangeWheelSize(largeWheelSize, () => {
+        //       newScrollerWidth = offsetSize.current.scrollerWidth > largeWheelSize ? offsetSize.current.scrollerWidth : largeWheelSize;
+        //       if (offsetSize.current) {
+        //         pan.current.setOffset({
+        //           x: panX,
+        //           y: panY
+        //         });
+        //         panX = offsetSize.current.xMin + (offsetSize.current.scrollerWidth / 2) - (newScrollerWidth / 2) + x;
+        //         panY = offsetSize.current.yMin + offsetSize.current.bubbleCenterOffsetTop - (offsetSize.current.toolTipHeight + (largeWheelSize / 2)) + y;
+        //         pan.current.setValue({ x: 0, y: 0 });
+        //         pan.current.setValue({ x: panX, y: panY });
+        //       }
+        //       setWheelSize(largeWheelSize);
+        //     });
+        //     clearLongPressTimeouts({ longPressTimeoutId });
+        //   }, longPressDuration * 1000);
+        // }
       },
       onPanResponderMove: (event, gestureState) => {
         pan.current.setValue({x: gestureState.dx, y: gestureState.dy});
@@ -191,7 +221,7 @@ export default function MoodDetector({navigation}) {
       onPanResponderRelease: (event, gestureState) => {
         pan.current.flattenOffset();
         setisHapticsEnabled(false);
-        // clearLongPressTimeouts({mediumPressTimeoutId, longPressTimeoutId, resetWheelSize: true});
+        // clearLongPressTimeouts({ mediumPressTimeoutId, longPressTimeoutId, resetWheelSize: true });
         // console.log('onPanResponderRelease screenWidth : ', screenWidth)
       },
     }),
@@ -307,8 +337,7 @@ export default function MoodDetector({navigation}) {
     if (resetWheelSize) {
       const timeoutId = setTimeout(() => {
         updateOffsetOnChangeWheelSize(regularWheelSize, () => {
-          setScrollerWheelSize(regularWheelSize);
-          forceUpdate();
+          setWheelSize(regularWheelSize);
         });
         clearTimeout(timeoutId);
       }, 1 * 1000);
@@ -454,14 +483,22 @@ export default function MoodDetector({navigation}) {
   };
 
   useEffect(() => {
-    // let okay = PushNotification.configure({onNotification({message, userInteraction, data, foreground})})
-    // PushNotificationIOS.getDeliveredNotifications((e) => {
-    //   console.log(`e of notification and try here`, e);
+    console.log(`tesst`);
+    // setTimeout(() => {
+    PushNotification.configure({
+      onNotification: function (notification) {
+        setNotifData(notification);
+        setIsNotificationQuestionModalVisible(true);
+        console.log('NOTIFICATION: HOME', notification);
+      },
+    });
+    // const data = NotifService.getLatestNotificationData();
+    // data.finish((e) => {
+    //   console.log(`e of test notif`, e);
     // });
-    // console.log(`okay`, okay);
+    // console.log(`data fro notification`, data);
+    // }, 1000);
   }, []);
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -491,7 +528,7 @@ export default function MoodDetector({navigation}) {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(UserData?.AllMoods) && UserData.AllMoods.length > 0) {
+    if (Array.isArray(UserData?.AllMoods) && (UserData.AllMoods.length > 0)) {
       userData.current = UserData;
     }
   }, [UserData]);
@@ -617,20 +654,22 @@ export default function MoodDetector({navigation}) {
         country: country_info,
       };
 
-      if (route?.params?.question != undefined) {
+      if (route?.params?.question != undefined || QuestionID !== null) {
         var myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
 
         var raw = JSON.stringify({
           device_id: deviceId,
           email: UserData.UserEmail,
-          pulse_question_id: route?.params?.question,
+          pulse_question_id: route?.params?.question
+            ? route?.params?.question
+            : QuestionID,
           mood_id: Id.id,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
         });
 
-        console.log(`params for updating answer`, raw);
+        console.log(`params for updating answer --------------->`, raw);
 
         var requestOptions = {
           method: 'POST',
@@ -644,9 +683,7 @@ export default function MoodDetector({navigation}) {
           .then((result) => {
             console.log('quesstion updated', result);
             setLoading(false);
-            showMoodSaveConfirmModal(() => {
-              navigation.navigate('HomeScreen', {screen: 'MicScreen'});
-            });
+            navigation.navigate('HomeScreen', { screen: 'MicScreen' });
           })
           .catch((error) => {
             console.log('error', error), setLoading(false);
@@ -667,21 +704,21 @@ export default function MoodDetector({navigation}) {
               //   mail: value,
               //   deviceID: deviceId,
               // });
-              {
-                if (route?.params?.question != undefined) {
-                  showMoodSaveConfirmModal(() => {
-                    navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+              if (route?.params?.question != undefined) {
+                showMoodSaveConfirmModal(() => {
+                  navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+                });
+              } else {
+                showMoodSaveConfirmModal(() => {
+                  navigation.replace('HomeScreen', {
+                    lat: lat,
+                    long: lng,
+                    screen: 'Home',
                   });
-                } else {
-                  showMoodSaveConfirmModal(() => {
-                    navigation.replace('HomeScreen', {
-                      lat: lat,
-                      long: lng,
-                      screen: 'Home',
-                    });
-                  });
-                }
+                });
               }
+              const notifService = new NotifService();
+              notifService.checkTimeAndUpdateNotif();
 
               // navigation.replace('HomeScreen', {
               //   lat: UserData.lat,
@@ -724,6 +761,7 @@ export default function MoodDetector({navigation}) {
   const verifyNotificationQuestion = (value) => {
     if (value === 'Yes') {
       setIsNotificationQuestionModalVisible(false);
+      setQuestionID(NotifData?.data?.id);
     } else {
       setIsNotificationQuestionModalVisible(false);
     }
@@ -965,20 +1003,19 @@ export default function MoodDetector({navigation}) {
         scrollerStyle={{
           ...pan.current.getLayout(),
           // ...newScrollerContainerPosition.current !== null ? newScrollerContainerPosition.current : {},
-          ...(constrainedX.current !== null && constrainedY.current !== null
-            ? {left: constrainedX.current, top: constrainedY.current}
-            : {}),
+          ...(constrainedX.current !== null && constrainedY.current !== null && wheelSize === regularWheelSize) ? { left: constrainedX.current, top: constrainedY.current } : {}
         }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
         emotionText={emotionText}
         toolTipRef={toolTipRef}
+        wheelSize={wheelSize}
         onToolTipLayout={onToolTipLayout}
         isAllMoodsDataAvailable={UserData.AllMoods !== null}
         scrollerRef={(ref) => (scrollerRef.current = ref)}
         scrollerContainerRef={scrollerContainerRef}
         onLayoutScrollerContainer={onLayoutScrollerContainer}
-        // toolTipSize={toolTipSize.current}
+      // toolTipSize={toolTipSize.current}
       />
 
       <VideoModal
@@ -1000,6 +1037,7 @@ export default function MoodDetector({navigation}) {
       />
 
       <NotificationQuestion
+        question={NotifData}
         modalVisible={isNotificationQuestionModalVisible}
         dismissModalHandler={dismissNotificationQuestionModal}
         verifyDone={(value) => verifyNotificationQuestion(value)}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
+import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -42,6 +43,163 @@ const ScreenData = ({
   MoodCount,
   swiperIndex,
 }) => {
+  const [ScreenTimeDuration, setScreenTimeDuration] = useState(false);
+  const [ScreenDuration, setScreenDuration] = useState('Week');
+
+  // const data = [
+  //   {
+  //     x: 1,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[0].temp_max === null
+  //           ? 0
+  //           : Graph[0].temp_max
+  //         : 0,
+  //   },
+  //   {
+  //     x: 2,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[1].temp_max === null
+  //           ? 0
+  //           : Graph[1].temp_max
+  //         : 0,
+  //   },
+  //   {
+  //     x: 3,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[2].temp_max === null
+  //           ? 0
+  //           : Graph[2].temp_max
+  //         : 0,
+  //   },
+  //   {
+  //     x: 4,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[3].temp_max === null
+  //           ? 0
+  //           : Graph[3].temp_max
+  //         : 0,
+  //   },
+  //   {
+  //     x: 5,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[4].temp_max === null
+  //           ? 0
+  //           : Graph[4].temp_max
+  //         : 0,
+  //   },
+  //   {
+  //     x: 6,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[5].temp_max === null
+  //           ? 0
+  //           : Graph[5].temp_max
+  //         : 0,
+  //   },
+  //   {
+  //     x: 7,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[6].temp_max === null
+  //           ? 0
+  //           : Graph[6].temp_max
+  //         : 0,
+  //   },
+  // ];
+
+  // const dataLow = [
+  //   {
+  //     x: 1,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[0].temp_min === null
+  //           ? 0
+  //           : Graph[0].temp_min
+  //         : 0,
+  //   },
+  //   {
+  //     x: 2,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[1].temp_min === null
+  //           ? 0
+  //           : Graph[1].temp_min
+  //         : 0,
+  //   },
+  //   {
+  //     x: 3,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[2].temp_min === null
+  //           ? 0
+  //           : Graph[2].temp_min
+  //         : 0,
+  //   },
+  //   {
+  //     x: 4,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[3].temp_min === null
+  //           ? 0
+  //           : Graph[3].temp_min
+  //         : 0,
+  //   },
+  //   {
+  //     x: 5,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[4].temp_min === null
+  //           ? 0
+  //           : Graph[4].temp_min
+  //         : 0,
+  //   },
+  //   {
+  //     x: 6,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[5].temp_min === null
+  //           ? 0
+  //           : Graph[5].temp_min
+  //         : 0,
+  //   },
+  //   {
+  //     x: 7,
+  //     y:
+  //       Graph && WeatherDuration === 'Week'
+  //         ? Graph[6].temp_min === null
+  //           ? 0
+  //           : Graph[6].temp_min
+  //         : 0,
+  //   },
+  // ];
+
+  // let heightProp = SIZE / 4.3;
+  // let widthProp = Math.round(SIZE - 138);
+
+  // const max =
+  //   data &&
+  //   Math.max.apply(
+  //     Math,
+  //     data.map(function (o) {
+  //       return o.y;
+  //     }),
+  //   );
+
+  // const Lowmax =
+  //   dataLow &&
+  //   Math.max.apply(
+  //     Math,
+  //     dataLow.map(function (o) {
+  //       return o.y;
+  //     }),
+  //   );
+
+  const ScreenDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
   return (
     <View>
       <ScrollView
@@ -75,11 +233,10 @@ const ScreenData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              swiperIndex == 1
-                ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
-                    3) *
-                  100
-                : 0
+              // swiperIndex == 1
+              ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) / 3) *
+              100
+              // : 0
             }
             height={10}
             backgroundColor="#CB9866"
@@ -92,7 +249,7 @@ const ScreenData = ({
               style={
                 (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
               }>
-              {JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3}/3
+              {JSON.parse(MoodCount) === null ? 0 : JSON.parse(MoodCount)}/3
             </Text>
           </View>
         </View>
@@ -117,7 +274,10 @@ const ScreenData = ({
         </View>
 
         {/* <ProgressBarCustom /> */}
-        <HomeHeader />
+        <HomeHeader
+          click={() => setScreenTimeDuration(true)}
+          value={ScreenDuration}
+        />
         <View style={{marginBottom: 50}}>
           <BarGraph />
           <View
@@ -152,6 +312,14 @@ const ScreenData = ({
           </View>
         )}
       </ScrollView>
+
+      <WeatherGraphDurationModal
+        data={ScreenDurations}
+        modalVisible={ScreenDuration}
+        onChangeText={setScreenDuration}
+        value={ScreenDuration}
+        dismissModalHandler={() => setScreenDuration(false)}
+      />
     </View>
   );
 };

@@ -34,11 +34,13 @@ const NotificationQuestion = ({
   modalVisible,
   dismissModalHandler,
   verifyDone,
+  question,
 }: props) => {
   const [color, setcolor] = useState('black');
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
+  const questionMain = question?.data?.question;
   return (
     <Modal
       style={styles.modalView}
@@ -94,8 +96,7 @@ const NotificationQuestion = ({
               width: dynamicSize(240),
               lineHeight: dynamicSize(26),
             }}>
-            You are not anonymous for this mood input. Save this mood with your
-            name?
+            {questionMain}
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
             <TouchableOpacity
