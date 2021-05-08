@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* MoodFloTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* MoodFloTests.m */; };
-		03EB866C11DCA924018E93DE /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		03EB866C11DCA924018E93DE /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		13010DA679A64031A88DAE34 /* Rubik-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E082F660C0344539046D5DC /* Rubik-SemiBoldItalic.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -141,7 +141,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03EB866C11DCA924018E93DE /* BuildFile in Frameworks */,
+				03EB866C11DCA924018E93DE /* (null) in Frameworks */,
 				CF833650A679E25538DFA8F8 /* libPods-MoodFlo-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -854,7 +854,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 39;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
@@ -879,9 +879,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
+<<<<<<< HEAD
+				CURRENT_PROJECT_VERSION = 39;
+=======
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 38;
+>>>>>>> 1aa0ae77a928bd6d296a61d4b14aeffb28c96e5c
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
