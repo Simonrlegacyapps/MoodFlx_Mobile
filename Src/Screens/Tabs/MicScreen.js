@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import HappyIcon from '../../../assets/emotionsicons/HappyIcon';
@@ -26,7 +27,7 @@ import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpir
 import AsyncStorage from '@react-native-community/async-storage';
 import {GetUserId, UserEmail} from '../../redux/actions/actions';
 import {useFocusEffect} from '@react-navigation/native';
-
+const { height, width } = Dimensions.get('window');
 const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
@@ -155,11 +156,11 @@ const MicScreen = ({navigation}) => {
             // flex: 1,
           }}>
           <Image
-            source={Constants.Images.GirlImage}
+            source={Constants.Images.TeamPulse}
             style={{
               height: dynamicSize(300),
-              width: dynamicSize(300),
-              resizeMode: 'contain',
+              width: width,
+              resizeMode: 'stretch',
             }}
           />
         </View>

@@ -164,7 +164,12 @@ const App = (props) => {
   const mainToken = async () => {
     // firebase.initializeApp();
     const fcmToken = await messaging().getToken();
-    console.log(`fcmToken home`, fcmToken);
+    try {
+      await AsyncStorage.setItem('device_token', fcmToken)
+    } catch (e) {
+      console.log('error saving device token in async storage');
+    }
+    console.log(`mainToken`, fcmToken);
   };
 
   useEffect(() => {
