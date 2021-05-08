@@ -38,14 +38,18 @@ const VerifyEmail = ({navigation}) => {
   // console.log('code ye hai ', code);
   const onLink = async () => {
     let fcmToken = await NotifService.getDeviceToken();
-    console.log('fcmToken', fcmToken);
+    const fcm = await messaging().getToken();
+    console.log('fcmToken', fcm, Platform.OS);
     const params = {
       email: mail,
       otp: Code,
       device_id: deviceID,
-      device_token: fcmToken,
-      device_type: Platform.OS === 'ios' ? 'ios' : 'android',
+      device_token: fcm,
+      device_type: Platform.OS,
+      // device_token: fcmToken,
+      // device_type: Platform.OS === 'ios' ? 'ios' : 'android',
     };
+    console.log(`params of otp`, params);
     setLoading(true);
     {
       Code == code

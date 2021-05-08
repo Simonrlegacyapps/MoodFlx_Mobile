@@ -29,7 +29,7 @@ export default {
   RainyHour: require('../../../assets/newImage/RainyHour/RainyHour.png'),
   Sleepimage: require('../../../assets/newImage/SleepImage/SleepImage.png'),
   Scale: require('../../../assets/newImage/Scale/Scale.png'),
-  TeamPulse: require('../../../assets/newImage/TeamPulse/teampulse.png'),
   Bulb: require('../../../assets/newImage/Bulb/Bulb.png'),
   ScreenPopUpImg: require('../../../assets/newImage/ScreenPopUpImg/ScreenPopUpImg.png'),
+  TeamPulse: require('../../../assets/newImage/TeamPulse/teampulse.png'),
 };
