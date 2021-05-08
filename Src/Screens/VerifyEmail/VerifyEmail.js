@@ -43,11 +43,8 @@ const VerifyEmail = ({navigation}) => {
       email: mail,
       otp: Code,
       device_id: deviceID,
-      device_token:
-        'cBv5s6QjS-WTO8rVGUfwK2:APA91bGoTzgMY1GSr38C6XqBPKd9JNJ_JYJJK8iYtK3f-x_wV0qMrcE7HvnTGnfJHjBLS4tSHZzZdOdOEpm1IAJk19sD4MzAYcacHVhVKYKhDy9MeqkXeJDhi_m4I3sMhw-O-nKed9sC',
-      device_type: 'android',
-      // device_token: fcmToken,
-      // device_type: Platform.OS === 'ios' ? 'ios' : 'android',
+      device_token: fcmToken,
+      device_type: Platform.OS === 'ios' ? 'ios' : 'android',
     };
     setLoading(true);
     {
