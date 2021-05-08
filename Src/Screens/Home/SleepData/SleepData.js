@@ -155,14 +155,14 @@ const SleepData = ({
                     position: 'absolute',
                     zIndex: -234234,
                     justifyContent: 'center',
-                    top: SIZE / 2.2,
+                    top: 420,
                   }}>
                   <Text
                     style={{
                       marginTop: -160,
                       fontWeight: '700',
                       fontFamily: RubikExtraBold,
-                      fontSize: SIZE / 5.5,
+                      fontSize: SIZE / 3.5,
                       color: '#E0DDED',
                       transform: [{rotate: '-15deg'}],
                     }}>
@@ -233,7 +233,7 @@ const SleepData = ({
                 marginTop: -160,
                 fontWeight: '700',
                 fontFamily: RubikExtraBold,
-                fontSize: 120,
+                fontSize: SIZE / 3.5,
                 color: '#E0DDED',
                 transform: [{rotate: '-15deg'}],
               }}>
