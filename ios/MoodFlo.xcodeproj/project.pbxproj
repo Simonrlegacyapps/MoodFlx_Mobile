@@ -879,13 +879,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
-<<<<<<< HEAD
-				CURRENT_PROJECT_VERSION = 39;
-=======
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 38;
->>>>>>> 1aa0ae77a928bd6d296a61d4b14aeffb28c96e5c
+				CURRENT_PROJECT_VERSION = 39;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
