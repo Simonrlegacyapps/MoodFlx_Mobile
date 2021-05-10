@@ -56,13 +56,13 @@ const SleepData = ({
   // console.log(`UserData.SleepPermission`, UserData.SleepPermission);
 
   const VerifyDone = async () => {
-    await AsyncStorage.setItem('GiveSleepPerm', 'true');
+    // await AsyncStorage.setItem('GiveSleepPerm', 'true');
 
     setopenActionSheet(false);
-    let Sp = await AsyncStorage.getItem('GiveSleepPerm');
-    let SleepP = await JSON.parse(Sp);
-    console.log(`SleepPerm`, SleepP);
-    dispatch(SleepPerm(SleepP));
+    // let Sp = await AsyncStorage.getItem('GiveSleepPerm');
+    // let SleepP = await JSON.parse(Sp);
+    // console.log(`SleepPerm`, SleepP);
+    // dispatch(SleepPerm(SleepP));
   };
   return (
     <View>
@@ -244,6 +244,7 @@ const SleepData = ({
       </ScrollView>
 
       <PopUp
+        ComingUp
         permission={false}
         image={Constants.Images.Sleepimage}
         dataType={'sleep'}

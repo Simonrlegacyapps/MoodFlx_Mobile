@@ -26,6 +26,7 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import PopUp from '../../../Components/PopUp/PopUp';
+import {dynamicSize} from '../../../Constants/sizeChoose';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -51,6 +52,15 @@ const LightData = ({
   const [ScreenDuration, setScreenDuration] = useState('Week');
   const [Graph, setGraph] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
+
+  const lines = [
+    {value: 500, hours: 'Perfect', bold: false},
+    {value: 400, hours: 'Almost', bold: false},
+    {value: 300, hours: 'Good', bold: true},
+    {value: 200, hours: 'Better', bold: false},
+    {value: 100, hours: 'Fine', bold: false},
+    {value: 0, hours: 'Poor', bold: false},
+  ];
 
   const data = [
     {
@@ -241,7 +251,18 @@ const LightData = ({
             />
           </View>
           <View style={{marginBottom: 100, alignItems: 'center'}}>
-            {swiperIndex == 4 && <BarGraph TopLabels ShowPollen={false} />}
+            {swiperIndex == 4 && (
+              <BarGraph
+                BarsMarginLeft={dynamicSize(44)}
+                width={dynamicSize(240)}
+                barsWidth={dynamicSize(260)}
+                sideLabels={lines}
+                color={'#EEA402'}
+                ShowPollen={false}
+                RightBar={true}
+                lightScreen={true}
+              />
+            )}
             <View
               style={{
                 // flex: 1,
@@ -254,8 +275,7 @@ const LightData = ({
               }}>
               {swiperIndex == 4 && (
                 <View>
-                  <View>
-                    {/* <BezierGraphAuto data={data} color={'#F4227E'} /> */}
+                  {/* <View>
 
                     <GraphBezierCustom
                       // abs
@@ -268,7 +288,6 @@ const LightData = ({
                     />
                   </View>
                   <View style={{marginTop: 20}}>
-                    {/* <BezierGraphAuto data={dataLow} color={'#70DEEC'} /> */}
                     <GraphBezierCustom
                       heightProp={heightProp}
                       stroke="#FDBB29"
@@ -277,7 +296,7 @@ const LightData = ({
                       max={Lowmax}
                       H={4}
                     />
-                  </View>
+                  </View> */}
                 </View>
               )}
             </View>

@@ -228,7 +228,9 @@ const ScreenData = ({
             value={ScreenDuration}
           />
           <View style={{marginBottom: 50, alignItems: 'center'}}>
-            {swiperIndex == 2 && <BarGraph ShowPollen={false} />}
+            {swiperIndex == 2 && (
+              <BarGraph color={'#7265E3'} ShowPollen={false} RightBar={false} />
+            )}
             <View
               style={{
                 // flex: 1,
@@ -244,7 +246,7 @@ const ScreenData = ({
                   <View>
                     {/* <BezierGraphAuto data={data} color={'#F4227E'} /> */}
 
-                    <GraphBezierCustom
+                    {/* <GraphBezierCustom
                       // abs
                       heightProp={heightProp}
                       stroke="#F4227E"
@@ -252,18 +254,18 @@ const ScreenData = ({
                       data={data}
                       max={max}
                       H={9}
-                    />
+                    />*/}
                   </View>
                   <View style={{marginTop: 20}}>
                     {/* <BezierGraphAuto data={dataLow} color={'#70DEEC'} /> */}
-                    <GraphBezierCustom
+                    {/* <GraphBezierCustom
                       heightProp={heightProp}
                       stroke="#70DEEC"
                       widthProp={widthProp}
                       data={dataLow}
                       max={Lowmax}
                       H={4}
-                    />
+                    /> */}
                   </View>
                 </View>
               )}

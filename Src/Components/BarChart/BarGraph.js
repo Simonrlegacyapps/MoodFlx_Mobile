@@ -1,20 +1,36 @@
 import React, {useState} from 'react';
 import {View, Text} from 'react-native';
-import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
+import {
+  RubikLight,
+  RubikMedium,
+  RubikRegular,
+} from '../../Constants/fonts/Fonts';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import CustomProgressBar from '../ProgressBar/ProgressBarCustom';
 import moment from 'moment';
+import GraphBar from '../GraphBar/GraphBar';
 
-const BarGraph = ({ShowPollen, TopLabels}) => {
+const BarGraph = ({
+  ShowPollen,
+  TopLabels,
+  RightBar,
+  color,
+  sideLabels,
+  width,
+  barsWidth,
+  BarsMarginLeft,
+}) => {
   const [Pollen, setPollen] = useState('Low');
 
-  const lines = [
-    {value: 15, hours: 8},
-    {value: 10, hours: 6},
-    {value: 5, hours: 4},
-    {value: 0, hours: 2},
-    {value: -5, hours: 0},
-  ];
+  const lines = sideLabels
+    ? sideLabels
+    : [
+        {value: 15, hours: 8},
+        {value: 10, hours: 6},
+        {value: 5, hours: 4},
+        {value: 0, hours: 2},
+        {value: -5, hours: 0},
+      ];
 
   const a = moment().subtract(0, 'days').startOf('day').format('dddd');
   const b = moment().subtract(1, 'days').startOf('day').format('dddd');
@@ -39,6 +55,8 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
   const barHeight = 180;
   const barWidth = 8;
 
+  console.log(`RightBar`, RightBar);
+
   return (
     <View
       style={{
@@ -49,9 +67,7 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
       {/* <Text>Look Bar</Text> */}
       {/* Left bar */}
       <View style={{flexDirection: 'column', height: 250}}>
-        {TopLabels ? (
-          <View></View>
-        ) : (
+        {TopLabels && (
           <View
             style={{
               flexDirection: 'row',
@@ -122,7 +138,6 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
                   <View
                     style={{
                       flexDirection: 'column',
-                      //   flex: 1,
                       backgroundColor: 'green',
                       alignSelf: 'center',
                     }}>
@@ -131,9 +146,13 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
                         justifyContent: 'flex-end',
                         alignSelf: 'flex-end',
                         height: 1,
-                        width: dynamicSize(250),
+                        // marginRight: !RightBar && -20,
+                        width: width
+                          ? width
+                          : !RightBar
+                          ? dynamicSize(290)
+                          : dynamicSize(250),
                         backgroundColor: '#B0B5B5',
-                        // marginTop: 10,
                       }}
                     />
                   </View>
@@ -144,15 +163,17 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
                       flex: 1,
                       alignSelf: 'center',
                     }}>
-                    <Text
-                      style={{
-                        marginHorizontal: 6,
-                        textAlign: 'center',
-                        fontFamily: RubikLight,
-                        color: '#9C9EB9',
-                      }}>
-                      {item.hours}
-                    </Text>
+                    {RightBar && (
+                      <Text
+                        style={{
+                          marginHorizontal: 6,
+                          textAlign: 'center',
+                          fontFamily: item.bold ? RubikMedium : RubikLight,
+                          color: item.bold ? '#000' : '#9C9EB9',
+                        }}>
+                        {item.hours}
+                      </Text>
+                    )}
                   </View>
                 </View>
               );
@@ -184,10 +205,16 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
             position: 'absolute',
             // backgroundColor: 'green',
             flexDirection: 'row',
-            width: dynamicSize(270),
+            left: dynamicSize(0),
+            width: barsWidth
+              ? barsWidth
+              : !RightBar
+              ? dynamicSize(300)
+              : dynamicSize(270),
             alignSelf: 'center',
             height: 260,
             marginTop: 20,
+            marginLeft: BarsMarginLeft ? BarsMarginLeft : !RightBar ? 35 : 45,
           }}>
           {bars &&
             bars.length > 0 &&
@@ -201,12 +228,12 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
                     alignItems: 'center',
                     alignSelf: 'center',
                   }}>
-                  <CustomProgressBar
+                  <GraphBar
                     value={item.value}
                     totalValue={totalValue}
                     height={barHeight}
                     width={barWidth}
-                    color={'#5E4ADC'}
+                    color={color}
                   />
                   <View
                     style={{
@@ -222,7 +249,7 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
                         position: 'absolute',
                         justifyContent: 'flex-end',
                         textAlignVertical: 'bottom',
-                        bottom: -40,
+                        bottom: -120,
                         right: -8,
                         fontFamily: RubikRegular,
                         color: '#9C9EB9',
@@ -237,7 +264,7 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
                           position: 'absolute',
                           // justifyContent: 'flex-end',
                           // textAlignVertical: 'bottom',
-                          bottom: -60,
+                          bottom: -140,
                           right: -4,
                           height: 10,
                           borderWidth: 1,
