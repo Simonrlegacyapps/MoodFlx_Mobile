@@ -76,6 +76,8 @@ const FitnessData = ({
   //   );
   // };
 
+  console.log(`UserSteps`, UserSteps);
+
   const dispatch = useDispatch();
 
   const VerifyDone = () => {

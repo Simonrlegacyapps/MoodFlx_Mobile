@@ -21,7 +21,7 @@ import {
   getScrollerWheelSize,
   mediumPressDuration,
   longPressDuration,
-  // setScrollerWheelSize,
+  setScrollerWheelSize,
   mediumWheelSize,
   largeWheelSize,
 } from './moodService';
@@ -94,7 +94,7 @@ export default function MoodDetector({navigation}) {
   ] = useState(false); //for remote question flag
   const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
-  let [toolTipData, setToolTipData] = useState({ ...initialEmotionTextData });
+  let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
   const [emotionText, setEmotionText] = useState(initialEmotionTextData.text);
   const [color, setColor] = useState(toolTipData.color);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -133,7 +133,6 @@ export default function MoodDetector({navigation}) {
   const mediumPressTimeoutId = useRef(null);
   const longPressTimeoutId = useRef(null);
   const previousWheelCenter = useRef(null);
-  const newScrollerContainerPosition = useRef(null);
   const userData = useRef(UserData);
 
   const panResponder = useRef(
@@ -178,7 +177,7 @@ export default function MoodDetector({navigation}) {
         //   clearLongPressTimeouts({ mediumPressTimeoutId, longPressTimeoutId });
         //   mediumPressTimeoutId.current = setTimeout(() => {
         //     updateOffsetOnChangeWheelSize(mediumWheelSize, () => {
-        //       if (offsetSize.current) {     
+        //       if (offsetSize.current) {
         //         pan.current.setOffset({
         //           x: pan.current.x._value,
         //           y: pan.current.y._value
@@ -292,38 +291,11 @@ export default function MoodDetector({navigation}) {
     prevEmotionData.current = emotionData;
   };
 
-  const updateOffsetOnChangeWheelSize = (newWheelSize, onUpdate) => {
-    if (!scrollerContainerRef.current && scrollerContainerSize.current) {
-      return;
-    }
-    scrollerContainerRef?.current?.measureInWindow((x, y, width, height) => {
-      const toolTipHeight =
-        scrollerContainerSize.current.height - getScrollerWheelSize();
-      const xOffset =
-        scrollerContainerSize.current.width > newWheelSize
-          ? 0
-          : (getScrollerWheelSize() - newWheelSize) / 2;
-      const yOffset =
-        scrollerContainerSize.current.height > newWheelSize + toolTipHeight
-          ? 0
-          : scrollerContainerSize.current.height -
-            (toolTipHeight + newWheelSize);
-
-      newScrollerContainerPosition.current = {
-        left: x + xOffset,
-        top: y + yOffset,
-      };
-      // console.log('newScrollerContainerPosition xOffset', xOffset);
-      // console.log('newScrollerContainerPosition yOffset', yOffset);
-      // console.log('newScrollerContainerPosition', scrollerContainerSize.current);
-      onUpdate?.();
-    });
-  };
-
   const clearLongPressTimeouts = ({
     mediumPressTimeoutId,
     longPressTimeoutId,
     resetWheelSize,
+    panXY
   }) => {
     if (mediumPressTimeoutId?.current) {
       clearTimeout(mediumPressTimeoutId.current);
@@ -333,12 +305,19 @@ export default function MoodDetector({navigation}) {
       clearTimeout(longPressTimeoutId.current);
       longPressTimeoutId.current = null;
     }
-    console.log('clearLongPressTimeouts =>', resetWheelSize);
-    if (resetWheelSize) {
+    console.log('clearLongPressTimeouts =>', resetWheelSize, getScrollerWheelSize());
+    if (resetWheelSize && getScrollerWheelSize() !== regularWheelSize) {
       const timeoutId = setTimeout(() => {
-        updateOffsetOnChangeWheelSize(regularWheelSize, () => {
-          setWheelSize(regularWheelSize);
-        });
+        if(panXY){
+          // pan.current.setOffset({
+          //   x: pan.current.x._value,
+          //   y: pan.current.y._value
+          // });
+          pan.current.setValue({ x: 0, y: 0 });
+          pan.current.setValue(panXY);
+        }
+        setScrollerWheelSize(regularWheelSize);
+        setWheelSize(regularWheelSize);
         clearTimeout(timeoutId);
       }, 1 * 1000);
     }
@@ -370,7 +349,7 @@ export default function MoodDetector({navigation}) {
       blocksSize.current,
     );
     let {xMin, xMax, yMin, yMax, initialX, initialY} = offSetSize;
-    console.log('updatePanResponder ', offSetSize);
+    // console.log('updatePanResponder ', offSetSize);
     offsetSize.current = offSetSize;
     constrainedX.current = pan.current.x.interpolate({
       inputRange: [xMin, 150, xMax],
@@ -444,10 +423,10 @@ export default function MoodDetector({navigation}) {
     let division = await JSON.parse(d);
     let HealthP = await JSON.parse(Hp);
     let WeatherP = await JSON.parse(Wp);
-    console.log(`e`, e);
-    console.log(`division`, division);
-    console.log(`HealthPerm`, HealthP);
-    console.log(`WeatherPerm`, WeatherP);
+    // console.log(`e`, e);
+    // console.log(`division`, division);
+    // console.log(`HealthPerm`, HealthP);
+    // console.log(`WeatherPerm`, WeatherP);
     await setEmail(e);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
@@ -483,7 +462,7 @@ export default function MoodDetector({navigation}) {
   };
 
   useEffect(() => {
-    console.log(`tesst`);
+    // console.log(`tesst`);
     // setTimeout(() => {
     PushNotification.configure({
       onNotification: function (notification) {
@@ -530,7 +509,7 @@ export default function MoodDetector({navigation}) {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(UserData?.AllMoods) && (UserData.AllMoods.length > 0)) {
+    if (Array.isArray(UserData?.AllMoods) && UserData.AllMoods.length > 0) {
       userData.current = UserData;
     }
   }, [UserData]);
@@ -565,7 +544,7 @@ export default function MoodDetector({navigation}) {
   };
 
   useEffect(() => {
-    console.log('isHapticsEnabled =>', isHapticsEnabled, hapticsData.current);
+    // console.log('isHapticsEnabled =>', isHapticsEnabled, hapticsData.current);
     playHaptics(isHapticsEnabled);
     // if (isHapticsEnabled && !hapticTimeoutId.current) {
     //   hapticTimeoutId.current = setInterval(() => {
@@ -596,7 +575,7 @@ export default function MoodDetector({navigation}) {
     }, 1000);
   };
 
-  console.log(`route?.params?.question`, route?.params?.question);
+  // console.log(`route?.params?.question`, route?.params?.question);
 
   const findId = async () => {
     let p = await AsyncStorage.getItem('MoodCount');
@@ -634,7 +613,7 @@ export default function MoodDetector({navigation}) {
       // console.log(`name`, name);
       return name === emotionText;
     });
-    console.log(`Id`, Id);
+    // console.log(`Id`, Id);
 
     console.log(`lat, lng`, UserData.lat, UserData.lon);
     const deviceId = DeviceInfo.getUniqueId();
@@ -644,7 +623,7 @@ export default function MoodDetector({navigation}) {
     } else {
       setLoading(true);
       console.log(`not fail`);
-      console.log(`Id`, Id.id);
+      // console.log(`Id`, Id.id);
       const params = {
         mood_id: Id.id,
         device_id: deviceId,
@@ -685,7 +664,7 @@ export default function MoodDetector({navigation}) {
           .then((result) => {
             console.log('quesstion updated', result);
             setLoading(false);
-            navigation.navigate('HomeScreen', { screen: 'MicScreen' });
+            navigation.navigate('HomeScreen', {screen: 'MicScreen'});
           })
           .catch((error) => {
             console.log('error', error), setLoading(false);
@@ -707,9 +686,7 @@ export default function MoodDetector({navigation}) {
               //   deviceID: deviceId,
               // });
               if (route?.params?.question != undefined) {
-                showMoodSaveConfirmModal(() => {
-                  navigation.navigate('HomeScreen', {screen: 'MicScreen'});
-                });
+                navigation.navigate('HomeScreen', {screen: 'MicScreen'});
               } else {
                 showMoodSaveConfirmModal(() => {
                   navigation.replace('HomeScreen', {
@@ -718,9 +695,9 @@ export default function MoodDetector({navigation}) {
                     screen: 'Home',
                   });
                 });
+                const notifService = new NotifService();
+                notifService.checkTimeAndUpdateNotif();
               }
-              const notifService = new NotifService();
-              notifService.checkTimeAndUpdateNotif();
 
               // navigation.replace('HomeScreen', {
               //   lat: UserData.lat,
@@ -786,7 +763,7 @@ export default function MoodDetector({navigation}) {
       <View
         ref={blocksContainerRef}
         onLayout={onBlocksContainerLayout}
-        {...panResponder.panHandlers}
+        {...(UserData.AllMoods !== null) ? panResponder.panHandlers: {}}
         style={[
           styles.childViewStyle,
           {
@@ -1004,8 +981,11 @@ export default function MoodDetector({navigation}) {
       <Scroller
         scrollerStyle={{
           ...pan.current.getLayout(),
-          // ...newScrollerContainerPosition.current !== null ? newScrollerContainerPosition.current : {},
-          ...(constrainedX.current !== null && constrainedY.current !== null && wheelSize === regularWheelSize) ? { left: constrainedX.current, top: constrainedY.current } : {}
+          ...(constrainedX.current !== null &&
+          constrainedY.current !== null &&
+          wheelSize === regularWheelSize
+            ? {left: constrainedX.current, top: constrainedY.current}
+            : {}),
         }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
@@ -1017,7 +997,7 @@ export default function MoodDetector({navigation}) {
         scrollerRef={(ref) => (scrollerRef.current = ref)}
         scrollerContainerRef={scrollerContainerRef}
         onLayoutScrollerContainer={onLayoutScrollerContainer}
-      // toolTipSize={toolTipSize.current}
+        // toolTipSize={toolTipSize.current}
       />
 
       <VideoModal

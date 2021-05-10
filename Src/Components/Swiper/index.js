@@ -846,20 +846,20 @@
              (loop && i === total - 1)
            ) {
              return (
-               <View style={pageStyle} key={i}>
+               <View style={pageStyle} key={String(i)}>
                  {children[page]}
                </View>
              )
            } else {
              return (
-               <View style={pageStyleLoading} key={i}>
+               <View style={pageStyleLoading} key={String(i)}>
                  {loadMinimalLoader ? loadMinimalLoader : <ActivityIndicator />}
                </View>
              )
            }
          } else {
            return (
-             <View style={pageStyle} key={i}>
+             <View style={pageStyle} key={String(i)}>
                {children[page]}
              </View>
            )
@@ -867,7 +867,7 @@
        })
      } else {
        pages = (
-         <View style={pageStyle} key={0}>
+         <View style={pageStyle} key={"0"}>
            {children}
          </View>
        )
