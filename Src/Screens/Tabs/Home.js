@@ -58,6 +58,12 @@ import {
 } from '../../redux/actions/actions';
 import messaging, {firebase} from '@react-native-firebase/messaging';
 import LightData from '../Home/LightData/LightData';
+import GoogleFit, {Scopes} from 'react-native-google-fit';
+import {
+  AppInstalledChecker,
+  CheckPackageInstallation,
+} from 'react-native-check-app-install';
+import RNAndroidInstalledApps from 'react-native-android-installed-apps';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -165,7 +171,7 @@ const App = (props) => {
     // firebase.initializeApp();
     const fcmToken = await messaging().getToken();
     try {
-      await AsyncStorage.setItem('device_token', fcmToken)
+      await AsyncStorage.setItem('device_token', fcmToken);
     } catch (e) {
       console.log('error saving device token in async storage');
     }
@@ -525,6 +531,128 @@ const App = (props) => {
         );
       });
       // setLoading(false);
+    }
+
+    if (Platform.OS === 'android') {
+      // AppInstalledChecker.isAppInstalled('Fit').then((isInstalled) => {
+      //   console.log(`Yes it is installed`, isInstalled);
+      //   // isInstalled is true if the app is installed or false if not
+      // });
+      console.log(AppInstalledChecker.getAppList());
+      // RNAndroidInstalledApps.getApps()
+      //   .then((apps) => {
+      //     console.log(`apps=================>>>>>>>>`, apps);
+      //   })
+      //   .catch((error) => {
+      //     alert(error);
+      //   });
+      const a = moment().subtract(1, 'days').toISOString();
+      // console.log(`a for checking date`, a);
+      const options = {
+        scopes: [
+          Scopes.FITNESS_ACTIVITY_READ,
+          Scopes.FITNESS_ACTIVITY_WRITE,
+          Scopes.FITNESS_BODY_READ,
+          Scopes.FITNESS_BODY_WRITE,
+          Scopes.FITNESS_SLEEP_READ,
+        ],
+      };
+      GoogleFit.authorize(options)
+        .then((authResult) => {
+          if (authResult.success) {
+            console.log('AUTH_SUCCESS');
+          } else {
+            console.log('AUTH_DENIED', authResult.message);
+          }
+        })
+        .catch(() => {
+          console.log('AUTH_ERROR');
+        });
+
+      const opt = {
+        startDate: a, // required ISO8601Timestamp
+        endDate: new Date().toISOString(), // required ISO8601Timestamp
+        bucketUnit: 'HOUR', // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+        bucketInterval: 1, // optional - default 1.
+      };
+
+      let optActivities = {
+        startDate: a, // required
+        endDate: new Date().toISOString(), // required
+        bucketUnit: 'DAY', // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+        bucketInterval: 1, // optional - default 1.
+      };
+
+      const optCalories = {
+        startDate: a, // required ISO8601Timestamp
+        endDate: new Date().toISOString(), // required ISO8601Timestamp
+        bucketUnit: 'DAY', // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+        bucketInterval: 1, // optional - default 1.
+      };
+
+      const optDistance = {
+        startDate: new Date(2021, 1, 1).toISOString(), // required
+        endDate: new Date().toISOString(), // required
+        bucketUnit: 'DAY', // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+        bucketInterval: 1, // optional - default 1.
+      };
+
+      const optSleep = {
+        startDate: new Date(2021, 1, 1).toISOString(), // required, timestamp or ISO8601 string
+        endDate: new Date().toISOString(), // required, timestamp or ISO8601 string
+      };
+
+      GoogleFit.onAuthorize(async function fetchData() {
+        const res = await GoogleFit.getDailyStepCountSamples(opt);
+        console.log('steps', res);
+        console.log('total user steps', res[2].steps[0].value);
+        if (res.length > 0) {
+          dispatch(UserSteps(res[2].steps[0].value));
+          dispatch(GetSteps(res[2].rawSteps));
+        }
+        // setSteps(res[1].steps);
+
+        // const Weight = await GoogleFit.getWeightSamples(optWeight);
+        // setWeighttt(Weight[0].value);
+        // console.log('Weight', Weight[0].value, Weighttt);
+
+        // const Height = await GoogleFit.getHeightSamples(optHeight);
+        // setHeightt(Height[0].value);
+        // console.log('Height', Height[0].value, Heighttt);
+      });
+
+      GoogleFit.onAuthorize(async function fetchMoreData() {
+        // const heartrate = await GoogleFit.getHeartRateSamples(optionsHB);
+        // setHeartRate(heartrate[0].value);
+        // console.log('heartrate', heartrate);
+        // const bloodpressure = await GoogleFit.getBloodPressureSamples(
+        //   optionsHB,
+        // );
+        // setBP(bloodpressure[0]);
+        // console.log('bloodpressure', bloodpressure);
+
+        const Activities = await GoogleFit.getActivitySamples(optActivities);
+        // setActivities(Activities);
+        console.log('Activities', Activities);
+
+        const Calories = await GoogleFit.getDailyCalorieSamples(optCalories);
+        // setCalories(Calories);
+        if (Calories.length > 0) {
+          dispatch(UserCalories(Math.abs(Calories[1].calorie)));
+        }
+        console.log('Calories', Math.abs(Calories[1].calorie));
+
+        const Distance = await GoogleFit.getDailyDistanceSamples(opt);
+        if (Distance.length > 0) {
+          dispatch(UserDistance(Math.ceil(Distance[0].distance)));
+        }
+        console.log('Distance', Distance);
+
+        // const Sleep = await GoogleFit.getSleepSamples(optSleep);
+        // console.log('Sleep', Sleep);
+
+        console.log('yoyoy');
+      });
     }
 
     const health = async () => {

@@ -27,7 +27,7 @@ import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpir
 import AsyncStorage from '@react-native-community/async-storage';
 import {GetUserId, UserEmail} from '../../redux/actions/actions';
 import {useFocusEffect} from '@react-navigation/native';
-const { height, width } = Dimensions.get('window');
+const {height, width} = Dimensions.get('window');
 const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
@@ -77,7 +77,7 @@ const MicScreen = ({navigation}) => {
     fetch('https://admin.moodflo.com/api/getQuestions', requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
-        console.log(`called here`, result);
+        // console.log(`called here`, result);
         // console.log('response of questions', result),
         await setquestions(result.questions);
         setLoading(false);

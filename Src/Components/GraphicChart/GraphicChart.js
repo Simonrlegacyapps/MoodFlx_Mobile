@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -76,58 +77,58 @@ const BasicExample = ({
 
   const dataFunction = () => {
     let steps = UserData.MainSteps;
-    // console.log(`steps============`, UserData.MainSteps);
+    // console.log(`STEPS============`, UserData.MainSteps);
 
     for (let i in steps) {
       let date = moment(steps[i].endDate).hour();
       if (date + 1 === 1) {
-        onez = steps[i].value;
+        onez = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 2) {
-        two = steps[i].value;
+        two = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 3) {
-        three = steps[i].value;
+        three = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 4) {
-        four = steps[i].value;
+        four = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 5) {
-        five = steps[i].value;
+        five = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 6) {
-        six = steps[i].value;
+        six = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 7) {
-        seven = steps[i].value;
+        seven = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 8) {
-        eight = steps[i].value;
+        eight = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 9) {
-        nine = steps[i].value;
+        nine = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 10) {
-        ten = steps[i].value;
+        ten = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 11) {
-        eleven = steps[i].value;
+        eleven = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 12) {
-        twelve = steps[i].value;
+        twelve = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 13) {
-        thirteen = steps[i].value;
+        thirteen = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 14) {
-        fourteen = steps[i].value;
+        fourteen = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 15) {
-        fifteen = steps[i].value;
+        fifteen = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 16) {
-        sixteen = steps[i].value;
+        sixteen = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 17) {
-        seventeen = steps[i].value;
+        seventeen = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 18) {
-        eighteen = steps[i].value;
+        eighteen = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 19) {
-        nineteen = steps[i].value;
+        nineteen = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 20) {
-        twenty = steps[i].value;
+        twenty = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 21) {
-        twentyOne = steps[i].value;
+        twentyOne = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 22) {
-        twentyTwo = steps[i].value;
+        twentyTwo = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 23) {
-        twentyThree = steps[i].value;
+        twentyThree = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       } else if (date + 1 === 24) {
-        twentyFour = steps[i].value;
+        twentyFour = Platform.OS === 'ios' ? steps[i].value : steps[i].steps;
       }
     }
     // console.log(`dataValue +++++++++++++++=`, dataValue);

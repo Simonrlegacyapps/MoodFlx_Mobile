@@ -226,7 +226,7 @@ const WeatherData = ({
       lon: UserData.lon,
     });
 
-    console.log('weather', data);
+    // console.log('weather', data);
     var config = {
       method: 'post',
       url: 'https://admin.moodflo.com/api/updateWeather',
@@ -287,6 +287,8 @@ const WeatherData = ({
       user_id: UserData.UserId,
     });
 
+    // console.log(`raw of weather graph data`, raw);
+
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
@@ -299,8 +301,8 @@ const WeatherData = ({
       fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
         .then((response) => response.json())
         .then((result) => {
-          console.log('weather Graph data', result),
-            setGraph(result.weatherData);
+          // console.log('weather Graph data', result),
+          setGraph(result.weatherData);
           data.push({});
         })
         .catch((error) => console.log('error', error));
@@ -368,7 +370,7 @@ const WeatherData = ({
         Graph && WeatherDuration === 'Week'
           ? !Graph[6]?.temp_max
             ? 0
-            : Graph[6].temp_max
+            : Graph[6] && Graph[6].temp_max
           : 0,
     },
   ];
@@ -434,7 +436,7 @@ const WeatherData = ({
         Graph && WeatherDuration === 'Week'
           ? !Graph[6]?.temp_min
             ? 0
-            : Graph[6].temp_min
+            : Graph[6] && Graph[6].temp_min
           : 0,
     },
   ];
@@ -833,7 +835,14 @@ const WeatherData = ({
             value={WeatherDuration}
           />
           <View style={{marginBottom: 50, alignItems: 'center'}}>
-            {swiperIndex == 1 && <BarGraph ShowPollen={true} />}
+            {swiperIndex == 1 && (
+              <BarGraph
+                color={'#7265E3'}
+                TopLabels
+                ShowPollen={true}
+                RightBar={true}
+              />
+            )}
             <View
               style={{
                 // flex: 1,
@@ -847,8 +856,6 @@ const WeatherData = ({
               {swiperIndex == 1 && (
                 <View>
                   <View>
-                    {/* <BezierGraphAuto data={data} color={'#F4227E'} /> */}
-
                     <GraphBezierCustom
                       // abs
                       heightProp={heightProp}
@@ -860,7 +867,6 @@ const WeatherData = ({
                     />
                   </View>
                   <View style={{marginTop: 20}}>
-                    {/* <BezierGraphAuto data={dataLow} color={'#70DEEC'} /> */}
                     <GraphBezierCustom
                       heightProp={heightProp}
                       stroke="#70DEEC"

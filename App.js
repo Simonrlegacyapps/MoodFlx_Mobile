@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   StatusBar,
@@ -10,21 +10,21 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-community/async-storage';
-import { ScaledSheet } from 'react-native-size-matters';
+import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import thunk from 'redux-thunk';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import {Provider, useDispatch, useSelector} from 'react-redux';
+import {createStore, applyMiddleware} from 'redux';
 import allReducers from './Src/redux/reducers';
 import ImageOne from './assets/OnBoarding/ImageOne';
 import FastImage from 'react-native-fast-image';
 import Carousel from 'react-native-snap-carousel';
 import One from './assets/OnBoarding/ImageOne.svg';
-import { SvgCssUri, SvgUri, SvgXml } from 'react-native-svg';
+import {SvgCssUri, SvgUri, SvgXml} from 'react-native-svg';
 import {
   GetUserId,
   HealthPerm,
@@ -47,7 +47,7 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
-const { width: screenWidth } = Dimensions.get('window');
+const {width: screenWidth} = Dimensions.get('window');
 
 const slides = [
   {
@@ -140,19 +140,19 @@ const App: () => React$Node = () => {
   const getProfileUserData = async () => {
     let DateCheck = await AsyncStorage.getItem('DateCheck');
     let CheckForTodayDate = await JSON.parse(DateCheck);
-    console.log(`CheckForTodayDate ------ 1`, CheckForTodayDate);
+    // console.log(`CheckForTodayDate ------ 1`, CheckForTodayDate);
     if (CheckForTodayDate === null) {
-      console.log(`date is set in storage for 1st time`);
+      // console.log(`date is set in storage for 1st time`);
       let aDay = moment().format('DD MMM YYYY');
       await AsyncStorage.setItem('DateCheck', JSON.stringify(aDay));
     }
     let DateCheckTwo = await AsyncStorage.getItem('DateCheck');
     let CheckForTodayDateTwo = await JSON.parse(DateCheckTwo);
-    console.log(`CheckForTodayDate ------ 2`, CheckForTodayDateTwo);
+    // console.log(`CheckForTodayDate ------ 2`, CheckForTodayDateTwo);
     let bDay = moment().format('DD MMM YYYY');
-    console.log(`Check for days ======> `, CheckForTodayDateTwo, bDay);
+    // console.log(`Check for days ======> `, CheckForTodayDateTwo, bDay);
     if (CheckForTodayDateTwo !== bDay) {
-      console.log(`Date is confirmed sure And &&&&&&&& Mood is reset`);
+      // console.log(`Date is confirmed sure And &&&&&&&& Mood is reset`);
       await AsyncStorage.setItem('DateCheck', JSON.stringify(bDay));
       AsyncStorage.setItem('MoodCount', JSON.stringify(0));
     }
@@ -177,18 +177,18 @@ const App: () => React$Node = () => {
     let WeatherP = await JSON.parse(Wp);
     let Id = await JSON.parse(UserId);
     let a = await JSON.parse(anonymous);
-    console.log(`e`, e);
-    console.log(`division`, division);
-    console.log(`HealthPerm`, HealthP);
-    console.log(`WeatherPerm`, WeatherP);
-    console.log(`userId`, Id);
-    console.log(`Anonymous`, a, a === null ? true : a);
+    // console.log(`e`, e);
+    // console.log(`division`, division);
+    // console.log(`HealthPerm`, HealthP);
+    // console.log(`WeatherPerm`, WeatherP);
+    // console.log(`userId`, Id);
+    // console.log(`Anonymous`, a, a === null ? true : a);
 
     //Sleep Permission
     let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
     let SleepP = await JSON.parse(SleepPer);
     dispatch(SleepPerm(SleepP));
-    console.log(`Sleep Permission`, SleepP);
+    // console.log(`Sleep Permission`, SleepP);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));
@@ -224,17 +224,18 @@ const App: () => React$Node = () => {
   };
 
   const requestNotificationPermissions = async () => {
-    notifService.requestPermissions()
-    .then(e => {
-      console.log('requestNotificationPermissions: ', e);
-      if(e.authorizationStatus !== 0){
-        fp();
-      }
-    })
-    .catch(error => {
-      console.log('requestNotificationPermissions error: ', error);
-    })
-  }
+    notifService
+      .requestPermissions()
+      .then((e) => {
+        console.log('requestNotificationPermissions: ', e);
+        if (e.authorizationStatus !== 0) {
+          fp();
+        }
+      })
+      .catch((error) => {
+        console.log('requestNotificationPermissions error: ', error);
+      });
+  };
 
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -242,7 +243,7 @@ const App: () => React$Node = () => {
     } else {
       notifService.checkPermission((res) => {
         console.log('checkPermission data => ', res);
-        if(res.authorizationStatus !== 0){
+        if (res.authorizationStatus !== 0) {
           fp();
         } else {
           requestNotificationPermissions();
@@ -271,7 +272,7 @@ const App: () => React$Node = () => {
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
-            const { code, message } = error;
+            const {code, message} = error;
             console.log('error', code, message);
           });
     }
@@ -292,7 +293,7 @@ const App: () => React$Node = () => {
     getProfileUserData();
   }, []);
 
-  const renderItems = ({ item, index }, parallaxProps) => {
+  const renderItems = ({item, index}, parallaxProps) => {
     // console.log('item', item.img);
     // console.log('ShowWelcome--', ShowWelcome);
     return (
@@ -302,7 +303,7 @@ const App: () => React$Node = () => {
             source={item.img}
             height={'100%'}
             width={'100%'}
-            style={{ height: '100%', width: '100%' }}
+            style={{height: '100%', width: '100%'}}
           />
         </View>
       </>
@@ -326,7 +327,7 @@ const App: () => React$Node = () => {
       {/* <Provider store={store}> */}
       {ShowWelcome === false ? (
         <NavigationContainer>
-          <SafeAreaView style={{ flex: 1 }}>
+          <SafeAreaView style={{flex: 1}}>
             <View style={styles.container}>
               <StackNavigation />
             </View>
@@ -388,7 +389,7 @@ const styles = ScaledSheet.create({
     fontWeight: '600',
     color: 'white',
   },
-  welcomeTextWrapper: { position: 'absolute', top: '15%', alignSelf: 'center' },
+  welcomeTextWrapper: {position: 'absolute', top: '15%', alignSelf: 'center'},
   welRenderWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
