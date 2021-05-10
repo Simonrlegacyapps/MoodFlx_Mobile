@@ -97,7 +97,7 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
             lines.map((item, index) => {
               return (
                 <View
-                  key={`${index}`}
+                  key={String(index)}
                   style={{
                     flex: 1,
                     flexDirection: 'row',
@@ -194,7 +194,7 @@ const BarGraph = ({ShowPollen, TopLabels}) => {
             bars.map((item, index) => {
               return (
                 <View
-                  key={`${index}`}
+                  key={String(index)}
                   style={{
                     flex: 1,
                     justifyContent: 'flex-end',
