@@ -77,8 +77,12 @@ const Linktocompany = ({ navigation }) => {
       .then(async (res) => {
         await dispatch(getDivisions(res.data));
         setDivisions(res.data);
+        console.log('getDivision =>', res);
         // console.log('response of division', res.data[0].id);
         // setSelectedDivisionId(res.data[0].id);
+      })
+      .catch((error) => {
+        console.log('getDivision error: ', error);
       });
   }, []);
 

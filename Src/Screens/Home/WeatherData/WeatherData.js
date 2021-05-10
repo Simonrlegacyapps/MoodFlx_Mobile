@@ -314,7 +314,7 @@ const WeatherData = ({
       x: 1,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[0].temp_max === null
+          ? !Graph[0]?.temp_max
             ? 0
             : Graph[0].temp_max
           : 0,
@@ -323,7 +323,7 @@ const WeatherData = ({
       x: 2,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[1].temp_max === null
+          ? !Graph[1]?.temp_max
             ? 0
             : Graph[1].temp_max
           : 0,
@@ -332,7 +332,7 @@ const WeatherData = ({
       x: 3,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[2].temp_max === null
+          ? !Graph[2]?.temp_max
             ? 0
             : Graph[2].temp_max
           : 0,
@@ -341,7 +341,7 @@ const WeatherData = ({
       x: 4,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[3].temp_max === null
+          ? !Graph[3]?.temp_max
             ? 0
             : Graph[3].temp_max
           : 0,
@@ -350,7 +350,7 @@ const WeatherData = ({
       x: 5,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[4].temp_max === null
+          ? !Graph[4]?.temp_max
             ? 0
             : Graph[4].temp_max
           : 0,
@@ -359,7 +359,7 @@ const WeatherData = ({
       x: 6,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[5].temp_max === null
+          ? !Graph[5]?.temp_max
             ? 0
             : Graph[5].temp_max
           : 0,
@@ -368,7 +368,7 @@ const WeatherData = ({
       x: 7,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[6] && Graph[6].temp_max === null
+          ? !Graph[6]?.temp_max
             ? 0
             : Graph[6] && Graph[6].temp_max
           : 0,
@@ -380,7 +380,7 @@ const WeatherData = ({
       x: 1,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[0].temp_min === null
+          ? !Graph[0]?.temp_min
             ? 0
             : Graph[0].temp_min
           : 0,
@@ -389,7 +389,7 @@ const WeatherData = ({
       x: 2,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[1].temp_min === null
+          ? !Graph[1]?.temp_min
             ? 0
             : Graph[1].temp_min
           : 0,
@@ -398,7 +398,7 @@ const WeatherData = ({
       x: 3,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[2].temp_min === null
+          ? !Graph[2]?.temp_min
             ? 0
             : Graph[2].temp_min
           : 0,
@@ -407,7 +407,7 @@ const WeatherData = ({
       x: 4,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[3].temp_min === null
+          ? !Graph[3]?.temp_min
             ? 0
             : Graph[3].temp_min
           : 0,
@@ -416,7 +416,7 @@ const WeatherData = ({
       x: 5,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[4].temp_min === null
+          ? !Graph[4]?.temp_min
             ? 0
             : Graph[4].temp_min
           : 0,
@@ -425,7 +425,7 @@ const WeatherData = ({
       x: 6,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[5].temp_min === null
+          ? !Graph[5]?.temp_min
             ? 0
             : Graph[5].temp_min
           : 0,
@@ -434,7 +434,7 @@ const WeatherData = ({
       x: 7,
       y:
         Graph && WeatherDuration === 'Week'
-          ? Graph[6] && Graph[6].temp_min === null
+          ? !Graph[6]?.temp_min
             ? 0
             : Graph[6] && Graph[6].temp_min
           : 0,
