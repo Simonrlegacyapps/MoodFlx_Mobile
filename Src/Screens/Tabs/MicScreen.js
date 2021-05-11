@@ -167,71 +167,62 @@ const MicScreen = ({navigation}) => {
         <Image style={{marginTop: -10}} source={Constants.Images.Circles} />
         <View style={{marginHorizontal: 15, paddingBottom: 90}}>
           <Text style={styles.normalText}>Team Pulse</Text>
-          <Text>
-            {UserData.UserEmail ? (
-              questions && questions.length > 0 ? (
-                <Text style={styles.BigText}>
-                  Have your say as a collective
-                </Text>
-              ) : (
-                <Text
-                  style={{textAlign: 'center', alignSelf: 'center', flex: 1}}>
-                  <Text
-                    numberOfLines={4}
-                    style={{
-                      alignSelf: 'center',
-                      lineHeight: 28,
-                      fontWeight: '500',
-                      fontSize: dynamicSize(18),
-                      marginTop: dynamicSize(12),
-                      // marginLeft: 62,
-                      // marginRight: 62,
-                      textAlign: 'center',
-                      // width: dynamicSize(290),
-                    }}>
-                    Anonymously answer Team Pulses with how you feel.
-                  </Text>
-                  {'\n'}
-                  <Text
-                    numberOfLines={4}
-                    style={{
-                      lineHeight: 28,
-                      fontWeight: '500',
-                      fontSize: dynamicSize(18),
-                      marginTop: dynamicSize(12),
-                      // marginLeft: 62,
-                      // marginRight: 62,
-                      textAlign: 'center',
-                      alignSelf: 'center',
-                      // width: dynamicSize(270),
-                    }}>
-                    You'll get a notification when a Team Pulse is available,
-                    stay tuned!
-                  </Text>
-                </Text>
-              )
+          {UserData.UserEmail ? (
+            questions && questions.length > 0 ? (
+              <Text style={styles.BigText}>Have your say as a collective</Text>
             ) : (
-              <Text
-                numberOfLines={4}
-                style={{
-                  lineHeight: 28,
-                  fontWeight: '500',
-                  fontSize: dynamicSize(18),
-                  marginTop: dynamicSize(12),
-                  // marginLeft: 62,
-                  // marginRight: 62,
-                  textAlign: 'center',
-                  width: dynamicSize(250),
-                }}>
-                {/* <TouchableOpacity onPress={()=>navigation.navigate('LinkCompanyStackNavigation')}><Text style={{textDecorationLine:'underline', fontWeight: 'bold',
-                  fontSize: dynamicSize(18),textAlign: 'center',}}> */}
-                Connect with your company to answer Team Pulses anonymously
-                {/* </Text></TouchableOpacity>   */}
-                {/* <Text style={{alignSelf:'center', textAlign:'center'}}>{" "} */}
-                {/* </Text> */}
+              <Text style={{textAlign: 'center', alignSelf: 'center', flex: 1}}>
+                <Text
+                  numberOfLines={4}
+                  style={{
+                    alignSelf: 'center',
+                    lineHeight: 28,
+                    fontWeight: '500',
+                    fontSize: dynamicSize(18),
+                    marginTop: dynamicSize(12),
+                    // marginLeft: 62,
+                    // marginRight: 62,
+                    textAlign: 'center',
+                    // width: dynamicSize(290),
+                  }}>
+                  Anonymously answer Team Pulses with how you feel.
+                </Text>
+                {'\n'}
+                <Text
+                  numberOfLines={4}
+                  style={{
+                    lineHeight: 28,
+                    fontWeight: '500',
+                    fontSize: dynamicSize(18),
+                    marginTop: dynamicSize(12),
+                    // marginLeft: 62,
+                    // marginRight: 62,
+                    textAlign: 'center',
+                    alignSelf: 'center',
+                    // width: dynamicSize(270),
+                  }}>
+                  You'll get a notification when a Team Pulse is available, stay
+                  tuned!
+                </Text>
               </Text>
-            )}
-          </Text>
+            )
+          ) : (
+            <Text
+              numberOfLines={4}
+              style={{
+                lineHeight: 28,
+                fontWeight: '500',
+                fontSize: dynamicSize(18),
+                marginTop: dynamicSize(12),
+                // backgroundColor: 'blue',
+                // marginLeft: 62,
+                // marginRight: 62,
+                textAlign: 'center',
+                // width: dynamicSize(250),
+              }}>
+              Connect with your company to answer Team Pulses anonymously
+            </Text>
+          )}
           {questions &&
             questions.length > 0 &&
             questions.map((item, index) => {

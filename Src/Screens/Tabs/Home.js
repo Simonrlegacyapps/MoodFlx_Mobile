@@ -534,19 +534,23 @@ const App = (props) => {
     }
 
     if (Platform.OS === 'android') {
-      // AppInstalledChecker.isAppInstalled('Fit').then((isInstalled) => {
+      // AppInstalledChecker.isAppInstalled(
+      //   'com.google.android.apps.fitness',
+      // ).then((isInstalled) => {
       //   console.log(`Yes it is installed`, isInstalled);
       //   // isInstalled is true if the app is installed or false if not
       // });
       console.log(AppInstalledChecker.getAppList());
-      // RNAndroidInstalledApps.getApps()
+      // RNAndroidInstalledApps.getApps();
       //   .then((apps) => {
       //     console.log(`apps=================>>>>>>>>`, apps);
       //   })
       //   .catch((error) => {
       //     alert(error);
       //   });
-      const a = moment().subtract(1, 'days').toISOString();
+      // const a = moment().subtract(1, 'days').toISOString();
+      const a = moment().subtract(1, 'days').endOf('day').toISOString();
+      // console.log(`check`, check);
       // console.log(`a for checking date`, a);
       const options = {
         scopes: [
@@ -638,9 +642,9 @@ const App = (props) => {
         const Calories = await GoogleFit.getDailyCalorieSamples(optCalories);
         // setCalories(Calories);
         if (Calories.length > 0) {
-          dispatch(UserCalories(Math.abs(Calories[1].calorie)));
+          dispatch(UserCalories(Math.abs(Calories[0].calorie)));
         }
-        console.log('Calories', Math.abs(Calories[1].calorie));
+        console.log('Calories', Math.abs(Calories[0].calorie));
 
         const Distance = await GoogleFit.getDailyDistanceSamples(opt);
         if (Distance.length > 0) {

@@ -591,10 +591,8 @@ export default function MoodDetector({navigation}) {
     // setTimeout(() => {
     PushNotification.configure({
       onNotification: function (notification) {
-        if(notification?.data?.question && notification?.data?.id) {
-          setNotifData(notification);
-          setIsNotificationQuestionModalVisible(true);
-        }
+        setNotifData(notification);
+        setIsNotificationQuestionModalVisible(true);
         console.log('NOTIFICATION: HOME', notification);
       },
     });

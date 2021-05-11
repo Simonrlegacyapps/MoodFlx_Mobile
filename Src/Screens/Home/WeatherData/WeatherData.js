@@ -297,12 +297,12 @@ const WeatherData = ({
     };
 
     setTimeout(() => {
-      // console.log(`Weather Graph Data Params`, raw);
+      console.log(`Weather Graph Data Params`, raw);
       fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
         .then((response) => response.json())
         .then((result) => {
-          // console.log('weather Graph data', result),
-          setGraph(result.weatherData);
+          console.log('weather Graph data', result),
+            setGraph(result.weatherData);
           data.push({});
         })
         .catch((error) => console.log('error', error));
