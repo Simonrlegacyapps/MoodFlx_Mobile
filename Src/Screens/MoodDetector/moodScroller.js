@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import Svg, { Path, SvgUri, G } from 'react-native-svg';
 import { getFontSize, getLineHeight } from '../../Constants/sizeChoose';
-import { getScrollerWheelSize, initialEmotionTextData, regularWheelSize } from './moodService';
+import { getScrollerWheelSize, initialEmotionTextData, largeWheelSize, mediumWheelSize, regularWheelSize } from './moodService';
 
 const { height, width } = Dimensions.get('window');
 
@@ -35,6 +35,29 @@ export default function MoodScroller({
   if(emotionText === initialEmotionTextData.text && scrollerStyle?.left === 0){
     return null;
   }
+  let wheelSizeArray = [
+    wheelSize * 0.25,
+    wheelSize * 0.5,
+    wheelSize * 0.75,
+    wheelSize
+  ]
+  if(wheelSize === mediumWheelSize) {
+    wheelSizeArray = null;
+    wheelSizeArray = [
+      wheelSize * 0.2,
+      wheelSize * 0.45,
+      wheelSize * 0.7,
+      wheelSize
+    ];
+  } else if (wheelSize === largeWheelSize) {
+    wheelSizeArray = null;
+    wheelSizeArray = [
+      wheelSize * 0.15,
+      wheelSize * 0.35,
+      wheelSize * 0.65,
+      wheelSize
+    ];
+  }
 
   return (
     <>
@@ -42,7 +65,7 @@ export default function MoodScroller({
         ref={scrollerContainerRef}
         onLayout={onLayoutScrollerContainer}
         style={[styles.container, scrollerStyle]}
-        {...(isAllMoodsDataAvailable && wheelSize === regularWheelSize) ? scrollerPanResponder.panHandlers : {}}
+        // {...(isAllMoodsDataAvailable && wheelSize === regularWheelSize) ? scrollerPanResponder.panHandlers : {}}
         pointerEvents="none"
       >
         {isAllMoodsDataAvailable && (
@@ -93,19 +116,19 @@ export default function MoodScroller({
           ref={scrollerRef}
         >
           <View style={[styles.circle2, {
-            height: wheelSize * 0.75,
-            width: wheelSize * 0.75,
-            borderRadius: (wheelSize * 0.75) / 2,
+            height: wheelSizeArray[2],
+            width: wheelSizeArray[2],
+            borderRadius: wheelSizeArray[2] / 2,
           }]} >
             <View style={[styles.circle3, {
-              height: wheelSize * 0.5,
-              width: wheelSize * 0.5,
-              borderRadius: (wheelSize * 0.5) / 2,
+              height: wheelSizeArray[1],
+              width: wheelSizeArray[1],
+              borderRadius: wheelSizeArray[1] / 2,
             }]} >
               <View style={[styles.circle4, {
-                height: wheelSize * 0.25,
-                width: wheelSize * 0.25,
-                borderRadius: (wheelSize * 0.25) / 2,
+                height: wheelSizeArray[0],
+                width: wheelSizeArray[0],
+                borderRadius: wheelSizeArray[0] / 2,
               }]} />
             </View>
           </View>
@@ -122,6 +145,7 @@ const fontSize = getFontSize(14)
     top: height / 2,
     left: width / 2,
     alignItems: 'center',
+    zIndex: 10,
     // backgroundColor: '#000000'
   },
   circle1: {
