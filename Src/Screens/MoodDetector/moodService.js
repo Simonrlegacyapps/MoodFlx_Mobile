@@ -9,14 +9,29 @@ export const regularWheelSize = 74
 export const mediumWheelSize = regularWheelSize * 2.5;
 export const largeWheelSize = regularWheelSize * 3.5;
 let scrollerWheelSize = regularWheelSize;
-export const mediumPressDuration = 1.5;
-export const longPressDuration = 2.5;
+export const longPressPopupDuration = 0.2;
+export const mediumPressDuration = 0.8;
+export const longPressDuration = 1;
 
 export const setScrollerWheelSize = (size) => {
   scrollerWheelSize = size
 }
 
 export const getScrollerWheelSize = (size) => scrollerWheelSize;
+
+export const mediumWheelSizeArray = [
+  mediumWheelSize * 0.2,
+  mediumWheelSize * 0.45,
+  mediumWheelSize * 0.7,
+  mediumWheelSize
+];
+
+export const largeWheelSizeArray = [
+  largeWheelSize * 0.15,
+  largeWheelSize * 0.35,
+  largeWheelSize * 0.65,
+  largeWheelSize
+];
 // height - 132
 // width - 93.75
 
@@ -263,13 +278,15 @@ const getPortraitPaddingVertical = () => {
   return (isIphoneXFlag ? (iPhoneXPadding.portrait.paddingBottom + iPhoneXPadding.portrait.paddingTop) : 0);
 }
 
-export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scrollerContainerSize, toolTipSize, blocksSize) => {
+export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scrollerContainerSize, toolTipSize, blocksSize, screenContainerSize) => {
   const isLandscape = screenSize.width > screenSize.height;
   const extraVerticalPadding = Platform.OS === 'android' ? verticalScale(0) : 0;
   const paddingHorizontal = isLandscape ? getLandscapePaddingHorizontal() : getPortraitPaddingHorizontal();
   const paddingVertical = isLandscape ? getLandscapePaddingVertical() : getPortraitPaddingVertical();
-  const paddingTop = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingTop : iPhoneXPadding.portrait.paddingTop) : 0;
-  const paddingBottom = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingBottom : iPhoneXPadding.portrait.paddingBottom) : 0;
+  // const paddingTop = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingTop : iPhoneXPadding.portrait.paddingTop) : 0;
+  // const paddingTop = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingTop : screenContainerSize.top) : 0;
+  // const paddingBottom = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingBottom : iPhoneXPadding.portrait.paddingBottom) : 0;
+  // console.log('offset paddingTop', paddingTop, isIphoneXFlag);
   // scrollerContainerSize.height = 117.1;
   // scrollerContainerSize.width = 104.7;
   // console.log('getScrollerOffset => screenSize: ', screenSize, ' scrollerWheelSize: ', scrollerWheelSize, ' scrollerContainerSize: ', scrollerContainerSize, ' toolTipSize: ', toolTipSize, ' blocksSize: ', blocksSize);
@@ -280,7 +297,7 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
   const scrollerWidth = toolTipSize.width > scrollerWheelSize ? toolTipSize.width : scrollerWheelSize;
   const bubbleCenterOffsetTop = toolTipHeight + (scrollerWheelSize / 2);
   // console.log('getScrollerOffset scrollerHeight', scrollerHeight)
-  const yMin = blocksSize?.top - paddingTop - extraVerticalPadding - bubbleCenterOffsetTop;
+  const yMin = blocksSize?.top - extraVerticalPadding - bubbleCenterOffsetTop;
   const yMax = yMin + (blocksSize?.height ?? 0);
   const xMin = 0 - scrollerWidth / 2;
   const xMax = screenSize.width - (scrollerWidth / 2) - paddingHorizontal;
