@@ -113,7 +113,7 @@ const BarGraph = ({
             lines.map((item, index) => {
               return (
                 <View
-                  key={`${index}`}
+                  key={String(index)}
                   style={{
                     flex: 1,
                     flexDirection: 'row',
@@ -221,7 +221,7 @@ const BarGraph = ({
             bars.map((item, index) => {
               return (
                 <View
-                  key={`${index}`}
+                  key={String(index)}
                   style={{
                     flex: 1,
                     justifyContent: 'flex-end',

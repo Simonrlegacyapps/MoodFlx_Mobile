@@ -14,7 +14,7 @@ import {
   Dimensions
 } from 'react-native';
 import Svg, { Path, SvgUri, G } from 'react-native-svg';
-import { horizontalScale } from '../../Constants/sizeChoose';
+import { getFontSize, getLineHeight } from '../../Constants/sizeChoose';
 import { getScrollerWheelSize, initialEmotionTextData, regularWheelSize } from './moodService';
 
 const { height, width } = Dimensions.get('window');
@@ -42,7 +42,7 @@ export default function MoodScroller({
         ref={scrollerContainerRef}
         onLayout={onLayoutScrollerContainer}
         style={[styles.container, scrollerStyle]}
-        {...scrollerPanResponder.panHandlers}
+        {...(isAllMoodsDataAvailable && wheelSize === regularWheelSize) ? scrollerPanResponder.panHandlers : {}}
         pointerEvents="none"
       >
         {isAllMoodsDataAvailable && (
@@ -115,7 +115,8 @@ export default function MoodScroller({
   )
 }
 
-const styles = StyleSheet.create({
+const fontSize = getFontSize(14)
+;const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: height / 2,
@@ -176,15 +177,15 @@ const styles = StyleSheet.create({
     zIndex: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 7,
     paddingHorizontal: 10,
     backgroundColor: 'white',
     borderRadius: 8,
   },
   toolTipText: {
-    paddingRight: 7,
-    lineHeight: 23,
-    fontSize: horizontalScale(14)
+    margin: 7,
+    marginRight: 7,
+    lineHeight: getLineHeight(fontSize),
+    fontSize: fontSize,
   },
   toolTipImg: {
     height: 21,

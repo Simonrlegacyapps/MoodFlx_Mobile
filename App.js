@@ -72,19 +72,19 @@ const slides = [
 
 const Images = [
   {
-    key: 1,
+    key: "1",
     img: require('./assets/OnBoarding/Onboarding1.png'),
   },
   {
-    key: 2,
+    key: "2",
     img: require('./assets/OnBoarding/Onboarding2.png'),
   },
   {
-    key: 3,
+    key: "3",
     img: require('./assets/OnBoarding/Onboarding3.png'),
   },
   {
-    key: 4,
+    key: "4",
     img: require('./assets/OnBoarding/Onboarding4.png'),
   },
 ];
