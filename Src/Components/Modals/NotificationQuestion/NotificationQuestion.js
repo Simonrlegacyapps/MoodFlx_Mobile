@@ -22,6 +22,7 @@ import {
 } from '../../../Constants/fonts/Fonts';
 import {dynamicSize} from '../../../Constants/sizeChoose';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
+import Constants from '../../../Constants';
 
 type props = {
   modalVisible: Boolean,
@@ -70,6 +71,19 @@ const NotificationQuestion = ({
             position: 'absolute',
           }}></TouchableOpacity>
         <View style={styles.upperContainer}>
+          <TouchableOpacity
+            onPress={dismissModalHandler}
+            style={{flex: 1, alignSelf: 'flex-end', marginBottom: 8}}>
+            <Image
+              source={Constants.Images.PlusBlack}
+              style={{
+                height: dynamicSize(30),
+                width: dynamicSize(30),
+                marginTop: 15,
+                resizeMode: 'contain',
+              }}
+            />
+          </TouchableOpacity>
           <Text
             style={{
               fontWeight: '500',
@@ -78,7 +92,7 @@ const NotificationQuestion = ({
               textAlign: 'center',
               marginTop: 20,
             }}>
-            New Question
+            Team Pulse
           </Text>
           <Text
             numberOfLines={4}
@@ -108,7 +122,7 @@ const NotificationQuestion = ({
                 style={{
                   marginTop: 48,
                   height: dynamicSize(53),
-                  width: dynamicSize(130),
+                  // width: dynamicSize(130),
                   backgroundColor: '#E4DFFF',
                   borderRadius: 16,
                   alignItems: 'center',
@@ -116,12 +130,17 @@ const NotificationQuestion = ({
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
-                  Answer
+                  style={{
+                    fontWeight: '500',
+                    marginHorizontal: 20,
+                    fontSize: 16,
+                    color: '#7265E3',
+                  }}>
+                  Answer with mood
                 </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 verifyDone('No');
               }}
@@ -142,7 +161,7 @@ const NotificationQuestion = ({
                   Later
                 </Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
         {/* <TouchableOpacity

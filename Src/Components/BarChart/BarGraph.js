@@ -55,7 +55,7 @@ const BarGraph = ({
   const barHeight = 180;
   const barWidth = 8;
 
-  console.log(`RightBar`, RightBar);
+  // console.log(`RightBar`, RightBar);
 
   return (
     <View

@@ -158,6 +158,9 @@ const VerifyEmail = ({navigation}) => {
             width: dynamicSize(56),
             fontSize: dynamicSize(18),
           }}
+          onCodeFilled={
+            Code ? () => onLink() : () => console.log('no OTP entered')
+          }
           codeInputHighlightStyle={{color: 'black'}}
           // onCodeFilled={(code) => {
           //   setCode(code);
