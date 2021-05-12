@@ -4,7 +4,7 @@
  * @flow
  */
 
-import React, { Component, useMemo } from 'react';
+import React, { Component, useRef, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import Svg, { Path, SvgUri, G } from 'react-native-svg';
 import { getFontSize, getLineHeight } from '../../Constants/sizeChoose';
-import { getScrollerWheelSize, initialEmotionTextData, largeWheelSize, mediumWheelSize, regularWheelSize } from './moodService';
+import { getScrollerWheelSize, initialEmotionTextData, largeWheelSize, largeWheelSizeArray, mediumWheelSize, mediumWheelSizeArray, regularWheelSize, regularWheelSizeArray } from './moodService';
 
 const { height, width } = Dimensions.get('window');
 
@@ -32,39 +32,53 @@ export default function MoodScroller({
   onLayoutScrollerContainer,
   wheelSize,
 }) {
-  if(emotionText === initialEmotionTextData.text && scrollerStyle?.left === 0){
+  if (emotionText === initialEmotionTextData.text && scrollerStyle?.left === 0) {
     return null;
   }
-  let wheelSizeArray = [
-    wheelSize * 0.25,
-    wheelSize * 0.5,
-    wheelSize * 0.75,
-    wheelSize
-  ]
-  if(wheelSize === mediumWheelSize) {
-    wheelSizeArray = null;
-    wheelSizeArray = [
-      wheelSize * 0.2,
-      wheelSize * 0.45,
-      wheelSize * 0.7,
-      wheelSize
-    ];
+  let scale = 1;
+  let scaleOne = 1;
+  let scaleTwo = 1;
+  let scaleThree = 1;
+  let scaleFour = 1;
+  let marginTop = -10;
+  let wheelSizeArray = regularWheelSizeArray
+  if (wheelSize === mediumWheelSize) {
+    marginTop = ((mediumWheelSize - regularWheelSize) / 2) - 10
+    scale = 2.5;
+    left = regularWheelSize / 2
   } else if (wheelSize === largeWheelSize) {
-    wheelSizeArray = null;
-    wheelSizeArray = [
-      wheelSize * 0.15,
-      wheelSize * 0.35,
-      wheelSize * 0.65,
-      wheelSize
-    ];
+    marginTop = ((largeWheelSize - regularWheelSize) / 2) - 10
+    scale = 3.5;
   }
+  scaleOne = wheelSize === mediumWheelSize ? 0.95 : 0.9;
+  scaleTwo = wheelSize === mediumWheelSize ? 0.95 : 0.85;
+  scaleThree = wheelSize === mediumWheelSize ? 0.95 : 0.9;
+  const circleOne = useRef(new Animated.Value(1));
 
+  useEffect(() => {
+    Animated.timing(
+      circleOne.current,
+      {
+        toValue: scale,
+        duration: 0.3 * 1000,
+        useNativeDriver: false,
+      }
+    ).start();
+  }, [wheelSize])
+console.log('scrollerStyle: ', scrollerStyle)
   return (
     <>
       <Animated.View
         ref={scrollerContainerRef}
         onLayout={onLayoutScrollerContainer}
-        style={[styles.container, scrollerStyle]}
+        style={[
+          styles.container, scrollerStyle,
+          scrollerStyle?.top?._value ? {
+            top: scrollerStyle.top._value - marginTop,
+            // left: scrollerStyle.left._value - wheelSize !== regularWheelSize ? (regularWheelSize / 2) : 0
+          } : {}
+          // { transform: [{ scale: circleOne.current }] }
+        ]}
         // {...(isAllMoodsDataAvailable && wheelSize === regularWheelSize) ? scrollerPanResponder.panHandlers : {}}
         pointerEvents="none"
       >
@@ -72,11 +86,14 @@ export default function MoodScroller({
           <View
             ref={toolTipRef}
             onLayout={onToolTipLayout}
-            style={styles.toolTipView}>
+            style={[styles.toolTipView,
+              // {transform: [{ scale: 1 }]}
+              {marginBottom: marginTop}
+            ]}>
             <View
               style={styles.toolTipTextView}>
               <Text style={styles.toolTipText}>
-              {emotionText}
+                {emotionText}
               </Text>
               {emotionText !== 'Slide finger' && (
                 <SvgUri
@@ -84,8 +101,7 @@ export default function MoodScroller({
                   height={20}
                   // viewBox="0 0 24 24"
                   fill="none"
-                  uri={`https://super.moodflo.com/${
-                    toolTipData?.img
+                  uri={`https://super.moodflo.com/${toolTipData?.img
                       ? toolTipData.img
                       : 'mood_icons/161616176321272238406054abe3bb450.svg'
                     }`}
@@ -107,112 +123,124 @@ export default function MoodScroller({
             </Svg>
           </View>
         )}
-        <Animated.View
-          style={[styles.circle1, {
-            height: wheelSize,
-            width: wheelSize,
-            borderRadius: wheelSize / 2,
-          }]}
-          ref={scrollerRef}
-        >
-          <View style={[styles.circle2, {
-            height: wheelSizeArray[2],
-            width: wheelSizeArray[2],
-            borderRadius: wheelSizeArray[2] / 2,
-          }]} >
-            <View style={[styles.circle3, {
-              height: wheelSizeArray[1],
-              width: wheelSizeArray[1],
-              borderRadius: wheelSizeArray[1] / 2,
-            }]} >
-              <View style={[styles.circle4, {
-                height: wheelSizeArray[0],
-                width: wheelSizeArray[0],
-                borderRadius: wheelSizeArray[0] / 2,
-              }]} />
-            </View>
-          </View>
-        </Animated.View>
+        <View style={styles.circleView}>
+          <Animated.View
+            style={[styles.circle1, {
+              height: wheelSizeArray[3] * scaleFour,
+              width: wheelSizeArray[3] * scaleFour,
+              borderRadius: (wheelSizeArray[3] * scaleFour) / 2,
+              transform: [{ scale: circleOne.current }]
+            }]}
+            ref={scrollerRef}
+          >
+            <Animated.View style={{
+              ...styles.circle2,
+              height: wheelSizeArray[2] * scaleThree,
+              width: wheelSizeArray[2] * scaleThree,
+              borderRadius: (wheelSizeArray[2] * scaleThree) / 2,
+              // transform: [{ scale: (scale * scaleThree) }]
+            }} >
+              <Animated.View style={{
+                ...styles.circle3,
+                height: wheelSizeArray[1] * scaleTwo,
+                width: wheelSizeArray[1] * scaleTwo,
+                borderRadius: (wheelSizeArray[1] * scaleTwo) / 2,
+                // transform: [{ scale: (scale * scaleTwo) }]
+              }} >
+                <Animated.View style={{
+                  ...styles.circle4,
+                  height: wheelSizeArray[0] * scaleOne,
+                  width: wheelSizeArray[0] * scaleOne,
+                  borderRadius: (wheelSizeArray[0] * scaleOne) / 2,
+                  // transform: [{ scale: (scale * scaleOne) }]
+                }} />
+              </Animated.View>
+            </Animated.View>
+          </Animated.View>
+        </View>
       </Animated.View>
     </>
   )
 }
 
-const fontSize = getFontSize(14)
-;const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: height / 2,
-    left: width / 2,
-    alignItems: 'center',
-    zIndex: 10,
-    // backgroundColor: '#000000'
-  },
-  circle1: {
-    //  position: 'absolute',
-    // opacity: 0.2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255, 0.2)',
-    height: getScrollerWheelSize(),
-    width: getScrollerWheelSize(),
-    borderRadius: getScrollerWheelSize() / 2,
-    zIndex: 5
-  },
-  circle2: {
-    // position: 'absolute',
-    backgroundColor: 'rgba(255,255,255, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: getScrollerWheelSize() * 0.75,
-    width: getScrollerWheelSize() * 0.75,
-    borderRadius: (getScrollerWheelSize() * 0.75) / 2,
-    // opacity: 0.4,
-    zIndex: 10,
-  },
-  circle3: {
-    // position: 'absolute',
-    backgroundColor: 'rgba(255,255,255, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: getScrollerWheelSize() * 0.5,
-    width: getScrollerWheelSize() * 0.5,
-    borderRadius: (getScrollerWheelSize() * 0.5) / 2,
-    // opacity: 0.6,
-    zIndex: 15,
-  },
-  circle4: {
-    // position: 'absolute',
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: getScrollerWheelSize() * 0.25,
-    width: getScrollerWheelSize() * 0.25,
-    borderRadius: (getScrollerWheelSize() * 0.25) / 2,
-    zIndex: 20,
-  },
-  toolTipView: {
-    zIndex: 30,
-    alignItems: 'center',
-    marginBottom: -10,
+const fontSize = getFontSize(14);
+const styles = StyleSheet.create({
+    container: {
+      position: 'absolute',
+      top: height / 2,
+      left: width / 2,
+      alignItems: 'center',
+      zIndex: 10,
+      // backgroundColor: '#000000'
+    },
+    circleView: {
+      // marginTop: 20
+    },
+    circle1: {
+      //  position: 'absolute',
+      // opacity: 0.2,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(255,255,255, 0.2)',
+      // height: regularWheelSizeArray[3],
+      // width: regularWheelSizeArray[3],
+      // borderRadius: regularWheelSizeArray[3] / 2,
+      zIndex: 5
+    },
+    circle2: {
+      // position: 'absolute',
+      backgroundColor: 'rgba(255,255,255, 0.4)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      // height: regularWheelSizeArray[2],
+      // width: regularWheelSizeArray[2],
+      // borderRadius: regularWheelSizeArray[2] / 2,
+      // opacity: 0.4,
+      zIndex: 10,
+    },
+    circle3: {
+      // position: 'absolute',
+      backgroundColor: 'rgba(255,255,255, 0.8)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      // height: regularWheelSizeArray[1],
+      // width: regularWheelSizeArray[1],
+      // borderRadius: regularWheelSizeArray[1] / 2,
+      // opacity: 0.6,
+      zIndex: 15,
+    },
+    circle4: {
+      // position: 'absolute',
+      backgroundColor: '#FFFFFF',
+      justifyContent: 'center',
+      alignItems: 'center',
+      // height: regularWheelSizeArray[0],
+      // width: regularWheelSizeArray[0],
+      // borderRadius: regularWheelSizeArray[0] / 2,
+      zIndex: 20,
+    },
+    toolTipView: {
+      zIndex: 30,
+      alignItems: 'center',
+      // marginBottom: -10,
 
-  },
-  toolTipTextView: {
-    zIndex: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    backgroundColor: 'white',
-    borderRadius: 8,
-  },
-  toolTipText: {
-    margin: 7,
-    marginRight: 7,
-    lineHeight: getLineHeight(fontSize),
-    fontSize: fontSize,
-  },
-  toolTipImg: {
-    height: 21,
-    width: 21
-  }
-})
+    },
+    toolTipTextView: {
+      zIndex: 5,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 10,
+      backgroundColor: 'white',
+      borderRadius: 8,
+    },
+    toolTipText: {
+      margin: 7,
+      marginRight: 7,
+      lineHeight: getLineHeight(fontSize),
+      fontSize: fontSize,
+    },
+    toolTipImg: {
+      height: 21,
+      width: 21
+    }
+  })

@@ -19,6 +19,13 @@ export const setScrollerWheelSize = (size) => {
 
 export const getScrollerWheelSize = (size) => scrollerWheelSize;
 
+export const regularWheelSizeArray = [
+  regularWheelSize * 0.25,
+  regularWheelSize * 0.5,
+  regularWheelSize * 0.75,
+  regularWheelSize
+];
+
 export const mediumWheelSizeArray = [
   mediumWheelSize * 0.2,
   mediumWheelSize * 0.45,
