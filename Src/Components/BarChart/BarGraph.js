@@ -19,17 +19,23 @@ const BarGraph = ({
   width,
   barsWidth,
   BarsMarginLeft,
+  max,
+  min,
 }) => {
   const [Pollen, setPollen] = useState('Low');
+
+  const interval = (max - min) / 4;
+
+  console.log(`max > 0 ? max : 20`, max, max > 0);
 
   const lines = sideLabels
     ? sideLabels
     : [
-        {value: 15, hours: 8},
-        {value: 10, hours: 6},
-        {value: 5, hours: 4},
-        {value: 0, hours: 2},
-        {value: -5, hours: 0},
+        {value: max > 0 ? Math.round(max) : 20, hours: 8}, // 35
+        {value: max > 0 ? Math.round(interval * 3 + min) : 15, hours: 6}, // 27.5
+        {value: max > 0 ? Math.round(interval * 2 + min) : 10, hours: 4}, // 20
+        {value: max > 0 ? Math.round(interval * 1 + min) : 5, hours: 2}, //12.5
+        {value: max > 0 ? Math.round(min) : 0, hours: 0}, //5
       ];
 
   const a = moment().subtract(0, 'days').startOf('day').format('dddd');

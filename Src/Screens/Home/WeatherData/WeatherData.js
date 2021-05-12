@@ -239,9 +239,7 @@ const WeatherData = ({
 
     axios(config)
       .then(function (response) {
-        console.log(
-          JSON.stringify(' ✅ ✅ ✅ ✅ Success ✅ ✅ ✅ ✅ ', response, data),
-        );
+        console.log(' ✅ ✅ ✅ ✅ Success ✅ ✅ ✅ ✅ ', data);
       })
       .catch(function (error) {
         console.log('❌❌❌❌Fail ❌❌❌❌', error, data);
@@ -456,6 +454,15 @@ const WeatherData = ({
   const Lowmax =
     dataLow &&
     Math.max.apply(
+      Math,
+      dataLow.map(function (o) {
+        return o.y;
+      }),
+    );
+
+  const Lowmin =
+    dataLow &&
+    Math.min.apply(
       Math,
       dataLow.map(function (o) {
         return o.y;
@@ -837,6 +844,8 @@ const WeatherData = ({
           <View style={{marginBottom: 50, alignItems: 'center'}}>
             {swiperIndex == 1 && (
               <BarGraph
+                max={max}
+                min={Lowmin}
                 color={'#7265E3'}
                 TopLabels
                 ShowPollen={true}
@@ -944,9 +953,13 @@ const WeatherData = ({
         verifyDone={(value) => EditDone(value)}
         Weather={Weather}
         hours={hours}
-        Temp={ManualTemp}
+        Temp={
+          ManualTemp
+            ? ManualTemp
+            : Math.round(Weather ? Weather.main.temp : '0')
+        }
         EditTemp={setManualTemp}
-        Hour={ManulHours}
+        Hour={ManulHours ? ManulHours : hours ? hours : 1}
         EditHour={setManulHours}
         Pollen={ManulPollen}
         EditPollen={setManulPollen}

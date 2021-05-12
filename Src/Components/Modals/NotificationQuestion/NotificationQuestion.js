@@ -1,4 +1,4 @@
-import React, {Component, useState} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -36,10 +36,15 @@ const NotificationQuestion = ({
   dismissModalHandler,
   verifyDone,
   question,
+  navigation,
 }: props) => {
   const [color, setcolor] = useState('black');
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log(`navigation`, navigation.dangerouslyGetParent);
+  }, []);
 
   const questionMain = question?.data?.question;
   return (
@@ -73,7 +78,15 @@ const NotificationQuestion = ({
         <View style={styles.upperContainer}>
           <TouchableOpacity
             onPress={dismissModalHandler}
-            style={{flex: 1, alignSelf: 'flex-end', marginBottom: 8}}>
+            style={{
+              // flex: 1,
+              position: 'absolute',
+              alignSelf: 'flex-end',
+              justifyContent: 'flex-start',
+              top: 0,
+              right: 5,
+              marginBottom: 8,
+            }}>
             <Image
               source={Constants.Images.PlusBlack}
               style={{
@@ -84,6 +97,7 @@ const NotificationQuestion = ({
               }}
             />
           </TouchableOpacity>
+
           <Text
             style={{
               fontWeight: '500',

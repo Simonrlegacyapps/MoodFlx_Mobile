@@ -40,15 +40,15 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Get the image from gallery discription.</string>
+	<string>Allow camera access to take a profile picture</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Read and understand health data.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Share workout data with other apps.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs to get your location...</string>
+	<string>Your rough location is used to automatically get your weather data so you don&apos;t have to manually input it</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Get the image from gallery.</string>
+	<string>Allow library access to take a profile picture</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Rubik-Black.ttf</string>

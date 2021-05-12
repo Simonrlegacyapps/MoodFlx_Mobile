@@ -36,13 +36,13 @@ const VerifyEmail = ({navigation}) => {
 
   const {code, mail, deviceID} = route.params;
   // console.log('code ye hai ', code);
-  const onLink = async () => {
+  const onLink = async (CodeOnComplete) => {
     let fcmToken = await NotifService.getDeviceToken();
     const fcm = await messaging().getToken();
     console.log('fcmToken', fcm, Platform.OS);
     const params = {
       email: mail,
-      otp: Code,
+      otp: Code?.toString().length === 4 ? Code : CodeOnComplete,
       device_id: deviceID,
       device_token: fcm,
       device_type: Platform.OS,
@@ -51,8 +51,9 @@ const VerifyEmail = ({navigation}) => {
     };
     console.log(`params of otp`, params);
     setLoading(true);
+    console.log(`Code, code`, Code, code);
     {
-      Code == code
+      Code == code || CodeOnComplete == code
         ? PostRequestApi('verifyOTP', params)
             .then(async (resp) => {
               if (resp.status == 200) {
@@ -159,7 +160,13 @@ const VerifyEmail = ({navigation}) => {
             fontSize: dynamicSize(18),
           }}
           onCodeFilled={
-            Code ? () => onLink() : () => console.log('no OTP entered')
+            (code) => {
+              setTimeout(() => {
+                onLink(code);
+              }, 300);
+              console.log(`complete code`, code);
+            }
+            // Code ? () => onLink() : () => console.log('no OTP entered')
           }
           codeInputHighlightStyle={{color: 'black'}}
           // onCodeFilled={(code) => {
@@ -236,7 +243,7 @@ const VerifyEmail = ({navigation}) => {
               lineHeight: 25,
               color: 'red',
             }}>
-            NOTE: You have entered wrong code
+            Nice code but it's incorrect - try again
           </Text>
         )}
       </View>
