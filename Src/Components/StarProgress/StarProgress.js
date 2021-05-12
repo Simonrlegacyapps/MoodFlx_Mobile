@@ -92,7 +92,7 @@ const StarProgress = () => {
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32}}
+            style={{height: 32, width: 32, resizeMode: 'contain'}}
           />
         }
         {
@@ -102,7 +102,7 @@ const StarProgress = () => {
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32}}
+            style={{height: 32, width: 32, resizeMode: 'contain'}}
           />
         }
         {
@@ -112,7 +112,7 @@ const StarProgress = () => {
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32}}
+            style={{height: 32, width: 32, resizeMode: 'contain'}}
           />
         }
         {
@@ -122,7 +122,7 @@ const StarProgress = () => {
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32}}
+            style={{height: 32, width: 32, resizeMode: 'contain'}}
           />
         }
         {
@@ -132,7 +132,7 @@ const StarProgress = () => {
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32}}
+            style={{height: 32, width: 32, resizeMode: 'contain'}}
           />
         }
       </View>

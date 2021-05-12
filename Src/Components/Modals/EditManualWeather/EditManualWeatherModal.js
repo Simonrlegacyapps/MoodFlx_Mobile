@@ -68,6 +68,7 @@ const EditManualWeatherModal = ({
   //   );
 
   // console.log(`value`, value);
+  // console.log(`Temp,`, Temp, Hour);
 
   const {width} = Dimensions.get('window');
 
@@ -204,6 +205,7 @@ const EditManualWeatherModal = ({
                       style={{
                         flexDirection: 'row',
                         // backgroundColor: 'red',
+
                         flex: 1,
                         alignItems: 'center',
                       }}>
@@ -214,7 +216,8 @@ const EditManualWeatherModal = ({
                             ? true
                             : false
                         }
-                        placeholder={Temp}
+                        placeholder={Temp.toString()}
+                        placeholderTextColor={'#000'}
                         value={Temp}
                         onChangeText={(text) => {
                           EditTemp(text);
@@ -222,6 +225,8 @@ const EditManualWeatherModal = ({
                         keyboardType={'number-pad'}
                         style={[
                           {
+                            minWidth: 55,
+                            paddingRight: 0,
                             fontFamily: RubikMedium,
                             fontSize: dynamicSize(34),
                             borderBottomWidth: 1,
@@ -279,7 +284,8 @@ const EditManualWeatherModal = ({
                               ? true
                               : false
                           }
-                          placeholder={""}
+                          placeholder={Hour.toString()}
+                          placeholderTextColor={'#000'}
                           value={Hour}
                           onChangeText={(text) => {
                             EditHour(text);
