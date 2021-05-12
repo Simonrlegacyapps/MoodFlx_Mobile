@@ -63,7 +63,11 @@ import NotificationQuestion from '../../Components/Modals/NotificationQuestion/N
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from '../../services/notifService';
-import {RubikMedium} from '../../Constants/fonts/Fonts';
+import { RubikMedium } from '../../Constants/fonts/Fonts';
+import { useFocusEffect } from '@react-navigation/native';
+
+let prevXY = {dx: 0, dy: 0};
+let moveCount = 0;
 
 const hapticOptions = {
   enableVibrateFallback: true,
@@ -201,11 +205,6 @@ export default function MoodDetector({navigation}) {
           x: 0,
           y: 0,
         });
-        // pan.current.setOffset({
-        //   x: pan.current.x._value,
-        //   y: pan.current.y._value,
-        // });
-        // pan.current.setValue({x: 0, y: 0});
         console.log('onPanResponderGrant gesture started');
         setisHapticsEnabled(true);
 
@@ -222,32 +221,26 @@ export default function MoodDetector({navigation}) {
         }
         const panX = offsetSize.current.xMin + x;
         const panY = offsetSize.current.yMin + y;
-        clearLongPressTimeouts({
-          mediumPressTimeoutId,
-          longPressTimeoutId,
-          longPressPopUpTimeoutId,
-          resetLongPressText: true,
-        });
-        if (
-          (Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1) &&
-          getScrollerWheelSize() !== regularWheelSize
-        ) {
-          console.log('setting wheelSize to Regular =>', regularWheelSize);
-          pan.current.setOffset({
-            x: 0,
-            y: 0,
-          });
-          pan.current.setValue({x: 0, y: 0});
-          setScrollerWheelSize(regularWheelSize);
-          setWheelSize(regularWheelSize);
+        const isMoved = (Math.abs(Math.abs(prevXY.dx) - Math.abs(gestureState.dx)) >= 1 || Math.abs(Math.abs(prevXY.dy) - Math.abs(gestureState.dy)) >= 1);
+        if (isMoved) {
+          console.log('isMoved: ', isMoved, 'dx: ', Math.abs(Math.abs(prevXY.dx) - Math.abs(gestureState.dx)), 'dy: ', Math.abs(Math.abs(prevXY.dy) - Math.abs(gestureState.dy)));
+          moveCount = 0;
+          if(getScrollerWheelSize() !== regularWheelSize) {
+            clearLongPressTimeouts({ mediumPressTimeoutId, longPressTimeoutId, longPressPopUpTimeoutId, resetLongPressText: true });
+            setScrollerWheelSize(regularWheelSize);
+            setWheelSize(regularWheelSize);
+          }
+          wheelSizeChangeDisabled.current = true;
+          onPanResponderMove(event, gestureState);
+          pan.current.setValue({ x: panX, y: panY });
+          startLongPressGesture(event, gestureState);
         } else {
-          pan.current.setValue({x: panX, y: panY});
-          // pan.current.setValue({ x: gestureState.dx, y: gestureState.dy });
+          if(longPressPopUpTimeoutId.current === null && moveCount === 0){
+            startLongPressGesture(event, gestureState);
+          }
+          moveCount += 1;
         }
-        pan.current.setValue({x: panX, y: panY});
-        wheelSizeChangeDisabled.current = true;
-        onPanResponderMove(event, gestureState);
-        startLongPressGesture(event, gestureState);
+        prevXY = {dx: gestureState.dx, dy: gestureState.dy};
         return true;
       },
       onPanResponderRelease: (event, gestureState) => {
@@ -279,20 +272,6 @@ export default function MoodDetector({navigation}) {
     scrollerRef.current.measureInWindow((x, y, width, height) => {
       const left = x + scrollerWheelRadius;
       const top = y + scrollerWheelRadius;
-      // if(!hapticTimeoutId.current && hapticType && timeInterval) {
-      //   hapticTimeoutId.current = setTimeout(() => {
-      //     ReactNativeHapticFeedback.trigger(hapticType, hapticOptions);
-      //     if(hapticTimeoutId.current){
-      //       clearTimeout(hapticTimeoutId.current)
-      //       hapticTimeoutId.current = null;
-      //     }
-      //   }, (timeInterval * 1000));
-      // } else if(timeInterval === -1){
-      //   if(hapticTimeoutId.current){
-      //     clearTimeout(hapticTimeoutId.current)
-      //     hapticTimeoutId.current = null;
-      //   }
-      // }
       updateColorData(left, top, gestureState);
       // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
     });
@@ -376,54 +355,30 @@ export default function MoodDetector({navigation}) {
           Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1,
         );
         if (!wheelSizeChangeDisabled.current) {
-          if (offsetSize.current) {
-            // pan.current.setOffset({
-            //   x: offsetSize.current.xMin + x,
-            //   y: offsetSize.current.yMin + y
-            // });
-            pan.current.setValue({x: 0, y: 0});
-            pan.current.setOffset({
-              x: pan.current.x._value,
-              y: pan.current.y._value,
-            });
-            // pan.current.setValue({ x: 0, y: 0 });
-            pan.current.setValue({x: panX, y: panY});
-          }
           setScrollerWheelSize(mediumWheelSize);
           setWheelSize(mediumWheelSize);
+          // pan.current.setOffset({x: 0, y: 0});
+          pan.current.setValue({
+            x: offsetSize.current.xMin + x,
+            y: offsetSize.current.yMin + y
+          })
+          // pan.current.setValue({ x: panX, y: panY });
         }
         longPressTimeoutId.current = setTimeout(() => {
-          console.log(
-            'longPressTimeoutId: ',
-            Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1,
-          );
-
-          newScrollerWidth =
-            offsetSize.current.scrollerWidth > largeWheelSize
-              ? offsetSize.current.scrollerWidth
-              : largeWheelSize;
+          newScrollerWidth = offsetSize.current.scrollerWidth > largeWheelSize ? offsetSize.current.scrollerWidth : largeWheelSize;
           if (!wheelSizeChangeDisabled.current) {
             if (offsetSize.current) {
-              // pan.current.setOffset({
-              //   x: offsetSize.current.xMin + x,
-              //   y: offsetSize.current.yMin + y
-              // });
-              pan.current.setValue({x: 0, y: 0});
-              panX =
-                offsetSize.current.xMin +
-                offsetSize.current.scrollerWidth / 2 -
-                newScrollerWidth / 2 +
-                x;
-              panY =
-                offsetSize.current.yMin +
-                offsetSize.current.bubbleCenterOffsetTop -
-                (offsetSize.current.toolTipHeight + largeWheelSize / 2) +
-                y;
-              // pan.current.setValue({ x: 0, y: 0 });
-              pan.current.setValue({x: panX, y: panY});
+              panX = offsetSize.current.xMin + (offsetSize.current.scrollerWidth / 2) - (newScrollerWidth / 2) + x;
+              panY = offsetSize.current.yMin + offsetSize.current.bubbleCenterOffsetTop - (offsetSize.current.toolTipHeight + (largeWheelSize / 2)) + y;
             }
             setScrollerWheelSize(largeWheelSize);
             setWheelSize(largeWheelSize);
+            // pan.current.setValue({ x: panX, y: panY });
+            // pan.current.setOffset({ x: 0, y: 0 });
+            pan.current.setValue({
+              x: offsetSize.current.xMin + x,
+              y: offsetSize.current.yMin + y
+            })
             setShowLongPressText(false);
           }
           clearLongPressTimeouts({longPressTimeoutId});
@@ -528,12 +483,13 @@ export default function MoodDetector({navigation}) {
     ) {
       return;
     }
-    emotionText === initialEmotionTextData.text &&
-      isInitialUpdate &&
-      pan.current.setValue({
-        x: initialX,
-        y: initialY,
-      });
+    if(emotionText === initialEmotionTextData.text &&
+      isInitialUpdate) {
+        pan.current.setValue({
+          x: initialX,
+          y: initialY,
+        });
+      }
   };
 
   const onBlocksContainerLayout = () => {
@@ -955,6 +911,24 @@ export default function MoodDetector({navigation}) {
     navigation.navigate('HomeScreen', {screen: 'MicScreen'});
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
+      // screen isFocused
+      console.log('screen isFocused: ', isActive)
+     
+  
+      return () => {
+        // screen is out of focus
+        isActive = false;
+        setWheelSize(regularWheelSize);
+        setScrollerWheelSize(regularWheelSize);
+        console.log('screen is out of focus: ', isActive)
+      };
+    }, [])
+  );
+
+
   const renderBlocks = () => {
     return (
       <View
@@ -1162,13 +1136,8 @@ export default function MoodDetector({navigation}) {
       <TouchableOpacity disabled={true} style={styles.anonymousHeaderView}>
         <AnonymousHeader />
       </TouchableOpacity>
-      {showLongPressText && blocksSize?.current?.top && (
-        <View
-          style={[
-            styles.holdTextView,
-            {top: blocksSize.current.top - horizontalScale(25)},
-          ]}
-          pointerEvents="none">
+      {emotionText !== 'Slide finger' && showLongPressText && blocksSize?.current?.top && (
+        <View style={{...styles.holdTextView, top: blocksSize.current.top - horizontalScale(25)}} pointerEvents="none">
           <Text style={styles.holdText}>Hold longer to increase intensity</Text>
         </View>
       )}
@@ -1185,13 +1154,7 @@ export default function MoodDetector({navigation}) {
         }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
-        emotionText={
-          wheelSize === regularWheelSize
-            ? emotionText
-            : wheelSize === mediumWheelSize
-            ? `Pretty ${emotionText}`
-            : `Very ${emotionText}`
-        }
+        emotionText={(wheelSize === regularWheelSize || emotionText === 'Slide finger') ? emotionText : wheelSize === mediumWheelSize ? `Pretty ${emotionText}` : `Very ${emotionText}`}
         toolTipRef={toolTipRef}
         wheelSize={wheelSize}
         onToolTipLayout={onToolTipLayout}
