@@ -7517,7 +7517,7 @@ react-native-modal@^11.7.0:
 
 react-native-push-notification@^7.2.3:
   version "7.2.3"
-  resolved "https://registry.npmjs.org/react-native-push-notification/-/react-native-push-notification-7.2.3.tgz"
+  resolved "https://registry.yarnpkg.com/react-native-push-notification/-/react-native-push-notification-7.2.3.tgz#e5efa0d48bfa27ad0cab538ba859b5f2cd21b684"
   integrity sha512-MWwzGXGD22vQ35roDWBQ4EJl1jS4kuuAAdxqe2C88gULgzT6rQkR9wszl5b5K+hIWqve50qg4zJoSgarr//2KA==
 
 react-native-reanimated@^2.0.0, react-native-reanimated@^2.0.0-alpha.5:

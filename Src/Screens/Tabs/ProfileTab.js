@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -43,9 +44,7 @@ const ProfileTab = ({navigation}) => {
   // const [value, onChangeText] = React.useState('');
   const UserData = useSelector((state) => state.First);
 
-  const [name, setname] = useState(
-    UserData?.UserDetails?.full_name ? UserData?.UserDetails?.full_name : '',
-  );
+  const [name, setname] = useState('Anonymous');
   const [gender, setgender] = useState('');
   const [Birthday, setBirthday] = useState('');
   const [Pronoun, setPronoun] = useState('');
@@ -53,6 +52,7 @@ const ProfileTab = ({navigation}) => {
   const [edit, setedit] = useState(false);
   const [ImageLoading, setImageLoading] = useState(false);
   const [ComingGenderPronoun, setComingGenderPronoun] = useState(null);
+  const [refreshing, setRefreshing] = React.useState(false);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -60,6 +60,24 @@ const ProfileTab = ({navigation}) => {
   const addAnswer = (item, index) => {
     setedit(!edit);
   };
+
+  const wait = (timeout) => {
+    return new Promise((resolve) => setTimeout(resolve, timeout));
+  };
+
+  const onRefresh = () => {
+    setgender('');
+    setPronoun('');
+
+    console.log(`refreshed here`);
+    setRefreshing(true);
+    getProfileUserData();
+    wait(1000).then(() => setRefreshing(false));
+  };
+
+  useCallback(() => {
+    getProfileUserData();
+  }, []);
 
   // const renderList = ({item, index}) => {
   //   return (
@@ -328,8 +346,21 @@ const ProfileTab = ({navigation}) => {
   const genderData = [{label: 'Male'}, {label: 'Female'}, {label: 'trans'}];
   const PronounData = [{label: 'He/him'}, {label: 'She/her'}, {label: 'trans'}];
 
+  console.log(
+    `name != '' && UserData?.UserDetails?.full_name`,
+    name != 'Anonymous'
+      ? name
+      : name != '' && UserData?.UserDetails?.full_name
+      ? UserData?.UserDetails?.full_name
+      : name,
+  );
+
   return (
-    <ScrollView style={{flex: 1, backgroundColor: Constants.Colors.WhiteColor}}>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      style={{flex: 1, backgroundColor: Constants.Colors.WhiteColor}}>
       <View style={styles.container}>
         <View style={styles.profileImageStyle}>
           <View style={styles.imageViewStyle}>
@@ -397,7 +428,7 @@ const ProfileTab = ({navigation}) => {
             label={'Name'}
             navigation={navigation}
             value={
-              name
+              name != 'Anonymous'
                 ? name
                 : name != '' && UserData?.UserDetails?.full_name
                 ? UserData?.UserDetails?.full_name
