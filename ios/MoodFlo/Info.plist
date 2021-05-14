@@ -46,7 +46,7 @@
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Share workout data with other apps.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Your rough location is used to automatically get your weather data so you don&apos;t have to manually input it</string>
+	<string>Your rough location is used to automatically get your weather data so you don't have to manually input it</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow library access to take a profile picture</string>
 	<key>UIAppFonts</key>
