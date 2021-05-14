@@ -117,13 +117,18 @@ const PopUp = ({
               },
             ]}>
             <TouchableOpacity
-              onPress={() => Linking.openURL('https://www.google.com/')}>
+              onPress={() =>
+                Linking.openURL('https://admin.moodflo.com/terms&conditions')
+              }>
               <Text style={{fontSize: 12, paddingTop: 12}}>
                 {' '}
                 Terms & Conditions
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                Linking.openURL('https://admin.moodflo.com/privacy_policy')
+              }>
               <Text style={{fontSize: 12, paddingTop: 12}}>
                 {' '}
                 • Privacy Policy

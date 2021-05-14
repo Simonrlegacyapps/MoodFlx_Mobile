@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
+  Linking,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -34,9 +35,17 @@ const listData = [
 ];
 
 const bottomList = [
-  {name: 'FAQ', icon: <FaqIcon />},
-  {name: 'Terms & Conditions', icon: <TermsIcon />},
-  {name: 'Privacy Policy', icon: <PrivacyIcon />},
+  // {name: 'FAQ', icon: <FaqIcon />},
+  {
+    name: 'Terms & Conditions',
+    icon: <TermsIcon />,
+    link: 'https://admin.moodflo.com/terms&conditions',
+  },
+  {
+    name: 'Privacy Policy',
+    icon: <PrivacyIcon />,
+    link: 'https://admin.moodflo.com/privacy_policy',
+  },
 ];
 
 const ProfileTab = ({navigation}) => {
@@ -226,7 +235,10 @@ const ProfileTab = ({navigation}) => {
 
   const renderBottomList = ({item}) => {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          Linking.openURL(item.link);
+        }}>
         <View style={styles.bottomFlatlistContainer}>
           <View style={{marginTop: dynamicSize(5)}}>{item.icon}</View>
           <Text
