@@ -307,11 +307,12 @@ const ProfileTab = ({navigation}) => {
       device_id: deviceId,
       email: UserData.UserEmail,
       user_id: UserData.UserId,
-      full_name: name
-        ? name
-        : name != '' && UserData?.UserDetails?.full_name
-        ? UserData?.UserDetails?.full_name
-        : name,
+      full_name:
+        name != 'Anonymous'
+          ? name
+          : name != '' && UserData?.UserDetails?.full_name
+          ? UserData?.UserDetails?.full_name
+          : name,
       pronouns: Pronoun
         ? Pronoun.name
         : UserData?.UserDetails?.pronouns
