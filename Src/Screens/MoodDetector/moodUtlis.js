@@ -1,3 +1,61 @@
+export const normalize = (degrees) => ((degrees % 360 + 360) % 360)
+
+export const rgb2Hex = (r, g, b) => {
+  if (typeof r === 'object') {
+    const args = r
+    r = args.r; g = args.g; b = args.b;
+  }
+  r = Math.round(r).toString(16)
+  g = Math.round(g).toString(16)
+  b = Math.round(b).toString(16)
+
+  r = r.length === 1 ? '0' + r : r
+  g = g.length === 1 ? '0' + g : g
+  b = b.length === 1 ? '0' + b : b
+
+  return '#' + r + g + b
+}
+
+export const hsv2Rgb = (h, s, v) => {
+  const RGB_MAX = 255
+  const HUE_MAX = 360
+  const SV_MAX = 100
+  if (typeof h === 'object') {
+    const args = h
+    h = args.h; s = args.s; v = args.v;
+  }
+
+  h = normalize(h)
+  h = (h === HUE_MAX) ? 1 : (h % HUE_MAX / parseFloat(HUE_MAX) * 6)
+  s = (s === SV_MAX) ? 1 : (s % SV_MAX / parseFloat(SV_MAX))
+  v = (v === SV_MAX) ? 1 : (v % SV_MAX / parseFloat(SV_MAX))
+
+  let i = Math.floor(h)
+  let f = h - i
+  let p = v * (1 - s)
+  let q = v * (1 - f * s)
+  let t = v * (1 - (1 - f) * s)
+  let mod = i % 6
+  let r = [v, q, p, p, t, v][mod]
+  let g = [t, v, v, q, p, p][mod]
+  let b = [p, p, t, v, v, q][mod]
+
+  return {
+    r: Math.floor(r * RGB_MAX),
+    g: Math.floor(g * RGB_MAX),
+    b: Math.floor(b * RGB_MAX),
+  }
+}
+
+export const hsv2Hex = (h, s, v) => {
+  let rgb = hsv2Rgb(h, s, v)
+  let hex = rgb2Hex(rgb.r, rgb.g, rgb.b)
+  // if(prevHex !== hex){
+  //   this.props?.setBackgroundColor?.(hex);
+  // }
+  return hex;
+}
+
 export const pSBC = (p, c0, c1, l) => {
   // console.log('pSBC p', p, c0);
   let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (c1) == "string";

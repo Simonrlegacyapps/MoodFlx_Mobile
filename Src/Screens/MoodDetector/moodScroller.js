@@ -31,6 +31,7 @@ export default function MoodScroller({
   scrollerContainerRef,
   onLayoutScrollerContainer,
   wheelSize,
+  forceUpdate,
 }) {
   if (emotionText === initialEmotionTextData.text && scrollerStyle?.left === 0) {
     return null;
@@ -63,9 +64,14 @@ export default function MoodScroller({
         duration: 0.3 * 1000,
         useNativeDriver: false,
       }
-    ).start();
+    ).start(({finished}) => {
+      console.log('finished: ', finished)
+      if(finished) {
+        forceUpdate();
+      }
+    });
   }, [wheelSize])
-console.log('scrollerStyle: ', scrollerStyle)
+
   return (
     <>
       <Animated.View
