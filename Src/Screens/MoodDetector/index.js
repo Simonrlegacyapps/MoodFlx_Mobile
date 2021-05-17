@@ -63,8 +63,9 @@ import NotificationQuestion from '../../Components/Modals/NotificationQuestion/N
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from '../../services/notifService';
-import { RubikMedium } from '../../Constants/fonts/Fonts';
-import { useFocusEffect } from '@react-navigation/native';
+import {RubikMedium} from '../../Constants/fonts/Fonts';
+import {useFocusEffect} from '@react-navigation/native';
+import messaging, {firebase} from '@react-native-firebase/messaging';
 
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
@@ -147,7 +148,7 @@ export default function MoodDetector({navigation}) {
   const previousWheelCenter = useRef(null);
   const userData = useRef(UserData);
   const wheelSizeChangeDisabled = useRef(true);
-  const hsvColor = useRef({h:0,s:0,v:100});
+  const hsvColor = useRef({h: 0, s: 0, v: 100});
 
   const panResponder = useRef(
     PanResponder.create({
@@ -222,21 +223,35 @@ export default function MoodDetector({navigation}) {
         }
         const panX = offsetSize.current.xMin + x;
         const panY = offsetSize.current.yMin + y;
-        const isMoved = (Math.abs(Math.abs(prevXY.dx) - Math.abs(gestureState.dx)) >= 1 || Math.abs(Math.abs(prevXY.dy) - Math.abs(gestureState.dy)) >= 1);
+        const isMoved =
+          Math.abs(Math.abs(prevXY.dx) - Math.abs(gestureState.dx)) >= 1 ||
+          Math.abs(Math.abs(prevXY.dy) - Math.abs(gestureState.dy)) >= 1;
         if (isMoved) {
-          console.log('isMoved: ', isMoved, 'dx: ', Math.abs(Math.abs(prevXY.dx) - Math.abs(gestureState.dx)), 'dy: ', Math.abs(Math.abs(prevXY.dy) - Math.abs(gestureState.dy)));
+          console.log(
+            'isMoved: ',
+            isMoved,
+            'dx: ',
+            Math.abs(Math.abs(prevXY.dx) - Math.abs(gestureState.dx)),
+            'dy: ',
+            Math.abs(Math.abs(prevXY.dy) - Math.abs(gestureState.dy)),
+          );
           moveCount = 0;
-          if(getScrollerWheelSize() !== regularWheelSize) {
-            clearLongPressTimeouts({ mediumPressTimeoutId, longPressTimeoutId, longPressPopUpTimeoutId, resetLongPressText: true });
+          if (getScrollerWheelSize() !== regularWheelSize) {
+            clearLongPressTimeouts({
+              mediumPressTimeoutId,
+              longPressTimeoutId,
+              longPressPopUpTimeoutId,
+              resetLongPressText: true,
+            });
             setScrollerWheelSize(regularWheelSize);
             setWheelSize(regularWheelSize);
           }
           wheelSizeChangeDisabled.current = true;
           onPanResponderMove(event, gestureState);
-          pan.current.setValue({ x: panX, y: panY });
+          pan.current.setValue({x: panX, y: panY});
           startLongPressGesture(event, gestureState);
         } else {
-          if(longPressPopUpTimeoutId.current === null && moveCount === 0){
+          if (longPressPopUpTimeoutId.current === null && moveCount === 0) {
             startLongPressGesture(event, gestureState);
           }
           moveCount += 1;
@@ -281,40 +296,43 @@ export default function MoodDetector({navigation}) {
   //color wheel caluclations
 
   const polar = ({locationX, locationY}) => {
-		const lx = locationX, ly = locationY
-    if(!lx || !ly) {
+    const lx = locationX,
+      ly = locationY;
+    if (!lx || !ly) {
       return null;
     }
     const wheelHeight = blocksSize.current?.height ?? screenWidth;
     const wheelWidth = blocksSize.current?.width ?? screenWidth;
-		const [x, y] = [lx - wheelWidth/2, ly - wheelHeight/2]
-		let deg = (Math.atan2(y, x) * (-180 / Math.PI));
+    const [x, y] = [lx - wheelWidth / 2, ly - wheelHeight / 2];
+    let deg = Math.atan2(y, x) * (-180 / Math.PI);
     // console.log('polar nativeEvent: ', nativeEvent);
-		deg = 180 - (45 + deg)
+    deg = 180 - (45 + deg);
     // console.log('polar deg: ', deg, x, y, lx, ly);
-		return {
-			// deg: (Math.atan2(y, x) * (-180 / Math.PI)),
-			deg,
+    return {
+      // deg: (Math.atan2(y, x) * (-180 / Math.PI)),
+      deg,
       // deg: 180,
-			radius: Math.sqrt(y * y + x * x) / (wheelHeight / 2),
-		}
-	}
+      radius: Math.sqrt(y * y + x * x) / (wheelHeight / 2),
+    };
+  };
 
   const updateHueSaturation = (location) => {
     const polarData = polar(location);
     if (!polarData) {
       return;
     }
-    let { deg, radius } = polarData;
-    if(radius > 1){
-      radius = 1;;
+    let {deg, radius} = polarData;
+    if (radius > 1) {
+      radius = 1;
     }
-    const h = deg, s = 100 * radius, v = hsvColor.current.v;
-    const hsv = { h, s, v };
+    const h = deg,
+      s = 100 * radius,
+      v = hsvColor.current.v;
+    const hsv = {h, s, v};
     const currentColor = hsv2Hex(hsv);
-		hsvColor.current = hsv;
-		setColor(hsv2Hex(hsv))
-	}
+    hsvColor.current = hsv;
+    setColor(hsv2Hex(hsv));
+  };
 
   const updateColorData = (x, y, gestureState) => {
     const left = x;
@@ -401,17 +419,28 @@ export default function MoodDetector({navigation}) {
           // pan.current.setOffset({x: 0, y: 0});
           pan.current.setValue({
             x: offsetSize.current.xMin + x,
-            y: offsetSize.current.yMin + y
-          })
+            y: offsetSize.current.yMin + y,
+          });
           forceUpdate();
           // pan.current.setValue({ x: panX, y: panY });
         }
         longPressTimeoutId.current = setTimeout(() => {
-          newScrollerWidth = offsetSize.current.scrollerWidth > largeWheelSize ? offsetSize.current.scrollerWidth : largeWheelSize;
+          newScrollerWidth =
+            offsetSize.current.scrollerWidth > largeWheelSize
+              ? offsetSize.current.scrollerWidth
+              : largeWheelSize;
           if (!wheelSizeChangeDisabled.current) {
             if (offsetSize.current) {
-              panX = offsetSize.current.xMin + (offsetSize.current.scrollerWidth / 2) - (newScrollerWidth / 2) + x;
-              panY = offsetSize.current.yMin + offsetSize.current.bubbleCenterOffsetTop - (offsetSize.current.toolTipHeight + (largeWheelSize / 2)) + y;
+              panX =
+                offsetSize.current.xMin +
+                offsetSize.current.scrollerWidth / 2 -
+                newScrollerWidth / 2 +
+                x;
+              panY =
+                offsetSize.current.yMin +
+                offsetSize.current.bubbleCenterOffsetTop -
+                (offsetSize.current.toolTipHeight + largeWheelSize / 2) +
+                y;
             }
             setScrollerWheelSize(largeWheelSize);
             setWheelSize(largeWheelSize);
@@ -419,8 +448,8 @@ export default function MoodDetector({navigation}) {
             // pan.current.setOffset({ x: 0, y: 0 });
             pan.current.setValue({
               x: offsetSize.current.xMin + x,
-              y: offsetSize.current.yMin + y
-            })
+              y: offsetSize.current.yMin + y,
+            });
             setShowLongPressText(false);
           }
           clearLongPressTimeouts({longPressTimeoutId});
@@ -526,15 +555,14 @@ export default function MoodDetector({navigation}) {
     //   return;
     // }
 
-    if(emotionText === initialEmotionTextData.text &&
-      isInitialUpdate) {
-        pan.current.setOffset({x: 0, y: 0});
-        pan.current.setValue({
-          x: initialX,
-          y: initialY,
-        });
-        forceUpdate();
-      }
+    if (emotionText === initialEmotionTextData.text && isInitialUpdate) {
+      pan.current.setOffset({x: 0, y: 0});
+      pan.current.setValue({
+        x: initialX,
+        y: initialY,
+      });
+      forceUpdate();
+    }
   };
 
   const onBlocksContainerLayout = () => {
@@ -777,6 +805,7 @@ export default function MoodDetector({navigation}) {
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
+    const fcm = await messaging().getToken();
     console.log(`mood count`, e);
 
     let geocode = null;
@@ -829,6 +858,9 @@ export default function MoodDetector({navigation}) {
         city: city_info,
         state: state_info,
         country: country_info,
+        user_id: UserData.UserId,
+        device_token: fcm,
+        device_type: Platform.OS,
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
@@ -960,19 +992,17 @@ export default function MoodDetector({navigation}) {
     React.useCallback(() => {
       let isActive = true;
       // screen isFocused
-      console.log('screen isFocused: ', isActive)
-     
-  
+      console.log('screen isFocused: ', isActive);
+
       return () => {
         // screen is out of focus
         isActive = false;
         setWheelSize(regularWheelSize);
         setScrollerWheelSize(regularWheelSize);
-        console.log('screen is out of focus: ', isActive)
+        console.log('screen is out of focus: ', isActive);
       };
-    }, [])
+    }, []),
   );
-
 
   const renderBlocks = () => {
     return (
@@ -1186,11 +1216,20 @@ export default function MoodDetector({navigation}) {
       <TouchableOpacity disabled={true} style={styles.anonymousHeaderView}>
         <AnonymousHeader />
       </TouchableOpacity>
-      {emotionText !== 'Slide finger' && showLongPressText && blocksSize?.current?.top && (
-        <View style={{...styles.holdTextView, top: blocksSize.current.top - horizontalScale(25)}} pointerEvents="none">
-          <Text style={styles.holdText}>Hold longer to increase intensity</Text>
-        </View>
-      )}
+      {emotionText !== 'Slide finger' &&
+        showLongPressText &&
+        blocksSize?.current?.top && (
+          <View
+            style={{
+              ...styles.holdTextView,
+              top: blocksSize.current.top - horizontalScale(25),
+            }}
+            pointerEvents="none">
+            <Text style={styles.holdText}>
+              Hold longer to increase intensity
+            </Text>
+          </View>
+        )}
       {renderBlocks()}
       {renderBottomBar(topBottomColor)}
       <Scroller
@@ -1204,7 +1243,13 @@ export default function MoodDetector({navigation}) {
         }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
-        emotionText={(wheelSize === regularWheelSize || emotionText === 'Slide finger') ? emotionText : wheelSize === mediumWheelSize ? `Pretty ${emotionText}` : `Very ${emotionText}`}
+        emotionText={
+          wheelSize === regularWheelSize || emotionText === 'Slide finger'
+            ? emotionText
+            : wheelSize === mediumWheelSize
+            ? `Pretty ${emotionText}`
+            : `Very ${emotionText}`
+        }
         toolTipRef={toolTipRef}
         forceUpdate={forceUpdate}
         wheelSize={wheelSize}
