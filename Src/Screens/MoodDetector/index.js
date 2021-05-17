@@ -26,7 +26,7 @@ import {
   mediumWheelSize,
   largeWheelSize,
 } from './moodService';
-import {pSBC} from './moodUtlis';
+import {hsv2Hex, pSBC} from './moodUtlis';
 import {
   dynamicSize,
   getFontSize,
@@ -148,6 +148,7 @@ export default function MoodDetector({navigation}) {
   const previousWheelCenter = useRef(null);
   const userData = useRef(UserData);
   const wheelSizeChangeDisabled = useRef(true);
+  const hsvColor = useRef({h: 0, s: 0, v: 100});
 
   const panResponder = useRef(
     PanResponder.create({
@@ -291,9 +292,52 @@ export default function MoodDetector({navigation}) {
       // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
     });
   };
+
+  //color wheel caluclations
+
+  const polar = ({locationX, locationY}) => {
+    const lx = locationX,
+      ly = locationY;
+    if (!lx || !ly) {
+      return null;
+    }
+    const wheelHeight = blocksSize.current?.height ?? screenWidth;
+    const wheelWidth = blocksSize.current?.width ?? screenWidth;
+    const [x, y] = [lx - wheelWidth / 2, ly - wheelHeight / 2];
+    let deg = Math.atan2(y, x) * (-180 / Math.PI);
+    // console.log('polar nativeEvent: ', nativeEvent);
+    deg = 180 - (45 + deg);
+    // console.log('polar deg: ', deg, x, y, lx, ly);
+    return {
+      // deg: (Math.atan2(y, x) * (-180 / Math.PI)),
+      deg,
+      // deg: 180,
+      radius: Math.sqrt(y * y + x * x) / (wheelHeight / 2),
+    };
+  };
+
+  const updateHueSaturation = (location) => {
+    const polarData = polar(location);
+    if (!polarData) {
+      return;
+    }
+    let {deg, radius} = polarData;
+    if (radius > 1) {
+      radius = 1;
+    }
+    const h = deg,
+      s = 100 * radius,
+      v = hsvColor.current.v;
+    const hsv = {h, s, v};
+    const currentColor = hsv2Hex(hsv);
+    hsvColor.current = hsv;
+    setColor(hsv2Hex(hsv));
+  };
+
   const updateColorData = (x, y, gestureState) => {
     const left = x;
     const top = y;
+    updateHueSaturation({locationX: left, locationY: y});
     previousWheelCenter.current = {left, top};
     const emotionData = getEmotionsTextData(
       top,
@@ -315,7 +359,7 @@ export default function MoodDetector({navigation}) {
       const color = pSBC(count.current / 100, toolTipData.color);
       setToolTipData(Object.assign(toolTipData, {...emotionData}));
       setEmotionText(emotionData?.text ?? '');
-      setColor(color);
+      // setColor(color);
       if (count.current === 40) {
         addValue.current = -1;
       }
@@ -328,7 +372,7 @@ export default function MoodDetector({navigation}) {
       setToolTipData(Object.assign(toolTipData, {...emotionData}));
       setEmotionText(emotionData?.text ?? '');
       const color = pSBC(count.current / 100, emotionData.color);
-      setColor(color);
+      // setColor(color);
       // count.current = 1;
     }
     prevEmotionData.current = emotionData;
@@ -377,6 +421,7 @@ export default function MoodDetector({navigation}) {
             x: offsetSize.current.xMin + x,
             y: offsetSize.current.yMin + y,
           });
+          forceUpdate();
           // pan.current.setValue({ x: panX, y: panY });
         }
         longPressTimeoutId.current = setTimeout(() => {
@@ -503,17 +548,20 @@ export default function MoodDetector({navigation}) {
       outputRange: [yMin, (yMax + yMin) / 2, yMax],
       extrapolate: 'clamp',
     });
-    if (
-      pan.current.x._value === initialX &&
-      pan.current.y._value === initialY
-    ) {
-      return;
-    }
+    // if (
+    //   pan.current.x._value === initialX &&
+    //   pan.current.y._value === initialY
+    // ) {
+    //   return;
+    // }
+
     if (emotionText === initialEmotionTextData.text && isInitialUpdate) {
+      pan.current.setOffset({x: 0, y: 0});
       pan.current.setValue({
         x: initialX,
         y: initialY,
       });
+      forceUpdate();
     }
   };
 
@@ -1004,6 +1052,7 @@ export default function MoodDetector({navigation}) {
           }}
         />
         <View
+          pointerEvents="none"
           style={{
             width: '100%',
             alignItems: 'center',
@@ -1021,6 +1070,7 @@ export default function MoodDetector({navigation}) {
           </Text>
         </View>
         <View
+          pointerEvents="none"
           style={{
             flexDirection: 'row',
             hieght: blocksContainerSize?.height,
@@ -1045,6 +1095,7 @@ export default function MoodDetector({navigation}) {
           </Text>
         </View>
         <View
+          pointerEvents="none"
           style={{
             width: '100%',
             alignItems: 'center',
@@ -1062,6 +1113,7 @@ export default function MoodDetector({navigation}) {
           </Text>
         </View>
         <View
+          pointerEvents="none"
           style={{
             hieght: '100%',
             justifyContent: 'center',
@@ -1070,6 +1122,7 @@ export default function MoodDetector({navigation}) {
               ? blocksContainerSize.height / 2 - 6
               : undefined,
             right: 6,
+            zIndex: 2,
           }}>
           <Text
             // ref={(ref) => this.positive = ref}
@@ -1198,6 +1251,7 @@ export default function MoodDetector({navigation}) {
             : `Very ${emotionText}`
         }
         toolTipRef={toolTipRef}
+        forceUpdate={forceUpdate}
         wheelSize={wheelSize}
         onToolTipLayout={onToolTipLayout}
         isAllMoodsDataAvailable={UserData.AllMoods !== null}
