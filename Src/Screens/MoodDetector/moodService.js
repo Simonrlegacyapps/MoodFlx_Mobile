@@ -1,9 +1,10 @@
 import {
   Dimensions
 } from 'react-native';
-import { hapticsConfigs } from '../../Constants/constants';
+import { hapticsConfigs, hapticsTopFlags } from '../../Constants/constants';
 import { horizontalScale, iPhoneXPadding, isIphoneX, verticalScale } from '../../Constants/sizeChoose';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export const regularWheelSize = 74
 export const mediumWheelSize = regularWheelSize * 2.5;
@@ -12,12 +13,34 @@ let scrollerWheelSize = regularWheelSize;
 export const longPressPopupDuration = 0.2;
 export const mediumPressDuration = 0.8;
 export const longPressDuration = 1;
+let isLeftHapticsEnabled = false;
+let isRightHapticsEnabled = false;
+let jawsThemeCount = 0;
+let circusThemeCount = 0;
 
 export const setScrollerWheelSize = (size) => {
   scrollerWheelSize = size
 }
 
-export const getScrollerWheelSize = (size) => scrollerWheelSize;
+export const getScrollerWheelSize = () => scrollerWheelSize;
+
+export const setIsHapticsEnabledFlag = ({isEnabled, directionFlag}) => {
+  console.log('setIsHapticsEnabledFlag =>', isEnabled, directionFlag);
+  if(directionFlag === hapticsTopFlags.both) {
+    jawsThemeCount = 0;
+    circusThemeCount = 0;
+    isLeftHapticsEnabled = false;
+    isRightHapticsEnabled = false;
+  } else if(directionFlag === hapticsTopFlags.left){
+    isLeftHapticsEnabled = isEnabled;
+    !isEnabled && (jawsThemeCount = 0)
+  } else if(directionFlag === hapticsTopFlags.right){
+    isRightHapticsEnabled = isEnabled;
+    !isEnabled && (circusThemeCount = 0)
+  }
+}
+
+export const getIsHapticsEnabled = (isLeft) => (isLeft ? isLeftHapticsEnabled : isRightHapticsEnabled);
 
 export const regularWheelSizeArray = [
   regularWheelSize * 0.25,
@@ -324,14 +347,15 @@ export const getScrollerOffset = (screenSize = window, scrollerWheelSize, scroll
   }
 }
 
-export const getHapticStats = (y, blocksSize, offsetSize) => {
+export const getHapticStats = (y, x, blocksSize, offsetSize) => {
   let hapticType = '';
   let timeInterval = -1;
   let percentage = 0;
+  let isLeft = false;
   if (y < blocksSize.top) {
-    return { hapticType, timeInterval, percentage };
+    return { hapticType, timeInterval, percentage, isLeft };
   } else if (y > (blocksSize.top + blocksSize.height)) {
-    return { hapticType, timeInterval, percentage };
+    return { hapticType, timeInterval, percentage, isLeft };
   }
   const yPosInBlock = y - blocksSize.top;
   const blockSizeHalf = blocksSize.height / 2;
@@ -362,5 +386,116 @@ export const getHapticStats = (y, blocksSize, offsetSize) => {
   // console.log('getHapticStats percentage', percentage);
   // console.log('getHapticStats hapticType', hapticType);
   // console.log('getHapticStats timeInterval', timeInterval);
-  return { hapticType, timeInterval, percentage };
+  if(x < (screenWidth / 2)) {
+    isLeft = true;
+  }
+  return { hapticType, timeInterval, percentage, isLeft };
+}
+
+export const playHapticJawsTheme = (callback) => {
+  setIsHapticsEnabledFlag({isEnabled: false, directionFlag: hapticsTopFlags.right})
+  if(!getIsHapticsEnabled(true)) {
+    return;
+  }
+  const hapticOptions = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: true,
+  };
+  
+  let timeoutId = null;
+  
+  function playHaptics(count) {
+    for(let i = 0; i <= count; i++){
+      ReactNativeHapticFeedback.trigger(hapticsConfigs.car.high, hapticOptions);
+      // ReactNativeHapticFeedback.trigger('selection', hapticOptions);
+      // ReactNativeHapticFeedback.trigger('rigid', hapticOptions);
+    }
+  }
+
+   if(jawsThemeCount <= 3) {
+      timeoutId = setTimeout(() => {
+        if (getIsHapticsEnabled(true)) {
+          playHaptics(8);
+          jawsThemeCount++;
+        }
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        callback?.();
+      }, (jawsThemeCount === 0 ? 0 : 1) * 1000);
+   } else {
+      timeoutId = setTimeout(() => {
+        if (getIsHapticsEnabled(true)) {
+          playHaptics(3);
+          jawsThemeCount++;
+        }
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        callback?.();
+      }, (jawsThemeCount === 4 ? 1.2 : 0.5) * 1000);
+    } 
+
+}
+
+export const playHapticCircusTheme = (callback) => {
+  setIsHapticsEnabledFlag({isEnabled: false, directionFlag: hapticsTopFlags.left});
+  if(!getIsHapticsEnabled(false)) {
+    return;
+  }
+  const hapticOptions = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: true,
+  };
+  
+  let timeoutId = null;
+  
+  function playHaptics(count) {
+    for(let i = 0; i <= count; i++){
+      // if(i === 0){
+      //   ReactNativeHapticFeedback.trigger(hapticsConfigs.car.high, hapticOptions);
+      // } else {
+      //   ReactNativeHapticFeedback.trigger(hapticsConfigs.car.medium, hapticOptions);
+      // }
+      ReactNativeHapticFeedback.trigger(hapticsConfigs.car.high, hapticOptions);
+    }
+  }
+
+  if(circusThemeCount <= 1 || circusThemeCount >= 3) {
+    timeoutId = setTimeout(() => {
+      if (getIsHapticsEnabled(false)) {
+        playHaptics(1);
+        if(circusThemeCount === 6) {
+          circusThemeCount = -1;
+        } else if(circusThemeCount === -1) {
+          circusThemeCount = 1;
+        } else {
+          circusThemeCount++;
+        }
+      }
+      clearTimeout(timeoutId);
+      timeoutId = null;
+      callback?.();
+    }, (circusThemeCount === 0 ? 0 : circusThemeCount === -1 ? 0.6 : circusThemeCount === 3 ? 0.7 : 0.5) * 1000);
+ } else {
+    timeoutId = setTimeout(() => {
+      if (getIsHapticsEnabled(false)) {
+        playHaptics(5);
+        circusThemeCount++;
+      }
+      clearTimeout(timeoutId);
+      timeoutId = null;
+      callback?.();
+    }, (0.5) * 1000);
+  } 
+
+  // timeoutId = setTimeout(() => {
+  //   if (getIsHapticsEnabled(false)) {
+  //     playHaptics(2);
+  //     circusThemeCount++;
+  //     circusThemeCount === 6 && (circusThemeCount = 1);
+  //   }
+  //   clearTimeout(timeoutId);
+  //   timeoutId = null;
+  //   callback?.();
+  // }, (circusThemeCount === 0 ? 0 : (circusThemeCount >= 4 && circusThemeCount <= 7) ? 0.2 : 0.6) * 1000);
+   
 }

@@ -12,3 +12,9 @@ export const hapticsConfigs = {
         high: 'notificationError'
     },
 }
+
+export const hapticsTopFlags = {
+    left: 'left',
+    right: 'right',
+    both: 'both',
+}
