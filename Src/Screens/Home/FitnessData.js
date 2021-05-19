@@ -76,7 +76,7 @@ const FitnessData = ({
   //   );
   // };
 
-  console.log(`UserSteps`, UserSteps);
+  // console.log(`UserSteps`, UserSteps);
 
   const dispatch = useDispatch();
 
@@ -165,7 +165,7 @@ const FitnessData = ({
 
   return (
     <View>
-      <StatusBar barStyle="dark-content" />
+      {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
