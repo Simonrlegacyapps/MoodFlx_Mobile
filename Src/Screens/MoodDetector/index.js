@@ -20,6 +20,8 @@ import {
   setEmotionsTextData,
   initialEmotionTextData,
   getHapticStats,
+  playHapticJawsTheme,
+  playHapticCircusTheme,
   getScrollerWheelSize,
   longPressPopupDuration,
   mediumPressDuration,
@@ -27,6 +29,8 @@ import {
   setScrollerWheelSize,
   mediumWheelSize,
   largeWheelSize,
+  setIsHapticsEnabledFlag,
+  getIsHapticsEnabled,
 } from './moodService';
 import {hsv2Hex, pSBC} from './moodUtlis';
 import {
@@ -68,9 +72,12 @@ import NotifService from '../../services/notifService';
 import {RubikMedium} from '../../Constants/fonts/Fonts';
 import {useFocusEffect} from '@react-navigation/native';
 import messaging, {firebase} from '@react-native-firebase/messaging';
+import { hapticsTopFlags } from '../../Constants/constants';
 
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
+let lpX = 0;
+let lpY = 0;
 
 const hapticOptions = {
   enableVibrateFallback: true,
@@ -349,12 +356,11 @@ export default function MoodDetector({navigation}) {
     );
     const hapticsDataObj = getHapticStats(
       top,
+      left,
       blocksSize.current,
       offsetSize.current,
     );
     hapticsData.current = hapticsDataObj;
-    if (hapticsDataObj?.timeInterval !== -1) {
-    }
 
     // console.log('emotionData => ', emotionData);
     if (prevEmotionData?.current?.text === emotionData.text) {
@@ -435,8 +441,8 @@ export default function MoodDetector({navigation}) {
             if (offsetSize.current) {
               panX =
                 offsetSize.current.xMin +
-                offsetSize.current.scrollerWidth / 2 -
-                newScrollerWidth / 2 +
+                (offsetSize.current.scrollerWidth / 2) -
+                (newScrollerWidth / 2) +
                 x;
               panY =
                 offsetSize.current.yMin +
@@ -739,38 +745,56 @@ export default function MoodDetector({navigation}) {
     }
   }, [UserData]);
 
-  const playHaptics = (isEnabled) => {
-    if (isEnabled) {
+  const playHaptics = useCallback(() => {
+    console.log('playHaptics isHapticsEnabled', isHapticsEnabled);
+    if (isHapticsEnabled) {
       const data = hapticsData.current ?? {};
-      let {hapticType, timeInterval, percentage} = data;
-      let interval = 0.1;
-      if (percentage) {
-        interval = (100 - Math.abs(percentage)) / 1000;
-      }
-      // console.log('playHaptics isEnabled: ', isEnabled, hapticsData.current);
-      // console.log('playHaptics interval: ', interval)
-      // console.log('playHaptics timeInterval: ', timeInterval);
-      if (hapticTimeoutId.current) {
-        clearTimeout(hapticTimeoutId.current);
-        hapticTimeoutId.current = null;
-      }
-      hapticTimeoutId.current = setTimeout(() => {
-        if (hapticType && timeInterval !== -1 && percentage !== 0) {
-          ReactNativeHapticFeedback.trigger(hapticType, hapticOptions);
+      let {hapticType, timeInterval, percentage, isLeft} = data;
+      if(percentage < 0) {
+        let interval = 0.1;
+        if (percentage) {
+          interval = (100 - Math.abs(percentage)) / 1000;
         }
-        playHaptics(isEnabled);
-      }, timeInterval * 1000);
+        // console.log('playHaptics isEnabled: ', isEnabled, hapticsData.current);
+        // console.log('playHaptics interval: ', interval)
+        // console.log('playHaptics timeInterval: ', timeInterval);
+        if (hapticTimeoutId.current) {
+          clearTimeout(hapticTimeoutId.current);
+          hapticTimeoutId.current = null;
+        }
+        hapticTimeoutId.current = setTimeout(() => {
+          if (hapticType && timeInterval !== -1 && percentage !== 0) {
+            ReactNativeHapticFeedback.trigger(hapticType, hapticOptions);
+          }
+          playHaptics();
+        }, timeInterval * 1000);
+      } else if (percentage > 0) {
+        if(isLeft === true) {
+          setIsHapticsEnabledFlag({isEnabled: true, directionFlag: hapticsTopFlags.left});
+          playHapticJawsTheme(() => {
+            (getIsHapticsEnabled(true) === true) && playHaptics();
+          });
+        } else if(isLeft === false){
+          setIsHapticsEnabledFlag({isEnabled: true, directionFlag: hapticsTopFlags.right});
+          playHapticCircusTheme(() => {
+            (getIsHapticsEnabled(false) === true) && playHaptics();
+          });
+        }
+      }
     } else {
+      setIsHapticsEnabledFlag({isEnabled: false, directionFlag: hapticsTopFlags.both});
       if (hapticTimeoutId.current) {
         clearInterval(hapticTimeoutId.current);
         hapticTimeoutId.current = null;
       }
     }
-  };
+  }, [isHapticsEnabled]);
 
   useEffect(() => {
-    // console.log('isHapticsEnabled =>', isHapticsEnabled, hapticsData.current);
-    playHaptics(isHapticsEnabled);
+    console.log('isHapticsEnabled =>', isHapticsEnabled, hapticsData.current);
+    playHaptics();
+    !isHapticsEnabled && setIsHapticsEnabledFlag({isEnabled: false, directionFlag: hapticsTopFlags.both})
+
     // if (isHapticsEnabled && !hapticTimeoutId.current) {
     //   hapticTimeoutId.current = setInterval(() => {
     //     const { hapticType, timeInterval } = hapticsData.current;
@@ -1005,6 +1029,14 @@ export default function MoodDetector({navigation}) {
       };
     }, []),
   );
+
+  const setLPXY = () => {
+    pan.current.setValue({
+      x: pan.current.x._value - (wheelSize === regularWheelSize ? 0 : getFontSize(16)),
+      y: pan.current.y._value - (wheelSize === regularWheelSize ? 0 : getFontSize(6)),
+    });
+    forceUpdate();
+  }
 
   const renderBlocks = () => {
     return (
@@ -1254,7 +1286,8 @@ export default function MoodDetector({navigation}) {
             : `Very ${emotionText}`
         }
         toolTipRef={toolTipRef}
-        forceUpdate={forceUpdate}
+        // forceUpdate={forceUpdate}
+        forceUpdate={setLPXY}
         wheelSize={wheelSize}
         onToolTipLayout={onToolTipLayout}
         isAllMoodsDataAvailable={UserData.AllMoods !== null}
