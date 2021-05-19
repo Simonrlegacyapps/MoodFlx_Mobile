@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Button,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import Scroller from './moodScroller';
 import {
@@ -1019,6 +1021,7 @@ export default function MoodDetector({navigation}) {
             flex: 1,
           },
         ]}>
+        {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
         <View
           pointerEvents="none"
           style={{

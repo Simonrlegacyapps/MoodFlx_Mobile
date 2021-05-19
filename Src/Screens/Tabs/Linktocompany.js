@@ -520,7 +520,8 @@ const Linktocompany = ({navigation}) => {
                   height: dynamicSize(80),
                   width: dynamicSize(80),
                   resizeMode: 'contain',
-                  backgroundColor: 'grey',
+                  borderWidth: 0.3,
+                  borderColor: '#ebebeb',
                   borderRadius: dynamicSize(40),
                 }}
                 source={{
