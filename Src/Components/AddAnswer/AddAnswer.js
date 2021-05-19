@@ -99,7 +99,7 @@ const AddAnswer = ({
             apicall();
             // : navigation.navigate('LinkCompanyStackNavigation'); //navigation.navigate('LinkCompanyStackNavigation');
           }}>
-          <AddButton label={'Done'} />
+          <AddButton label={'Update'} />
         </TouchableOpacity>
       )}
       {popUp && (

@@ -298,10 +298,11 @@ const WeatherData = ({
       console.log(`Weather Graph Data Params`, raw);
       fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
         .then((response) => response.json())
-        .then((result) => {
+        .then(async (result) => {
           console.log('weather Graph data', result),
             setGraph(result.weatherData);
           data.push({});
+          await syncWeatherData();
         })
         .catch((error) => console.log('error', error));
     }, 1000);
@@ -672,7 +673,7 @@ const WeatherData = ({
                   Today's Weather
                 </Text>
                 <Text style={[styles.SmallThinText, styles.city]}>
-                  {Weather ? Weather?.name : 'Loading ...'}
+                  {Weather ? Weather?.name : 'Tap here to sync your weather...'}
                 </Text>
                 <View>
                   <TouchableOpacity
