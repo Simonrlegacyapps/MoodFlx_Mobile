@@ -29,10 +29,10 @@ const AddAnswer = ({
   const [edit, setedit] = useState(false);
   // const [userData, setUserData] = useState(null);
 
-  console.log(`data of add answer`, data);
-  const apicall = () => {
+  // console.log(`data of add answer`, data);
+  const apicall = (value) => {
     setedit(!edit);
-    ProfileApiCallHere();
+    ProfileApiCallHere(value);
   };
   const UserData = useSelector((state) => state.First);
   return (
@@ -61,15 +61,11 @@ const AddAnswer = ({
             autoCapitalize={'words'}
             autoCompleteType={'off'}
             placeholder={'Annonymous'}
-            placeholderTextColor={'black'}
+            placeholderTextColor={Constants.Colors.greyColorCode}
             style={[
               {
-                // height: dynamicSize(50),
-                // width: dynamicSize(250),
                 backgroundColor: 'white',
-                // borderRadius: 10,
                 borderBottomWidth: 1,
-                // paddingLeft: 15,
               },
               styles.anonymousTextStyle,
             ]}
@@ -77,17 +73,17 @@ const AddAnswer = ({
               onChangeText(text);
             }}
             value={value}
+            onSubmitEditing={() => {
+              apicall();
+            }}
           />
         )}
       </View>
       {!edit ? (
         <TouchableOpacity
           onPress={() => {
-            // UserData.UserEmail
-            //   ?
             popUp && setOpenActionSheet(true);
             setedit(!edit);
-            // : navigation.navigate('LinkCompanyStackNavigation'); //navigation.navigate('LinkCompanyStackNavigation');
           }}>
           <AddButton label={checkedit ? 'Edit' : 'Add'} />
         </TouchableOpacity>
@@ -109,7 +105,9 @@ const AddAnswer = ({
           modalVisible={openActionSheet}
           onChangeText={onChangeText}
           value={value}
-          dismissModalHandler={() => setOpenActionSheet(false)}
+          dismissModalHandler={() => {
+            setOpenActionSheet(false);
+          }}
           date={date}
         />
       )}

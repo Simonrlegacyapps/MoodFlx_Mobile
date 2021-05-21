@@ -251,7 +251,7 @@ const LightData = ({
             />
           </View>
           <View style={{marginBottom: 100, alignItems: 'center'}}>
-            {swiperIndex == 4 && (
+            {swiperIndex == 3 && (
               <BarGraph
                 BarsMarginLeft={dynamicSize(44)}
                 width={dynamicSize(240)}
@@ -273,7 +273,7 @@ const LightData = ({
                 // justifyContent: 'center',
                 marginTop: 30,
               }}>
-              {swiperIndex == 4 && (
+              {swiperIndex == 3 && (
                 <View>
                   {/* <View>
 

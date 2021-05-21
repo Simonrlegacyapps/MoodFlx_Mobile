@@ -228,7 +228,7 @@ const ScreenData = ({
             value={ScreenDuration}
           />
           <View style={{marginBottom: 50, alignItems: 'center'}}>
-            {swiperIndex == 2 && (
+            {swiperIndex == 4 && (
               <BarGraph color={'#7265E3'} ShowPollen={false} RightBar={false} />
             )}
             <View
@@ -241,7 +241,7 @@ const ScreenData = ({
                 // justifyContent: 'center',
                 marginTop: 30,
               }}>
-              {swiperIndex == 2 && (
+              {swiperIndex == 4 && (
                 <View>
                   <View>
                     {/* <BezierGraphAuto data={data} color={'#F4227E'} /> */}
