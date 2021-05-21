@@ -218,7 +218,7 @@ const EditManualWeatherModal = ({
                         }
                         placeholder={Temp.toString()}
                         placeholderTextColor={'#000'}
-                        value={Temp}
+                        value={typeof Temp === 'number' ? String(Temp) : Temp}
                         onChangeText={(text) => {
                           EditTemp(text);
                         }}
@@ -286,7 +286,7 @@ const EditManualWeatherModal = ({
                           }
                           placeholder={Hour.toString()}
                           placeholderTextColor={'#000'}
-                          value={Hour}
+                          value={typeof Temp === 'number' ? String(Hour) : Hour}
                           onChangeText={(text) => {
                             EditHour(text);
                           }}

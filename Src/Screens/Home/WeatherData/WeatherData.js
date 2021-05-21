@@ -268,8 +268,9 @@ const WeatherData = ({
 
   useEffect(() => {
     // if (swiperIndex == 1) {
-    setTimeout(() => {
+    const timeOutId = setTimeout(() => {
       syncWeatherData();
+      clearTimeout(timeOutId);
     }, 500);
     // }
   }, []);
@@ -294,7 +295,7 @@ const WeatherData = ({
       redirect: 'follow',
     };
 
-    setTimeout(() => {
+    let timeOutId = setTimeout(() => {
       console.log(`Weather Graph Data Params`, raw);
       fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
         .then((response) => response.json())
@@ -305,7 +306,15 @@ const WeatherData = ({
           await syncWeatherData();
         })
         .catch((error) => console.log('error', error));
+        clearTimeout(timeOutId);
+        timeOutId = null;
     }, 1000);
+    return () => {
+      if(timeOutId !== null) {
+        clearTimeout(timeOutId);
+        timeOutId = null;
+      }
+    }
   }, [One, Two, Three, Four, Five]);
 
   const data = [

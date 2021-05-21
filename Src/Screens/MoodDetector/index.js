@@ -832,7 +832,7 @@ export default function MoodDetector({navigation}) {
       const closeId = setTimeout(() => {
         onClose?.();
         clearTimeout(closeId);
-      }, 100);
+      }, 300);
       clearTimeout(id);
     }, 1000);
   };
