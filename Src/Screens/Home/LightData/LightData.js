@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  DeviceEventEmitter,
+  NativeModules,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -18,7 +20,6 @@ import {
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
 import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
-
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
@@ -27,6 +28,7 @@ import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import PopUp from '../../../Components/PopUp/PopUp';
 import {dynamicSize} from '../../../Constants/sizeChoose';
+const {SensorManager} = NativeModules;
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -156,6 +158,18 @@ const LightData = ({
     // console.log(`SleepPerm`, SleepP);
     // dispatch(SleepPerm(SleepP));
   };
+
+  // Light data using react-native-sensor-manager
+  // useEffect(() => {
+  //   SensorManager.startLightSensor(5000);
+  //   function lightSensorCallback(data) {
+  //     console.log('LigntSensorData: ', data);
+  //   }
+  //   DeviceEventEmitter.addListener('LightSensor', lightSensorCallback);
+  //   return () => {
+  //      SensorManager.stopLightSensor();
+  //   }
+  // }, [])
 
   const ScreenDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
   return (
