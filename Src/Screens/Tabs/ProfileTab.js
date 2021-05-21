@@ -297,7 +297,7 @@ const ProfileTab = ({navigation}) => {
     });
   };
 
-  const ProfileApiCallHere = () => {
+  const ProfileApiCallHere = (genderUp) => {
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
     myHeaders.append('Accept', 'application/json');
@@ -323,6 +323,8 @@ const ProfileTab = ({navigation}) => {
         : Birthday,
       gender: gender
         ? gender.id
+        : genderUp
+        ? genderUp
         : UserData?.UserDetails?.gender
         ? UserData?.UserDetails?.gender
         : '',
@@ -452,7 +454,7 @@ const ProfileTab = ({navigation}) => {
           {console.log(`gender`, gender.id)}
           <AddAnswer
             checkedit={UserData?.UserDetails?.gender ? true : false}
-            ProfileApiCallHere={ProfileApiCallHere}
+            ProfileApiCallHere={(value) => ProfileApiCallHere(value)}
             data={ComingGenderPronoun ? ComingGenderPronoun?.gender : null}
             label={'Gender'}
             navigation={navigation}
@@ -461,14 +463,7 @@ const ProfileTab = ({navigation}) => {
                 ? gender.name
                 : UserData?.UserDetails?.gender && ComingGenderPronoun
                 ? checkGenderName(UserData?.UserDetails?.gender)
-                : // ? UserData?.UserDetails?.gender == 2
-                  //   ? 'Female'
-                  //   : UserData?.UserDetails?.gender == 1
-                  //   ? 'Male'
-                  //   : UserData?.UserDetails?.gender == 3
-                  //   ? 'Trans'
-                  //   : gender
-                  gender
+                : gender
             }
             onChangeText={setgender}
             popUp

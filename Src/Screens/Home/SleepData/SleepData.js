@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -59,11 +59,62 @@ const SleepData = ({
     // await AsyncStorage.setItem('GiveSleepPerm', 'true');
 
     setopenActionSheet(false);
-    // let Sp = await AsyncStorage.getItem('GiveSleepPerm');
-    // let SleepP = await JSON.parse(Sp);
-    // console.log(`SleepPerm`, SleepP);
-    // dispatch(SleepPerm(SleepP));
+    let Sp = await AsyncStorage.getItem('GiveSleepPerm');
+    let SleepP = await JSON.parse(Sp);
+    console.log(`SleepPerm`, SleepP);
+    dispatch(SleepPerm(SleepP));
+    if (SleepP != null) {
+      OnSleepDataPerm();
+    }
   };
+
+  useEffect(() => {
+    if (UserData.SleepPermission === true) {
+      OnSleepDataPerm();
+    }
+  }, []);
+
+  const OnSleepDataPerm = () => {
+    if (Platform.OS === 'ios') {
+      const healthKitOptions = {
+        permissions: {
+          read: [PERMS.SleepAnalysis],
+        },
+      };
+
+      // console.log(`-------------qwertyuiopasdfghjklzxcvbnm-----------------,`);
+      AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
+        // setLoading(true);
+        console.log(
+          `healthKitOptions`,
+          healthKitOptions.permissions.read,
+          results,
+          Object.keys(healthKitOptions.permissions.read).length,
+        );
+        if (
+          Object.keys(healthKitOptions.permissions.read).length + 1 !=
+          results
+        ) {
+          // Linking.openURL('App-Prefs:Privacy');
+          // Linking.openSettings('Health');
+        }
+        if (err) {
+          console.log('error initializing Healthkit: ', err);
+          return;
+        }
+
+        AppleHealthKit.getSleepSamples(
+          stepsCount,
+          async (err: Object, results: Array<Object>) => {
+            setSleep(results);
+            console.log('Sleep Analysis +++++++++======>>>>', results);
+          },
+        );
+      });
+      // setLoading(false);
+    }
+  };
+
   return (
     <View>
       <ScrollView

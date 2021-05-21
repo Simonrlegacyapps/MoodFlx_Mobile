@@ -163,6 +163,8 @@ const FitnessData = ({
     setAnonymousClick(false);
   };
 
+  // console.log(`UserDistance`, UserDistance);
+
   return (
     <View>
       {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}

@@ -33,6 +33,8 @@ const ProfileGenderModal = ({
   apicall,
 }: props) => {
   const [color, setcolor] = useState('black');
+
+  console.log(`value`, value);
   return (
     <Modal
       style={styles.modalView}

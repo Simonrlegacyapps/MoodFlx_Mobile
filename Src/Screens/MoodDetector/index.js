@@ -72,7 +72,7 @@ import NotifService from '../../services/notifService';
 import {RubikMedium} from '../../Constants/fonts/Fonts';
 import {useFocusEffect} from '@react-navigation/native';
 import messaging, {firebase} from '@react-native-firebase/messaging';
-import { hapticsTopFlags } from '../../Constants/constants';
+import {hapticsTopFlags} from '../../Constants/constants';
 
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
@@ -195,10 +195,10 @@ export default function MoodDetector({navigation}) {
         return true;
       },
       onMoveShouldSetPanResponder: (evt, gestureState) => {
-        console.log(
-          'onMoveShouldSetPanResponder: ',
-          Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1,
-        );
+        // console.log(
+        //   'onMoveShouldSetPanResponder: ',
+        //   Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1,
+        // );
         // return Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1;
         return true;
       }, //true,
@@ -208,15 +208,15 @@ export default function MoodDetector({navigation}) {
       // },
       // onMoveShouldSetPanResponder: (evt, gestureState) => true,//true,
       onPanResponderGrant: (event, gestureState) => {
-        console.log(
-          'onPanResponderGrant: ',
-          Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1,
-        );
+        // console.log(
+        //   'onPanResponderGrant: ',
+        //   Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1,
+        // );
         pan.current.setOffset({
           x: 0,
           y: 0,
         });
-        console.log('onPanResponderGrant gesture started');
+        // console.log('onPanResponderGrant gesture started');
         setisHapticsEnabled(true);
 
         // enlarge buubble on long press
@@ -236,14 +236,14 @@ export default function MoodDetector({navigation}) {
           Math.abs(Math.abs(prevXY.dx) - Math.abs(gestureState.dx)) >= 1 ||
           Math.abs(Math.abs(prevXY.dy) - Math.abs(gestureState.dy)) >= 1;
         if (isMoved) {
-          console.log(
-            'isMoved: ',
-            isMoved,
-            'dx: ',
-            Math.abs(Math.abs(prevXY.dx) - Math.abs(gestureState.dx)),
-            'dy: ',
-            Math.abs(Math.abs(prevXY.dy) - Math.abs(gestureState.dy)),
-          );
+          // console.log(
+          //   'isMoved: ',
+          //   isMoved,
+          //   'dx: ',
+          //   Math.abs(Math.abs(prevXY.dx) - Math.abs(gestureState.dx)),
+          //   'dy: ',
+          //   Math.abs(Math.abs(prevXY.dy) - Math.abs(gestureState.dy)),
+          // );
           moveCount = 0;
           if (getScrollerWheelSize() !== regularWheelSize) {
             clearLongPressTimeouts({
@@ -417,10 +417,10 @@ export default function MoodDetector({navigation}) {
 
       //mediumPressTimeout code
       mediumPressTimeoutId.current = setTimeout(() => {
-        console.log(
-          'mediumPressTimeoutId: ',
-          Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1,
-        );
+        // console.log(
+        //   'mediumPressTimeoutId: ',
+        //   Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1,
+        // );
         if (!wheelSizeChangeDisabled.current) {
           setScrollerWheelSize(mediumWheelSize);
           setWheelSize(mediumWheelSize);
@@ -441,8 +441,8 @@ export default function MoodDetector({navigation}) {
             if (offsetSize.current) {
               panX =
                 offsetSize.current.xMin +
-                (offsetSize.current.scrollerWidth / 2) -
-                (newScrollerWidth / 2) +
+                offsetSize.current.scrollerWidth / 2 -
+                newScrollerWidth / 2 +
                 x;
               panY =
                 offsetSize.current.yMin +
@@ -477,7 +477,7 @@ export default function MoodDetector({navigation}) {
     panXY,
   }) => {
     if (resetLongPressText && getScrollerWheelSize() === regularWheelSize) {
-      console.log('showLongPressText reseted');
+      // console.log('showLongPressText reseted');
       setShowLongPressText(false);
     }
     if (longPressPopUpTimeoutId?.current) {
@@ -492,11 +492,11 @@ export default function MoodDetector({navigation}) {
       clearTimeout(longPressTimeoutId.current);
       longPressTimeoutId.current = null;
     }
-    console.log(
-      'clearLongPressTimeouts =>',
-      resetWheelSize,
-      getScrollerWheelSize(),
-    );
+    // console.log(
+    //   'clearLongPressTimeouts =>',
+    //   resetWheelSize,
+    //   getScrollerWheelSize(),
+    // );
     if (resetWheelSize && getScrollerWheelSize() !== regularWheelSize) {
       if (panXY) {
         // pan.current.setOffset({
@@ -506,7 +506,7 @@ export default function MoodDetector({navigation}) {
         pan.current.setValue({x: 0, y: 0});
         pan.current.setValue(panXY);
       }
-      console.log('setting wheelSize to Regular =>', regularWheelSize);
+      // console.log('setting wheelSize to Regular =>', regularWheelSize);
 
       setScrollerWheelSize(regularWheelSize);
       setWheelSize(regularWheelSize);
@@ -544,7 +544,7 @@ export default function MoodDetector({navigation}) {
       screenContainerSize.current,
     );
     let {xMin, xMax, yMin, yMax, initialX, initialY} = offSetSize;
-    console.log('updatePanResponder ', offSetSize);
+    // console.log('updatePanResponder ', offSetSize);
     offsetSize.current = offSetSize;
     constrainedX.current = pan.current.x.interpolate({
       inputRange: [xMin, 150, xMax],
@@ -750,7 +750,7 @@ export default function MoodDetector({navigation}) {
     if (isHapticsEnabled) {
       const data = hapticsData.current ?? {};
       let {hapticType, timeInterval, percentage, isLeft} = data;
-      if(percentage < 0) {
+      if (percentage < 0) {
         let interval = 0.1;
         if (percentage) {
           interval = (100 - Math.abs(percentage)) / 1000;
@@ -769,20 +769,29 @@ export default function MoodDetector({navigation}) {
           playHaptics();
         }, timeInterval * 1000);
       } else if (percentage > 0) {
-        if(isLeft === true) {
-          setIsHapticsEnabledFlag({isEnabled: true, directionFlag: hapticsTopFlags.left});
-          playHapticJawsTheme(() => {
-            (getIsHapticsEnabled(true) === true) && playHaptics();
+        if (isLeft === true) {
+          setIsHapticsEnabledFlag({
+            isEnabled: true,
+            directionFlag: hapticsTopFlags.left,
           });
-        } else if(isLeft === false){
-          setIsHapticsEnabledFlag({isEnabled: true, directionFlag: hapticsTopFlags.right});
+          playHapticJawsTheme(() => {
+            getIsHapticsEnabled(true) === true && playHaptics();
+          });
+        } else if (isLeft === false) {
+          setIsHapticsEnabledFlag({
+            isEnabled: true,
+            directionFlag: hapticsTopFlags.right,
+          });
           playHapticCircusTheme(() => {
-            (getIsHapticsEnabled(false) === true) && playHaptics();
+            getIsHapticsEnabled(false) === true && playHaptics();
           });
         }
       }
     } else {
-      setIsHapticsEnabledFlag({isEnabled: false, directionFlag: hapticsTopFlags.both});
+      setIsHapticsEnabledFlag({
+        isEnabled: false,
+        directionFlag: hapticsTopFlags.both,
+      });
       if (hapticTimeoutId.current) {
         clearInterval(hapticTimeoutId.current);
         hapticTimeoutId.current = null;
@@ -791,9 +800,13 @@ export default function MoodDetector({navigation}) {
   }, [isHapticsEnabled]);
 
   useEffect(() => {
-    console.log('isHapticsEnabled =>', isHapticsEnabled, hapticsData.current);
+    // console.log('isHapticsEnabled =>', isHapticsEnabled, hapticsData.current);
     playHaptics();
-    !isHapticsEnabled && setIsHapticsEnabledFlag({isEnabled: false, directionFlag: hapticsTopFlags.both})
+    !isHapticsEnabled &&
+      setIsHapticsEnabledFlag({
+        isEnabled: false,
+        directionFlag: hapticsTopFlags.both,
+      });
 
     // if (isHapticsEnabled && !hapticTimeoutId.current) {
     //   hapticTimeoutId.current = setInterval(() => {
@@ -825,14 +838,14 @@ export default function MoodDetector({navigation}) {
   };
 
   // console.log(`route?.params?.question`, route?.params?.question);
-  console.log(`QuestionId`, QuestionID);
+  // console.log(`QuestionId`, QuestionID);
 
   const findId = async () => {
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
     const fcm = await messaging().getToken();
-    console.log(`mood count`, e);
+    // console.log(`mood count`, e);
 
     let geocode = null;
     Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
@@ -864,17 +877,17 @@ export default function MoodDetector({navigation}) {
       // console.log(`name`, name);
       return name === emotionText;
     });
-    console.log(`Id`, Id);
+    // console.log(`Id`, Id);
 
-    console.log(`lat, lng`, UserData.lat, UserData.lon);
+    // console.log(`lat, lng`, UserData.lat, UserData.lon);
     const deviceId = DeviceInfo.getUniqueId();
     if (Id === undefined) {
-      console.log(`fail`);
+      // console.log(`fail`);
       setMoodFail(true);
     } else {
       setLoading(true);
-      console.log(`not fail`);
-      console.log(`Id`, Id.id);
+      // console.log(`not fail`);
+      // console.log(`Id`, Id.id);
       const params = {
         mood_id: Id.id,
         device_id: deviceId,
@@ -981,7 +994,7 @@ export default function MoodDetector({navigation}) {
   };
 
   const verifyDone = (value) => {
-    console.log(`value-->`, value);
+    // console.log(`value-->`, value);
 
     if (value === 'Yes') {
       setSaveConfirm(false);
@@ -1018,25 +1031,29 @@ export default function MoodDetector({navigation}) {
     React.useCallback(() => {
       let isActive = true;
       // screen isFocused
-      console.log('screen isFocused: ', isActive);
+      // console.log('screen isFocused: ', isActive);
 
       return () => {
         // screen is out of focus
         isActive = false;
         setWheelSize(regularWheelSize);
         setScrollerWheelSize(regularWheelSize);
-        console.log('screen is out of focus: ', isActive);
+        // console.log('screen is out of focus: ', isActive);
       };
     }, []),
   );
 
   const setLPXY = () => {
     pan.current.setValue({
-      x: pan.current.x._value - (wheelSize === regularWheelSize ? 0 : getFontSize(16)),
-      y: pan.current.y._value - (wheelSize === regularWheelSize ? 0 : getFontSize(6)),
+      x:
+        pan.current.x._value -
+        (wheelSize === regularWheelSize ? 0 : getFontSize(16)),
+      y:
+        pan.current.y._value -
+        (wheelSize === regularWheelSize ? 0 : getFontSize(6)),
     });
     forceUpdate();
-  }
+  };
 
   const renderBlocks = () => {
     return (
