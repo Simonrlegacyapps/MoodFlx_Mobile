@@ -55,7 +55,7 @@ export const horizontalScale = size => (width / guidelineBaseWidth) * size;
 export const verticalScale = size => (height / guidelineBaseHeight) * size;
 const moderateScale = (size, factor = 0.5) => size + (horizontalScale(size) - size) * factor;
 export function getFontSize(size) {
-  const newSize = horizontalScale(size)
+  let newSize = horizontalScale(size);
   if (Platform.OS === 'ios') {
     return Math.round(PixelRatio.roundToNearestPixel(newSize))
   } else {

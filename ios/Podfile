@@ -10,7 +10,7 @@ target 'MoodFlo' do
 
   pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
 
-  pod 'RCTAppleHealthKit', :path => '../node_modules/rn-apple-healthkit'
+#  pod 'RCTAppleHealthKit', :path => '../node_modules/rn-apple-healthkit'
 
   pod 'RNCClipboard', :path => '../node_modules/@react-native-community/clipboard'
 

@@ -80,6 +80,7 @@ const WeatherGraphDurationModal = ({
             data.map((item, index) => {
               return (
                 <TouchableOpacity
+                  key={item?.label ?? String(index)}
                   onPress={() => {
                     onChangeText(item.label), dismissModalHandler();
                   }}

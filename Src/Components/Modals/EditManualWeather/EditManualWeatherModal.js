@@ -218,7 +218,7 @@ const EditManualWeatherModal = ({
                         }
                         placeholder={Temp.toString()}
                         placeholderTextColor={'#000'}
-                        value={Temp}
+                        value={typeof Temp === 'number' ? String(Temp) : Temp}
                         onChangeText={(text) => {
                           EditTemp(text);
                         }}
@@ -286,13 +286,14 @@ const EditManualWeatherModal = ({
                           }
                           placeholder={Hour.toString()}
                           placeholderTextColor={'#000'}
-                          value={Hour}
+                          value={typeof Temp === 'number' ? String(Hour) : Hour}
                           onChangeText={(text) => {
                             EditHour(text);
                           }}
                           keyboardType={'decimal-pad'}
                           style={[
                             {
+                              marginTop: 2,
                               fontFamily: RubikMedium,
                               fontSize: 18,
                               borderBottomWidth: 1,
@@ -301,7 +302,13 @@ const EditManualWeatherModal = ({
                             },
                           ]}></TextInput>
                         <Text
-                          style={[, {fontFamily: RubikMedium, fontSize: 18}]}>
+                          style={[
+                            {
+                              fontFamily: RubikMedium,
+                              fontSize: 18,
+                              marginTop: 2,
+                            },
+                          ]}>
                           {' '}
                           hr
                         </Text>
@@ -319,6 +326,7 @@ const EditManualWeatherModal = ({
                     backgroundColor: 'white',
                     borderRadius: 15,
                     paddingRight: 2,
+                    height: 70,
                   }}>
                   <View
                     style={{
@@ -345,7 +353,7 @@ const EditManualWeatherModal = ({
                           style={[
                             ,
                             {
-                              marginTop: 10,
+                              // marginTop: 10,
                               marginLeft: Pollen === 'Medium' ? -8 : 0,
                               fontFamily: RubikMedium,
                               fontSize: dynamicSize(16),
@@ -361,7 +369,7 @@ const EditManualWeatherModal = ({
                             marginHorizontal: 5,
                             justifyContent: 'center',
                             alignSelf: 'center',
-                            marginTop: 8,
+                            marginTop: 3,
                           }}
                           source={Constants.Images.dropDownTwo}
                         />
@@ -547,6 +555,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 15,
     marginRight: 15,
+    height: 70,
   },
   SmallCardImage: {
     margin: 5,

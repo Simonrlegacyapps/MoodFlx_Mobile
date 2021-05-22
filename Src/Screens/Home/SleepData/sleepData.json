@@ -1,0 +1,30 @@
+[
+  {
+    "endDate": "2021-05-22T17:53:58.926+0530",
+    "sourceId": "com.apple.health.5CE6F869-C45D-40AD-8BDB-84D6D541B7EB",
+    "sourceName": "Nirav iPhone 7",
+    "startDate": "2021-05-21T23:00:00.000+0530",
+    "value": "INBED"
+  },
+  {
+    "endDate": "2021-05-21T03:04:00.000+0530",
+    "sourceId": "com.apple.Health",
+    "sourceName": "Health",
+    "startDate": "2021-05-20T18:04:00.000+0530",
+    "value": "INBED"
+  },
+  {
+    "endDate": "2021-05-19T11:00:00.000+0530",
+    "sourceId": "com.apple.Health",
+    "sourceName": "Health",
+    "startDate": "2021-05-19T09:30:00.000+0530",
+    "value": "INBED"
+  },
+  {
+    "endDate": "2021-05-19T05:05:00.000+0530",
+    "sourceId": "com.apple.Health",
+    "sourceName": "Health",
+    "startDate": "2021-05-18T20:05:00.000+0530",
+    "value": "INBED"
+  }
+]

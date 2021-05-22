@@ -96,7 +96,7 @@ const WeatherData = ({
   // console.log(`Weather`, UserData.DayTemperature);
 
   useEffect(() => {
-    if (swiperIndex == 1 && UserData.WeatherPermission) {
+    if (swiperIndex == 2 && UserData.WeatherPermission) {
       getUserLocation();
     }
   }, [swiperIndex]);
@@ -268,8 +268,9 @@ const WeatherData = ({
 
   useEffect(() => {
     // if (swiperIndex == 1) {
-    setTimeout(() => {
+    const timeOutId = setTimeout(() => {
       syncWeatherData();
+      clearTimeout(timeOutId);
     }, 500);
     // }
   }, []);
@@ -294,7 +295,7 @@ const WeatherData = ({
       redirect: 'follow',
     };
 
-    setTimeout(() => {
+    let timeOutId = setTimeout(() => {
       console.log(`Weather Graph Data Params`, raw);
       fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
         .then((response) => response.json())
@@ -305,7 +306,15 @@ const WeatherData = ({
           await syncWeatherData();
         })
         .catch((error) => console.log('error', error));
+        clearTimeout(timeOutId);
+        timeOutId = null;
     }, 1000);
+    return () => {
+      if(timeOutId !== null) {
+        clearTimeout(timeOutId);
+        timeOutId = null;
+      }
+    }
   }, [One, Two, Three, Four, Five]);
 
   const data = [
@@ -663,7 +672,7 @@ const WeatherData = ({
           </View>
 
           <View style={styles.WeatherCardMain}>
-            {swiperIndex == 1 && (
+            {swiperIndex == 2 && (
               <View style={styles.WeatherCard}>
                 <Text
                   style={[
@@ -673,7 +682,7 @@ const WeatherData = ({
                   Today's Weather
                 </Text>
                 <Text style={[styles.SmallThinText, styles.city]}>
-                  {Weather ? Weather?.name : 'Tap here to sync your weather...'}
+                  {Weather ? Weather?.name : 'Sync your weather'}
                 </Text>
                 <View>
                   <TouchableOpacity
@@ -703,7 +712,7 @@ const WeatherData = ({
                             ? ManualWeatherType
                             : Weather
                             ? findWeather(Weather.weather[0].description)
-                            : 'Low'}
+                            : 'Rainy'}
                         </Text>
                         <Text
                           style={[
@@ -752,7 +761,7 @@ const WeatherData = ({
                               ? ManualWeatherType
                               : Weather
                               ? findWeather(Weather.weather[0].description)
-                              : 'Low'}
+                              : 'Rainy'}
                           </Text>
                           <Text
                             style={[
@@ -843,7 +852,7 @@ const WeatherData = ({
             value={WeatherDuration}
           />
           <View style={{marginBottom: 50, alignItems: 'center'}}>
-            {swiperIndex == 1 && (
+            {swiperIndex == 2 && (
               <BarGraph
                 max={max}
                 min={Lowmin}
@@ -863,7 +872,7 @@ const WeatherData = ({
                 // justifyContent: 'center',
                 marginTop: 30,
               }}>
-              {swiperIndex == 1 && (
+              {swiperIndex == 2 && (
                 <View>
                   <View>
                     <GraphBezierCustom
@@ -901,7 +910,7 @@ const WeatherData = ({
               <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
             </View>
           </View>
-          {swiperIndex == 1 && (
+          {swiperIndex == 2 && (
             <GraphicChart
               dataOfWeatherGraph={dataOfWeatherGraph}
               fitness={false}

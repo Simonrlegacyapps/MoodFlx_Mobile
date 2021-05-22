@@ -193,7 +193,7 @@ const Linktocompany = ({navigation}) => {
     }
     // setLinked(type);
   };
-  console.log(`UserData ---------->>>>`, UserData.UserDetails);
+  // console.log(`UserData ---------->>>>`, UserData.UserDetails);
   // console.log(`UserData.NameCompany`, UserData.NameCompany);
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>

@@ -18,7 +18,12 @@ import {
 import moment from 'moment';
 import axios from 'axios';
 
-import AppleHealthKit from 'rn-apple-healthkit';
+// import AppleHealthKit from 'rn-apple-healthkit';
+import AppleHealthKit, {
+  HealthValue,
+  HealthKitPermissions,
+} from 'react-native-health';
+
 import GetLocation from 'react-native-get-location';
 import DeviceInfo from 'react-native-device-info';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
@@ -225,7 +230,7 @@ const App = (props) => {
     let e = await JSON.parse(MCount);
     setMoodCount(e);
     dispatch(UserMoodCount(e));
-    console.log(`mood count again`, e);
+    // console.log(`mood count again`, e);
     let HealthP = await JSON.parse(p);
     dispatch(HealthPerm(HealthP));
     console.log(`HealthP`, HealthP != null);
@@ -254,7 +259,7 @@ const App = (props) => {
     let e = await JSON.parse(MCount);
     setMoodCount(e);
     dispatch(UserMoodCount(e));
-    console.log(`mood count again`, e);
+    // console.log(`mood count again`, e);
     let HealthP = await JSON.parse(p);
     dispatch(HealthPerm(HealthP));
 
@@ -313,7 +318,7 @@ const App = (props) => {
             // PERMS.BasalEnergyBurned, //
             PERMS.DistanceWalkingRunning, //
             PERMS.HeartRate,
-            PERMS.SleepAnalysis,
+
             // PERMS.FlightsClimbed,
             PERMS.DistanceCycling,
             PERMS.Workout,
@@ -523,6 +528,10 @@ const App = (props) => {
         AppleHealthKit.getSamples(
           WorkoutTimeCount,
           async (err: Object, results: Array<Object>) => {
+            console.log(
+              `workout =++++++++++====++++++++======++++++++++++++++==`,
+              results,
+            );
             dispatch(GetWorkouts(results));
             if (err) {
               return console.log(`errola`, err);
@@ -688,7 +697,7 @@ const App = (props) => {
   //     console.log(`end ========== >>>> ${diffDuration} `);
   //   }
   // };
-  console.log(`UserData.UserCalories`, UserData.UserCalories);
+  // console.log(`UserData.UserCalories`, UserData.UserCalories);
   const filterSteps = () => {
     console.log(`check???????????`, dates);
 
@@ -809,9 +818,9 @@ const App = (props) => {
         steps: totalSteps,
         distance: totalDistance,
         calories: UserData.UserCalories,
-        heartRate: totalHeartRate,
-        highBP: highBp,
-        lowBP: lowBp,
+        heart_Rate: totalHeartRate,
+        high_bp: highBp,
+        low_bp: lowBp,
       });
       WalkTime.push({
         date: dates[i],
@@ -1014,6 +1023,18 @@ const App = (props) => {
           />
         </View>
 
+        <View style={styles.slide3}>
+          <SleepData
+            swiperIndex={swiperIndex}
+            data={data}
+            dataLow={dataLow}
+            Weather={Weather}
+            PermScreenTime={PermScreenTime}
+            CheckForSleepData={CheckForSleepData}
+            MoodCount={MoodCount}
+          />
+        </View>
+
         <View>
           {/* {swiperIndex == 1 ? ( */}
           {/* {console.log(`tryWeather`, TryWeather)} */}
@@ -1040,28 +1061,6 @@ const App = (props) => {
         </View>
 
         <View style={styles.slide3}>
-          <ScreenData
-            swiperIndex={swiperIndex}
-            // data={data}
-            // dataLow={dataLow}
-            Weather={Weather}
-            PermScreenTime={PermScreenTime}
-            CheckForScreenData={CheckForScreenData}
-            MoodCount={MoodCount}
-          />
-        </View>
-        <View style={styles.slide3}>
-          <SleepData
-            swiperIndex={swiperIndex}
-            data={data}
-            dataLow={dataLow}
-            Weather={Weather}
-            PermScreenTime={PermScreenTime}
-            CheckForSleepData={CheckForSleepData}
-            MoodCount={MoodCount}
-          />
-        </View>
-        <View style={styles.slide3}>
           <LightData
             swiperIndex={swiperIndex}
             // data={data}
@@ -1069,6 +1068,18 @@ const App = (props) => {
             Weather={Weather}
             PermScreenTime={PermScreenTime}
             CheckForLightData={CheckForLightData}
+            MoodCount={MoodCount}
+          />
+        </View>
+
+        <View style={styles.slide3}>
+          <ScreenData
+            swiperIndex={swiperIndex}
+            // data={data}
+            // dataLow={dataLow}
+            Weather={Weather}
+            PermScreenTime={PermScreenTime}
+            CheckForScreenData={CheckForScreenData}
             MoodCount={MoodCount}
           />
         </View>
