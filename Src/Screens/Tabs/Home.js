@@ -18,7 +18,12 @@ import {
 import moment from 'moment';
 import axios from 'axios';
 
-import AppleHealthKit from 'rn-apple-healthkit';
+// import AppleHealthKit from 'rn-apple-healthkit';
+import AppleHealthKit, {
+  HealthValue,
+  HealthKitPermissions,
+} from 'react-native-health';
+
 import GetLocation from 'react-native-get-location';
 import DeviceInfo from 'react-native-device-info';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';

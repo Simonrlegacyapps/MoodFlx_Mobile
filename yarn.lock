@@ -7492,6 +7492,11 @@ react-native-haptic-feedback@^1.10.0, react-native-haptic-feedback@^1.11.0:
   resolved "https://registry.npmjs.org/react-native-haptic-feedback/-/react-native-haptic-feedback-1.11.0.tgz"
   integrity sha512-KTIy7lExwMtB6pOpCARyUzFj5EzYTh+A1GN/FB5Eb0LrW5C6hbb1kdj9K2/RHyZC+wyAJD1M823ZaDCU6n6cLA==
 
+react-native-health@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/react-native-health/-/react-native-health-1.7.2.tgz#3684429630aa602f2dd985f04208afe3b4650bb3"
+  integrity sha512-xL3SOnoEZ69vwspBn3REy5/Ts6YFedKLHVoKtfCMj4bpyP6HaKKTgJsj1cotb/wD986kEaZTN/c7fA5k6zEgEQ==
+
 react-native-image-crop-picker@^0.36.0:
   version "0.36.0"
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.36.0.tgz#adf5a5677c3ae0e0bdaa18c73d880db2190e3023"
@@ -7959,11 +7964,6 @@ rimraf@~2.2.6:
   version "2.2.8"
   resolved "https://registry.npmjs.org/rimraf/-/rimraf-2.2.8.tgz"
   integrity sha1-5Dm+Kq7jJzIZUnMPmaiSnk/FBYI=
-
-rn-apple-healthkit@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.npmjs.org/rn-apple-healthkit/-/rn-apple-healthkit-0.8.0.tgz"
-  integrity sha512-LymIWk9lwIkcGIACveCxvp2jKXTTrDbdUYgcac+wuaSLPPpLfZqrQ0fz+QACYx5cSwAn6Uj6NcJ5+QkwPjY+5g==
 
 rsvp@^4.8.4:
   version "4.8.5"

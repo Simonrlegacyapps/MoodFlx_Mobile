@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,31 +6,85 @@ import {
   Animated,
   ImageBackground,
   Dimensions,
+  StyleSheet
 } from 'react-native';
 import Constants from '../../Constants';
-import {RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
+import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+const { width } = Dimensions.get('window');
+const wid = horizontalScale(300);
 
-const StarProgress = () => {
+const StarProgress = ({ sleepHours }) => {
   const [Width, setWidth] = useState(0);
-  const animatedValue = React.useRef(new Animated.Value(-1000)).current;
-  const reactive = React.useRef(new Animated.Value(-1000)).current;
-  const [step, setstep] = useState(6.6); // change here for moving the hours bar
-  const wid = dynamicSize(300);
-
-  const {width} = Dimensions.get('screen');
+  const animatedValue = React.useRef(new Animated.Value(0)).current;
+  // const reactive = useRef(new Animated.Value(-1000));
+  const progressRef = useRef(null);
+  const progressSize = useRef(null);
+  const [toolTipPosition, setToolTipPosition] = useState(0); //ToolTip position from left
+  const [step, setstep] = useState(-1); // change here for moving the hours bar
+  const [initialPosition, setInitialPosition] = useState(0); // change here for moving the hours bar
+  const [currentFont, setCurrentFont] = useState(17);
+  const starSize = 32;
+  const toolTipSize = 60;
+  const toolTipText = ` ${sleepHours} ${sleepHours > 1 ? 'Hrs' : 'Hr'} `;
 
   useEffect(() => {
+    if(toolTipPosition <= 0) {
+      return;
+    }
     Animated.timing(animatedValue, {
-      toValue: reactive,
+      toValue: toolTipPosition,
       duration: 1000,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [toolTipPosition]);
 
   useEffect(() => {
-    reactive.setValue(-Width + (Width * step) / 10);
-  }, [step, Width]);
+    let s = sleepHours > 8 ? 8 : sleepHours;
+    s = Math.round((s * 5) / 8);
+    setstep(s);
+  }, [sleepHours]);
+
+  useEffect(() => {
+    calculateToolTipPosition();
+  }, [step]);
+
+  useEffect(() => {
+    // setToolTipPosition(-Width + (Width * step) / 10);
+    Animated.timing(animatedValue, {
+      toValue: toolTipPosition,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, [toolTipPosition]);
+
+  const calculateToolTipPosition = useCallback(() => {
+    if(progressSize.current && step >= 0) {
+      const {left, top, width, height} = progressSize.current;
+      const space = (width - 40 - (starSize * 5)) / 4;
+      const position = 0 + 20 + ((step > 0 ? step : 1) * starSize) + ((step > 0 ? (step - 1) : 0) * space) - (starSize / 2) - (toolTipSize / 2) + 1;
+      setToolTipPosition(position);
+    }
+  }, [step])
+
+  const onProgressLayout = useCallback((e) => {
+    progressRef?.current?.measureInWindow((x, y, width, height) => {
+      progressSize.current = {left: x, top: y, width, height};
+        calculateToolTipPosition();
+    })
+  }, [calculateToolTipPosition])
+
+  const onTextLayout = useCallback((e) => {
+    const { lines } = e.nativeEvent;
+    if(toolTipText.length === 7 && currentFont !== 17) {
+      setCurrentFont(17)
+    } else if(toolTipText.length === 8 && currentFont !== 15) {
+      setCurrentFont(15)
+    } else if(lines.length > 1) {
+      setCurrentFont(currentFont - 1);
+    }
+  }, [currentFont, setCurrentFont, sleepHours])
+
   return (
     <View
       style={{
@@ -42,22 +96,22 @@ const StarProgress = () => {
       }}
       onLayout={(e) => {
         const newWidth = e.nativeEvent.layout.width - 10;
-
         setWidth(newWidth);
       }}>
       <Animated.View
         style={{
-          left: Width,
-          transform: [{translateX: animatedValue}],
+          left: initialPosition,
+          transform: [{ translateX: animatedValue }],
         }}>
         <ImageBackground
           resizeMode={'contain'}
           source={Constants.Images.Pointer}
           style={{
             resizeMode: 'contain',
-            height: 60,
-            width: 60,
+            height: toolTipSize,
+            width: toolTipSize,
             marginBottom: 15,
+            paddingHorizontal: 3,
           }}>
           <View
             style={{
@@ -67,84 +121,126 @@ const StarProgress = () => {
               flex: 1,
             }}>
             <Text
+            onTextLayout={onTextLayout}
               style={{
                 color: '#fff',
                 flex: 1,
                 justifyContent: 'center',
-                fontSize: 17,
+                fontSize: currentFont,
                 fontFamily: RubikRegular,
               }}>
-              {Math.ceil(step) - 2} Hrs
+              {toolTipText}
             </Text>
           </View>
         </ImageBackground>
       </Animated.View>
       <View
+        ref={progressRef}
+        onLayout={onProgressLayout}
         style={{
           flexDirection: 'row',
-          justifyContent: 'space-evenly',
+          justifyContent: 'space-between',
           width: '100%',
+          paddingHorizontal: 20
         }}>
         {
           <Image
             source={
-              step + 2 >= 2
+              step >= 1
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32, resizeMode: 'contain'}}
+            style={{ height: starSize, width: starSize, resizeMode: 'stretch' }}
           />
         }
         {
           <Image
             source={
-              step + 2 >= 4
+              step >= 2
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32, resizeMode: 'contain'}}
+            style={{ height: starSize, width: starSize, resizeMode: 'stretch' }}
           />
         }
         {
           <Image
             source={
-              step + 2 >= 6
+              step >= 3
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32, resizeMode: 'contain'}}
+            style={{ height: starSize, width: starSize, resizeMode: 'stretch' }}
           />
         }
         {
           <Image
             source={
-              step + 2 >= 8
+              step >= 4
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32, resizeMode: 'contain'}}
+            style={{ height: starSize, width: starSize, resizeMode: 'stretch' }}
           />
         }
         {
           <Image
             source={
-              step + 2 >= 10
+              step >= 5
                 ? Constants.Images.ColoredStar
                 : Constants.Images.Star
             }
-            style={{height: 32, width: 32, resizeMode: 'contain'}}
+            style={{ height: starSize, width: starSize, resizeMode: 'stretch' }}
           />
         }
       </View>
-      <View style={{alignItems: 'center', marginTop: 20}}>
+      <View style={{ alignItems: 'center', marginTop: 20 }}>
         <Image
           resizeMode={'contain'}
           source={Constants.Images.Scale}
-          style={{height: 20, width: width - dynamicSize(110)}}
+          style={{ height: 20, width: wid }}
         />
+        <View style={styles.qualitiesView}>
+          <View>
+            <Text style={styles.qualitiesText}>Poor</Text>
+          </View>
+          <View style={styles.goodView}>
+            <Text style={styles.qualitiesText}>Good</Text>
+          </View>
+          <View style={styles.almostView}>
+            <Text style={[styles.qualitiesText, { color: '#000000' }]}>Almost</Text>
+          </View>
+          <View>
+            <Text style={styles.qualitiesText}>Perfect!</Text>
+          </View>
+        </View>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  qualitiesView: {
+    width: wid,
+    paddingHorizontal: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: horizontalScale(10),
+  },
+  qualitiesText: {
+    color: '#4C5980',
+    flex: 1,
+    fontSize: getFontSize(12),
+    fontFamily: RubikRegular,
+  },
+  goodView: {
+    left: horizontalScale(4),
+    top: 0
+  },
+  almostView: {
+    left: horizontalScale(12),
+    top: 0
+  }
+});
 
 export default StarProgress;

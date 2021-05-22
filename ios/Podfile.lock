@@ -348,8 +348,6 @@ PODS:
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
   - PromisesObjC (1.2.12)
-  - RCTAppleHealthKit (0.8.0):
-    - React
   - RCTRequired (0.63.4)
   - RCTTypeSafety (0.63.4):
     - FBLazyVector (= 0.63.4)
@@ -589,6 +587,8 @@ PODS:
     - React-jsi (= 0.63.4)
   - ReactNativeGetLocation (2.0.0):
     - React
+  - RNAppleHealthKit (1.7.0):
+    - React
   - RNCAsyncStorage (1.12.1):
     - React-Core
   - RNCClipboard (1.5.1):
@@ -680,7 +680,6 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - RCTAppleHealthKit (from `../node_modules/rn-apple-healthkit`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -708,6 +707,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeGetLocation (from `../node_modules/react-native-get-location`)
+  - RNAppleHealthKit (from `../node_modules/react-native-health`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
@@ -764,8 +764,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
-  RCTAppleHealthKit:
-    :path: "../node_modules/rn-apple-healthkit"
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
   RCTTypeSafety:
@@ -816,6 +814,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeGetLocation:
     :path: "../node_modules/react-native-get-location"
+  RNAppleHealthKit:
+    :path: "../node_modules/react-native-health"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
   RNCClipboard:
@@ -878,7 +878,6 @@ SPEC CHECKSUMS:
   libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  RCTAppleHealthKit: bbb19a33c922d0c36631cd571680eed68e78c63a
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
   React: b0a957a2c44da4113b0c4c9853d8387f8e64e615
@@ -904,6 +903,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   ReactNativeGetLocation: 6da6fa5cff3ede411d1a0066755d39872b90f593
+  RNAppleHealthKit: 60a6beefdd89a75811e9a8873a5e24f351dee681
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 41d8d918092ae8e676f18adada19104fa3e68495
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
@@ -926,6 +926,6 @@ SPEC CHECKSUMS:
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 7aeaf62e5ce4c1e56d23805d46932ac615066baf
+PODFILE CHECKSUM: 9ad109e3ff8781a47051e87a867b9c953b242fce
 
 COCOAPODS: 1.10.1
