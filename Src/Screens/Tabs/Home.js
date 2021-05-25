@@ -813,7 +813,7 @@ const App = (props) => {
         steps: totalSteps,
         distance: totalDistance,
         calories: UserData.UserCalories,
-        heart_Rate: totalHeartRate,
+        heart_rate: totalHeartRate,
         high_bp: highBp,
         low_bp: lowBp,
       });
