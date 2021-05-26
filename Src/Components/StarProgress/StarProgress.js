@@ -11,10 +11,11 @@ import {
 import Constants from '../../Constants';
 import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+import { convertMinutesToTime } from '../../Screens/Home/SleepData/sleepDataService';
 const { width } = Dimensions.get('window');
 const wid = horizontalScale(300);
 
-const StarProgress = ({ sleepHours }) => {
+const StarProgress = ({ sleepMinutes }) => {
   const [Width, setWidth] = useState(0);
   const animatedValue = React.useRef(new Animated.Value(0)).current;
   // const reactive = useRef(new Animated.Value(-1000));
@@ -25,8 +26,8 @@ const StarProgress = ({ sleepHours }) => {
   const [initialPosition, setInitialPosition] = useState(0); // change here for moving the hours bar
   const [currentFont, setCurrentFont] = useState(17);
   const starSize = 32;
-  const toolTipSize = 60;
-  const toolTipText = ` ${sleepHours} ${sleepHours > 1 ? 'Hrs' : 'Hr'} `;
+  const toolTipSize = 70;
+  const toolTipText = convertMinutesToTime(sleepMinutes);
 
   useEffect(() => {
     if(toolTipPosition <= 0) {
@@ -40,10 +41,11 @@ const StarProgress = ({ sleepHours }) => {
   }, [toolTipPosition]);
 
   useEffect(() => {
-    let s = sleepHours > 8 ? 8 : sleepHours;
-    s = Math.round((s * 5) / 8);
+    const hours = Number.parseInt(String(sleepMinutes / 60));
+    let s = sleepMinutes > 480 ? 480 : sleepMinutes;
+    s = Math.round((s * 5) / 480);
     setstep(s);
-  }, [sleepHours]);
+  }, [sleepMinutes]);
 
   useEffect(() => {
     calculateToolTipPosition();
@@ -76,14 +78,18 @@ const StarProgress = ({ sleepHours }) => {
 
   const onTextLayout = useCallback((e) => {
     const { lines } = e.nativeEvent;
-    if(toolTipText.length === 7 && currentFont !== 17) {
+    // if(lines.length > 1) {
+    //   setCurrentFont(currentFont - 1);
+    // }
+    // return;
+    if(toolTipText.length < 8 && currentFont !== 17) {
       setCurrentFont(17)
     } else if(toolTipText.length === 8 && currentFont !== 15) {
       setCurrentFont(15)
     } else if(lines.length > 1) {
       setCurrentFont(currentFont - 1);
     }
-  }, [currentFont, setCurrentFont, sleepHours])
+  }, [currentFont, setCurrentFont, sleepMinutes])
 
   return (
     <View
@@ -112,19 +118,22 @@ const StarProgress = ({ sleepHours }) => {
             width: toolTipSize,
             marginBottom: 15,
             paddingHorizontal: 3,
+            justifyContent: 'center',
+            alignItems: 'center',
           }}>
           <View
             style={{
               alignItems: 'center',
-              marginTop: 15,
+              // marginTop: 15,
+              marginBottom: 5,
               justifyContent: 'center',
-              flex: 1,
+              // flex: 1,
             }}>
             <Text
             onTextLayout={onTextLayout}
               style={{
                 color: '#fff',
-                flex: 1,
+                // flex: 1,
                 justifyContent: 'center',
                 fontSize: currentFont,
                 fontFamily: RubikRegular,

@@ -507,7 +507,7 @@ const WeatherData = ({
     setWeatherDurationModal(false);
   };
 
-  dataOfWeatherGraph = [
+  const dataOfWeatherGraph = [
     {
       x: 1,
       y:

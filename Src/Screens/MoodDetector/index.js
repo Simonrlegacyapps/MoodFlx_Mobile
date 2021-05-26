@@ -960,6 +960,7 @@ export default function MoodDetector({navigation}) {
                     lat: lat,
                     long: lng,
                     screen: 'Home',
+                    isMoodUpdate: true
                   });
                 });
                 const notifService = new NotifService();

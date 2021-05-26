@@ -38,8 +38,11 @@ const BasicExample = ({
   threes,
   fours,
   fives,
+  sleepData,
   dataOfWeatherGraph,
   fitness,
+  sleepGraphData,
+  isDailyDisabled,
 }) => {
   const [Duration, setDuration] = useState('Daily');
 
@@ -259,22 +262,24 @@ const BasicExample = ({
           marginTop: 20,
           justifyContent: 'flex-start',
         }}>
-        <TouchableOpacity
-          onPress={() => {
-            setDuration('Daily');
-          }}
-          style={{
-            padding: 8,
-            paddingHorizontal: 12,
-            backgroundColor: Duration === 'Daily' ? '#5E4ADC' : '#7965F6',
-            borderRadius: 14,
-            marginHorizontal: 6,
-          }}>
-          <Text
-            style={{color: 'white', fontSize: 13, fontFamily: RubikRegular}}>
-            DAY
+        {!isDailyDisabled && (
+          <TouchableOpacity
+            onPress={() => {
+              setDuration('Daily');
+            }}
+            style={{
+              padding: 8,
+              paddingHorizontal: 12,
+              backgroundColor: Duration === 'Daily' ? '#5E4ADC' : '#7965F6',
+              borderRadius: 14,
+              marginHorizontal: 6,
+            }}>
+            <Text
+              style={{ color: 'white', fontSize: 13, fontFamily: RubikRegular }}>
+              DAY
           </Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={() => {
             setDuration('Week');

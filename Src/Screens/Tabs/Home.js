@@ -145,7 +145,7 @@ const App = (props) => {
   const [LightDataPermModal, setLightDataPermModal] = useState(false);
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
-  const {lat, long} = route.params.cord;
+  const {lat, long, isMoodUpdate} = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
   // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
@@ -1027,6 +1027,7 @@ const App = (props) => {
           <SleepData
             swiperIndex={swiperIndex}
             data={data}
+            isMoodUpdate={isMoodUpdate}
             dataLow={dataLow}
             Weather={Weather}
             PermScreenTime={PermScreenTime}
