@@ -239,10 +239,10 @@ const WeatherData = ({
 
     axios(config)
       .then(function (response) {
-        console.log(' ✅ ✅ ✅ ✅ Success ✅ ✅ ✅ ✅ ', data);
+        console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ', data);
       })
       .catch(function (error) {
-        console.log('❌❌❌❌Fail ❌❌❌❌', error, data);
+        console.log('❌❌❌❌ Update Weather Fail ❌❌❌❌', error, data);
       });
   };
 
@@ -300,7 +300,8 @@ const WeatherData = ({
       fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
         .then((response) => response.json())
         .then(async (result) => {
-          console.log('weather Graph data', result),
+          console.log('Get weather Graph data', result),
+          console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ', data);
             setGraph(result.weatherData);
           data.push({});
           await syncWeatherData();

@@ -217,10 +217,13 @@ const App: () => React$Node = () => {
     fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
-        console.log('UserDetailsssssssssssssssss', await result?.userData);
+        console.log(
+          '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+          result?.userData
+        );
         await dispatch(UserDetail(result?.userData));
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error));
   };
 
   const requestNotificationPermissions = async () => {
@@ -267,13 +270,17 @@ const App: () => React$Node = () => {
           .then((location) => {
             //   console.log('Success', location);
             // setlat(location.latitude);
+            console.log(
+              '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
+              JSON.stringify(location),
+            );
             dispatch(Lat(location.latitude));
             // setlng(location.longitude);
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
             const {code, message} = error;
-            console.log('error', code, message);
+            console.log('error getting lat lon from geolocation api', code, message);
           });
     }
     {

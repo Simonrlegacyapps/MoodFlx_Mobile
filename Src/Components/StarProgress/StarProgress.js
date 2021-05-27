@@ -29,16 +29,16 @@ const StarProgress = ({ sleepMinutes }) => {
   const toolTipSize = 70;
   const toolTipText = convertMinutesToTime(sleepMinutes);
 
-  useEffect(() => {
-    if(toolTipPosition <= 0) {
-      return;
-    }
-    Animated.timing(animatedValue, {
-      toValue: toolTipPosition,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }, [toolTipPosition]);
+  // useEffect(() => {
+  //   if(toolTipPosition <= 0) {
+  //     return;
+  //   }
+  //   Animated.timing(animatedValue, {
+  //     toValue: toolTipPosition,
+  //     duration: 1000,
+  //     useNativeDriver: true,
+  //   }).start();
+  // }, [toolTipPosition]);
 
   useEffect(() => {
     const hours = Number.parseInt(String(sleepMinutes / 60));
@@ -53,6 +53,7 @@ const StarProgress = ({ sleepMinutes }) => {
 
   useEffect(() => {
     // setToolTipPosition(-Width + (Width * step) / 10);
+    console.log('StarProgress animation: ', toolTipPosition);
     Animated.timing(animatedValue, {
       toValue: toolTipPosition,
       duration: 1000,
@@ -72,7 +73,8 @@ const StarProgress = ({ sleepMinutes }) => {
   const onProgressLayout = useCallback((e) => {
     progressRef?.current?.measureInWindow((x, y, width, height) => {
       progressSize.current = {left: x, top: y, width, height};
-        calculateToolTipPosition();
+      console.log('StarProgress onProgressLayout: ', progressSize.current);
+      calculateToolTipPosition();
     })
   }, [calculateToolTipPosition])
 

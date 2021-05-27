@@ -321,8 +321,8 @@ export function getSleepDataForUpdateApi() {
         const endDateMillis = d?.end_date ? new Date(d.end_date).getTime() : null;
         if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
           data = {
-            "start_date": moment(startDateMillis).format("YYYY-MM-DD hh:mm:ss"),
-            "end_date": moment(endDateMillis).format("YYYY-MM-DD hh:mm:ss"),
+            "start_date": moment(startDateMillis).format("YYYY-MM-DD HH:mm:ss"),
+            "end_date": moment(endDateMillis).format("YYYY-MM-DD HH:mm:ss"),
             "type": (d?.type?.toLowerCase() === "inbed" || d?.type?.toLowerCase() === "asleep") ? d.type?.toUpperCase?.() : "INBED"
           };
           formatData.push(data);
