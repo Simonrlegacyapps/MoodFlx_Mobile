@@ -145,7 +145,7 @@ const App = (props) => {
   const [LightDataPermModal, setLightDataPermModal] = useState(false);
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
-  const {lat, long} = route.params.cord;
+  const {lat, long, isMoodUpdate} = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
   // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
@@ -849,13 +849,13 @@ const App = (props) => {
         `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
-        console.log(`response`, response.data);
-        dispatch(DayTemp(response.data));
-        await setTryWeather(response.data);
+        console.log(' ✅ ✅ ✅ ✅ Success Get Weather Data✅ ✅ ✅ ✅ ', response?.data);
+        dispatch(DayTemp(response?.data));
+        await setTryWeather(response?.data);
         // await console.log(`response.data for weather`, response.data);
       })
       .catch(function (error) {
-        console.log(`error for weather`, error);
+        console.log('Error Get Weather Data❌❌❌❌', error);
       });
     // }
   };
@@ -931,12 +931,12 @@ const App = (props) => {
       axios(config)
         .then(function (response) {
           console.log(
-            '✅ ✅ ✅ ✅ Success message for health data ✅ ✅ ✅ ✅',
-            JSON.stringify(response.data),
+            '✅ ✅ ✅ ✅ Success Update Staff Health ✅ ✅ ✅ ✅',
+            JSON.stringify(response?.data),
           );
         })
         .catch(function (error) {
-          console.log('❌ ❌ ❌ ❌ error for health data ❌ ❌ ❌ ❌', error);
+          console.log('❌ ❌ ❌ ❌ Error Update Staff Health ❌ ❌ ❌ ❌', error);
         });
     }
     setTodayStep(Fsteps.length > 0 ? (Fsteps[0].steps / 10000) * 100 : 0);
@@ -1027,6 +1027,7 @@ const App = (props) => {
           <SleepData
             swiperIndex={swiperIndex}
             data={data}
+            isMoodUpdate={isMoodUpdate}
             dataLow={dataLow}
             Weather={Weather}
             PermScreenTime={PermScreenTime}

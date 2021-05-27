@@ -852,28 +852,31 @@ export default function MoodDetector({navigation}) {
     var state_info = '';
     var city_info = '';
     var country_info = '';
-    await Geocoder.from({
-      lat: UserData.lat,
-      lng: UserData.lon,
-    })
-      .then((data) => {
-        geocode = data.plus_code.compound_code;
-        const address_list = data.results[0].address_components;
-        for (i = 0; i < address_list.length; i++) {
-          if (address_list[i].types.includes('country')) {
-            country_info = address_list[i].long_name;
-          }
-          if (address_list[i].types.includes('administrative_area_level_1')) {
-            state_info = address_list[i].long_name;
-          }
-          if (address_list[i].types.includes('administrative_area_level_2')) {
-            city_info = address_list[i].long_name;
-          }
-        }
+    setLoading(true);
+    if (UserData.lat && UserData.lon) {
+      await Geocoder.from({
+        lat: UserData.lat,
+        lng: UserData.lon,
       })
-      .catch((err) => console.log(`weather api location err`, err));
+        .then((data) => {
+          geocode = data.plus_code.compound_code;
+          const address_list = data.results[0].address_components;
+          for (i = 0; i < address_list.length; i++) {
+            if (address_list?.[i]?.types?.includes?.('country')) {
+              country_info = address_list?.[i]?.long_name ?? '';
+            }
+            if (address_list?.[i]?.types?.includes?.('administrative_area_level_1')) {
+              state_info = address_list?.[i]?.long_name ?? '';
+            }
+            if (address_list?.[i]?.types?.includes?.('administrative_area_level_2')) {
+              city_info = address_list?.[i]?.long_name ?? '';
+            }
+          }
+        })
+        .catch((err) => console.log(`weather api location err`, err));
 
-    const Id = UserData.AllMoods.find(({name}) => {
+    }
+    const Id = UserData.AllMoods.find(({ name }) => {
       // console.log(`name`, name);
       return name === emotionText;
     });
@@ -883,6 +886,7 @@ export default function MoodDetector({navigation}) {
     const deviceId = DeviceInfo.getUniqueId();
     if (Id === undefined) {
       // console.log(`fail`);
+      setLoading(false);
       setMoodFail(true);
     } else {
       setLoading(true);
@@ -934,7 +938,8 @@ export default function MoodDetector({navigation}) {
             navigation.navigate('HomeScreen', {screen: 'MicScreen'});
           })
           .catch((error) => {
-            console.log('error', error), setLoading(false);
+            console.log('error', error);
+            setLoading(false);
           });
       } else {
         console.log(`params for mood update`, params);
@@ -960,6 +965,7 @@ export default function MoodDetector({navigation}) {
                     lat: lat,
                     long: lng,
                     screen: 'Home',
+                    isMoodUpdate: true
                   });
                 });
                 const notifService = new NotifService();

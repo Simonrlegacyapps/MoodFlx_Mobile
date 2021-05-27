@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -17,30 +17,30 @@ import {
 } from '../../../Constants/fonts/Fonts';
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
+import DeviceInfo from 'react-native-device-info';
 import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
+import axios from 'axios';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import StarProgress from '../../../Components/StarProgress/StarProgress';
 import PopUp from '../../../Components/PopUp/PopUp';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { SleepPerm } from '../../../redux/actions/actions';
 // import AppleHealthKit from 'rn-apple-healthkit';
-import AppleHealthKit, {
-  HealthValue,
-  HealthKitPermissions,
-} from 'react-native-health';
-const sleepPermission = {
-  permissions: {
-    read: [AppleHealthKit.Constants.Permissions.SleepAnalysis],
-    write: [],
-  },
-};
-// } as HealthKitPermissions;
 import moment from 'moment';
 import { dynamicSize } from '../../../Constants/sizeChoose';
+import { 
+  getMonthlySleepData,
+  getSleepGraphData,
+  getWeeklySleepData,
+  setSleepDataLastThirtyDays,
+  sleepDataPermissionsIOS,
+  fetchSleepDataForLastThirtyDays,
+  getSleepDataForUpdateApi
+} from './sleepDataService';
+
 
 export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -61,21 +61,37 @@ const SleepData = ({
   dataLow,
   MoodCount,
   swiperIndex,
+  isMoodUpdate
 }) => {
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [SleepPopUp, setSleepPopUp] = useState(false);
-  const [sleepHoursToday, setSleepHoursToday] = useState(0);
+  const [sleepMinutesToday, setSleepMinutesToday] = useState(0);
+  const [lastThirtyDaySleepData, setLastThirtyDaySleepData] = useState(null);
+  const [weeklySleepData, setWeeklySleepData] = useState(null);
+  const [monthlySleepData, setMonthlySleepData] = useState(null);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   // console.log(`UserData.SleepPermission`, UserData.SleepPermission);
 
   const VerifyDone = async () => {
+    // return;
     // await AsyncStorage.setItem('GiveSleepPerm', 'true');
 
     setopenActionSheet(false);
     const timeoutId = setTimeout(() => {
-      onSleepDataPerm();
+      // remove commented code after testing for fetchSleepDataFroLastThiryDays
+      // onSleepDataPerm();
+      fetchSleepDataForLastThirtyDays({
+        askPermission: true,
+        onUpdate: function ({sleepData, isPermissionAsked}) {
+          setLastThirtyDaySleepData(sleepData);
+          if(isMoodUpdate) {
+            callSleepDataUpdateApi(sleepData);
+          }
+        },
+        dispatch
+      });
       clearTimeout(timeoutId);
     }, 500)
     // let Sp = await AsyncStorage.getItem('GiveSleepPerm');
@@ -88,85 +104,94 @@ const SleepData = ({
   };
 
   useEffect(() => {
-    AppleHealthKit.getAuthStatus(sleepPermission, (err, result) => {
-      // {"permissions": {"read": [0], "write": []}}
-      if (err) {
-        console.log('getSleepAnalysis getAuthStatus error: ', err);
-      }
-      console.log('Sleep Analysis getAuthStatus +++++++++======>>>>', result);
-      if (result?.permissions?.read?.[0] === 1) {
-        if (!UserData.SleepPermission) {
-          dispatch(SleepPerm(true));
+    fetchSleepDataForLastThirtyDays({
+      askPermission: false,
+      onUpdate: function ({sleepData, isPermissionAsked}) {
+        console.log('setLastThirtyDaySleepData: ', sleepData)
+        setLastThirtyDaySleepData(sleepData);
+        if(isMoodUpdate) {
+          callSleepDataUpdateApi(sleepData);
         }
-        onSleepDataPerm();
-      }
+      },
+      dispatch
     });
   }, []);
 
-  const onSleepDataPerm = () => {
-    if (Platform.OS === 'ios') {
-      // console.log(`-------------qwertyuiopasdfghjklzxcvbnm-----------------,`);
-      AppleHealthKit.initHealthKit(sleepPermission, (err, results) => {
-        // setLoading(true);
-        console.log(
-          `healthKitOptions`,
-          sleepPermission.permissions.read,
-          results,
-          err,
-        );
-        if (
-          Object.keys(sleepPermission.permissions.read).length + 1 !=
-          results
-        ) {
-          // Linking.openURL('App-Prefs:Privacy');
-          // Linking.openSettings('Health');
+  useEffect(() => {
+    //sleep data for current day
+    if(Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) { 
+      let totalMinutes = 0;
+      lastThirtyDaySleepData.forEach((e, idx) => {
+        const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
+        const endDate = e?.end_date ? moment(new Date(e.end_date).getTime()) : null;
+        let diff = 0;
+        if (startDate && endDate && startDate.date() === moment().date()) {
+          diff = endDate.diff(startDate, 'minutes');
+          totalMinutes += diff;
         }
-        if (err) {
-          console.log('error initializing Healthkit: ', err);
-          return;
-        }
-        
-        if (results === 1 && !UserData.SleepPermission) {
-          dispatch(SleepPerm(true));
-        }
-        console.log('sleepData yesterday time: ', (moment().startOf('day').toDate()).toISOString());
-        const sleepOptions = {
-          // startDate: (moment().startOf('day').subtract(1, 'days').toDate()).toISOString(), // required
-          startDate: (moment().startOf('day').subtract(1, 'days').toDate()).toISOString(), // required
-          endDate: (new Date()).toISOString(), // optional; default now
-        };
-        AppleHealthKit.getSleepSamples(
-          sleepOptions,
-          async (err: Object, results: Array<Object>) => {
-            if (err) {
-              console.log('getSleepAnalysis error: ', err);
-            }
-            if (results) {
-              // setSleep(results);
-              let totalHours = 0;
-              results.forEach((e, idx) => {
-                const startDate = e?.startDate ? moment(new Date(e.startDate).getTime()) : null;
-                const endDate = e?.endDate ? moment(new Date(e.endDate).getTime()) : null;
-                let diff = 0;
-                if (startDate && endDate) {
-                  const startOfToday = moment().startOf('day');
-                  if (startDate.isBefore(startOfToday) && endDate.isAfter(startOfToday)) {
-                    diff = endDate.diff(startDate, 'hours') - startOfToday.diff(startDate, 'hours');
-                  } else {
-                    diff = endDate.diff(startDate, 'hours');
-                  }
-                  totalHours += diff;
-                }
-                setSleepHoursToday(totalHours);
-              })
-              console.log('Sleep Analysis +++++++++======>>>>', results);
-            }
-          },
-        );
-      });
-      // setLoading(false);
+      })
+      setSleepMinutesToday(totalMinutes);
     }
-  };
+  }, [lastThirtyDaySleepData]);
+
+  useEffect(() => {
+    //sleep data for last 7 days
+    if(Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
+      setSleepDataLastThirtyDays(lastThirtyDaySleepData);
+      const weeklyData = getWeeklySleepData();
+      // console.log('weeklyData: ', JSON.stringify(weeklyData));
+      // console.log('weeklyData: ', weeklyData);
+      setWeeklySleepData(weeklyData);
+    }
+  }, [lastThirtyDaySleepData]);
+  
+  useEffect(() => {
+    //sleep data for this month
+    if(Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
+      setSleepDataLastThirtyDays(lastThirtyDaySleepData);
+      const montlhlySleep = getMonthlySleepData();
+      // console.log('monthlySleep: ', JSON.stringify(montlhlySleep));
+      // console.log('monthlySleep: ', montlhlySleep);
+      setMonthlySleepData(montlhlySleep);
+    }
+  }, [lastThirtyDaySleepData]);
+
+  const callSleepDataUpdateApi = useCallback((sData) => {
+    if(!(Array.isArray(sData) && sData.length > 0)) {
+      return;
+    }
+    setSleepDataLastThirtyDays(sData);
+    const sleepData = getSleepDataForUpdateApi();
+    if(!(Array.isArray(sleepData) && sleepData.length > 0)) {
+      return;
+    }
+    console.log('api sleep data: ', sleepData);
+    // return;
+    const deviceId = DeviceInfo.getUniqueId();
+    const data = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail ?? '',
+      user_id: UserData.UserId ?? '',
+      sleep_data: sleepData
+    });
+    var config = {
+      method: 'post',
+      url: 'https://admin.moodflo.com/api/updateSleepQuality',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
+      })
+      .catch(function (error) {
+        console.log('❌❌❌❌Fail Update Sleep Data❌❌❌❌', error, data);
+      });
+  }, [UserData.UserEmail, UserData.UserId]);
 
   return (
     <View>
@@ -277,8 +302,7 @@ const SleepData = ({
 
           <View style={{ marginBottom: 50 }}>
             <StarProgress
-              // sleepHours={0}
-              sleepHours={sleepHoursToday}
+              sleepMinutes={sleepMinutesToday}
             />
             <View
               style={{
@@ -288,7 +312,10 @@ const SleepData = ({
               }}>
             </View>
           </View>
-          <GraphicChart />
+          <GraphicChart 
+            isDailyDisabled={true}
+            sleepGraphData={getSleepGraphData({weeklyData: weeklySleepData, monthlyData: monthlySleepData})}
+          />
           {!UserData.SleepPermission && (
             <View
               style={{
