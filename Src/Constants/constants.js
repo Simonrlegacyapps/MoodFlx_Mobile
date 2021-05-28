@@ -18,3 +18,16 @@ export const hapticsTopFlags = {
     right: 'right',
     both: 'both',
 }
+
+export const dataTypes = {
+    sleep: 'sleep',
+    weather: 'weather',
+    light: 'light',
+    activity: 'activity'
+}
+
+export const durationTypes = {
+    daily: 'Daily',
+    week: 'Week',
+    monthly: 'Monthly'
+}

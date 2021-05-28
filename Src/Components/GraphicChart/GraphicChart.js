@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Platform,
@@ -13,12 +13,14 @@ import {
   ChartPathProvider,
   monotoneCubicInterpolation,
 } from '@rainbow-me/animated-charts';
-import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
-import {useSelector} from 'react-redux';
+import { RubikLight, RubikRegular } from '../../Constants/fonts/Fonts';
+import { useSelector } from 'react-redux';
 import GraphBezierCustom from '../GraphBezierCustom/GraphBezierCustom';
-import moment from 'moment';
+import moment, { duration } from 'moment';
+import { DataGraph } from '../DataGraph/DataGraph';
+import { durationTypes } from '../../Constants/constants';
 
-export const {width: SIZE} = Dimensions.get('window');
+export const { width: SIZE } = Dimensions.get('window');
 
 // export const data = [
 //   {x: 1, y: 1},
@@ -38,15 +40,22 @@ const BasicExample = ({
   threes,
   fours,
   fives,
-  sleepData,
   dataOfWeatherGraph,
   fitness,
   sleepGraphData,
   isDailyDisabled,
+  graphType
 }) => {
-  const [Duration, setDuration] = useState('Daily');
+  const [Duration, setDuration] = useState(sleepGraphData ? durationTypes.week : durationTypes.daily);
 
   const UserData = useSelector((state) => state.First);
+
+  useEffect(() => {
+    if(Array.isArray(sleepGraphData?.weeklyData) && sleepGraphData.weeklyData.length > 0) {
+      console.log('BasicExample setDuration', durationTypes.week);
+      setDuration(durationTypes.week);
+    }
+  }, [sleepGraphData?.weeklyData])
   // console.log(`UserData.MainSteps --------->>> `, UserData.MainSteps);
   // useEffect(() => {
   //   // dataFunction();
@@ -136,40 +145,40 @@ const BasicExample = ({
     }
     // console.log(`dataValue +++++++++++++++=`, dataValue);
     return (dataValue = [
-      {x: 1, y: onez},
-      {x: 2, y: two},
-      {x: 3, y: three},
-      {x: 4, y: four},
-      {x: 5, y: five},
-      {x: 6, y: six},
-      {x: 7, y: seven},
-      {x: 8, y: eight},
-      {x: 9, y: nine},
-      {x: 10, y: ten},
-      {x: 11, y: eleven},
-      {x: 12, y: twelve},
-      {x: 13, y: thirteen},
-      {x: 14, y: fourteen},
-      {x: 15, y: fifteen},
-      {x: 16, y: sixteen},
-      {x: 17, y: seventeen},
-      {x: 18, y: eighteen},
-      {x: 19, y: nineteen},
-      {x: 20, y: twenty},
-      {x: 21, y: twentyOne},
-      {x: 22, y: twentyTwo},
-      {x: 23, y: twentyThree},
-      {x: 24, y: twentyFour},
+      { x: 1, y: onez },
+      { x: 2, y: two },
+      { x: 3, y: three },
+      { x: 4, y: four },
+      { x: 5, y: five },
+      { x: 6, y: six },
+      { x: 7, y: seven },
+      { x: 8, y: eight },
+      { x: 9, y: nine },
+      { x: 10, y: ten },
+      { x: 11, y: eleven },
+      { x: 12, y: twelve },
+      { x: 13, y: thirteen },
+      { x: 14, y: fourteen },
+      { x: 15, y: fifteen },
+      { x: 16, y: sixteen },
+      { x: 17, y: seventeen },
+      { x: 18, y: eighteen },
+      { x: 19, y: nineteen },
+      { x: 20, y: twenty },
+      { x: 21, y: twentyOne },
+      { x: 22, y: twentyTwo },
+      { x: 23, y: twentyThree },
+      { x: 24, y: twentyFour },
     ]);
   };
   // console.log(`dataValue --?`, dataFunction());
 
   let demoData = [
-    {x: 1, y: 0},
+    { x: 1, y: 0 },
     {
       x: 2,
       y:
-        Duration === 'Daily'
+        Duration === durationTypes.daily
           ? UserData.TodayAllSteps !== null
             ? 1 + UserData.TodayAllSteps[0].two
             : 0
@@ -178,7 +187,7 @@ const BasicExample = ({
     {
       x: 3,
       y:
-        Duration === 'Daily'
+        Duration === durationTypes.daily
           ? UserData.TodayAllSteps !== null
             ? UserData.TodayAllSteps[0].three
             : 1
@@ -187,7 +196,7 @@ const BasicExample = ({
     {
       x: 4,
       y:
-        Duration === 'Daily'
+        Duration === durationTypes.daily
           ? UserData.TodayAllSteps !== null
             ? UserData.TodayAllSteps[0].four
             : 0
@@ -196,7 +205,7 @@ const BasicExample = ({
     {
       x: 5,
       y:
-        Duration === 'Daily'
+        Duration === durationTypes.daily
           ? UserData.TodayAllSteps !== null
             ? UserData.TodayAllSteps[0].five
             : 0
@@ -205,7 +214,7 @@ const BasicExample = ({
     {
       x: 6,
       y:
-        Duration === 'Daily'
+        Duration === durationTypes.daily
           ? UserData.TodayAllSteps !== null
             ? UserData.TodayAllSteps[0].six
             : 0
@@ -214,7 +223,7 @@ const BasicExample = ({
     {
       x: 7,
       y:
-        Duration === 'Daily'
+        Duration === durationTypes.daily
           ? UserData.TodayAllSteps !== null
             ? UserData.TodayAllSteps[0].seven
             : 0
@@ -222,12 +231,18 @@ const BasicExample = ({
     },
   ];
 
+  console.log('BasicExample: ', sleepGraphData?.weeklyData);
+
   const data =
-    dataOfWeatherGraph && Duration === 'Daily'
+    dataOfWeatherGraph && Duration === durationTypes.daily
       ? dataOfWeatherGraph
-      : fitness && Duration === 'Daily'
-      ? dataFunction()
-      : demoData;
+      : fitness && Duration === durationTypes.daily
+        ? dataFunction()
+        : sleepGraphData && Duration === durationTypes.week
+          ? sleepGraphData?.weeklyData ?? demoData
+          : sleepGraphData?.monthlyData && Duration === durationTypes.monthly
+          ? sleepGraphData?.monthlyData
+          : demoData;
 
   const max =
     data &&
@@ -242,7 +257,19 @@ const BasicExample = ({
   let widthProp = SIZE - 114;
   // console.log(`max`, max);
 
-  const points = monotoneCubicInterpolation({data, range: 40});
+  const points = monotoneCubicInterpolation({ data, range: 40 });
+  if(sleepGraphData) {
+    return (
+      <DataGraph 
+        data={data}
+        yAxisLabel=''
+        yAxisSuffix='hr'
+        graphType={graphType}
+        setDuration={setDuration}
+        duration={Duration}
+      />
+    )
+  }
   return (
     <View
       style={{
@@ -265,12 +292,12 @@ const BasicExample = ({
         {!isDailyDisabled && (
           <TouchableOpacity
             onPress={() => {
-              setDuration('Daily');
+              setDuration(durationTypes.daily);
             }}
             style={{
               padding: 8,
               paddingHorizontal: 12,
-              backgroundColor: Duration === 'Daily' ? '#5E4ADC' : '#7965F6',
+              backgroundColor: Duration === durationTypes.daily ? '#5E4ADC' : '#7965F6',
               borderRadius: 14,
               marginHorizontal: 6,
             }}>
@@ -282,33 +309,33 @@ const BasicExample = ({
         )}
         <TouchableOpacity
           onPress={() => {
-            setDuration('Week');
+            setDuration(durationTypes.week);
           }}
           style={{
             padding: 8,
             paddingHorizontal: 12,
-            backgroundColor: Duration === 'Week' ? '#5E4ADC' : '#7965F6',
+            backgroundColor: Duration === durationTypes.week ? '#5E4ADC' : '#7965F6',
             borderRadius: 14,
             marginHorizontal: 6,
           }}>
           <Text
-            style={{color: 'white', fontSize: 13, fontFamily: RubikRegular}}>
+            style={{ color: 'white', fontSize: 13, fontFamily: RubikRegular }}>
             WEEK
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            setDuration('Monthly');
+            setDuration(durationTypes.monthly);
           }}
           style={{
             padding: 8,
             paddingHorizontal: 12,
-            backgroundColor: Duration === 'Monthly' ? '#5E4ADC' : '#7965F6',
+            backgroundColor: Duration === durationTypes.monthly ? '#5E4ADC' : '#7965F6',
             borderRadius: 14,
             marginHorizontal: 6,
           }}>
           <Text
-            style={{color: 'white', fontSize: 13, fontFamily: RubikRegular}}>
+            style={{ color: 'white', fontSize: 13, fontFamily: RubikRegular }}>
             MONTH
           </Text>
         </TouchableOpacity>
@@ -324,14 +351,15 @@ const BasicExample = ({
             backgroundColor: 'blue',
           }}
         /> */}
-      <View style={{flex: 1}}>
-        <View style={{flexDirection: 'row', flex: 1, marginLeft: 30}}>
-          <View>
+      <View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', flex: 1, marginLeft: 30 }}>
+          <View style={styles.lineDayContainer}>
             <View style={styles.lineParent}>
               <View style={styles.LineParentView} />
             </View>
-            <Text style={[styles.DayText, {left: -10}]}>
-              {Duration == 'Daily' ? '12 AM' : 'Mo'}
+            {/* <Text style={[styles.DayText, {left: -10}]}> */}
+            <Text style={[styles.DayText]}>
+              {Duration == durationTypes.daily ? '12 AM' : data?.[0]?.day ?? 'Mo'}
             </Text>
           </View>
           <View>
@@ -339,7 +367,7 @@ const BasicExample = ({
               <View style={styles.LineParentView} />
             </View>
             <Text style={styles.DayText}>
-              {Duration == 'Daily' ? '4' : 'Tu'}
+              {Duration == durationTypes.daily ? '4' : data?.[1]?.day ?? 'Tu'}
             </Text>
           </View>
           <View>
@@ -347,23 +375,16 @@ const BasicExample = ({
               <View style={styles.LineParentView} />
             </View>
             <Text style={styles.DayText}>
-              {Duration == 'Daily' ? '8' : 'We'}
+              {Duration == durationTypes.daily ? '8' : data?.[2]?.day ?? 'We'}
             </Text>
           </View>
           <View>
             <View style={styles.lineParent}>
               <View style={styles.LineParentView} />
             </View>
-            <Text style={[styles.DayText, {left: -10}]}>
-              {Duration == 'Daily' ? '12 PM' : 'Th'}
-            </Text>
-          </View>
-          <View>
-            <View style={styles.lineParent}>
-              <View style={styles.LineParentView} />
-            </View>
-            <Text style={styles.DayText}>
-              {Duration == 'Daily' ? '4' : 'Fr'}
+            {/* <Text style={[styles.DayText, {left: -10}]}> */}
+            <Text style={[styles.DayText]}>
+              {Duration == durationTypes.daily ? '12 PM' : data?.[3]?.day ?? 'Th'}
             </Text>
           </View>
           <View>
@@ -371,15 +392,24 @@ const BasicExample = ({
               <View style={styles.LineParentView} />
             </View>
             <Text style={styles.DayText}>
-              {Duration == 'Daily' ? '8' : 'Sa'}
+              {Duration == durationTypes.daily ? '4' : data?.[4]?.day ?? 'Fr'}
             </Text>
           </View>
           <View>
             <View style={styles.lineParent}>
               <View style={styles.LineParentView} />
             </View>
-            <Text style={[styles.DayText, {left: -10}]}>
-              {Duration == 'Daily' ? '12 AM' : 'Sa'}
+            <Text style={styles.DayText}>
+              {Duration == durationTypes.daily ? '8' : data?.[5]?.day ?? 'Sa'}
+            </Text>
+          </View>
+          <View>
+            <View style={styles.lineParent}>
+              <View style={styles.LineParentView} />
+            </View>
+            {/* <Text style={[styles.DayText, {left: -10}]}> */}
+            <Text style={[styles.DayText]}>
+              {Duration == durationTypes.daily ? '12 AM' : data?.[6]?.day ?? 'Sa'}
             </Text>
           </View>
           {/* <Text style={{width: (SIZE - 70) / 7}}>Tu</Text>
@@ -396,6 +426,7 @@ const BasicExample = ({
               stroke="#70DEEC"
               widthProp={widthProp}
               fitness={fitness}
+              sleep={sleepGraphData}
               Duration={Duration}
               // W={100}
               check={dataFunction()}
@@ -412,6 +443,9 @@ const BasicExample = ({
 };
 
 const styles = StyleSheet.create({
+  lineDayContainer: {
+    // alignItems: 'center'
+  },
   LineParentView: {
     borderRightWidth: 1,
     height: '100%',
@@ -441,7 +475,7 @@ export default BasicExample;
 //   {
 //     x: 2,
 //     y:
-//       Duration === 'Daily'
+//       Duration === durationTypes.daily
 //         ? UserData.TodayAllSteps !== null
 //           ? 1 + UserData.TodayAllSteps[0].two
 //           : 0
@@ -450,7 +484,7 @@ export default BasicExample;
 //   {
 //     x: 3,
 //     y:
-//       Duration === 'Daily'
+//       Duration === durationTypes.daily
 //         ? UserData.TodayAllSteps !== null
 //           ? UserData.TodayAllSteps[0].three
 //           : 1
@@ -459,7 +493,7 @@ export default BasicExample;
 //   {
 //     x: 4,
 //     y:
-//       Duration === 'Daily'
+//       Duration === durationTypes.daily
 //         ? UserData.TodayAllSteps !== null
 //           ? UserData.TodayAllSteps[0].four
 //           : 0
@@ -468,7 +502,7 @@ export default BasicExample;
 //   {
 //     x: 5,
 //     y:
-//       Duration === 'Daily'
+//       Duration === durationTypes.daily
 //         ? UserData.TodayAllSteps !== null
 //           ? UserData.TodayAllSteps[0].five
 //           : 0
@@ -477,7 +511,7 @@ export default BasicExample;
 //   {
 //     x: 6,
 //     y:
-//       Duration === 'Daily'
+//       Duration === durationTypes.daily
 //         ? UserData.TodayAllSteps !== null
 //           ? UserData.TodayAllSteps[0].six
 //           : 0
@@ -486,7 +520,7 @@ export default BasicExample;
 //   {
 //     x: 7,
 //     y:
-//       Duration === 'Daily'
+//       Duration === durationTypes.daily
 //         ? UserData.TodayAllSteps !== null
 //           ? UserData.TodayAllSteps[0].seven
 //           : 0

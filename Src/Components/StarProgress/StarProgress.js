@@ -22,7 +22,7 @@ const StarProgress = ({ sleepMinutes }) => {
   const progressRef = useRef(null);
   const progressSize = useRef(null);
   const [toolTipPosition, setToolTipPosition] = useState(0); //ToolTip position from left
-  const [step, setstep] = useState(-1); // change here for moving the hours bar
+  const [step, setStep] = useState(-1); // change here for moving the hours bar
   const [initialPosition, setInitialPosition] = useState(0); // change here for moving the hours bar
   const [currentFont, setCurrentFont] = useState(17);
   const starSize = 32;
@@ -39,33 +39,46 @@ const StarProgress = ({ sleepMinutes }) => {
   //     useNativeDriver: true,
   //   }).start();
   // }, [toolTipPosition]);
+  // console.log('sleepMinutes: ', sleepMinutes);
 
   useEffect(() => {
     const hours = Number.parseInt(String(sleepMinutes / 60));
     let s = sleepMinutes > 480 ? 480 : sleepMinutes;
     s = Math.round((s * 5) / 480);
-    setstep(s);
+    // console.log('calculated step: ', s);
+    setStep(s);
+    const timeoutId = setTimeout(() => {
+      calculateToolTipPosition(s);
+      clearTimeout(timeoutId);
+    }, 500);
   }, [sleepMinutes]);
 
   useEffect(() => {
     calculateToolTipPosition();
   }, [step]);
 
+  // console.log('toolTipPosition: ', toolTipPosition);
   useEffect(() => {
     // setToolTipPosition(-Width + (Width * step) / 10);
-    console.log('StarProgress animation: ', toolTipPosition);
-    Animated.timing(animatedValue, {
-      toValue: toolTipPosition,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
+    // console.log('StarProgress animation: ', toolTipPosition);
+    if(!(toolTipPosition <= 0)) {
+      Animated.timing(animatedValue, {
+        toValue: toolTipPosition,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+    }
   }, [toolTipPosition]);
 
-  const calculateToolTipPosition = useCallback(() => {
-    if(progressSize.current && step >= 0) {
-      const {left, top, width, height} = progressSize.current;
+  const calculateToolTipPosition = useCallback((_step) => {
+    let stepss = _step !== undefined ? _step : step;
+    if (progressSize.current && (_step >=0 || step >= 0)) {
+      console.log('calculateToolTipPosition stepss: ', stepss);
+      console.log('calculateToolTipPosition _step: ', _step);
+      const { left, top, width, height } = progressSize.current;
       const space = (width - 40 - (starSize * 5)) / 4;
-      const position = 0 + 20 + ((step > 0 ? step : 1) * starSize) + ((step > 0 ? (step - 1) : 0) * space) - (starSize / 2) - (toolTipSize / 2) + 1;
+      const position = 0 + 20 + ((stepss > 0 ? stepss : 1) * starSize) + ((stepss > 0 ? (stepss - 1) : 0) * space) - (starSize / 2) - (toolTipSize / 2) + 1;
+      // console.log('calculateToolTipPosition position: ', position);
       setToolTipPosition(position);
     }
   }, [step])
@@ -73,7 +86,7 @@ const StarProgress = ({ sleepMinutes }) => {
   const onProgressLayout = useCallback((e) => {
     progressRef?.current?.measureInWindow((x, y, width, height) => {
       progressSize.current = {left: x, top: y, width, height};
-      console.log('StarProgress onProgressLayout: ', progressSize.current);
+      // console.log('StarProgress onProgressLayout: ', progressSize.current);
       calculateToolTipPosition();
     })
   }, [calculateToolTipPosition])

@@ -301,7 +301,7 @@ const WeatherData = ({
         .then((response) => response.json())
         .then(async (result) => {
           console.log('Get weather Graph data', result),
-          console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ', data);
+          console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
             setGraph(result.weatherData);
           data.push({});
           await syncWeatherData();

@@ -60,9 +60,9 @@ const VerifyEmail = ({navigation}) => {
                 setLoading(false);
                 console.log(
                   ' ✅ ✅ ✅ ✅ Sucess for verify✅ ✅ ✅ ✅',
-                  resp.data,
-                  resp.data.user_id,
-                  resp.data.companyInfo.full_name,
+                  resp?.data,
+                  resp?.data?.user_id,
+                  resp?.data?.companyInfo?.full_name,
                 );
                 dispatch(OTP_Verify(resp.data));
                 navigation.navigate('Linktocompany', {
@@ -73,9 +73,9 @@ const VerifyEmail = ({navigation}) => {
                   'UserId',
                   JSON.stringify(resp.data.user_id),
                 );
-                dispatch(CompanyName(resp.data.companyInfo));
-                dispatch(GetUserId(resp.data.user_id));
-                dispatch(UserEmail(mail));
+                resp?.data?.companyInfo && dispatch(CompanyName(resp.data.companyInfo));
+                resp?.data.user_id && dispatch(GetUserId(resp.data.user_id));
+                mail && dispatch(UserEmail(mail));
               } else {
                 console.log(`Api Failed`, params);
               }
