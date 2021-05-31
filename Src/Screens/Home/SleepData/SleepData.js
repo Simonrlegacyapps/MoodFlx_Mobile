@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -41,6 +42,7 @@ import {
   getSleepDataForUpdateApi
 } from './sleepDataService';
 import { dataTypes } from '../../../Constants/constants';
+import { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 
 
 export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
@@ -194,17 +196,48 @@ const SleepData = ({
       data: data,
     };
 
-    axios(config)
-      .then(function (response) {
-        console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
-        const timeoutId = setTimeout(() => {
-          callGetSleepDataApi();
-          clearTimeout(timeoutId);
-        }, 500);
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail ?? '',
+        user_id: UserData.UserId ?? '',
+      }, dispatch)
+      .then(async (result) => {
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          return axios(config);
+        } else {
+          return null;
+        }
+      })
+      .then(async (result) => {
+        if(result){
+          console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
+          const timeoutId = setTimeout(() => {
+            callGetSleepDataApi();
+            clearTimeout(timeoutId);
+          }, 500);
+        }
       })
       .catch(function (error) {
         console.log('❌❌❌❌Fail Sleep Data❌❌❌❌', error, data);
       });
+
+
+    // axios(config)
+    //   .then(function (response) {
+    //     console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
+    //     const timeoutId = setTimeout(() => {
+    //       callGetSleepDataApi();
+    //       clearTimeout(timeoutId);
+    //     }, 500);
+    //   })
+    //   .catch(function (error) {
+    //     console.log('❌❌❌❌Fail Sleep Data❌❌❌❌', error, data);
+    //   });
   }, [UserData.UserEmail, UserData.UserId]);
 
   const callGetSleepDataApi = useCallback(() => {
@@ -408,8 +441,8 @@ const SleepData = ({
       </ScrollView>
 
       <PopUp
-        ComingUp
-        permission={false}
+        ComingUp={Platform.OS === 'android'}
+        permission={UserData.SleepPermission}
         image={Constants.Images.Sleepimage}
         dataType={'sleep'}
         modalVisible={openActionSheet}
