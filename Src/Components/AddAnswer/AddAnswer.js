@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -30,10 +30,19 @@ const AddAnswer = ({
   // const [userData, setUserData] = useState(null);
 
   // console.log(`data of add answer`, data);
-  const apicall = (value) => {
+  const apicall = useCallback(() => {
     setedit(!edit);
-    ProfileApiCallHere(value);
-  };
+    ProfileApiCallHere();
+  }, [setedit, ProfileApiCallHere]);
+
+  // const onAddAnswerChangeText = useCallback((text) => {
+  //   onChangeText(text)
+  //   const timeoutId = setTimeout(() => {
+  //     apicall();
+  //     clearTimeout(timeoutId);
+  //   }, 500);
+  // }, [onChangeText, apicall])
+
   const UserData = useSelector((state) => state.First);
   return (
     <View style={styles.flatlistViewStyle}>
@@ -73,13 +82,23 @@ const AddAnswer = ({
               onChangeText(text);
             }}
             value={value}
-            onSubmitEditing={() => {
-              apicall();
+            onSubmitEditing={(event) => {
+              setedit(!edit);
+              console.log('onSubmitEditing event', event?.nativeEvent?.text)
+              ProfileApiCallHere({_name: event?.nativeEvent?.text});
             }}
           />
         )}
       </View>
-      {!edit ? (
+
+      <TouchableOpacity
+         onPress={() => {
+           popUp && setOpenActionSheet(true);
+           setedit(!edit);
+         }}>
+         <AddButton label={checkedit ? 'Edit' : 'Add'} />
+       </TouchableOpacity>
+      {/* {!edit || (checkedit && edit) ? (
         <TouchableOpacity
           onPress={() => {
             popUp && setOpenActionSheet(true);
@@ -87,17 +106,19 @@ const AddAnswer = ({
           }}>
           <AddButton label={checkedit ? 'Edit' : 'Add'} />
         </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          onPress={() => {
-            // UserData.UserEmail
-            //   ?
-            apicall();
-            // : navigation.navigate('LinkCompanyStackNavigation'); //navigation.navigate('LinkCompanyStackNavigation');
-          }}>
-          <AddButton label={'Update'} />
-        </TouchableOpacity>
-      )}
+      )
+        : (
+         <TouchableOpacity
+           onPress={() => {
+             // UserData.UserEmail
+             //   ?
+             apicall();
+             // : navigation.navigate('LinkCompanyStackNavigation'); //navigation.navigate('LinkCompanyStackNavigation');
+           }}>
+           <AddButton label={'Update'} />
+         </TouchableOpacity>
+       )
+      } */}
       {popUp && (
         <ProfileGenderModal
           datePicker={datePicker}

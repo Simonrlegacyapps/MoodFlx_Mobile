@@ -26,6 +26,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
 import DeviceInfo from 'react-native-device-info';
 import {UserDetail} from '../../redux/actions/actions';
+import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 
 const listData = [
   {name: 'Name', value: 'Annonymous'},
@@ -62,6 +63,7 @@ const ProfileTab = ({navigation}) => {
   const [ImageLoading, setImageLoading] = useState(false);
   const [ComingGenderPronoun, setComingGenderPronoun] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [Loading, setLoading] = useState(false);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -73,6 +75,7 @@ const ProfileTab = ({navigation}) => {
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
+
 
   const onRefresh = () => {
     setgender('');
@@ -87,6 +90,14 @@ const ProfileTab = ({navigation}) => {
   useCallback(() => {
     getProfileUserData();
   }, []);
+
+ useEffect(() => {
+    console.log('useEffect onChangePronoun: ', Pronoun);;
+  }, [Pronoun]);
+
+ useEffect(() => {
+    console.log('useEffect onChangeGender: ', gender);;
+  }, [gender]);
 
   // const renderList = ({item, index}) => {
   //   return (
@@ -153,15 +164,33 @@ const ProfileTab = ({navigation}) => {
       redirect: 'follow',
     };
 
-    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        console.log('UserDetaills', result.userData);
-        dispatch(UserDetail(result.userData));
-        setImageLoading(false);
+    GetStaffUserData({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+    }, dispatch)
+      .then(async (result) => {
+        console.log(
+          '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+          result?.userData
+        );
+        if (result?.userData?.status !== 2) {
+          // console.log('UserDetaills', result.userData);
+          dispatch(UserDetail(result.userData));
+          setImageLoading(false);
+        }
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error));
     setImageLoading(false);
+    // fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     console.log('UserDetaills', result.userData);
+    //     dispatch(UserDetail(result.userData));
+    //     setImageLoading(false);
+    //   })
+    //   .catch((error) => console.log('error', error));
+    // setImageLoading(false);
   };
 
   useEffect(() => {
@@ -296,8 +325,10 @@ const ProfileTab = ({navigation}) => {
       console.log(`images`, images);
     });
   };
+  console.log('ProfileTab Pronoun: ', Pronoun);
 
-  const ProfileApiCallHere = (genderUp) => {
+  const ProfileApiCallHere = async ({_name, _gender, _pronoun}) => {
+    const name_ = _name ? _name : name;
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
     myHeaders.append('Accept', 'application/json');
@@ -308,23 +339,21 @@ const ProfileTab = ({navigation}) => {
       email: UserData.UserEmail,
       user_id: UserData.UserId,
       full_name:
-        name != 'Anonymous'
-          ? name
-          : name != '' && UserData?.UserDetails?.full_name
+      name_ != 'Anonymous'
+          ? name_
+          : name_ != '' && UserData?.UserDetails?.full_name
           ? UserData?.UserDetails?.full_name
-          : name,
-      pronouns: Pronoun
-        ? Pronoun.name
+          : name_,
+      pronouns: _pronoun
+        ? _pronoun.name
         : UserData?.UserDetails?.pronouns
         ? UserData?.UserDetails?.pronouns
         : '',
       date_of_birth: UserData?.UserDetails?.date_of_bitrh
         ? UserData?.UserDetails?.date_of_bitrh
         : Birthday,
-      gender: gender
-        ? gender.id
-        : genderUp
-        ? genderUp
+      gender: _gender
+        ? _gender.id
         : UserData?.UserDetails?.gender
         ? UserData?.UserDetails?.gender
         : '',
@@ -338,25 +367,37 @@ const ProfileTab = ({navigation}) => {
     };
 
     console.log(`raw`, raw);
+    setLoading(true);
 
-    fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions)
+    await fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions)
       .then((response) => response.text())
       .then((result) => {
         console.log('profile updated', result), getProfileUserData();
       })
       .catch((error) => console.log('error', error));
+    setLoading(false);
   };
 
   const checkGenderName = (value) => {
-    console.log(`value`, value, ComingGenderPronoun.gender);
+    // console.log(`value`, value, ComingGenderPronoun.gender);
 
     const Id = ComingGenderPronoun.gender.find(({id}) => {
-      console.log(`name`, id, value);
+      // console.log(`name`, id, value);
       return id == value;
     });
-    console.log(`Id`, Id);
+    // console.log(`Id`, Id);
     return Id.name;
   };
+
+  const onSetGender = useCallback((value) => {
+    setgender(value);
+    ProfileApiCallHere({_gender: value});
+  }, [setgender, ProfileApiCallHere])
+
+  const onSetPronoun = useCallback((value) => {
+    setPronoun(value);
+    ProfileApiCallHere({_pronoun: value});
+  }, [setPronoun, ProfileApiCallHere])
 
   const genderData = [{label: 'Male'}, {label: 'Female'}, {label: 'trans'}];
   const PronounData = [{label: 'He/him'}, {label: 'She/her'}, {label: 'trans'}];
@@ -371,6 +412,7 @@ const ProfileTab = ({navigation}) => {
   );
 
   return (
+    <>
     <ScrollView
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -465,7 +507,7 @@ const ProfileTab = ({navigation}) => {
                 ? checkGenderName(UserData?.UserDetails?.gender)
                 : gender
             }
-            onChangeText={setgender}
+            onChangeText={onSetGender}
             popUp
           />
           {/* <AddAnswer
@@ -492,7 +534,7 @@ const ProfileTab = ({navigation}) => {
                 : Pronoun.name
             }
             gender={gender}
-            onChangeText={setPronoun}
+            onChangeText={onSetPronoun}
             popUp
           />
         </View>
@@ -526,6 +568,21 @@ const ProfileTab = ({navigation}) => {
         selectedValue={(i) => imageSelectType(i)}
       />
     </ScrollView>
+    {Loading && !openActionSheet && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'black',
+            opacity: 0.2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
+    </>
   );
 };
 
