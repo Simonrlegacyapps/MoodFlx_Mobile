@@ -30,6 +30,7 @@ import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import AnonymousPopUp from '../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
+import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -114,13 +115,35 @@ const FitnessData = ({
 
     console.log(`raw`, raw);
 
-    fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions)
-      .then((response) => response.text())
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      }, dispatch)
+      .then(async (result) => {
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+        } else {
+          return null;
+        }
+      })
       .then(async (result) => {
         setShowAddName(false);
-        console.log('profile updated', result), getProfileUserData();
+        if(result){
+          console.log(
+            '✅ ✅ ✅ ✅ Success Update Staff Profile ✅ ✅ ✅ ✅',
+            result
+          );
+          getProfileUserData();
+        }
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Update Staff Profile ❌ ❌ ❌ ❌', error));
+
   };
 
   const getProfileUserData = () => {

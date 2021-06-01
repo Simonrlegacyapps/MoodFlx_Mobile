@@ -7441,7 +7441,7 @@ react-native-chart-kit@^6.11.0:
     paths-js "^0.4.10"
     point-in-polygon "^1.0.1"
 
-react-native-check-app-install@0.0.5:
+react-native-check-app-install@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/react-native-check-app-install/-/react-native-check-app-install-0.0.5.tgz#1cd5bff09a7d294af7acc88da627984654cb1b9c"
   integrity sha512-nKUf0HcLbRGlOgSun4w2ftKZsabcwwff4GK//WwdoxG5wstqhWK1231+SKapjJY4GjoM2pI2Xv6ClTQV6e5cog==
