@@ -223,7 +223,7 @@ const SleepData = ({
         }
       })
       .catch(function (error) {
-        console.log('❌❌❌❌Fail Sleep Data❌❌❌❌', error, data);
+        console.log('❌❌❌❌Fail Update Sleep Data❌❌❌❌', error, data);
       });
 
 
@@ -263,7 +263,7 @@ const SleepData = ({
       .then((response) => response.json())
       .then(async (result) => {
         console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', result);
-        const sleepDataArray = result ? Object.values(result.sleepData) : weeklySleepApiData;
+        const sleepDataArray = result?.sleepData?.INBED ? Object.values(result.sleepData.INBED) : weeklySleepApiData;
         if(Array.isArray(sleepDataArray) && sleepDataArray.length > 0) {
         console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', sleepDataArray);
         setWeeklySleepApiData(sleepDataArray);
