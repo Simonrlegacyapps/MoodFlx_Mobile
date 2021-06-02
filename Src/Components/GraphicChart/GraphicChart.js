@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import GraphBezierCustom from '../GraphBezierCustom/GraphBezierCustom';
 import moment, { duration } from 'moment';
 import { DataGraph } from '../DataGraph/DataGraph';
-import { durationTypes } from '../../Constants/constants';
+import { dataTypes, durationTypes } from '../../Constants/constants';
 
 export const { width: SIZE } = Dimensions.get('window');
 
@@ -51,11 +51,11 @@ const BasicExample = ({
   const UserData = useSelector((state) => state.First);
 
   useEffect(() => {
-    if(Array.isArray(sleepGraphData?.weeklyData) && sleepGraphData.weeklyData.length > 0) {
+    if(graphType === dataTypes.sleep) {
       console.log('BasicExample setDuration', durationTypes.week);
       setDuration(durationTypes.week);
     }
-  }, [sleepGraphData?.weeklyData])
+  }, [])
   // console.log(`UserData.MainSteps --------->>> `, UserData.MainSteps);
   // useEffect(() => {
   //   // dataFunction();
