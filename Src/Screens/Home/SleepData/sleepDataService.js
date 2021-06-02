@@ -148,6 +148,11 @@ export function calculateSleepData(sleepData, onUpdate) {
         sleepData: formattedData,
         isPermissionAsked: true
       });
+    } else {
+      onUpdate?.({
+        sleepData: null,
+        isPermissionAsked: true
+      });
     }
   }
 }
@@ -247,27 +252,69 @@ export function getWeeklySleepData() {
 }
 
 export function getSleepGraphData({ weeklyData, monthlyData }) {
+  console.log('getSleepGraphData weeklyData: ', weeklyData);
   let weeklySleepGraphData = [];
   let monthlySleepGraphData = [];
-
-  if (Array.isArray(weeklyData) && weeklyData.length > 0 && weeklyData.length === 7) {
-    weeklySleepGraphData = [];
-    weeklyData.forEach((e, idx) => {
-      weeklySleepGraphData.push({
-        x: idx + 1,
-        y: weeklyData?.[idx]?.duration ?? 0,
-        date: e?.start_date,
+  if (Array.isArray(weeklyData) && weeklyData.length > 0 && weeklyData.length === 7 && weeklyData?.[0]?.end_date) {
+    if(weeklyData.length === 7) {
+      weeklySleepGraphData = [];
+      weeklyData.forEach((e, idx) => {
+        let day = '';
+        if(e?.start_date){
+          day = moment(new Date(e.start_date).getTime()).format('dd');
+        }
+        weeklySleepGraphData.push({
+          x: idx + 1,
+          y: weeklyData?.[idx]?.duration ? convertMinutesToHours(weeklyData[idx].duration) : 0,
+          day,
+        });
       });
+    }
+  } else if(Array.isArray(weeklyData) && weeklyData.length > 0){
+    let weekDates = [];
+    let dates = [6, 5, 4, 3, 2, 1, 0];
+    dates.forEach((e, idx) => {
+      const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+      weekDates.push(d);
     });
+    weekDates.forEach((e, idx) => {
+      const eData = moment(e);
+      let data = null;
+      let day = '';
+      day = eData.format('dd');
+      weeklyData.forEach((d) => {
+        const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+        if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
+          data = {
+            x: idx + 1,
+            y: d?.duration ? convertMinutesToHours(d.duration) : 0,
+            day,
+          }
+        }
+      });
+      if (data === null) {
+        data = {
+          x: idx + 1,
+          y: 0,
+          day
+        }
+      } else {
+      }
+      weeklySleepGraphData.push(data);
+    })
   }
 
   if (Array.isArray(monthlyData) && monthlyData.length > 0 && monthlyData.length >= 28) {
     monthlySleepGraphData = [];
     monthlyData.forEach((e, idx) => {
+      let day = '';
+      if(e?.start_date){
+        day = moment(new Date(e.start_date).getTime()).format('D');
+      }
       monthlySleepGraphData.push({
         x: idx + 1,
-        y: monthlyData?.[idx]?.duration ?? 0,
-        date: e?.start_date,
+        y: monthlyData?.[idx]?.duration ? convertMinutesToHours(monthlyData[idx].duration) : 0,
+        day,
       });
     });
   }
@@ -278,7 +325,7 @@ export function getSleepGraphData({ weeklyData, monthlyData }) {
   if (monthlySleepGraphData.length > 0) {
     graphData = Object.assign({}, (graphData ?? {}), { monthlyData: monthlySleepGraphData });
   }
-  // console.log('sleep graph data: ', graphData);
+  console.log('sleep graph data: ', graphData);
   return graphData;
 }
 
@@ -296,6 +343,22 @@ export function convertMinutesToTime(minutes) {
     }
   }
   return `${hours}${Number(hours) > 1 ? 'hrs' : 'hr'}`;
+}
+
+export function convertMinutesToHours(minutes) {
+  if(isNaN(minutes)){
+    return 0;
+  }
+  let hours = Number.parseInt(String(minutes / 60));
+  const min = minutes % 60;
+  if(min > 0) {
+    const hoursOffset = (((min * 10) / 60) / 10)
+    if(hoursOffset >= 0.1) {
+      hours += hoursOffset;
+      hours = hours.toFixed(1); 
+    }
+  }
+  return Number(hours);
 }
 
 export function getSleepDataForUpdateApi() {

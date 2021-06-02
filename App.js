@@ -45,6 +45,7 @@ import moment from 'moment';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
+import { GetStaffUserData } from './Src/apirequest/PostRequestApi';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -201,11 +202,16 @@ const App: () => React$Node = () => {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
+    var raw = {
       device_id: deviceId,
       email: e,
       user_id: Id,
-    });
+    };
+    // var raw = JSON.stringify({
+    //   device_id: deviceId,
+    //   email: e,
+    //   user_id: Id,
+    // });
 
     var requestOptions = {
       method: 'POST',
@@ -214,16 +220,18 @@ const App: () => React$Node = () => {
       redirect: 'follow',
     };
 
-    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
-      .then((response) => response.json())
+    GetStaffUserData(raw, dispatch)
       .then(async (result) => {
-        console.log(
-          '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
-          result?.userData
-        );
-        await dispatch(UserDetail(result?.userData));
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          await dispatch(UserDetail(result?.userData));
+        }
       })
       .catch((error) => console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error));
+
   };
 
   const requestNotificationPermissions = async () => {

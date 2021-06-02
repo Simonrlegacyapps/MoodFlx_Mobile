@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -17,7 +17,6 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import axios from 'axios';
-
 // import AppleHealthKit from 'rn-apple-healthkit';
 import AppleHealthKit, {
   HealthValue,
@@ -69,6 +68,7 @@ import {
   CheckPackageInstallation,
 } from 'react-native-check-app-install';
 import RNAndroidInstalledApps from 'react-native-android-installed-apps';
+import InstallGoogleFitModal from '../../Components/Modals/InstallGoogleFitModal/InstallGoogleFitModal';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -145,6 +145,7 @@ const App = (props) => {
   const [LightDataPermModal, setLightDataPermModal] = useState(false);
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
+  const [isInstallGoogleFitModalVisible, setIsInstallGoogleFitModalVisible] = useState(false);
   const {lat, long, isMoodUpdate} = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
@@ -544,6 +545,18 @@ const App = (props) => {
     }
 
     if (Platform.OS === 'android') {
+      let isGoogleFitInstalled = '-1';
+      try {
+        isGoogleFitInstalled = await AppInstalledChecker.checkPackageName('com.google.android.apps.fitness');
+        console.log('AppInstalledChecker com.google.android.apps.fitness isInstalled?: ', isGoogleFitInstalled);
+        if (isGoogleFitInstalled === false) {
+          !isInstallGoogleFitModalVisible && setIsInstallGoogleFitModalVisible(true);
+          return;
+        }
+      } catch (error) {
+        console.log('error while checking if google fit is installed:', error);
+      }
+
       console.log(`herer?`);
       const a = moment().subtract(1, 'days').endOf('day').toISOString();
       const options = {
@@ -945,6 +958,26 @@ const App = (props) => {
     setMoveTime(WalkTime.length > 0 ? (WalkTime[0].walkTime / 120) * 100 : 0);
   };
 
+  const dismissInstallGoogleFitModal = useCallback(() => {
+    setIsInstallGoogleFitModalVisible(false);
+  }, [setIsInstallGoogleFitModalVisible]);
+
+  const onInstallGoogleFit = useCallback(async () => {
+    const googleFitPlayStoreUrl = 'https://play.google.com/store/apps/details?id=com.google.android.apps.fitness';
+    const supported = await Linking.canOpenURL(googleFitPlayStoreUrl);
+      if (supported) {
+        // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+        // by some browser in the mobile
+        dismissInstallGoogleFitModal();
+        const timeoutId = setTimeout(async () => {
+          await Linking.openURL(googleFitPlayStoreUrl);
+          clearTimeout(timeoutId);
+        }, 500);
+      } else {
+        console.log(`Don't know how to open this URL: ${googleFitPlayStoreUrl}`);
+      }
+  }, [])
+
   // const FitnessData = () => {
   //   return <FitnessData Perm={Perm} checkStorage={checkStorage} />;
   // };
@@ -1085,7 +1118,7 @@ const App = (props) => {
           />
         </View>
       </Swiper>
-      {Loading && (
+      {Loading && !isInstallGoogleFitModalVisible && (
         <View
           style={{
             position: 'absolute',
@@ -1099,6 +1132,12 @@ const App = (props) => {
           <ActivityIndicator size="large" />
         </View>
       )}
+      <InstallGoogleFitModal
+        modalVisible={!Loading && isInstallGoogleFitModalVisible}
+        dismissModalHandler={dismissInstallGoogleFitModal}
+        onClickButtonOne={onInstallGoogleFit}
+        buttonOneText='Install Google Fit'
+      />
     </View>
   );
 };

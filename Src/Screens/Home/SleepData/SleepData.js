@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -40,6 +41,8 @@ import {
   fetchSleepDataForLastThirtyDays,
   getSleepDataForUpdateApi
 } from './sleepDataService';
+import { dataTypes } from '../../../Constants/constants';
+import { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 
 
 export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
@@ -68,6 +71,7 @@ const SleepData = ({
   const [sleepMinutesToday, setSleepMinutesToday] = useState(0);
   const [lastThirtyDaySleepData, setLastThirtyDaySleepData] = useState(null);
   const [weeklySleepData, setWeeklySleepData] = useState(null);
+  const [weeklySleepApiData, setWeeklySleepApiData] = useState(null);
   const [monthlySleepData, setMonthlySleepData] = useState(null);
 
   const UserData = useSelector((state) => state.First);
@@ -87,7 +91,11 @@ const SleepData = ({
         onUpdate: function ({sleepData, isPermissionAsked}) {
           setLastThirtyDaySleepData(sleepData);
           if(isMoodUpdate) {
-            callSleepDataUpdateApi(sleepData);
+            if(sleepData){
+              callSleepDataUpdateApi(sleepData);
+            } else {
+              callGetSleepDataApi();
+            }
           }
         },
         dispatch
@@ -110,7 +118,11 @@ const SleepData = ({
         console.log('setLastThirtyDaySleepData: ', sleepData)
         setLastThirtyDaySleepData(sleepData);
         if(isMoodUpdate) {
-          callSleepDataUpdateApi(sleepData);
+          if(sleepData){
+            callSleepDataUpdateApi(sleepData);
+          } else {
+            callGetSleepDataApi();
+          }
         }
       },
       dispatch
@@ -184,12 +196,81 @@ const SleepData = ({
       data: data,
     };
 
-    axios(config)
-      .then(function (response) {
-        console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail ?? '',
+        user_id: UserData.UserId ?? '',
+      }, dispatch)
+      .then(async (result) => {
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          return axios(config);
+        } else {
+          return null;
+        }
+      })
+      .then(async (result) => {
+        if(result){
+          console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
+          const timeoutId = setTimeout(() => {
+            callGetSleepDataApi();
+            clearTimeout(timeoutId);
+          }, 500);
+        }
       })
       .catch(function (error) {
         console.log('❌❌❌❌Fail Update Sleep Data❌❌❌❌', error, data);
+      });
+
+
+    // axios(config)
+    //   .then(function (response) {
+    //     console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
+    //     const timeoutId = setTimeout(() => {
+    //       callGetSleepDataApi();
+    //       clearTimeout(timeoutId);
+    //     }, 500);
+    //   })
+    //   .catch(function (error) {
+    //     console.log('❌❌❌❌Fail Sleep Data❌❌❌❌', error, data);
+    //   });
+  }, [UserData.UserEmail, UserData.UserId]);
+
+  const callGetSleepDataApi = useCallback(() => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData?.UserEmail ?? '',
+      user_id: UserData?.UserId ?? '',
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      // redirect: 'follow',
+    };
+
+    console.log(`Get Sleep Data Params`, raw);
+    fetch('https://admin.moodflo.com/api/getSleepQualityReport', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', result);
+        const sleepDataArray = result?.sleepData?.INBED ? Object.values(result.sleepData.INBED) : weeklySleepApiData;
+        if(Array.isArray(sleepDataArray) && sleepDataArray.length > 0) {
+        console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', sleepDataArray);
+        setWeeklySleepApiData(sleepDataArray);
+        }
+      })
+      .catch(function (error) {
+        console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, raw);
       });
   }, [UserData.UserEmail, UserData.UserId]);
 
@@ -302,7 +383,7 @@ const SleepData = ({
 
           <View style={{ marginBottom: 50 }}>
             <StarProgress
-              sleepMinutes={sleepMinutesToday}
+              sleepMinutes={UserData.SleepPermission ? sleepMinutesToday : 360}
             />
             <View
               style={{
@@ -314,7 +395,8 @@ const SleepData = ({
           </View>
           <GraphicChart 
             isDailyDisabled={true}
-            sleepGraphData={getSleepGraphData({weeklyData: weeklySleepData, monthlyData: monthlySleepData})}
+            sleepGraphData={getSleepGraphData({weeklyData: (weeklySleepApiData || weeklySleepData), monthlyData: monthlySleepData})}
+            graphType={dataTypes.sleep}
           />
           {!UserData.SleepPermission && (
             <View
@@ -359,8 +441,8 @@ const SleepData = ({
       </ScrollView>
 
       <PopUp
-        ComingUp
-        permission={false}
+        ComingUp={Platform.OS === 'android'}
+        permission={UserData.SleepPermission}
         image={Constants.Images.Sleepimage}
         dataType={'sleep'}
         modalVisible={openActionSheet}

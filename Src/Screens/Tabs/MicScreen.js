@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -9,7 +9,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import {ScrollView} from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import HappyIcon from '../../../assets/emotionsicons/HappyIcon';
 import Constants from '../../Constants';
 import {
@@ -17,18 +17,19 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import Svg, {Path, SvgUri} from 'react-native-svg';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import Svg, { Path, SvgUri } from 'react-native-svg';
+import { dynamicSize } from '../../Constants/sizeChoose';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AsyncStorage from '@react-native-community/async-storage';
-import {GetUserId, UserEmail} from '../../redux/actions/actions';
-import {useFocusEffect} from '@react-navigation/native';
-const {height, width} = Dimensions.get('window');
-const MicScreen = ({navigation}) => {
+import { GetUserId, UserEmail } from '../../redux/actions/actions';
+import { useFocusEffect } from '@react-navigation/native';
+import { GetStaffUserData } from '../../apirequest/PostRequestApi';
+const { height, width } = Dimensions.get('window');
+const MicScreen = ({ navigation }) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
@@ -74,15 +75,37 @@ const MicScreen = ({navigation}) => {
       redirect: 'follow',
     };
     setLoading(true);
-    fetch('https://admin.moodflo.com/api/getQuestions', requestOptions)
-      .then((response) => response.json())
+
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: e,
+        user_id: Id,
+      }, dispatch)
       .then(async (result) => {
-        // console.log(`called here`, result);
-        // console.log('response of questions', result),
-        await setquestions(result.questions);
-        setLoading(false);
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          return fetch('https://admin.moodflo.com/api/getQuestions', requestOptions);
+        } else {
+          return null;
+        }
       })
-      .catch((error) => console.log('error', error));
+      .then(async (result) => {
+        if (result) {
+          console.log(' ✅ ✅ ✅ ✅ Success Get Questions✅ ✅ ✅ ✅ ', result);
+          if(result?.questions) {
+            await setquestions(result?.questions);
+          } 
+          setLoading(false);
+        }
+      })
+      .catch(function (error) {
+        console.log('❌❌❌❌Fail Get Questions❌❌❌❌', error, data);
+      });
+
   };
 
   useFocusEffect(
@@ -164,14 +187,14 @@ const MicScreen = ({navigation}) => {
             }}
           />
         </View>
-        <Image style={{marginTop: -10}} source={Constants.Images.Circles} />
-        <View style={{marginHorizontal: 15, paddingBottom: 90}}>
+        <Image style={{ marginTop: -10 }} source={Constants.Images.Circles} />
+        <View style={{ marginHorizontal: 15, paddingBottom: 90 }}>
           <Text style={styles.normalText}>Team Pulse</Text>
           {UserData.UserEmail ? (
             questions && questions.length > 0 ? (
               <Text style={styles.BigText}>Have your say as a collective</Text>
             ) : (
-              <Text style={{textAlign: 'center', alignSelf: 'center', flex: 1}}>
+              <Text style={{ textAlign: 'center', alignSelf: 'center', flex: 1 }}>
                 <Text
                   numberOfLines={4}
                   style={{
@@ -235,15 +258,15 @@ const MicScreen = ({navigation}) => {
                   onPress={() =>
                     givenDate >= todayDate
                       ? navigation.replace('MoodEmotionDetector', {
-                          question: item.id,
-                        })
+                        question: item.id,
+                      })
                       : setDateExpired(true)
                   }>
-                  <View style={{flexDirection: 'row'}}>
-                    <Text style={[styles.questionText, {marginHorizontal: 6}]}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text style={[styles.questionText, { marginHorizontal: 6 }]}>
                       {index + 1}.{' '}
                     </Text>
-                    <Text style={[styles.questionText, {width: '92%'}]}>
+                    <Text style={[styles.questionText, { width: '92%' }]}>
                       {item.question}
                     </Text>
                   </View>
@@ -256,7 +279,7 @@ const MicScreen = ({navigation}) => {
                       }}>
                       <View style={styles.ans}>
                         <Text
-                          style={{flexDirection: 'row', marginHorizontal: 10}}>
+                          style={{ flexDirection: 'row', marginHorizontal: 10 }}>
                           {item.name}
                         </Text>
                         {/* <HappyIcon /> */}
@@ -266,7 +289,7 @@ const MicScreen = ({navigation}) => {
                           // viewBox="0 0 24 24"
                           fill="none"
                           uri={`https://super.moodflo.com/${item.icon}`}
-                          // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+                        // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
                         />
                       </View>
                       <Text
@@ -292,7 +315,7 @@ const MicScreen = ({navigation}) => {
               onPress={() => {
                 navigation.navigate('LinkCompanyStackNavigation');
               }}
-              style={{alignItems: 'center', justifyContent: 'center'}}>
+              style={{ alignItems: 'center', justifyContent: 'center' }}>
               <View
                 style={{
                   marginTop: dynamicSize(48),
@@ -305,7 +328,7 @@ const MicScreen = ({navigation}) => {
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
+                  style={{ fontWeight: '500', fontSize: 16, color: '#7265E3' }}>
                   Connect
                 </Text>
               </View>

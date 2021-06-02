@@ -15,6 +15,7 @@ import {PHOTO_URL} from '../../Constants/constants';
 import AddNameModal from '../Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
 import {dynamicSize} from '../../Constants/sizeChoose';
+import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 
 const AnonymousHeader = ({backGround}) => {
   const UserData = useSelector((state) => state.First);
@@ -55,15 +56,38 @@ const AnonymousHeader = ({backGround}) => {
 
     console.log(`raw`, raw);
 
-    fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions)
-      .then((response) => response.text())
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      }, dispatch)
       .then(async (result) => {
-        await AsyncStorage.setItem('Anonymous', JSON.stringify(false));
-        dispatch(IsAnonymous(false));
-        setShowAddName(false);
-        console.log('profile updated', result), getProfileUserData();
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+        } else {
+          return null;
+        }
       })
-      .catch((error) => console.log('error', error));
+      .then(async (result) => {
+        if(result){
+          await AsyncStorage.setItem('Anonymous', JSON.stringify(false));
+          dispatch(IsAnonymous(false));
+          setShowAddName(false);
+          // console.log('profile updated', result), getProfileUserData();
+          console.log(
+            '✅ ✅ ✅ ✅ Success Update Staff Profile ✅ ✅ ✅ ✅',
+            result
+          );
+          getProfileUserData();
+        }
+      })
+      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Update Staff Profile ❌ ❌ ❌ ❌', error));
+
   };
 
   const getProfileUserData = () => {
