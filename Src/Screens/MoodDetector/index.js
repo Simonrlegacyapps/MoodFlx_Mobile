@@ -36,6 +36,7 @@ import {hsv2Hex, pSBC} from './moodUtlis';
 import {
   dynamicSize,
   getFontSize,
+  getLineHeight,
   horizontalScale,
   iPhoneXPadding,
   isIphoneX,
@@ -1062,6 +1063,7 @@ export default function MoodDetector({navigation}) {
   };
 
   const renderBlocks = () => {
+    const lineHeight = getLineHeight(12);
     return (
       <View
         ref={blocksContainerRef}
@@ -1121,8 +1123,10 @@ export default function MoodDetector({navigation}) {
           <Text
             // ref={(ref) => this.passiveCalm = ref}
             style={{
-              color: '#fff',
+              color: '#000000',
               //  left: width / 2.4,
+              lineHeight: lineHeight,
+              fontSize: 12,
             }}>
             Passive/Calm
           </Text>
@@ -1133,7 +1137,7 @@ export default function MoodDetector({navigation}) {
             flexDirection: 'row',
             hieght: blocksContainerSize?.height,
             top: blocksContainerSize
-              ? blocksContainerSize.height / 2 - 6
+              ? (blocksContainerSize.height / 2) - (lineHeight/2)
               : undefined,
             alignItems: 'center',
             position: 'absolute',
@@ -1143,8 +1147,9 @@ export default function MoodDetector({navigation}) {
           <Text
             // ref={(ref) => this.negative = ref}
             style={{
-              color: '#fff',
-              lineHeight: 12,
+              color: '#000000',
+              lineHeight: lineHeight,
+              fontSize: 12,
               // flex: 1,
               // justifyContent: 'center',
               //  top: height / 3.05,
@@ -1164,8 +1169,9 @@ export default function MoodDetector({navigation}) {
           <Text
             // ref={(ref) => this.activeAroused = ref}
             style={{
-              color: '#fff',
-              //  left: width / 2.56,
+              color: '#000000',
+              lineHeight: lineHeight,
+              fontSize: 12,
             }}>
             Active/Aroused
           </Text>
@@ -1177,7 +1183,7 @@ export default function MoodDetector({navigation}) {
             justifyContent: 'center',
             position: 'absolute',
             top: blocksContainerSize
-              ? blocksContainerSize.height / 2 - 6
+              ? (blocksContainerSize.height / 2) - (lineHeight/2)
               : undefined,
             right: 6,
             zIndex: 2,
@@ -1185,9 +1191,10 @@ export default function MoodDetector({navigation}) {
           <Text
             // ref={(ref) => this.positive = ref}
             style={{
-              color: '#fff',
+              color: '#000000',
               //  top: height / 3.05,
-              lineHeight: 12,
+              lineHeight: lineHeight,
+              fontSize: 12,
             }}>
             Positive
           </Text>
