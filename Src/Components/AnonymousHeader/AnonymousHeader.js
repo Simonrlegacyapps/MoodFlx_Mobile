@@ -35,7 +35,7 @@ const AnonymousHeader = ({backGround}) => {
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
+    var raw = {
       device_id: deviceId,
       email: UserData.UserEmail,
       user_id: UserData.UserId,
@@ -45,12 +45,12 @@ const AnonymousHeader = ({backGround}) => {
       pronouns: null,
       date_of_birth: null,
       gender: null,
-    });
+    };
 
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
-      body: raw,
+      body: JSON.stringify(raw),
       redirect: 'follow',
     };
 
@@ -70,7 +70,10 @@ const AnonymousHeader = ({backGround}) => {
         if (result?.userData?.status !== 2) {
           return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
         } else {
-          return null;
+          raw.email = '';
+          raw.user_id = '';
+          requestOptions.body = JSON.stringify(raw);
+          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
         }
       })
       .then(async (result) => {

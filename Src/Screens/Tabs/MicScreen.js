@@ -90,9 +90,15 @@ const MicScreen = ({ navigation }) => {
         if (result?.userData?.status !== 2) {
           return fetch('https://admin.moodflo.com/api/getQuestions', requestOptions);
         } else {
-          return null;
+          requestOptions.body = JSON.stringify({
+            device_id: deviceId,
+            email: '',
+            user_id: '',
+          })
+          return fetch('https://admin.moodflo.com/api/getQuestions', requestOptions);
         }
       })
+      .then(async (result) => result.json())
       .then(async (result) => {
         if (result) {
           console.log(' ✅ ✅ ✅ ✅ Success Get Questions✅ ✅ ✅ ✅ ', result);

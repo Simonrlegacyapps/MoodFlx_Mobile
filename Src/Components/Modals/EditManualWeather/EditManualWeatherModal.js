@@ -23,7 +23,7 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import {dynamicSize} from '../../../Constants/sizeChoose';
+import {dynamicSize, getFontSize, horizontalScale} from '../../../Constants/sizeChoose';
 import ProfileGenderModal from '../ProfileGender/ProfileGenderModal';
 
 type props = {
@@ -206,7 +206,8 @@ const EditManualWeatherModal = ({
                         flexDirection: 'row',
                         // backgroundColor: 'red',
 
-                        flex: 1,
+                        // flex: 1,
+                        paddingTop: horizontalScale(10),
                         alignItems: 'center',
                       }}>
                       <TextInput
@@ -228,7 +229,7 @@ const EditManualWeatherModal = ({
                             minWidth: 55,
                             paddingRight: 0,
                             fontFamily: RubikMedium,
-                            fontSize: dynamicSize(34),
+                            fontSize: getFontSize(34),
                             borderBottomWidth: 1,
                           },
                         ]}>
