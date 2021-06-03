@@ -53,7 +53,6 @@ const GraphBezierCustom = ({
   sleep,
 }) => {
   // console.log(`numberOfXAxis`, check.length);
-  console.log('GraphBezierCustom: ', data)
   const scaleX = scaleTime()
     .domain([1, check && fitness && Duration === 'Daily' ? check.length : 7])
     .range([0, widthProp]);

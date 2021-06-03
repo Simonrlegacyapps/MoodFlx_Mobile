@@ -15,7 +15,7 @@ import {
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
-import {PHOTO_URL} from '../../../Constants/constants';
+import {PHOTO_URL, weatherActions, weatherApiDataTypes, weatherTypes} from '../../../Constants/constants';
 import {
   RubikBlack,
   RubikBold,
@@ -78,40 +78,34 @@ const EditManualWeatherModal = ({
     {name: 'High', id: 'High'},
   ];
   let Weatherdata = [
-    {name: 'Rainy', id: 'Rainy'},
-    {name: 'Sunny', id: 'Sunny'},
-    {name: 'Cloudy', id: 'Cloudy'},
-    {name: 'Stormy', id: 'Stormy'},
-    {name: 'Snowy', id: 'Snowy'},
+    {name: weatherTypes.Rainy, id: weatherTypes.Rainy},
+    {name: weatherTypes.Sunny, id: weatherTypes.Sunny},
+    {name: weatherTypes.Cloudy, id: weatherTypes.Cloudy},
+    {name: weatherTypes.Stormy, id: weatherTypes.Stormy},
+    {name: weatherTypes.Snowy, id: weatherTypes.Snowy},
   ];
 
   const findWeather = (value) => {
     // console.log(`value`, value);
-    let weather = '';
-    if (value) {
-      value == 'clear sky'
-        ? (weather = weather + 'Sunny')
-        : value == 'few clouds' ||
-          value == 'scattered clouds' ||
-          value == 'broken clouds'
-        ? (weather = weather + 'Cloudy')
-        : value == 'rain' || value == 'shower rain'
-        ? (weather = weather + 'Rainy')
-        : value == 'thunderstorm'
-        ? (weather = weather + 'Stormy')
-        : value == 'snow' || value == 'mist'
-        ? (weather = weather + 'Snowy')
-        : value == undefined
-        ? (weather = weather + 'Rainy')
-        : (weather = weather + 'Rainy');
-    }
-
-    return weather;
+    console.log(`findWeather value`, value);
+    const v = value?.toLowerCase?.() ?? value;
+    return weatherApiDataTypes?.[v] ?? weatherTypes.Rainy;
   };
 
   let myname = UserData?.UserDetails?.full_name
     ? UserData?.UserDetails?.full_name
     : 'InnoApps';
+
+  const _weatherType = WeatherType
+    ? WeatherType
+    : Weather
+      ? findWeather(Weather?.weather?.[0]?.main)
+      : weatherTypes.Rainy;
+
+  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Rainy;
+
+  const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Rain;
+
   return (
     <Modal
       style={styles.modalView}
@@ -174,7 +168,7 @@ const EditManualWeatherModal = ({
                   <TouchableOpacity onPress={() => setOpenWeatherType(true)}>
                     <Image
                       resizeMode={'contain'}
-                      source={Constants.Images.Rain}
+                      source={_largeWeatherImg}
                       style={{margin: 10, marginHorizontal: 14}}
                     />
                   </TouchableOpacity>
@@ -183,11 +177,7 @@ const EditManualWeatherModal = ({
                       style={{flexDirection: 'row'}}
                       onPress={() => setOpenWeatherType(true)}>
                       <Text style={[styles.Card1Text, {marginLeft: -10}]}>
-                        {WeatherType
-                          ? WeatherType
-                          : Weather
-                          ? findWeather(Weather.weather[0].description)
-                          : 'Low'}
+                        {_weatherType}
                       </Text>
                       <Image
                         resizeMode={'contain'}
@@ -265,11 +255,7 @@ const EditManualWeatherModal = ({
                       <TouchableOpacity
                         onPress={() => setOpenWeatherType(true)}>
                         <Text style={[styles.Card1Text]}>
-                          {WeatherType
-                            ? WeatherType
-                            : Weather
-                            ? findWeather(Weather.weather[0].description)
-                            : 'Low'}
+                          {_weatherAction}
                         </Text>
                       </TouchableOpacity>
                       <View

@@ -52,7 +52,6 @@ const BasicExample = ({
 
   useEffect(() => {
     if(graphType === dataTypes.sleep) {
-      console.log('BasicExample setDuration', durationTypes.week);
       setDuration(durationTypes.week);
     }
   }, [])
@@ -231,7 +230,6 @@ const BasicExample = ({
     },
   ];
 
-  console.log('BasicExample: ', sleepGraphData?.weeklyData);
 
   const data =
     dataOfWeatherGraph && Duration === durationTypes.daily
