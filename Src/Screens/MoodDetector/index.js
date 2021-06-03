@@ -1064,7 +1064,8 @@ export default function MoodDetector({navigation}) {
   };
 
   const renderBlocks = () => {
-    const lineHeight = getLineHeight(12);
+    const fontSize = getFontSize(12)
+    const lineHeight = getLineHeight(fontSize);
     return (
       <View
         ref={blocksContainerRef}
@@ -1127,7 +1128,7 @@ export default function MoodDetector({navigation}) {
               color: '#000000',
               //  left: width / 2.4,
               lineHeight: lineHeight,
-              fontSize: 12,
+              fontSize: fontSize,
             }}>
             Passive/Calm
           </Text>
@@ -1150,7 +1151,7 @@ export default function MoodDetector({navigation}) {
             style={{
               color: '#000000',
               lineHeight: lineHeight,
-              fontSize: 12,
+              fontSize: fontSize,
               // flex: 1,
               // justifyContent: 'center',
               //  top: height / 3.05,
@@ -1172,7 +1173,7 @@ export default function MoodDetector({navigation}) {
             style={{
               color: '#000000',
               lineHeight: lineHeight,
-              fontSize: 12,
+              fontSize: fontSize,
             }}>
             Active/Aroused
           </Text>
@@ -1195,7 +1196,7 @@ export default function MoodDetector({navigation}) {
               color: '#000000',
               //  top: height / 3.05,
               lineHeight: lineHeight,
-              fontSize: 12,
+              fontSize: fontSize,
             }}>
             Positive
           </Text>

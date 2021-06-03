@@ -18,7 +18,7 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import Svg, { Path, SvgUri } from 'react-native-svg';
-import { dynamicSize } from '../../Constants/sizeChoose';
+import { dynamicSize, isTablet } from '../../Constants/sizeChoose';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import { useDispatch, useSelector } from 'react-redux';
@@ -189,11 +189,17 @@ const MicScreen = ({ navigation }) => {
             style={{
               height: dynamicSize(300),
               width: width,
-              resizeMode: 'stretch',
+              resizeMode: isTablet ? 'contain' : 'stretch',
             }}
           />
         </View>
-        <Image style={{ marginTop: -10 }} source={Constants.Images.Circles} />
+        <Image style={{ 
+          marginTop: -10,
+          ...isTablet ? {
+            resizeMode: 'stretch',
+            width: width,
+          } : {},
+         }} source={Constants.Images.Circles} />
         <View style={{ marginHorizontal: 15, paddingBottom: 90 }}>
           <Text style={styles.normalText}>Team Pulse</Text>
           {UserData.UserEmail ? (

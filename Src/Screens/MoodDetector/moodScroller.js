@@ -103,8 +103,8 @@ export default function MoodScroller({
               </Text>
               {emotionText !== 'Slide finger' && (
                 <SvgUri
-                  width={20}
-                  height={20}
+                  width={getFontSize(20)}
+                  height={getFontSize(20)}
                   // viewBox="0 0 24 24"
                   fill="none"
                   uri={`https://super.moodflo.com/${toolTipData?.img

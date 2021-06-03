@@ -30,7 +30,7 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import PopUp from '../../../Components/PopUp/PopUp';
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
-import {dynamicSize} from '../../../Constants/sizeChoose';
+import {dynamicSize, horizontalScale, isTablet} from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
 import {Lat, Long, WeatherPerm} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
@@ -133,8 +133,8 @@ const WeatherData = ({
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
-        console.log(`weather day data api success response`, response);
-        console.log(`weather day data api success response`, JSON.stringify(response));
+        // console.log(`weather day data api success response`, response);
+        // console.log(`weather day data api success response`, JSON.stringify(response));
         setAllDayWeather(response.data.hourly);
         if (UserData.DayTemperature) {
           for (let i in response.data.hourly) {
@@ -161,7 +161,7 @@ const WeatherData = ({
     const v = value?.toLowerCase?.() ?? value;
     return weatherApiDataTypes?.[v] ?? weatherTypes.Rainy;
   };
-console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
+// console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
   const syncWeatherData = async () => {
     let geocode = null;
     Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
@@ -434,8 +434,8 @@ console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
     },
   ];
 
-  let heightProp = SIZE / 4.3;
-  let widthProp = Math.round(SIZE - 138);
+  let heightProp = isTablet ? horizontalScale(30) : (SIZE / 4.3);
+  let widthProp = isTablet ? Math.round(SIZE - (SIZE * 0.48)) : Math.round(SIZE - 138);
 
   const max =
     data &&
