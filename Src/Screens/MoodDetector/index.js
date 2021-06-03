@@ -905,6 +905,7 @@ export default function MoodDetector({navigation}) {
         user_id: UserData.UserId,
         device_token: fcm,
         device_type: Platform.OS,
+        anonymous: !UserData.Anonymous ? 0 : 1,
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
