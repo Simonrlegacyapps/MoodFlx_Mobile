@@ -180,12 +180,12 @@ const SleepData = ({
     console.log('api sleep data: ', sleepData);
     // return;
     const deviceId = DeviceInfo.getUniqueId();
-    const data = JSON.stringify({
+    let data = {
       device_id: deviceId,
       email: UserData.UserEmail ?? '',
       user_id: UserData.UserId ?? '',
       sleep_data: sleepData
-    });
+    };
     var config = {
       method: 'post',
       url: 'https://admin.moodflo.com/api/updateSleepQuality',
@@ -193,7 +193,7 @@ const SleepData = ({
         'Content-Type': 'application/json',
         Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
       },
-      data: data,
+      data: JSON.stringify(data),
     };
 
     GetStaffUserData(
@@ -210,7 +210,10 @@ const SleepData = ({
         if (result?.userData?.status !== 2) {
           return axios(config);
         } else {
-          return null;
+          data.user_id = '';
+          data.email = '';
+          config.data = JSON.stringify(data);
+          return axios(config);
         }
       })
       .then(async (result) => {

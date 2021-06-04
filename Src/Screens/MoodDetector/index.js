@@ -74,11 +74,16 @@ import {RubikMedium} from '../../Constants/fonts/Fonts';
 import {useFocusEffect} from '@react-navigation/native';
 import messaging, {firebase} from '@react-native-firebase/messaging';
 import {hapticsTopFlags} from '../../Constants/constants';
+import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
 let lpX = 0;
 let lpY = 0;
+
+let isUnmounted = true;
+let isMoodDetectorScreenFocused = false;
+let currentNotif = null;
 
 const hapticOptions = {
   enableVibrateFallback: true,
@@ -683,15 +688,7 @@ export default function MoodDetector({navigation}) {
   };
 
   useEffect(() => {
-    // console.log(`tesst`);
-    // setTimeout(() => {
-    // PushNotification.configure({
-    //   onNotification: function (notification) {
-    //     setNotifData(notification);
-    //     setIsNotificationQuestionModalVisible(true);
-    //     console.log('NOTIFICATION: HOME', notification);
-    //   },
-    // });
+    isUnmounted = false;
 
     PushNotification.configure({
       onNotification: function (notification) {
@@ -699,10 +696,18 @@ export default function MoodDetector({navigation}) {
           console.log(
             `Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++`,
           );
-          setNotifData(notification);
-          setIsNotificationQuestionModalVisible(true);
+          if(isUnmounted === false && isMoodDetectorScreenFocused === true) {
+            setNotifData(notification);
+            setIsNotificationQuestionModalVisible(true);
+          }
+          currentNotif = notification;
         }
-        console.log('NOTIFICATION: HOME', notification);
+        const currentRoute = getCurrentRoute();
+        if(currentRoute?.name !== 'MoodEmotionDetector'){
+          navigate('MoodEmotionDetector');
+        }
+        NotifService.cancelDeliveredNotifications([String(notification.id)])
+        console.log('NOTIFICATION: MoodDetector', notification);
       },
     });
     // const data = NotifService.getLatestNotificationData();
@@ -711,6 +716,10 @@ export default function MoodDetector({navigation}) {
     // });
     // console.log(`data fro notification`, data);
     // }, 1000);
+    return () => {
+      isUnmounted = true;
+      currentNotif = null;
+    }
   }, []);
 
   useEffect(() => {
@@ -905,6 +914,7 @@ export default function MoodDetector({navigation}) {
         user_id: UserData.UserId,
         device_token: fcm,
         device_type: Platform.OS,
+        anonymous: !UserData.Anonymous ? 0 : 1,
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
@@ -1036,13 +1046,18 @@ export default function MoodDetector({navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-      let isActive = true;
+      isMoodDetectorScreenFocused = true;
+      if(currentNotif) {
+        setNotifData(currentNotif);
+        setIsNotificationQuestionModalVisible(true);
+      }
       // screen isFocused
       // console.log('screen isFocused: ', isActive);
 
       return () => {
         // screen is out of focus
-        isActive = false;
+        isMoodDetectorScreenFocused = false;
+        currentNotif = null;
         setWheelSize(regularWheelSize);
         setScrollerWheelSize(regularWheelSize);
         // console.log('screen is out of focus: ', isActive);
@@ -1063,7 +1078,8 @@ export default function MoodDetector({navigation}) {
   };
 
   const renderBlocks = () => {
-    const lineHeight = getLineHeight(12);
+    const fontSize = getFontSize(12)
+    const lineHeight = getLineHeight(fontSize);
     return (
       <View
         ref={blocksContainerRef}
@@ -1126,7 +1142,7 @@ export default function MoodDetector({navigation}) {
               color: '#000000',
               //  left: width / 2.4,
               lineHeight: lineHeight,
-              fontSize: 12,
+              fontSize: fontSize,
             }}>
             Passive/Calm
           </Text>
@@ -1149,7 +1165,7 @@ export default function MoodDetector({navigation}) {
             style={{
               color: '#000000',
               lineHeight: lineHeight,
-              fontSize: 12,
+              fontSize: fontSize,
               // flex: 1,
               // justifyContent: 'center',
               //  top: height / 3.05,
@@ -1171,7 +1187,7 @@ export default function MoodDetector({navigation}) {
             style={{
               color: '#000000',
               lineHeight: lineHeight,
-              fontSize: 12,
+              fontSize: fontSize,
             }}>
             Active/Aroused
           </Text>
@@ -1194,7 +1210,7 @@ export default function MoodDetector({navigation}) {
               color: '#000000',
               //  top: height / 3.05,
               lineHeight: lineHeight,
-              fontSize: 12,
+              fontSize: fontSize,
             }}>
             Positive
           </Text>
@@ -1319,6 +1335,7 @@ export default function MoodDetector({navigation}) {
         // forceUpdate={forceUpdate}
         forceUpdate={setLPXY}
         wheelSize={wheelSize}
+        iconColor={color}
         onToolTipLayout={onToolTipLayout}
         isAllMoodsDataAvailable={UserData.AllMoods !== null}
         scrollerRef={(ref) => (scrollerRef.current = ref)}

@@ -30,12 +30,13 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import PopUp from '../../../Components/PopUp/PopUp';
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
-import {dynamicSize} from '../../../Constants/sizeChoose';
+import {dynamicSize, horizontalScale, isTablet} from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
 import {Lat, Long, WeatherPerm} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
+import { weatherActions, weatherApiDataTypes, weatherTypes } from '../../../Constants/constants';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -132,7 +133,8 @@ const WeatherData = ({
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
-        // console.log(`response.data.hourly`, response.data.hourly);
+        // console.log(`weather day data api success response`, response);
+        // console.log(`weather day data api success response`, JSON.stringify(response));
         setAllDayWeather(response.data.hourly);
         if (UserData.DayTemperature) {
           for (let i in response.data.hourly) {
@@ -155,29 +157,11 @@ const WeatherData = ({
   };
 
   const findWeather = (value) => {
-    // console.log(`value`, value);
-    let weather = '';
-    if (value) {
-      value == 'clear sky'
-        ? (weather = weather + 'Sunny')
-        : value == 'few clouds' ||
-          value == 'scattered clouds' ||
-          value == 'broken clouds'
-        ? (weather = weather + 'Cloudy')
-        : value == 'rain' || value == 'shower rain'
-        ? (weather = weather + 'Rainy')
-        : value == 'thunderstorm'
-        ? (weather = weather + 'Stormy')
-        : value == 'snow' || value == 'mist'
-        ? (weather = weather + 'Snowy')
-        : value == undefined
-        ? (weather = weather + 'Rainy')
-        : (weather = weather + 'Rainy');
-    }
-
-    return weather;
+    console.log(`findWeather value`, value);
+    const v = value?.toLowerCase?.() ?? value;
+    return weatherApiDataTypes?.[v] ?? weatherTypes.Rainy;
   };
-
+// console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
   const syncWeatherData = async () => {
     let geocode = null;
     Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
@@ -204,7 +188,7 @@ const WeatherData = ({
         }
       })
       .catch((err) => console.log(`weather api location err`, err));
-
+    
     const deviceId = DeviceInfo.getUniqueId();
     const data = JSON.stringify({
       user_id: UserData.UserId,
@@ -213,7 +197,7 @@ const WeatherData = ({
       hours: ManulHours ? ManulHours : hours,
       weather_type: ManualWeatherType
         ? ManualWeatherType
-        : findWeather(UserData?.DayTemperature?.weather[0].description),
+        : findWeather(UserData?.DayTemperature?.weather?.[0]?.main),
       pollen: null,
       pollen_type: ManulPollen ? ManulPollen : 'Low',
       weather_data: UserData.DayTemperature,
@@ -450,8 +434,8 @@ const WeatherData = ({
     },
   ];
 
-  let heightProp = SIZE / 4.3;
-  let widthProp = Math.round(SIZE - 138);
+  let heightProp = isTablet ? horizontalScale(30) : (SIZE / 4.3);
+  let widthProp = isTablet ? Math.round(SIZE - (SIZE * 0.48)) : Math.round(SIZE - 138);
 
   const max =
     data &&
@@ -560,6 +544,17 @@ const WeatherData = ({
     },
   ];
   // console.log(`AllDayWeather`, AllDayWeather);
+
+  const _weatherType = ManualWeatherType
+  ? ManualWeatherType
+  : Weather
+  ? findWeather(Weather?.weather?.[0]?.main)
+  : weatherTypes.Rainy;
+
+  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Rainy;
+
+  const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Rain;
+
   return (
     <View>
       {/* {console.log(`data`, data)} */}
@@ -704,16 +699,12 @@ const WeatherData = ({
                       }}>
                       <Image
                         resizeMode={'contain'}
-                        source={Constants.Images.Rain}
+                        source={_largeWeatherImg}
                         style={{margin: 10, marginHorizontal: 20}}
                       />
                       <View>
                         <Text style={[styles.Card1Text]}>
-                          {ManualWeatherType
-                            ? ManualWeatherType
-                            : Weather
-                            ? findWeather(Weather.weather[0].description)
-                            : 'Rainy'}
+                          {_weatherType}
                         </Text>
                         <Text
                           style={[
@@ -758,11 +749,7 @@ const WeatherData = ({
                         />
                         <View>
                           <Text style={[styles.smallCardText]}>
-                            {ManualWeatherType
-                              ? ManualWeatherType
-                              : Weather
-                              ? findWeather(Weather.weather[0].description)
-                              : 'Rainy'}
+                            {_weatherAction}
                           </Text>
                           <Text
                             style={[

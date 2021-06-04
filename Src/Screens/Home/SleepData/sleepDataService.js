@@ -252,7 +252,6 @@ export function getWeeklySleepData() {
 }
 
 export function getSleepGraphData({ weeklyData, monthlyData }) {
-  console.log('getSleepGraphData weeklyData: ', weeklyData);
   let weeklySleepGraphData = [];
   let monthlySleepGraphData = [];
   if (Array.isArray(weeklyData) && weeklyData.length > 0 && weeklyData.length === 7 && weeklyData?.[0]?.end_date) {
@@ -325,7 +324,7 @@ export function getSleepGraphData({ weeklyData, monthlyData }) {
   if (monthlySleepGraphData.length > 0) {
     graphData = Object.assign({}, (graphData ?? {}), { monthlyData: monthlySleepGraphData });
   }
-  console.log('sleep graph data: ', graphData);
+  // console.log('sleep graph data: ', graphData);
   return graphData;
 }
 

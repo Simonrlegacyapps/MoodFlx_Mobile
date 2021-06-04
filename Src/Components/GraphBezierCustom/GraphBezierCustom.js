@@ -11,10 +11,9 @@ import {
 import Svg, {Path, Defs, LinearGradient, Stop} from 'react-native-svg';
 // import * as path from 'svg-path-properties';
 import * as shape from 'd3-shape';
-
+import DeviceInfo from 'react-native-device-info';
 import {scaleTime, scaleLinear, scaleQuantile} from 'd3-scale';
-import {dynamicSize} from '../../Constants/sizeChoose';
-
+import {dynamicSize, horizontalScale, verticalScale, isTablet} from '../../Constants/sizeChoose';
 // const {Path, Defs, LinearGradient, Stop} = Svg;
 
 const d3 = {
@@ -53,10 +52,10 @@ const GraphBezierCustom = ({
   sleep,
 }) => {
   // console.log(`numberOfXAxis`, check.length);
-  console.log('GraphBezierCustom: ', data)
+  // console.log('Graph isTablet: ', isTablet);
   const scaleX = scaleTime()
     .domain([1, check && fitness && Duration === 'Daily' ? check.length : 7])
-    .range([0, widthProp]);
+    .range([isTablet ? horizontalScale(width * 0.04) : 0, widthProp]);
   const scaleY = scaleLinear()
     .domain([0, max + 0.1])
     .range([heightProp - verticalPadding, verticalPadding]);

@@ -100,7 +100,14 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 //Called when a notification is delivered to a foreground app.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
+//  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
+  NSDictionary *userInfo = notification.request.content.userInfo;
+     //Foreground
+     NSLog(@"APP_PUSH from foreground %@", userInfo);
+    
+    [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo
+    fetchCompletionHandler:^void (UIBackgroundFetchResult result){}];
+    completionHandler(UNNotificationPresentationOptionAlert);
 }
 
 @end

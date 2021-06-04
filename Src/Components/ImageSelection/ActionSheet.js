@@ -14,12 +14,14 @@ type props = {
   modalVisible: Boolean,
   dismissModalHandler: Object,
   selectedValue: Object,
+  modalRef: Object,
 };
 
 const ActionSheet = ({
   modalVisible,
   dismissModalHandler,
   selectedValue,
+  modalRef,
 }: props) => {
   const [color, setcolor] = useState('black');
   return (
@@ -28,6 +30,7 @@ const ActionSheet = ({
       testID={'modal'}
       onSwipeComplete={dismissModalHandler}
       useNativeDriverForBackdrop
+      ref={modalRef}
       swipeDirection={['down']}
       isVisible={modalVisible}
       onSwipeMove={() => {
