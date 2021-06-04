@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {
   View,
   StatusBar,
@@ -46,6 +46,7 @@ import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
 import { GetStaffUserData } from './Src/apirequest/PostRequestApi';
+import * as RootNavigation from './Src/navigator/RootNavigation';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -97,6 +98,12 @@ const App: () => React$Node = () => {
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    return () => {
+      RootNavigation.isReadyRef.current = false;
+    };
+  }, []);
 
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
@@ -336,12 +343,19 @@ const App: () => React$Node = () => {
     }
   };
 
+  const onNavigationReady = useCallback(() => {
+    RootNavigation.isReadyRef.current = true;
+  }, []);
+
   return (
     <>
       {/* {console.log('ShowWelcome--', ShowWelcome)} */}
       {/* <Provider store={store}> */}
       {ShowWelcome === false ? (
-        <NavigationContainer>
+        <NavigationContainer
+          ref={RootNavigation.navigationRef}
+          onReady={onNavigationReady}
+        >
           <SafeAreaView style={{flex: 1}}>
             <View style={styles.container}>
               <StackNavigation />

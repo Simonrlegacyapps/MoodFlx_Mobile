@@ -214,17 +214,20 @@ export default class NotifService {
         notif.forEach((e) => {
           if (
             e.id === NotifService.notifData.one.id &&
-            e.title === NotifService.notifData.one.title
+            e.title === NotifService.notifData.one.title &&
+            e.date
           ) {
             isOne = true;
           } else if (
             e.id === NotifService.notifData.three.id &&
-            e.title === NotifService.notifData.three.title
+            e.title === NotifService.notifData.three.title &&
+            e.date
           ) {
             isTwo = true;
           } else if (
             e.id === NotifService.notifData.three.id &&
-            e.title === NotifService.notifData.three.title
+            e.title === NotifService.notifData.three.title &&
+            e.date
           ) {
             isThree = true;
           } else if (e.id !== undefined && typeof e.id === 'number') {
@@ -402,6 +405,17 @@ export default class NotifService {
 
   cancelAll() {
     PushNotification.cancelAllLocalNotifications();
+  }
+
+  static cancelDeliveredNotifications(identifiers) {
+    console.log('cancelDeliveredNotifications idnetifiers', identifiers);
+    if(Array.isArray(identifiers)){
+      PushNotification.removeDeliveredNotifications(identifiers)
+    } else {
+      if(identifiers){
+        PushNotification.removeDeliveredNotifications([String(identifiers)])
+      }
+    }
   }
 
   abandonPermissions() {

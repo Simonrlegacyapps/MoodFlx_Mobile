@@ -74,11 +74,16 @@ import {RubikMedium} from '../../Constants/fonts/Fonts';
 import {useFocusEffect} from '@react-navigation/native';
 import messaging, {firebase} from '@react-native-firebase/messaging';
 import {hapticsTopFlags} from '../../Constants/constants';
+import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
 let lpX = 0;
 let lpY = 0;
+
+let isUnmounted = true;
+let isMoodDetectorScreenFocused = false;
+let currentNotif = null;
 
 const hapticOptions = {
   enableVibrateFallback: true,
@@ -683,15 +688,7 @@ export default function MoodDetector({navigation}) {
   };
 
   useEffect(() => {
-    // console.log(`tesst`);
-    // setTimeout(() => {
-    // PushNotification.configure({
-    //   onNotification: function (notification) {
-    //     setNotifData(notification);
-    //     setIsNotificationQuestionModalVisible(true);
-    //     console.log('NOTIFICATION: HOME', notification);
-    //   },
-    // });
+    isUnmounted = false;
 
     PushNotification.configure({
       onNotification: function (notification) {
@@ -699,10 +696,18 @@ export default function MoodDetector({navigation}) {
           console.log(
             `Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++`,
           );
-          setNotifData(notification);
-          setIsNotificationQuestionModalVisible(true);
+          if(isUnmounted === false && isMoodDetectorScreenFocused === true) {
+            setNotifData(notification);
+            setIsNotificationQuestionModalVisible(true);
+          }
+          currentNotif = notification;
         }
-        console.log('NOTIFICATION: HOME', notification);
+        const currentRoute = getCurrentRoute();
+        if(currentRoute?.name !== 'MoodEmotionDetector'){
+          navigate('MoodEmotionDetector');
+        }
+        NotifService.cancelDeliveredNotifications([String(notification.id)])
+        console.log('NOTIFICATION: MoodDetector', notification);
       },
     });
     // const data = NotifService.getLatestNotificationData();
@@ -711,6 +716,10 @@ export default function MoodDetector({navigation}) {
     // });
     // console.log(`data fro notification`, data);
     // }, 1000);
+    return () => {
+      isUnmounted = true;
+      currentNotif = null;
+    }
   }, []);
 
   useEffect(() => {
@@ -1037,13 +1046,18 @@ export default function MoodDetector({navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-      let isActive = true;
+      isMoodDetectorScreenFocused = true;
+      if(currentNotif) {
+        setNotifData(currentNotif);
+        setIsNotificationQuestionModalVisible(true);
+      }
       // screen isFocused
       // console.log('screen isFocused: ', isActive);
 
       return () => {
         // screen is out of focus
-        isActive = false;
+        isMoodDetectorScreenFocused = false;
+        currentNotif = null;
         setWheelSize(regularWheelSize);
         setScrollerWheelSize(regularWheelSize);
         // console.log('screen is out of focus: ', isActive);
