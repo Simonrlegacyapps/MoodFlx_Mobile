@@ -16,7 +16,7 @@ import {
 import Svg, { Path, SvgUri, G } from 'react-native-svg';
 import { getFontSize, getLineHeight } from '../../Constants/sizeChoose';
 import { getScrollerWheelSize, initialEmotionTextData, largeWheelSize, largeWheelSizeArray, mediumWheelSize, mediumWheelSizeArray, regularWheelSize, regularWheelSizeArray } from './moodService';
-
+import CustomFastSVG from '../../Components/CustomFastSVG/CustomFastSVG';
 const { height, width } = Dimensions.get('window');
 
 export default function MoodScroller({
@@ -32,6 +32,7 @@ export default function MoodScroller({
   onLayoutScrollerContainer,
   wheelSize,
   forceUpdate,
+  iconColor,
 }) {
   if (emotionText === initialEmotionTextData.text && scrollerStyle?.left === 0) {
     return null;
@@ -102,15 +103,16 @@ export default function MoodScroller({
                 {emotionText}
               </Text>
               {emotionText !== 'Slide finger' && (
-                <SvgUri
+                <CustomFastSVG
                   width={getFontSize(20)}
                   height={getFontSize(20)}
                   // viewBox="0 0 24 24"
-                  fill="none"
-                  uri={`https://super.moodflo.com/${toolTipData?.img
-                      ? toolTipData.img
-                      : 'mood_icons/161616176321272238406054abe3bb450.svg'
-                    }`}
+                  fill='none'
+                  stroke={iconColor}
+                  source={{uri: `https://super.moodflo.com/${toolTipData?.img
+                    ? toolTipData.img
+                    : 'mood_icons/161616176321272238406054abe3bb450.svg'
+                    }`}}
                 // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
                 />
               )}
@@ -246,7 +248,7 @@ const styles = StyleSheet.create({
       fontSize: fontSize,
     },
     toolTipImg: {
-      height: 21,
-      width: 21
+      height: getFontSize(20),
+      width: getFontSize(20)
     }
   })
