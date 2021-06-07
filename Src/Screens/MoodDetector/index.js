@@ -1335,7 +1335,6 @@ export default function MoodDetector({navigation}) {
         // forceUpdate={forceUpdate}
         forceUpdate={setLPXY}
         wheelSize={wheelSize}
-        iconColor={color}
         onToolTipLayout={onToolTipLayout}
         isAllMoodsDataAvailable={UserData.AllMoods !== null}
         scrollerRef={(ref) => (scrollerRef.current = ref)}
