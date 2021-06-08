@@ -32,7 +32,6 @@ export default function MoodScroller({
   onLayoutScrollerContainer,
   wheelSize,
   forceUpdate,
-  iconColor,
 }) {
   if (emotionText === initialEmotionTextData.text && scrollerStyle?.left === 0) {
     return null;
@@ -108,7 +107,7 @@ export default function MoodScroller({
                   height={getFontSize(20)}
                   // viewBox="0 0 24 24"
                   fill='none'
-                  stroke={iconColor}
+                  // stroke={iconColor}
                   source={{uri: `https://super.moodflo.com/${toolTipData?.img
                     ? toolTipData.img
                     : 'mood_icons/161616176321272238406054abe3bb450.svg'

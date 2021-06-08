@@ -71,7 +71,8 @@ import RNAndroidInstalledApps from 'react-native-android-installed-apps';
 import InstallGoogleFitModal from '../../Components/Modals/InstallGoogleFitModal/InstallGoogleFitModal';
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
-
+let steps = false;
+let HeartRate = false;
 const data = [
   {x: 1, y: 1.2},
   {x: 2, y: 2.3},
@@ -106,7 +107,6 @@ const App = (props) => {
   // const [lat, setlat] = useState(false);
   const [BP, setBP] = useState(false);
   const [allHeights, setallHeights] = useState(false);
-  const [steps, setsteps] = useState(false);
   const [temp, settemp] = useState(false);
   const [StepCount, setStepCount] = useState(false);
   const [BodyFatPerc, setBodyFatPerc] = useState(false);
@@ -115,7 +115,7 @@ const App = (props) => {
   const [Height, setHeight] = useState(false);
   const [Calories, setCalories] = useState(false);
   const [Sleep, setSleep] = useState(false);
-  const [HeartRate, setHeartRate] = useState(false);
+  const [_HeartRate, setHeartRate] = useState(false);
   const [DOB, setDOB] = useState(false);
   const [Distance, setDistance] = useState(false);
   const [LatestWeight, setLatestWeight] = useState(false);
@@ -217,6 +217,10 @@ const App = (props) => {
     //   enable_notification: true,
     //   id: userData.id
     // }
+    return () => {
+      HeartRate = null;
+      steps = null;
+    }
   }, []);
 
   useEffect(() => {
@@ -236,19 +240,24 @@ const App = (props) => {
     dispatch(HealthPerm(HealthP));
     console.log(`HealthP`, HealthP != null);
     if (HealthP != null) {
-      await OnAutoSync();
-      const steps_data = await UserData.MainSteps;
-      console.log(`steps_data`, steps_data, UserData.MainSteps);
-      if (steps_data !== null) {
-        console.log('good to go for API in async here at top');
-        setLoading(UserData.HealthPermission ? true : false);
-        setcallOneTime('second');
-        console.log(`UserData.MainSteps`, UserData.MainSteps);
-        filterDates();
-        filterSteps();
-        AddDataToFilter();
-      }
-      setLoading(false);
+      await OnAutoSync(function (flag) {
+        console.log("onFinish called", flag);
+        const timeoutId = setTimeout(async () => {
+          // const steps_data = await UserData.MainSteps;
+          console.log(`steps_data`, steps);
+          if (steps) {
+            console.log('good to go for API in async here at top');
+            setLoading(UserData.HealthPermission ? true : false);
+            setcallOneTime('second');
+            console.log(`steps`, steps);
+            filterDates();
+            filterSteps();
+            AddDataToFilter();
+          }
+          setLoading(false);
+          clearTimeout(timeoutId);
+        }, 500);
+      });
     }
   };
 
@@ -266,15 +275,19 @@ const App = (props) => {
 
     if (HealthP != null) {
       console.log('good to go for API in async here at top');
-      await OnAutoSync();
-      await UserData.MainSteps;
-      console.log(`UserData.MainSteps`, UserData.MainSteps);
-      if (UserData.MainSteps !== null) {
-        filterDates();
-        filterSteps();
-        AddDataToFilter();
-      }
-      setLoading(false);
+      await OnAutoSync(function (flag){
+        console.log("onFinish called", flag);
+        const timeoutId = setTimeout(async () => {
+          console.log(`steps`, steps);
+          if (steps) {
+            filterDates();
+            filterSteps();
+            AddDataToFilter();
+          }
+          setLoading(false);
+          clearTimeout(timeoutId);
+        }, 500);
+      });
     }
   };
 
@@ -291,8 +304,10 @@ const App = (props) => {
   //   FitnessData()
   // }, [])
 
-  const OnAutoSync = async () => {
+  const OnAutoSync = async (onFinish) => {
     console.log(`auto sync function called`);
+    let count = 0;
+    //for ios if count === 10 - call onFinish function
     // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
     // console.log('moment() month', new Date(a).toISOString());
@@ -352,6 +367,9 @@ const App = (props) => {
         // Date of Birth Example
         AppleHealthKit.getDateOfBirth(null, async (err, results) => {
           setDateOfBirth(results);
+          count++;
+          console.log(`count==> `, count);
+          count === 10 && onFinish?.(true);
           //  console.log('age', results);
         });
 
@@ -368,7 +386,7 @@ const App = (props) => {
             let fours = 0;
             let fives = 0;
             let all = [];
-            setsteps(results);
+            steps = results;
             for (let j in results) {
               total = total + results[j].value;
               if (
@@ -435,15 +453,20 @@ const App = (props) => {
             console.log(`all ====++++>>>>>>`, all);
             dispatch(DaySteps(all));
             dispatch(UserSteps(total));
-            // console.log('All steps ++++', results, total);
+            count++;
+            console.log(`count==> `, count);
+            count === 10 && onFinish?.(true);
+          // console.log('All steps ++++', results, total);
           },
         );
         AppleHealthKit.getBloodPressureSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            setBP(results);
-
+            setBP(results);     
             console.log('All BP', results);
+            count++;
+            console.log(`count==> `, count);
+            count === 10 && onFinish?.(true);
           },
         );
         // Need to check from here for data ================================================================>>>>>>>>>>>>>>>>>>>>
@@ -457,7 +480,10 @@ const App = (props) => {
               total = total + results[i].value;
             }
             dispatch(UserCalories(total));
-            // console.log('Active energy count', results);
+            count++;
+            console.log(`count==> `, count);
+            count === 10 && onFinish?.(true);
+          // console.log('Active energy count', results);
           },
         );
 
@@ -472,6 +498,9 @@ const App = (props) => {
             }
             dispatch(UserDistance(total));
             // console.log('Distance in KMS', results, total);
+            count++;
+            console.log(`count==> `, count);
+            count === 10 && onFinish?.(true);
           },
         );
 
@@ -479,7 +508,11 @@ const App = (props) => {
           stepsCount,
           async (err: Object, results: Array<Object>) => {
             setHeartRate(results);
-            // console.log('Heart Samples', results);
+            HeartRate = results;
+            console.log('Heart Samples', results);
+            count++;
+            console.log(`count==> `, count);
+            count === 10 && onFinish?.(true);
           },
         );
 
@@ -488,6 +521,9 @@ const App = (props) => {
           async (err: Object, results: Array<Object>) => {
             setSleep(results);
             // console.log('Sleep Analysis +++++++++======>>>>', results);
+            count++;
+            console.log(`count==> `, count);
+            count === 10 && onFinish?.(true);
           },
         );
 
@@ -497,6 +533,9 @@ const App = (props) => {
             dispatch(GetDOB(results));
             setDOB(results);
             // console.log('DOB', results);
+            count++;
+            console.log(`count==> `, count);
+            count === 10 && onFinish?.(true);
           },
         );
 
@@ -523,6 +562,9 @@ const App = (props) => {
             //   results,
             //   totalWalkTime,
             // );
+            count++;
+            console.log(`count==> `, count);
+            count === 10 && onFinish?.(true);
           },
         );
 
@@ -538,6 +580,9 @@ const App = (props) => {
               return console.log(`errola`, err);
             }
             setWorkouts(results);
+            count++;
+            console.log(`count==> `, count);
+            count === 10 && onFinish?.(true);
           },
         );
       });
@@ -551,7 +596,7 @@ const App = (props) => {
         console.log('AppInstalledChecker com.google.android.apps.fitness isInstalled?: ', isGoogleFitInstalled);
         if (isGoogleFitInstalled === false) {
           !isInstallGoogleFitModalVisible && setIsInstallGoogleFitModalVisible(true);
-          return;
+          onFinish?.(false);
         }
       } catch (error) {
         console.log('error while checking if google fit is installed:', error);
@@ -568,17 +613,25 @@ const App = (props) => {
           Scopes.FITNESS_SLEEP_READ,
         ],
       };
-      GoogleFit.authorize(options)
-        .then((authResult) => {
-          if (authResult.success) {
-            console.log('AUTH_SUCCESS');
-          } else {
-            console.log('AUTH_DENIED', authResult.message);
-          }
-        })
-        .catch(() => {
-          console.log('AUTH_ERROR');
-        });
+      try {
+        await GoogleFit.checkIsAuthorized();
+        console.log('Google Fit isAuthorized: ', GoogleFit.isAuthorized);
+        if (!GoogleFit.isAuthorized) {
+          await GoogleFit.authorize(options)
+            .then((authResult) => {
+              if (authResult.success) {
+                console.log('AUTH_SUCCESS');
+              } else {
+                console.log('AUTH_DENIED', authResult.message);
+              }
+            })
+            .catch(() => {
+              console.log('AUTH_ERROR');
+            });
+        }
+      } catch (error) {
+        console.log('Google Fit checkAuthorization error: ', error);
+      }
 
       const opt = {
         startDate: a, // required ISO8601Timestamp
@@ -614,39 +667,60 @@ const App = (props) => {
       };
 
       console.log(`entering?`);
-      GoogleFit.onAuthorize(async function fetchData() {
-        const res = await GoogleFit.getDailyStepCountSamples(opt);
-        console.log('steps', res);
-        console.log('total user steps', res[2].steps[0].value);
-        if (res.length > 0) {
-          dispatch(UserSteps(res[2].steps[0].value));
-          dispatch(GetSteps(res[2].rawSteps));
-          setsteps(res[2].rawSteps);
+      try {
+        await GoogleFit.checkIsAuthorized();
+        console.log('isGoogleFitAuthorized: ', GoogleFit.isAuthorized);
+        if(!GoogleFit.isAuthorized){
+          onFinish?.(false);
+          return false;
         }
-      });
+      } catch(error) {
+        onFinish?.(false);
+        console.log('GoogleFit check authorization error: ', error);
+        return false;
+      }
 
-      GoogleFit.onAuthorize(async function fetchMoreData() {
-        const Activities = await GoogleFit.getActivitySamples(optActivities);
-        // setActivities(Activities);
-        console.log('Activities', Activities);
+      // get daily steps count
+      const res = await GoogleFit.getDailyStepCountSamples(opt);
+      console.log('steps', res);
+      console.log('total user steps', res[2].steps[0].value);
+      if (res.length > 0) {
+        dispatch(UserSteps(res[2].steps[0].value));
+        dispatch(GetSteps(res[2].rawSteps));
+        steps = res[2].rawSteps;
+      }
+      count++;
+      console.log(`count==> `, count);
+      count === 2 && onFinish?.(true);
+      // GoogleFit.onAuthorize(async function fetchData() {
+      // });
 
-        const Calories = await GoogleFit.getDailyCalorieSamples(optCalories);
-        // setCalories(Calories);
-        if (Calories.length > 0) {
-          dispatch(UserCalories(Math.abs(Calories[0].calorie)));
-          dispatch(GetCalories(Calories[0]));
-        }
-        console.log(
-          'Calories????????????????????????----------------',
-          Calories[0],
-        );
+      // get activity data
+      const Activities = await GoogleFit.getActivitySamples(optActivities);
+      // setActivities(Activities);
+      console.log('Activities', Activities);
 
-        const Distance = await GoogleFit.getDailyDistanceSamples(opt);
-        if (Distance.length > 0) {
-          dispatch(UserDistance(Math.ceil(Distance[0].distance)));
-        }
-        console.log('Distance', Distance);
-      });
+      const Calories = await GoogleFit.getDailyCalorieSamples(optCalories);
+      // setCalories(Calories);
+      if (Calories.length > 0) {
+        dispatch(UserCalories(Math.abs(Calories[0].calorie)));
+        dispatch(GetCalories(Calories[0]));
+      }
+      console.log(
+        'Calories????????????????????????----------------',
+        Calories[0],
+      );
+
+      const Distance = await GoogleFit.getDailyDistanceSamples(opt);
+      if (Distance.length > 0) {
+        dispatch(UserDistance(Math.ceil(Distance[0].distance)));
+      }
+      console.log('Distance', Distance);
+      count++;
+      console.log(`count==> `, count);
+      count === 2 && onFinish?.(true);
+      // GoogleFit.onAuthorize(async function fetchMoreData() {
+      // });
     }
 
     const health = async () => {
@@ -672,7 +746,7 @@ const App = (props) => {
   const dates = [];
 
   const filterDates = () => {
-    // console.log(`------------steps in filterdates----------`, steps);
+    console.log(`------------steps in filterdates----------`, steps);
 
     steps &&
       steps.map((i) => {
@@ -715,64 +789,64 @@ const App = (props) => {
     console.log(`check???????????`, dates);
 
     for (let i in dates) {
-      for (let j in UserData.MainSteps) {
-        let iteratedate = moment(UserData.MainSteps[j].startDate).format(
+      for (let j in steps) {
+        let iteratedate = moment(steps[j].startDate).format(
           'DD-MMM-YYYY',
         );
         if (dates[i] === iteratedate) {
           Platform.OS === 'ios'
-            ? (totalSteps = totalSteps + UserData.MainSteps[j].value)
-            : (totalSteps = totalSteps + UserData.MainSteps[j].steps);
+            ? (totalSteps = totalSteps + steps[j].value)
+            : (totalSteps = totalSteps + steps[j].steps);
         }
         if (
-          moment(UserData.MainSteps[j].startDate).startOf('day') <
-            moment(UserData.MainSteps[j].startDate) &&
-          moment(UserData.MainSteps[j].startDate) <
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(4)
+          moment(steps[j].startDate).startOf('day') <
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <
+            moment(steps[j].startDate).startOf('day').hours(4)
         ) {
           console.log(`0`);
-          zero = zero + UserData.MainSteps[j].value;
+          zero = zero + steps[j].value;
           setOnes(zero);
         } else if (
-          moment(UserData.MainSteps[j].startDate).startOf('day').hours(4) <
-            moment(UserData.MainSteps[j].startDate) &&
-          moment(UserData.MainSteps[j].startDate) <
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(8)
+          moment(steps[j].startDate).startOf('day').hours(4) <
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <
+            moment(steps[j].startDate).startOf('day').hours(8)
         ) {
-          console.log(`2`, UserData.MainSteps[j].value);
-          ones = ones + UserData.MainSteps[j].value;
+          console.log(`2`, steps[j].value);
+          ones = ones + steps[j].value;
           setTwos(ones);
         } else if (
-          moment(UserData.MainSteps[j].startDate).startOf('day').hours(8) <=
-            moment(UserData.MainSteps[j].startDate) &&
-          moment(UserData.MainSteps[j].startDate) <=
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(12)
+          moment(steps[j].startDate).startOf('day').hours(8) <=
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <=
+            moment(steps[j].startDate).startOf('day').hours(12)
         ) {
-          twos = twos + UserData.MainSteps[j].value;
+          twos = twos + steps[j].value;
           console.log(`3`, twos);
           setThrees(twos);
           //add setzeros to this.
         } else if (
-          moment(UserData.MainSteps[j].startDate).startOf('day').hours(12) <=
-            moment(UserData.MainSteps[j].startDate) &&
-          moment(UserData.MainSteps[j].startDate) <=
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(16)
+          moment(steps[j].startDate).startOf('day').hours(12) <=
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <=
+            moment(steps[j].startDate).startOf('day').hours(16)
         ) {
-          threes = threes + UserData.MainSteps[j].value;
+          threes = threes + steps[j].value;
           console.log(`4`, threes);
           setFours(threes);
         } else if (
-          moment(UserData.MainSteps[j].startDate).startOf('day').hours(16) <
-            moment(UserData.MainSteps[j].startDate) &&
-          moment(UserData.MainSteps[j].startDate) <
-            moment(UserData.MainSteps[j].startDate).startOf('day').hours(20)
+          moment(steps[j].startDate).startOf('day').hours(16) <
+            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) <
+            moment(steps[j].startDate).startOf('day').hours(20)
         ) {
-          fours = fours + UserData.MainSteps[j].value;
-          console.log(`5`, UserData.MainSteps[j].value);
+          fours = fours + steps[j].value;
+          console.log(`5`, steps[j].value);
           setFives(fours);
         } else {
-          fives = fives + UserData.MainSteps[j].value;
-          console.log(`6`, UserData.MainSteps[j].value);
+          fives = fives + steps[j].value;
+          console.log(`6`, steps[j].value);
           setSixes(fives);
         }
       }

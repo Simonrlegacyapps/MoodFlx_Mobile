@@ -236,11 +236,7 @@ const BasicExample = ({
       ? dataOfWeatherGraph
       : fitness && Duration === durationTypes.daily
         ? dataFunction()
-        : sleepGraphData && Duration === durationTypes.week
-          ? sleepGraphData?.weeklyData ?? demoData
-          : sleepGraphData?.monthlyData && Duration === durationTypes.monthly
-          ? sleepGraphData?.monthlyData
-          : demoData;
+        : demoData;
 
   const max =
     data &&
@@ -259,7 +255,7 @@ const BasicExample = ({
   if(sleepGraphData) {
     return (
       <DataGraph 
-        data={data}
+        data={sleepGraphData?.weeklyData}
         yAxisLabel=''
         yAxisSuffix='hr'
         graphType={graphType}
