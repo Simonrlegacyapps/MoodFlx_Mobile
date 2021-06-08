@@ -597,6 +597,7 @@ const App = (props) => {
         if (isGoogleFitInstalled === false) {
           !isInstallGoogleFitModalVisible && setIsInstallGoogleFitModalVisible(true);
           onFinish?.(false);
+          return false;
         }
       } catch (error) {
         console.log('error while checking if google fit is installed:', error);
@@ -699,6 +700,8 @@ const App = (props) => {
       const Activities = await GoogleFit.getActivitySamples(optActivities);
       // setActivities(Activities);
       console.log('Activities', Activities);
+      dispatch(GetWorkouts(Activities));
+      setWorkouts(Activities);
 
       const Calories = await GoogleFit.getDailyCalorieSamples(optCalories);
       // setCalories(Calories);
