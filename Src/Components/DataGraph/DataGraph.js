@@ -157,7 +157,7 @@ console.log('datagraph duration: ', duration)
         data={{
           labels: labels,
           datasets: _dataSet,
-          legend: data?.INBED ? ["ASLEEP", "INBED"] : undefined
+          legend: data?.INBED ? ["ASLEEP", "IN BED"] : undefined
         }}
         width={Dimensions.get("window").width} // from react-native
         height={220}

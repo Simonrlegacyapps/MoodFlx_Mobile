@@ -454,7 +454,7 @@ const SleepData = ({
       </ScrollView>
 
       <PopUp
-        ComingUp={Platform.OS === 'android'}
+        ComingUp={false}
         permission={UserData.SleepPermission}
         image={Constants.Images.Sleepimage}
         dataType={'sleep'}
