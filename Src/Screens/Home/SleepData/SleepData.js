@@ -71,8 +71,10 @@ const SleepData = ({
   const [sleepMinutesToday, setSleepMinutesToday] = useState(0);
   const [lastThirtyDaySleepData, setLastThirtyDaySleepData] = useState(null);
   const [weeklySleepData, setWeeklySleepData] = useState(null);
-  const [weeklySleepApiData, setWeeklySleepApiData] = useState(null);
+  const [weeklyInBedData, setWeeklyInBedData] = useState(null);
+  const [weeklyAsleepData, setWeeklyAsleepData] = useState(null);
   const [monthlySleepData, setMonthlySleepData] = useState(null);
+  const [sleepGraphData, setSleepGraphData] = useState(null);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -137,7 +139,7 @@ const SleepData = ({
         const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
         const endDate = e?.end_date ? moment(new Date(e.end_date).getTime()) : null;
         let diff = 0;
-        if (startDate && endDate && startDate.date() === moment().date()) {
+        if (startDate && endDate && startDate.date() === moment().date() && e.type === 'INBED') {
           diff = endDate.diff(startDate, 'minutes');
           totalMinutes += diff;
         }
@@ -265,12 +267,20 @@ const SleepData = ({
     fetch('https://admin.moodflo.com/api/getSleepQualityReport', requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
-        console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', result);
-        const sleepDataArray = result?.sleepData?.INBED ? Object.values(result.sleepData.INBED) : weeklySleepApiData;
-        if(Array.isArray(sleepDataArray) && sleepDataArray.length > 0) {
-        console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', sleepDataArray);
-        setWeeklySleepApiData(sleepDataArray);
+        console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', JSON.stringify(result));
+        const inBedArray = result?.sleepData?.INBED ? Object.values(result.sleepData.INBED) : [];
+        const asleepArray = result?.sleepData?.ASLEEP ? Object.values(result.sleepData.ASLEEP) : [];
+        if (Array.isArray(inBedArray) && inBedArray.length > 0) {
+          console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  inBed', inBedArray);
+          setWeeklyInBedData(inBedArray);
         }
+        if (Array.isArray(asleepArray) && asleepArray.length > 0) {
+          console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  asleep', asleepArray);
+          setWeeklyAsleepData(asleepArray);
+        }
+        const graphData = getSleepGraphData({weeklyData: {ASLEEP: asleepArray, INBED: inBedArray}});
+        console.log('graphData: ', graphData);
+        setSleepGraphData(graphData);
       })
       .catch(function (error) {
         console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, raw);
@@ -398,7 +408,7 @@ const SleepData = ({
           </View>
           <GraphicChart 
             isDailyDisabled={true}
-            sleepGraphData={getSleepGraphData({weeklyData: (weeklySleepApiData || weeklySleepData), monthlyData: monthlySleepData})}
+            sleepGraphData={sleepGraphData}
             graphType={dataTypes.sleep}
           />
           {!UserData.SleepPermission && (

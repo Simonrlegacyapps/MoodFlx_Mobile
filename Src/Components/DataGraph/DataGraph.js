@@ -37,6 +37,10 @@ export function DataGraph({
       l = data.map(e => {
         return e?.day;
       })
+    } else if (Array.isArray(data?.INBED) && data.INBED.length === 7) {
+      l = data.INBED.map(e => {
+        return e?.day;
+      })
     }
     if (l == null) {
       l = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
@@ -44,15 +48,32 @@ export function DataGraph({
     return l;
   }, [data]);
 
-  const _data = useMemo(() => {
-    let d = null;
+  const _dataSet = useMemo(() => {
+    let d = [];
     if (Array.isArray(data) && data.length === 7) {
-      d = data.map(e => {
+    d.push({
+      data: data.map(e => {
         return e?.y;
       })
+    });
+    } else if (Array.isArray(data?.INBED) && data.INBED.length === 7 && Array.isArray(data?.ASLEEP) && data.ASLEEP.length === 7) {
+      d.push({
+        data: data.INBED.map(e => {
+          return e?.y;
+        }),
+        color: () => '#EC7063'
+      });
+      d.push({
+        data: data.ASLEEP.map(e => {
+          return e?.y;
+        }),
+        color: () => "#70DEEC"
+      });
     }
-    if (d == null) {
-      d = [10, 15, 20, 15, 10, 15];
+    if (d.length === 0) {
+      d.push({
+        data: [10, 15, 20, 15, 10, 15]
+      });
     }
     return d;
   }, [data]);
@@ -71,6 +92,7 @@ console.log('datagraph duration: ', duration)
         alignItems: 'center',
         alignSelf: 'center',
       }}>
+      {graphType !== dataTypes.sleep && (
       <View
         style={{
           flexDirection: 'row',
@@ -129,15 +151,13 @@ console.log('datagraph duration: ', duration)
           </Text>
         </TouchableOpacity>
       </View>
+      )}
       {/* <Text>Bezier Line Chart</Text> */}
       <LineChart
         data={{
           labels: labels,
-          datasets: [
-            {
-              data: _data
-            }
-          ]
+          datasets: _dataSet,
+          legend: data?.INBED ? ["ASLEEP", "INBED"] : undefined
         }}
         width={Dimensions.get("window").width} // from react-native
         height={220}
@@ -163,6 +183,7 @@ console.log('datagraph duration: ', duration)
             //   stroke: "transparent"
           }
         }}
+        segments={3}
         bezier
         style={{
           marginVertical: 8,
