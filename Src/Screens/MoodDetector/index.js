@@ -75,6 +75,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import messaging, {firebase} from '@react-native-firebase/messaging';
 import {hapticsTopFlags} from '../../Constants/constants';
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
+import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
@@ -116,6 +117,10 @@ export default function MoodDetector({navigation}) {
     isNotificationQuestionModalVisible,
     setIsNotificationQuestionModalVisible,
   ] = useState(false); //for remote question flag
+  const [
+    isSkipMoodInputModalVisible,
+    setIsSkipMoodInputModalVisible,
+  ] = useState(false); 
   const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
   let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
@@ -1044,6 +1049,22 @@ export default function MoodDetector({navigation}) {
     navigation.navigate('HomeScreen', {screen: 'MicScreen'});
   }, []);
 
+  const dismissSkipMoodInputModal = useCallback(() => {
+    setIsSkipMoodInputModalVisible(false);
+  }, []);
+
+  const onAcceptSkipMoodInput = useCallback(() => {
+    dismissSkipMoodInputModal();
+    const timeoutId = setTimeout(() => {
+      navigation.navigate('HomeScreen', {lat: lat, long: lng});
+      clearTimeout(timeoutId);
+    }, 500);
+  }, [dismissSkipMoodInputModal, lat, lng, navigation]);
+
+  const onDenySkipMoodInput = useCallback(() => {
+    dismissSkipMoodInputModal();
+  }, [dismissSkipMoodInputModal]);
+
   useFocusEffect(
     React.useCallback(() => {
       isMoodDetectorScreenFocused = true;
@@ -1238,7 +1259,7 @@ export default function MoodDetector({navigation}) {
         <TouchableOpacity
           style={{marginLeft: 12}}
           onPress={
-            () => navigation.navigate('HomeScreen', {lat: lat, long: lng})
+            () => setIsSkipMoodInputModalVisible(true)
             // navigation.replace('HomeScreen', {
             //   lat: UserData.lat,
             //   long: UserData.lon,
@@ -1368,6 +1389,13 @@ export default function MoodDetector({navigation}) {
         modalVisible={isNotificationQuestionModalVisible}
         dismissModalHandler={dismissNotificationQuestionModal}
         verifyDone={(value) => verifyNotificationQuestion(value)}
+      />
+
+      <SkipMoodInputModal
+        modalVisible={isSkipMoodInputModalVisible}
+        dismissModalHandler={dismissSkipMoodInputModal}
+        onClickButtonOne={onAcceptSkipMoodInput}
+        onClickButtonTwo={onDenySkipMoodInput}
       />
 
       {Loading && (
