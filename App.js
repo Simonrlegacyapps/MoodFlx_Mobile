@@ -9,6 +9,7 @@ import {
   Dimensions,
   Image,
   Platform,
+  AppState,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
@@ -95,6 +96,8 @@ const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState('');
   const notifService = useRef(new NotifService()).current;
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -135,6 +138,29 @@ const App: () => React$Node = () => {
     // } catch (e) {
     //   console.warn(e);
     // }
+  }, []);
+
+  const _handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      console.log("App has come to the foreground!");
+      NotifService.cancelMoodFloSheduledNotifications();
+    }
+
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+    // console.log("AppState", appState.current);
+  };
+
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+    NotifService.cancelMoodFloSheduledNotifications();
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
   }, []);
 
   const checkStorage = async () => {
