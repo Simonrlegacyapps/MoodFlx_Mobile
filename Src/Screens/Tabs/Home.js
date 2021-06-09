@@ -684,11 +684,28 @@ const App = (props) => {
       // get daily steps count
       const res = await GoogleFit.getDailyStepCountSamples(opt);
       console.log('steps', res);
-      console.log('total user steps', res[2].steps[0].value);
-      if (res.length > 0) {
-        dispatch(UserSteps(res[2].steps[0].value));
-        dispatch(GetSteps(res[2].rawSteps));
-        steps = res[2].rawSteps;
+      // console.log('total user steps', res[2].steps[0].value);
+      let userSteps = -1;
+      let rawSteps = null;
+      if (Array.isArray(res) && res.length > 0) {
+        res.forEach((e, eIdx) => {
+          if(e.source === 'com.google.android.gms:estimated_steps' &&
+          Array.isArray(e?.steps) && e.steps.length > 0) {
+            e.steps.forEach(s => {
+              if(
+                userSteps === -1 &&
+                s.date &&
+                moment(s.date, 'YYYY-MM-DD').isValid() &&
+                moment(s.date, 'YYYY-MM-DD').startOf('days').isSame(moment().startOf('days'))) {
+                  userSteps = s?.value ? s.value : userSteps;
+                  rawSteps = (userSteps !== -1 && (e?.rawSteps?.length > 0)) ? e.rawSteps : rawSteps; 
+                }
+              })
+            }
+          })
+        userSteps !== -1 && dispatch(UserSteps(res[2].steps[0].value));
+        rawSteps && dispatch(GetSteps(res[2].rawSteps));
+        steps = rawSteps;
       }
       count++;
       console.log(`count==> `, count);
