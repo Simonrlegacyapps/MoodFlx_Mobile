@@ -388,57 +388,59 @@ const App = (props) => {
             let all = [];
             steps = results;
             for (let j in results) {
-              total = total + results[j].value;
-              if (
-                moment(results[j].startDate).startOf('day') <
+              total = total + (results[j]?.value ?? 0);
+              if (results?.[j]?.startDate && moment(results[j].startDate).isValid() && results?.[j]?.value) {
+                if (
+                  moment(results[j].startDate).startOf('day') <
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <
+                  moment(results[j].startDate) <
                   moment(results[j].startDate).startOf('day').hours(4)
-              ) {
-                console.log(`0`);
-                zero = zero + results[j].value;
-                setOnes(zero);
-              } else if (
-                moment(results[j].startDate).startOf('day').hours(4) <
+                ) {
+                  console.log(`0`);
+                  zero = zero + results[j].value;
+                  setOnes(zero);
+                } else if (
+                  moment(results[j].startDate).startOf('day').hours(4) <
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <
+                  moment(results[j].startDate) <
                   moment(results[j].startDate).startOf('day').hours(8)
-              ) {
-                console.log(`2`, results[j].value);
-                ones = ones + results[j].value;
-                setTwos(ones);
-              } else if (
-                moment(results[j].startDate).startOf('day').hours(8) <=
+                ) {
+                  console.log(`2`, results[j].value);
+                  ones = ones + results[j].value;
+                  setTwos(ones);
+                } else if (
+                  moment(results[j].startDate).startOf('day').hours(8) <=
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <=
+                  moment(results[j].startDate) <=
                   moment(results[j].startDate).startOf('day').hours(12)
-              ) {
-                twos = twos + results[j].value;
-                console.log(`3`, twos);
-                setThrees(twos);
-                //add setzeros to this.
-              } else if (
-                moment(results[j].startDate).startOf('day').hours(12) <=
+                ) {
+                  twos = twos + results[j].value;
+                  console.log(`3`, twos);
+                  setThrees(twos);
+                  //add setzeros to this.
+                } else if (
+                  moment(results[j].startDate).startOf('day').hours(12) <=
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <=
+                  moment(results[j].startDate) <=
                   moment(results[j].startDate).startOf('day').hours(16)
-              ) {
-                threes = threes + results[j].value;
-                console.log(`4`, threes);
-                setFours(threes);
-              } else if (
-                moment(results[j].startDate).startOf('day').hours(16) <
+                ) {
+                  threes = threes + results[j].value;
+                  console.log(`4`, threes);
+                  setFours(threes);
+                } else if (
+                  moment(results[j].startDate).startOf('day').hours(16) <
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <
+                  moment(results[j].startDate) <
                   moment(results[j].startDate).startOf('day').hours(20)
-              ) {
-                fours = fours + results[j].value;
-                console.log(`5`, results[j].value);
-                setFives(fours);
-              } else {
-                fives = fives + results[j].value;
-                console.log(`6`, results[j].value);
-                setSixes(fives);
+                ) {
+                  fours = fours + results[j].value;
+                  console.log(`5`, results[j].value);
+                  setFives(fours);
+                } else {
+                  fives = fives + results[j].value;
+                  console.log(`6`, results[j].value);
+                  setSixes(fives);
+                }
               }
             }
             all.push({
