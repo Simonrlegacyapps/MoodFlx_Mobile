@@ -69,10 +69,10 @@ export const weatherActions = {
 }
 
 export const defaultLocation = {
-  latitude: "33.902885",
-  longitude: "151.0142862",
-  city: "Yagoona",
-  state: "New South Wales",
+  latitude: "37.8130398",
+  longitude: "144.9660029",
+  city: "Melbourne",
+  state: "Victoria",
   country: "Australia"
 }
 
