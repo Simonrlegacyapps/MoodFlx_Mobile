@@ -73,7 +73,7 @@ import NotifService from '../../services/notifService';
 import {RubikMedium} from '../../Constants/fonts/Fonts';
 import {useFocusEffect} from '@react-navigation/native';
 import messaging, {firebase} from '@react-native-firebase/messaging';
-import {hapticsTopFlags} from '../../Constants/constants';
+import {defaultLocation, hapticsTopFlags, isCountryIndia} from '../../Constants/constants';
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 
@@ -731,26 +731,23 @@ export default function MoodDetector({navigation}) {
     setTimeout(() => {
       checkStorage();
       getProfileUserData();
-
-      {
-        UserData.WeatherPermission &&
-          (UserData.lat == null || UserData.lon == null) &&
-          GetLocation.getCurrentPosition({
-            enableHighAccuracy: true,
-            timeout: 15000,
+      UserData.WeatherPermission &&
+        (UserData.lat == null || UserData.lon == null) &&
+        GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+        })
+          .then((location) => {
+            //   console.log('Success', location);
+            setlat(location.latitude);
+            dispatch(Lat(location.latitude));
+            setlng(location.longitude);
+            dispatch(Long(location.longitude));
           })
-            .then((location) => {
-              //   console.log('Success', location);
-              setlat(location.latitude);
-              dispatch(Lat(location.latitude));
-              setlng(location.longitude);
-              dispatch(Long(location.longitude));
-            })
-            .catch((error) => {
-              const {code, message} = error;
-              console.log('error', code, message);
-            });
-      }
+          .catch((error) => {
+            const { code, message } = error;
+            console.log('error', code, message);
+          });
     }, 150);
   }, []);
 
@@ -907,15 +904,18 @@ export default function MoodDetector({navigation}) {
       setLoading(true);
       // console.log(`not fail`);
       // console.log(`Id`, Id.id);
+      const isIndia = isCountryIndia();
       const params = {
         mood_id: Id.id,
         device_id: deviceId,
-        lat: UserData.lat,
-        long: UserData.lon,
+
+        city: isIndia && city_info ? defaultLocation.city : city_info,
+        state: isIndia && state_info ? defaultLocation.state : state_info,
+        country: isIndia && country_info ? defaultLocation.country : country_info,
+        lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
+        lon: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
+
         email: Email,
-        city: city_info,
-        state: state_info,
-        country: country_info,
         user_id: UserData.UserId,
         device_token: fcm,
         device_type: Platform.OS,
