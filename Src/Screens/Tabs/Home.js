@@ -388,57 +388,59 @@ const App = (props) => {
             let all = [];
             steps = results;
             for (let j in results) {
-              total = total + results[j].value;
-              if (
-                moment(results[j].startDate).startOf('day') <
+              total = total + (results[j]?.value ?? 0);
+              if (results?.[j]?.startDate && moment(results[j].startDate).isValid() && results?.[j]?.value) {
+                if (
+                  moment(results[j].startDate).startOf('day') <
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <
+                  moment(results[j].startDate) <
                   moment(results[j].startDate).startOf('day').hours(4)
-              ) {
-                console.log(`0`);
-                zero = zero + results[j].value;
-                setOnes(zero);
-              } else if (
-                moment(results[j].startDate).startOf('day').hours(4) <
+                ) {
+                  console.log(`0`);
+                  zero = zero + results[j].value;
+                  setOnes(zero);
+                } else if (
+                  moment(results[j].startDate).startOf('day').hours(4) <
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <
+                  moment(results[j].startDate) <
                   moment(results[j].startDate).startOf('day').hours(8)
-              ) {
-                console.log(`2`, results[j].value);
-                ones = ones + results[j].value;
-                setTwos(ones);
-              } else if (
-                moment(results[j].startDate).startOf('day').hours(8) <=
+                ) {
+                  console.log(`2`, results[j].value);
+                  ones = ones + results[j].value;
+                  setTwos(ones);
+                } else if (
+                  moment(results[j].startDate).startOf('day').hours(8) <=
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <=
+                  moment(results[j].startDate) <=
                   moment(results[j].startDate).startOf('day').hours(12)
-              ) {
-                twos = twos + results[j].value;
-                console.log(`3`, twos);
-                setThrees(twos);
-                //add setzeros to this.
-              } else if (
-                moment(results[j].startDate).startOf('day').hours(12) <=
+                ) {
+                  twos = twos + results[j].value;
+                  console.log(`3`, twos);
+                  setThrees(twos);
+                  //add setzeros to this.
+                } else if (
+                  moment(results[j].startDate).startOf('day').hours(12) <=
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <=
+                  moment(results[j].startDate) <=
                   moment(results[j].startDate).startOf('day').hours(16)
-              ) {
-                threes = threes + results[j].value;
-                console.log(`4`, threes);
-                setFours(threes);
-              } else if (
-                moment(results[j].startDate).startOf('day').hours(16) <
+                ) {
+                  threes = threes + results[j].value;
+                  console.log(`4`, threes);
+                  setFours(threes);
+                } else if (
+                  moment(results[j].startDate).startOf('day').hours(16) <
                   moment(results[j].startDate) &&
-                moment(results[j].startDate) <
+                  moment(results[j].startDate) <
                   moment(results[j].startDate).startOf('day').hours(20)
-              ) {
-                fours = fours + results[j].value;
-                console.log(`5`, results[j].value);
-                setFives(fours);
-              } else {
-                fives = fives + results[j].value;
-                console.log(`6`, results[j].value);
-                setSixes(fives);
+                ) {
+                  fours = fours + results[j].value;
+                  console.log(`5`, results[j].value);
+                  setFives(fours);
+                } else {
+                  fives = fives + results[j].value;
+                  console.log(`6`, results[j].value);
+                  setSixes(fives);
+                }
               }
             }
             all.push({
@@ -760,7 +762,6 @@ const App = (props) => {
       // });
     };
 
-    CheckForWeather(lat, long);
   };
 
   const dates = [];
@@ -946,26 +947,6 @@ const App = (props) => {
     // console.log(`Workouts |||||||||||| ppppppp =========`, Workouts);
   };
 
-  const CheckForWeather = async (loc_lat, loc_long) => {
-    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    let WeatherP = await JSON.parse(Wp);
-    dispatch(WeatherPerm(WeatherP));
-    // if (UserData.WeatherPermission) {
-    axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
-      )
-      .then(async (response) => {
-        console.log(' ✅ ✅ ✅ ✅ Success Get Weather Data✅ ✅ ✅ ✅ ', response?.data);
-        dispatch(DayTemp(response?.data));
-        await setTryWeather(response?.data);
-        // await console.log(`response.data for weather`, response.data);
-      })
-      .catch(function (error) {
-        console.log('Error Get Weather Data❌❌❌❌', error);
-      });
-    // }
-  };
 
   const CheckForSleepData = async () => {
     console.log(`Implement screen data`);
@@ -1095,7 +1076,6 @@ const App = (props) => {
           dataLow={dataLow}
           Weather={Weather}
           PermWeather={PermWeather}
-          CheckForWeather={CheckForWeather}
           lat={lat}
           long={long}
           MoodCount={MoodCount}
@@ -1167,13 +1147,7 @@ const App = (props) => {
           {/* {swiperIndex == 1 ? ( */}
           {/* {console.log(`tryWeather`, TryWeather)} */}
           <WeatherData
-            tryWeather={UserData.DayTemperature}
             swiperIndex={swiperIndex}
-            Weather={Weather}
-            PermWeather={PermWeather}
-            CheckForWeather={CheckForWeather}
-            // lat={lat}
-            // long={long}
             MoodCount={MoodCount}
           />
           {/* ) : (

@@ -230,9 +230,8 @@ export default class NotifService {
             e.date
           ) {
             isThree = true;
-          } else if (e.id !== undefined && typeof e.id === 'number') {
-            this.cancelNotif(e.id);
-          }
+          } 
+          // this.cancelNotif(e?.id);
         });
       if (!isOne) {
         this.scheduleMoodFloNotifWithId(NotifService.notifData.one.id);
@@ -243,12 +242,12 @@ export default class NotifService {
       if (!isThree) {
         this.scheduleMoodFloNotifWithId(NotifService.notifData.three.id);
       }
-      this.getScheduledLocalNotifications((notifications) => {
-        // console.log(
-        //   'scheduleMoodFloLocalNotif after update: ',
-        //   JSON.stringify(notifications),
-        // );
-      });
+      // this.getScheduledLocalNotifications((notifications) => {
+      //   console.log(
+      //     'scheduleMoodFloLocalNotif after update: ',
+      //     JSON.stringify(notifications),
+      //   );
+      // });
     });
   }
 
@@ -306,19 +305,20 @@ export default class NotifService {
         title: NotifService.notifData.three.title,
       });
     }
-    this.getScheduledLocalNotifications((notif) => {
+    // this.getScheduledLocalNotifications((notif) => {
       // console.log(
       //   'checkTimeAndUpdateNotif scheduledNotification: ',
       //   JSON.stringify(notif),
       // );
-    });
+    // });
   }
 
   scheduleMoodFloNotifWithId(id) {
     if (id === NotifService.notifData.one.id) {
       // let first = new Date(new Date().setHours(12, 41, 0, 0));
       let first = new Date(
-        new Date().setHours(NotifService.notifData.one.timeInHour, 0, 0, 0),
+        // new Date().setHours(NotifService.notifData.one.timeInHour, 0, 0, 0),
+        new Date().setHours(18, 1, 0, 0),
       );
       if (moment().isAfter(first.getTime(), 'second')) {
         first = moment(first.getTime()).add(1, 'days').toDate();
@@ -330,7 +330,8 @@ export default class NotifService {
       });
     } else if (id === NotifService.notifData.two.id) {
       let second = new Date(
-        new Date().setHours(NotifService.notifData.two.timeInHour, 0, 0, 0),
+        // new Date().setHours(NotifService.notifData.two.timeInHour, 0, 0, 0),
+        new Date().setHours(18, 1, 30, 0),
       );
       // let second = new Date(new Date().setHours(12, 41, 30, 0));
       if (moment().isAfter(second.getTime(), 'second')) {
@@ -397,14 +398,27 @@ export default class NotifService {
     if (id === undefined) {
       return;
     }
+    console.log('cancelNotif id: ', id);
+
     PushNotification.cancelLocalNotifications({id: '' + id});
-    this.getScheduledLocalNotifications((notif) => {
-      // console.log('cancelNotif scheduledNotification: ', JSON.stringify(notif));
-    });
+    // this.getScheduledLocalNotifications((notif) => {
+    //   console.log('cancelNotif scheduledNotification: ', JSON.stringify(notif));
+    // });
   }
 
   cancelAll() {
     PushNotification.cancelAllLocalNotifications();
+    // this.getScheduledLocalNotifications((notif) => {
+    //   console.log('cancelAll scheduledNotification: ', JSON.stringify(notif));
+    // });
+  }
+
+  static cancelMoodFloSheduledNotifications() {
+    NotifService.cancelDeliveredNotifications([
+      String(NotifService.notifData.one.id),
+      String(NotifService.notifData.two.id),
+      String(NotifService.notifData.three.id),
+    ])
   }
 
   static cancelDeliveredNotifications(identifiers) {
