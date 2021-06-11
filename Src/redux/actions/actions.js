@@ -29,6 +29,7 @@ import {
   IS_ANONYMOUS,
   COMPANY_NAME,
   GET_SLEEP_PERM,
+  GET_LIGHT_PERM,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -112,6 +113,12 @@ export const WeatherPerm = (data) => {
 export const SleepPerm = (data) => {
   return {
     type: GET_SLEEP_PERM,
+    payload: data,
+  };
+};
+export const LightPerm = (data) => {
+  return {
+    type: GET_LIGHT_PERM,
     payload: data,
   };
 };

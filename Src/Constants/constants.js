@@ -76,36 +76,6 @@ export const defaultLocation = {
   country: "Australia"
 }
 
-export const defaultWeatherData = {
-  "coord": {
-    "lon": 72.5997,
-    "lat": 22.9987
-  },
-  "weather": [
-    {
-      "id": 801,
-      "main": "Clouds",
-      "description": "few clouds",
-      "icon": "02d"
-    }
-  ],
-  "base": "stations",
-  "main": {
-    "temp": 39.02,
-    "feels_like": 46.02,
-    "temp_min": 39.02,
-    "temp_max": 39.02,
-    "pressure": 998,
-    "humidity": 42
-  },
-  "visibility": 6000,
-  "wind": {
-    "speed": 2.57,
-    "deg": 270
-  },
-  "clouds": {
-    "all": 20
-  }
-};
+
 
 export const isCountryIndia = () => (moment().utcOffset() == 330);

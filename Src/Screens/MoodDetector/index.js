@@ -913,7 +913,7 @@ export default function MoodDetector({navigation}) {
         state: isIndia && state_info ? defaultLocation.state : state_info,
         country: isIndia && country_info ? defaultLocation.country : country_info,
         lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
-        lon: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
+        long: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
 
         email: Email,
         user_id: UserData.UserId,

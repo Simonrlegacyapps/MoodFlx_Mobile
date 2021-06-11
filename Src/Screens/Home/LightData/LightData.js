@@ -1,4 +1,9 @@
-import React, {useState} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback
+} from 'react';
 import {
   View,
   Text,
@@ -9,6 +14,7 @@ import {
   TouchableOpacity,
   DeviceEventEmitter,
   NativeModules,
+  Platform,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -28,7 +34,16 @@ import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import PopUp from '../../../Components/PopUp/PopUp';
 import {dynamicSize} from '../../../Constants/sizeChoose';
+import { LightPerm } from '../../../redux/actions/actions';
 const {SensorManager} = NativeModules;
+import {useDispatch, useSelector} from 'react-redux';
+import axios from 'axios';
+import DeviceInfo from 'react-native-device-info';
+import moment from 'moment';
+import AsyncStorage from '@react-native-community/async-storage';
+
+let lightData = null;
+let currentLightData = -1;
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -42,18 +57,17 @@ const IndicatorHelper = ({color, text}) => {
 };
 
 const LightData = ({
-  CheckForLightData,
-  PermScreenTime,
-  Weather,
-  // data,
-  // dataLow,
   MoodCount,
   swiperIndex,
 }) => {
-  const [ScreenTimeDuration, setScreenTimeDuration] = useState(false);
-  const [ScreenDuration, setScreenDuration] = useState('Week');
+  const [light, setLight] = useState(-1);
+  const [lightApiData, setLightApiData] = useState(null);
   const [Graph, setGraph] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
+  const isUpdateLightApiCalled = useRef(false);
+
+  const UserData = useSelector((state) => state.First);
+  const dispatch = useDispatch();
 
   const lines = [
     {value: 500, hours: 'Perfect', bold: false},
@@ -150,28 +164,90 @@ const LightData = ({
     );
 
   const VerifyDone = async () => {
-    // await AsyncStorage.setItem('GiveSleepPerm', 'true');
-
+    if(UserData.LightPermission) {
+      callUpdateLightApi(light);
+    } else {
+      if(Platform.OS === 'android') {
+        await AsyncStorage.setItem('GiveLightPerm', 'true');
+        dispatch(LightPerm(true));
+      }
+    }
     setopenActionSheet(false);
-    // let Sp = await AsyncStorage.getItem('GiveSleepPerm');
-    // let SleepP = await JSON.parse(Sp);
-    // console.log(`SleepPerm`, SleepP);
-    // dispatch(SleepPerm(SleepP));
   };
 
-  // Light data using react-native-sensor-manager
-  // useEffect(() => {
-  //   SensorManager.startLightSensor(5000);
-  //   function lightSensorCallback(data) {
-  //     console.log('LigntSensorData: ', data);
-  //   }
-  //   DeviceEventEmitter.addListener('LightSensor', lightSensorCallback);
-  //   return () => {
-  //      SensorManager.stopLightSensor();
-  //   }
-  // }, [])
+  const callUpdateLightApi = (_light) => {
+    isUpdateLightApiCalled.current = true;
+    const deviceId = DeviceInfo.getUniqueId();
+    if(_light !== -1 && UserData.LightPermission) {
+      // _light = isNaN(_light) ? Number.parseInt(_light, 10) : _light;
+      const params = {
+        "device_id": deviceId,
+        "email": UserData.UserId ?? "",
+        "user_id": UserData.UserId ?? "",
+        "date": moment().format("YYYY-MM-DD HH:mm:ss"),
+        "value": _light
+      };
+      console.log('callUpdateLightApi params ==> ', params);
+      // return;
+      axios.post('https://admin.moodflo.com/api/updateLightData', params)
+      .then(function (response) {
+        console.log('✅ ✅ ✅ ✅ Success Update Light Data ✅ ✅ ✅ ✅', params);
+        callGetLightApi();
+      })
+      .catch(function (error) {
+        console.log('❌ ❌ ❌ ❌ Error Update Light Data ❌ ❌ ❌ ❌', error);
+      });
+    }
+  }
 
-  const ScreenDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
+  const callGetLightApi = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    const params = {
+      "device_id": deviceId,
+      "email": UserData.UserId ?? "",
+      "user_id": UserData.UserId ?? ""
+    };
+    console.log('callGetLightApi params ==> ', params);
+    axios.post('https://admin.moodflo.com/api/getLightReport', params)
+      .then(function (response) {
+        console.log('✅ ✅ ✅ ✅ Success Get Light Data ✅ ✅ ✅ ✅');
+        // console.log('Get Light Data response: ', response);
+      })
+      .catch(function (error) {
+        console.log('❌ ❌ ❌ ❌ Error Get Light Data ❌ ❌ ❌ ❌', error);
+      });
+  }
+
+  // Light data using react-native-sensor-manager
+  useEffect(() => {
+    if (UserData.LightPermission) {
+      SensorManager.startLightSensor(10000);
+      function lightSensorCallback(data) {
+        if(data?.light) {
+          currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
+          setLight(currentLightData);
+          console.log('LigntSensorData: ', currentLightData);
+        }
+      }
+      DeviceEventEmitter.addListener('LightSensor', lightSensorCallback);
+      return () => {
+        SensorManager.stopLightSensor();
+      }
+    }
+
+  }, [UserData.LightPermission]);
+
+  useEffect(() => {
+    if (!isUpdateLightApiCalled.current && UserData.LightPermission && light !== -1) {
+      callUpdateLightApi(light);
+    }
+    return () => {
+      lightData = null;
+      currentLightData = -1;
+    }
+
+  }, [UserData.LightPermission, light]);
+
   return (
     <View>
       <ScrollView
@@ -182,7 +258,6 @@ const LightData = ({
         <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
-              CheckForLightData();
               setopenActionSheet(true);
             }}
             style={{
@@ -233,6 +308,11 @@ const LightData = ({
               justifyContent: 'center',
               alignItems: 'center',
             }}>
+          <View
+            style={{
+              alignItems: 'center',
+              width: '100%',
+            }}>
             <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
               LIGHT
             </Text>
@@ -242,16 +322,29 @@ const LightData = ({
               under <Text style={{color: '#5947D0'}}>250</Text> for over{' '}
               <Text style={{color: '#5947D0'}}>4 hours</Text>
             </Text>
-            {/* <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
-            Try get less than 3hrs a day
-          </Text> */}
+            </View>
+            {UserData.LightPermission && (
+              <View
+                style={{
+                  position: 'absolute',
+                  zIndex: -234234,
+                  justifyContent: 'center',
+                  top: SIZE / 2.3,
+                }}>
+                <Text
+                  style={{
+                    marginTop: -160,
+                    fontWeight: '700',
+                    fontFamily: RubikExtraBold,
+                    fontSize: SIZE / 5.5,
+                    color: '#E0DDED',
+                    transform: [{ rotate: '-15deg' }],
+                  }}>
+                  Demo
+              </Text>
+              </View>
+            )}
           </View>
-
-          {/* <ProgressBarCustom /> */}
-          {/* <HomeHeader
-          click={() => setScreenTimeDuration(false)}
-          value={ScreenDuration}
-        /> */}
 
           <View
             style={{
@@ -277,72 +370,9 @@ const LightData = ({
                 lightScreen={true}
               />
             )}
-            <View
-              style={{
-                // flex: 1,
-                position: 'absolute',
-                left: SIZE / 6,
-                // alignSelf: 'center',
-                // alignItems: 'center',
-                // justifyContent: 'center',
-                marginTop: 30,
-              }}>
-              {swiperIndex == 3 && (
-                <View>
-                  {/* <View>
-
-                    <GraphBezierCustom
-                      // abs
-                      heightProp={heightProp}
-                      stroke="#FDBB29"
-                      widthProp={widthProp}
-                      data={data}
-                      max={max}
-                      H={9}
-                    />
-                  </View>
-                  <View style={{marginTop: 20}}>
-                    <GraphBezierCustom
-                      heightProp={heightProp}
-                      stroke="#FDBB29"
-                      widthProp={widthProp}
-                      data={dataLow}
-                      max={Lowmax}
-                      H={4}
-                    />
-                  </View> */}
-                </View>
-              )}
-            </View>
           </View>
 
-          {/* <View style={{marginBottom: 20}}>
-          <ScreenCircleBar
-            DarkColor="#0DDE79"
-            lightColor="#CFF9ED"
-            Label="Morning"
-            Time="1hr 34min"
-            value={54}
-            border={true}
-          />
-          <ScreenCircleBar
-            DarkColor="#F992BE"
-            lightColor="#FEE9F2"
-            Label="Afternoon"
-            Time="1hr 34min"
-            value={32}
-            border={true}
-          />
-          <ScreenCircleBar
-            DarkColor="#21CDDE"
-            lightColor="#E5F9FC"
-            Label="Evening"
-            Time="1hr 34min"
-            value={92}
-          />
-        </View> */}
-          {/* <GraphicChart /> */}
-          {false && (
+          {!UserData.LightPermission && (
             <View
               style={{
                 position: 'absolute',
@@ -354,7 +384,7 @@ const LightData = ({
               }}>
               <Text
                 style={{
-                  marginTop: -160,
+                  marginTop: dynamicSize(-320),
                   fontWeight: '700',
                   fontFamily: RubikExtraBold,
                   fontSize: SIZE / 3.5,
@@ -366,31 +396,7 @@ const LightData = ({
             </View>
           )}
 
-          {!PermScreenTime && (
-            <View
-              style={{
-                position: 'absolute',
-                top: 420,
-                alignItems: 'center',
-                height: '100%',
-                width: '100%',
-                zIndex: -234234,
-              }}>
-              <Text
-                style={{
-                  marginTop: -300,
-                  fontWeight: '700',
-                  fontFamily: RubikExtraBold,
-                  fontSize: SIZE / 3.5,
-                  color: '#E0DDED',
-                  transform: [{rotate: '-15deg'}],
-                }}>
-                Demo
-              </Text>
-            </View>
-          )}
-
-          {true && (
+          {!UserData.LightPermission  && (
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {
@@ -410,8 +416,8 @@ const LightData = ({
       </ScrollView>
 
       <PopUp
-        permission={false}
-        ComingUp
+        permission={UserData.LightPermission}
+        ComingUp={Platform.OS === 'ios'}
         image={Constants.Images.Sleepimage}
         dataType={'light'}
         modalVisible={openActionSheet}
