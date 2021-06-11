@@ -38,6 +38,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 import {PHOTO_URL} from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
+import axios from 'axios';
 
 const Linktocompany = ({navigation}) => {
   const {OTPVerified, setDivision, getDivision} = useSelector(
@@ -71,19 +72,34 @@ const Linktocompany = ({navigation}) => {
   // );
 
   useEffect(() => {
-    fetch('https://admin.moodflo.com/api/getDivision')
-      .then((data) => data.json())
-      .then(async (res) => {
-        await dispatch(getDivisions(res.data));
-        setDivisions(res.data);
-        console.log('getDivision =>', res);
-        // console.log('response of division', res.data[0].id);
-        // setSelectedDivisionId(res.data[0].id);
-      })
-      .catch((error) => {
-        console.log('getDivision error: ', error);
-      });
-  }, []);
+    if (UserData.UserEmail && UserData.UserId) {
+      var myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+      const deviceId = DeviceInfo.getUniqueId();
+      const params = {
+        device_id: deviceId,
+        user_id: UserData.UserId,
+        email: UserData.UserEmail
+      };
+
+      console.log('=== getDivision params ===', params);
+
+      axios.post('https://admin.moodflo.com/api/getDivision', params)
+        .then(async (res) => {
+          if (Array.isArray(res?.data?.data)) {
+            await dispatch(getDivisions(res.data.data));
+            setDivisions(res.data.data);
+            console.log('getDivision data =>', res.data.data);
+          }
+          // console.log('getDivision =>', res);
+          // console.log('response of division', res.data[0].id);
+          // setSelectedDivisionId(res.data[0].id);
+        })
+        .catch((error) => {
+          console.log('getDivision error: ', error);
+        });
+    }
+  }, [UserData.UserId, UserData.UserEmail]);
 
   useEffect(() => {
     const deviceId = DeviceInfo.getUniqueId();
