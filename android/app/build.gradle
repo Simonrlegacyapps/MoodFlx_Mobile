@@ -132,8 +132,8 @@ android {
         applicationId "com.moodflo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 27
-        versionName "1.0.4"
+        versionCode 28
+        versionName "1.0.5"
         multiDexEnabled true
     }
     splits {
