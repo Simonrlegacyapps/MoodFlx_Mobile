@@ -79,3 +79,9 @@ export const defaultLocation = {
 
 
 export const isCountryIndia = () => (moment().utcOffset() == 330);
+
+export const moodTypes = {
+  regular: "regular",
+  pretty: "pretty",
+  very: "very"
+}

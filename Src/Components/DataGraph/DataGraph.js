@@ -16,7 +16,7 @@ import {
 } from "react-native-chart-kit";
 import { dataTypes, durationTypes } from '../../Constants/constants';
 import { metrics } from '../../Constants/sizeChoose';
-import { RubikLight, RubikRegular } from '../../Constants/fonts/Fonts';
+import { RubikRegular } from '../../Constants/fonts/Fonts';
 
 export function DataGraph({
   graphHeight,

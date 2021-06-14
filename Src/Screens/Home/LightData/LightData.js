@@ -18,10 +18,13 @@ import {
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
+  RubikBlack,
   RubikExtraBold,
+  RubikBold,
   RubikLight,
   RubikMedium,
   RubikRegular,
+  RubikSemiBold,
 } from '../../../Constants/fonts/Fonts';
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
@@ -33,7 +36,7 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import PopUp from '../../../Components/PopUp/PopUp';
-import {dynamicSize} from '../../../Constants/sizeChoose';
+import {dynamicSize, getLineHeight} from '../../../Constants/sizeChoose';
 import { LightPerm } from '../../../redux/actions/actions';
 const {SensorManager} = NativeModules;
 import {useDispatch, useSelector} from 'react-redux';
@@ -41,20 +44,13 @@ import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
+import { LightGraph } from '../../../Components/LightGraph/LightGraph';
 
 let lightData = null;
 let currentLightData = -1;
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
-const IndicatorHelper = ({color, text}) => {
-  return (
-    <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
-      <Text style={styles.indicatorText}>{text}</Text>
-    </View>
-  );
-};
 
 const LightData = ({
   MoodCount,
@@ -64,6 +60,7 @@ const LightData = ({
   const [lightApiData, setLightApiData] = useState(null);
   const [Graph, setGraph] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
+  const [lightGraphData, setLightGraphData] = useState(null);
   const isUpdateLightApiCalled = useRef(false);
 
   const UserData = useSelector((state) => state.First);
@@ -163,6 +160,46 @@ const LightData = ({
       }),
     );
 
+    function getLightGraphData(dataArray) {
+      let lightGraphData = [];
+      let weekDates = [];
+      let dates = [6, 5, 4, 3, 2, 1, 0];
+      dates.forEach((e, idx) => {
+        const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+        weekDates.push(d);
+      });
+      weekDates.forEach((e, idx) => {
+        const eData = moment(e);
+        let data = null;
+        let day = '';
+        day = eData.format('dd');
+        // INBED
+        dataArray.forEach((d) => {
+          const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
+          let value = 0;
+          if(d?.value && !isNaN(d?.value)){
+            value = Number.parseInt(Number(d.value), 10);
+          }
+          if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
+            data = {
+              x: idx + 1,
+              y: value,
+              day,
+            }
+          }
+        });
+        if (data === null) {
+          data = {
+            x: idx + 1,
+            y: 0,
+            day
+          }
+        }
+        lightGraphData.push(data);
+      });
+      return lightGraphData;
+    }
+
   const VerifyDone = async () => {
     if(UserData.LightPermission) {
       callUpdateLightApi(light);
@@ -211,7 +248,16 @@ const LightData = ({
     axios.post('https://admin.moodflo.com/api/getLightReport', params)
       .then(function (response) {
         console.log('✅ ✅ ✅ ✅ Success Get Light Data ✅ ✅ ✅ ✅');
-        // console.log('Get Light Data response: ', response);
+        console.log('Get Light Data response: ', response?.data?.lightData);
+        console.log('Get Light Data response: ', Object.values(response?.data?.lightData));
+        if(response?.data?.lightData) {
+          const lightArray = Object.values(response?.data?.lightData);
+          if(Array.isArray(lightArray) && lightArray.length > 0){
+            const lightGraphData = getLightGraphData(lightArray);
+            console.log('lightGraphData: ', lightGraphData)
+            setLightGraphData(lightGraphData)
+          }
+        }
       })
       .catch(function (error) {
         console.log('❌ ❌ ❌ ❌ Error Get Light Data ❌ ❌ ❌ ❌', error);
@@ -223,10 +269,11 @@ const LightData = ({
     if (UserData.LightPermission) {
       SensorManager.startLightSensor(10000);
       function lightSensorCallback(data) {
-        if(data?.light) {
-          currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
-          setLight(currentLightData);
+        if(data?.light && typeof data?.light === 'number') {
+          // currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
+          currentLightData = Number.parseInt((data.light), 10);
           console.log('LigntSensorData: ', currentLightData);
+          setLight(currentLightData);
         }
       }
       DeviceEventEmitter.addListener('LightSensor', lightSensorCallback);
@@ -349,26 +396,40 @@ const LightData = ({
           <View
             style={{
               alignItems: 'center',
-              justifyContent: 'center',
+              // justifyContent: 'center',
               marginVertical: 30,
             }}>
             <Image
               source={Constants.Images.Bulb}
-              style={{height: 220, width: 220, resizeMode: 'contain'}}
+              style={{height: 220, width: 220, resizeMode: 'contain', 
+              // tintColor: 'yellow'
+            }}
             />
+            <View style={styles.bulbImage}>
+              <Text style={styles.bulbText}>{light}</Text>
+              <Text style={styles.bulbText}>Lux</Text>
+            </View>
           </View>
           <View style={{marginBottom: 100, alignItems: 'center'}}>
             {swiperIndex == 3 && (
-              <BarGraph
-                BarsMarginLeft={dynamicSize(44)}
-                width={dynamicSize(240)}
-                barsWidth={dynamicSize(260)}
-                sideLabels={lines}
-                color={'#EEA402'}
-                ShowPollen={false}
-                RightBar={true}
-                lightScreen={true}
+              <LightGraph
+                data={lightGraphData}
+                graphWidth={SIZE}
+                // yAxisLabel='Lux'
+                // duration='Lux'
               />
+              // <BarGraph
+              //   BarsMarginLeft={dynamicSize(44)}
+              //   width={SIZE * 0.5}
+              //   barsWidth={dynamicSize(260)}
+              //   // width={dynamicSize(240)}
+              //   // barsWidth={dynamicSize(260)}
+              //   sideLabels={lines}
+              //   color={'#EEA402'}
+              //   ShowPollen={false}
+              //   RightBar={true}
+              //   lightScreen={true}
+              // />
             )}
           </View>
 
@@ -565,6 +626,18 @@ const styles = StyleSheet.create({
     color: '#4C5980',
     fontFamily: RubikRegular,
   },
+  bulbImage: {
+    position: 'absolute',
+    alignItems: 'center',
+    top: 70
+  },
+  bulbText: {
+    fontFamily: RubikBold,
+    fontSize: 19,
+    lineHeight: 23,
+    letterSpacing: 1,
+    color: '#000000'
+    },
 });
 
 export default LightData;
