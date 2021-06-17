@@ -527,7 +527,7 @@ const LightData = ({
 
       <PopUp
         permission={UserData.LightPermission}
-        ComingUp={Platform.OS === 'ios'}
+        ComingUp={false}
         image={Constants.Images.Sleepimage}
         dataType={'light'}
         modalVisible={openActionSheet}

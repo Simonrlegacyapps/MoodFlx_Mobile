@@ -89,7 +89,7 @@ export function LightGraph({
             }}>
             <Text
               style={{ color: 'white', fontSize: getFontSize(13), fontFamily: RubikRegular }}>
-              {"Low : < 150"}
+              {"Low: < 200"}
           </Text>
           </View>
         <View
@@ -102,7 +102,7 @@ export function LightGraph({
           }}>
           <Text
             style={{ color: 'white', fontSize: getFontSize(13), fontFamily: RubikRegular }}>
-            {"Ideal : 150 - 400"}
+            {"Ideal: 200-400"}
           </Text>
         </View>
         <View
@@ -115,7 +115,7 @@ export function LightGraph({
           }}>
           <Text
             style={{ color: 'white', fontSize: getFontSize(13), fontFamily: RubikRegular }}>
-            {"High : > 400"}
+            {"High: > 400"}
           </Text>
         </View>
       </View>
