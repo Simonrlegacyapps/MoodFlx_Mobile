@@ -73,7 +73,7 @@ import NotifService from '../../services/notifService';
 import {RubikMedium} from '../../Constants/fonts/Fonts';
 import {useFocusEffect} from '@react-navigation/native';
 import messaging, {firebase} from '@react-native-firebase/messaging';
-import {defaultLocation, hapticsTopFlags, isCountryIndia} from '../../Constants/constants';
+import {defaultLocation, hapticsTopFlags, isCountryIndia, moodTypes} from '../../Constants/constants';
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 
@@ -853,6 +853,13 @@ export default function MoodDetector({navigation}) {
   // console.log(`QuestionId`, QuestionID);
 
   const findId = async () => {
+    let mood_type = moodTypes.regular;
+    if(wheelSize === mediumWheelSize) {
+      mood_type = moodTypes.pretty
+    } else if(wheelSize === largeWheelSize) {
+      mood_type = moodTypes.very
+    }
+            
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
@@ -908,12 +915,12 @@ export default function MoodDetector({navigation}) {
       const params = {
         mood_id: Id.id,
         device_id: deviceId,
-
+        mood_type,
         city: isIndia && city_info ? defaultLocation.city : city_info,
         state: isIndia && state_info ? defaultLocation.state : state_info,
         country: isIndia && country_info ? defaultLocation.country : country_info,
         lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
-        lon: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
+        long: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
 
         email: Email,
         user_id: UserData.UserId,

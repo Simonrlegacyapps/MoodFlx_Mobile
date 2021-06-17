@@ -89,7 +89,7 @@ const EditManualWeatherModal = ({
     // console.log(`value`, value);
     console.log(`findWeather value`, value);
     const v = value?.toLowerCase?.() ?? value;
-    return weatherApiDataTypes?.[v] ?? weatherTypes.Rainy;
+    return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
   };
 
   let myname = UserData?.UserDetails?.full_name
@@ -100,11 +100,13 @@ const EditManualWeatherModal = ({
     ? WeatherType
     : Weather
       ? findWeather(Weather?.weather?.[0]?.main)
-      : weatherTypes.Rainy;
+      : weatherTypes.Cloudy;
 
-  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Rainy;
+  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Cloudy;
 
-  const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Rain;
+  const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Cloudy;
+  const _smallWeatherIcon = _weatherType === weatherTypes.Rainy ? Constants.Images.RainyHour : _largeWeatherImg;
+
 
   return (
     <Modal
@@ -248,7 +250,7 @@ const EditManualWeatherModal = ({
                   <View style={{flexDirection: 'row', padding: 15}}>
                     <Image
                       resizeMode={'contain'}
-                      source={Constants.Images.RainyHour}
+                      source={_smallWeatherIcon}
                       style={styles.SmallCardImage}
                     />
                     <View>

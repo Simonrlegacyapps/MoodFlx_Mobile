@@ -142,7 +142,6 @@ const App = (props) => {
   const [callOneTime, setcallOneTime] = useState('one');
   const [TryWeather, setTryWeather] = useState(null);
   const [ScreenDataPermModal, setScreenDataPermModal] = useState(false);
-  const [LightDataPermModal, setLightDataPermModal] = useState(false);
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
   const [isInstallGoogleFitModalVisible, setIsInstallGoogleFitModalVisible] = useState(false);
@@ -963,13 +962,6 @@ const App = (props) => {
     // dispatch(SleepPerm(WeatherP));
   };
 
-  const CheckForLightData = async () => {
-    console.log(`Implement Light data`);
-    setLightDataPermModal(true);
-    // let Wp = await AsyncStorage.getItem('GiveSleepPerm');
-    // let WeatherP = await JSON.parse(Wp);
-    // dispatch(SleepPerm(WeatherP));
-  };
 
   const AddDataToFilter = async () => {
     const deviceId = DeviceInfo.getUniqueId();
@@ -1165,11 +1157,6 @@ const App = (props) => {
         <View style={styles.slide3}>
           <LightData
             swiperIndex={swiperIndex}
-            // data={data}
-            // dataLow={dataLow}
-            Weather={Weather}
-            PermScreenTime={PermScreenTime}
-            CheckForLightData={CheckForLightData}
             MoodCount={MoodCount}
           />
         </View>

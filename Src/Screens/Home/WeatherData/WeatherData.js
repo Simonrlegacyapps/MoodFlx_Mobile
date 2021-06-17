@@ -101,6 +101,9 @@ const WeatherData = ({
     if (swiperIndex == 2 && UserData.WeatherPermission) {
       getUserLocation();
     }
+    return () => {
+      weatherData = null;
+    }
   }, [swiperIndex]);
 
   const getUserLocation = () => {
@@ -168,7 +171,7 @@ const WeatherData = ({
 
   const findWeather = (value) => {
     const v = value?.toLowerCase?.() ?? value;
-    return weatherApiDataTypes?.[v] ?? weatherTypes.Rainy;
+    return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
   };
 // console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
   const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
@@ -267,11 +270,23 @@ const WeatherData = ({
   };
 
   useEffect(() => {
-    th(swiperIndex, UserData.lat, UserData.lon);
+    let lat = UserData.lat;
+    let lng = UserData.lon;
+    if(!UserData.WeatherPermission){
+      lat = defaultLocation.latitude;
+      lng = defaultLocation.longitude;
+    }
+    th(swiperIndex, lat, lng);
   }, [swiperIndex]);
 
   useEffect(() => {
-    CheckForWeather(UserData.lat, UserData.lon, function(flag) {
+    let lat = UserData.lat;
+    let lng = UserData.lon;
+    if(!UserData.WeatherPermission){
+      lat = defaultLocation.latitude;
+      lng = defaultLocation.longitude;
+    }
+    CheckForWeather(lat, lng, function(flag) {
       if(flag === false) {
         syncWeatherData();
       }
@@ -279,10 +294,10 @@ const WeatherData = ({
   }, []);
 
   const CheckForWeather = async (loc_lat = UserData.lat, loc_long = UserData.lon, onFinish) => {
-    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    let WeatherP = await JSON.parse(Wp);
-    dispatch(WeatherPerm(WeatherP));
-    if(!(WeatherP && loc_lat && loc_long)) {
+    // let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    // let WeatherP = await JSON.parse(Wp);
+    // dispatch(WeatherPerm(WeatherP));
+    if(!(loc_lat && loc_long)) {
       onFinish?.(false);
       return;
     }
@@ -600,12 +615,13 @@ const WeatherData = ({
   const _weatherType = ManualWeatherType
   ? ManualWeatherType
   : weatherData
-  ? findWeather(weatherData?.weather?.[0]?.main)
-  : weatherTypes.Rainy;
+  ? findWeather(Weather?.weather?.[0]?.main)
+  : weatherTypes.Cloudy;
 
-  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Rainy;
+  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Cloudy;
 
-  const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Rain;
+  const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Cloudy;
+  const _smallWeatherIcon = _weatherType === weatherTypes.Rainy ? Constants.Images.RainyHour : _largeWeatherImg;
 
   return (
     <View>
@@ -730,7 +746,7 @@ const WeatherData = ({
                   Today's Weather
                 </Text>
                 <Text style={[styles.SmallThinText, styles.city]}>
-                  {weatherData ? weatherData?.name : 'Sync your weather'}
+                  {UserData.WeatherPermission ? Weather?.name : 'Sync your weather'}
                 </Text>
                 <View>
                   <TouchableOpacity
@@ -768,7 +784,7 @@ const WeatherData = ({
                           ]}>
                           {ManualTemp
                             ? ManualTemp
-                            : Math.round(weatherData ? weatherData.main.temp : '0')}
+                            : Math.round(Weather?.main?.temp ? Weather.main.temp : '0')}
                           ºC
                         </Text>
                       </View>
@@ -796,7 +812,7 @@ const WeatherData = ({
                       <View style={{flexDirection: 'row', padding: 15}}>
                         <Image
                           resizeMode={'contain'}
-                          source={Constants.Images.RainyHour}
+                          source={_smallWeatherIcon}
                           style={styles.SmallCardImage}
                         />
                         <View>

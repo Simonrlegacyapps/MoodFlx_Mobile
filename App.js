@@ -31,6 +31,7 @@ import {
   HealthPerm,
   IsAnonymous,
   Lat,
+  LightPerm,
   Long,
   Moods,
   SleepPerm,
@@ -205,16 +206,20 @@ const App: () => React$Node = () => {
     let d = await AsyncStorage.getItem('Division');
     let Hp = await AsyncStorage.getItem('GiveHealthPerm');
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    let Lp = await AsyncStorage.getItem('GiveLightPerm');
+   
     let e = await JSON.parse(p);
     let division = await JSON.parse(d);
     let HealthP = await JSON.parse(Hp);
     let WeatherP = await JSON.parse(Wp);
     let Id = await JSON.parse(UserId);
     let a = await JSON.parse(anonymous);
+    let LightP = await JSON.parse(Lp);
     // console.log(`e`, e);
     // console.log(`division`, division);
     // console.log(`HealthPerm`, HealthP);
     // console.log(`WeatherPerm`, WeatherP);
+    // console.log(`LightPerm`, LightP);
     // console.log(`userId`, Id);
     // console.log(`Anonymous`, a, a === null ? true : a);
 
@@ -222,6 +227,7 @@ const App: () => React$Node = () => {
     let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
     let SleepP = await JSON.parse(SleepPer);
     dispatch(SleepPerm(SleepP));
+    dispatch(LightPerm(LightP));
     // console.log(`Sleep Permission`, SleepP);
     dispatch(UserEmail(e));
     dispatch(UserDivision(division));
@@ -339,7 +345,7 @@ const App: () => React$Node = () => {
     }
     checkStorage();
     getProfileUserData();
-  }, []);
+  }, [UserData.WeatherPermission]);
 
   const renderItems = ({item, index}, parallaxProps) => {
     // console.log('item', item.img);

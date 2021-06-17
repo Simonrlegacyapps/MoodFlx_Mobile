@@ -7,4 +7,6 @@
 
 @property(nonatomic, strong) UIWindow *window;
 
+- (double) getCurrentLight; // called from the RCTMoodDataModule
+
 @end
