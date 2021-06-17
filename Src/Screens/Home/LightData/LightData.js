@@ -45,8 +45,11 @@ import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
 import { LightGraph } from '../../../Components/LightGraph/LightGraph';
+import { getLightDataIOS } from '../../../services/moodDataModuleService';
 
 let lightData = null;
+let getLightTimeoutIdIOS = null;
+let isStopLightTimeout = true;
 let currentLightData = -1;
 
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
@@ -57,7 +60,6 @@ const LightData = ({
   swiperIndex,
 }) => {
   const [light, setLight] = useState(-1);
-  const [lightApiData, setLightApiData] = useState(null);
   const [Graph, setGraph] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [lightGraphData, setLightGraphData] = useState(null);
@@ -204,10 +206,8 @@ const LightData = ({
     if(UserData.LightPermission) {
       callUpdateLightApi(light);
     } else {
-      if(Platform.OS === 'android') {
-        await AsyncStorage.setItem('GiveLightPerm', 'true');
-        dispatch(LightPerm(true));
-      }
+      await AsyncStorage.setItem('GiveLightPerm', 'true');
+      dispatch(LightPerm(true));
     }
     setopenActionSheet(false);
   };
@@ -264,21 +264,68 @@ const LightData = ({
       });
   }
 
+  const getCalculatedLightIOS = (v) => {
+    const m = v * 100;
+    const m1 = 41 - m;
+    const multiplier = 5.7948 + (m1 < 0 ? (m / 10) : 0);
+    // console.log('multiplier light data: ', multiplier);
+    const l = multiplier * v * 100;
+    return l;
+  };
+
+  const getLightIOS = useCallback(() => {
+    if (isStopLightTimeout) {
+      getLightTimeoutIdIOS && clearTimeout(getLightTimeoutIdIOS);
+      getLightTimeoutIdIOS = null;
+    } else {
+      getLightTimeoutIdIOS && clearTimeout(getLightTimeoutIdIOS);
+      getLightTimeoutIdIOS = null;
+      getLightTimeoutIdIOS = setTimeout(() => {
+        getLightDataIOS((lightValue) => {
+          // console.log('LightData getLightDataIOS: ', lightValue);
+          let l = lightValue;
+          if (!isStopLightTimeout) {
+            if (lightValue && !isNaN(lightValue)) {
+              const l = getCalculatedLightIOS(lightValue);
+              l?.toFixed && setLight(l.toFixed(0));
+            }
+            getLightIOS();
+          }
+        });
+      }, 5000);
+    }
+  }, []);
+
   // Light data using react-native-sensor-manager
   useEffect(() => {
     if (UserData.LightPermission) {
-      SensorManager.startLightSensor(10000);
-      function lightSensorCallback(data) {
-        if(data?.light && typeof data?.light === 'number') {
-          // currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
-          currentLightData = Number.parseInt((data.light), 10);
-          console.log('LigntSensorData: ', currentLightData);
-          setLight(currentLightData);
+      if (Platform.OS === 'android') {
+        SensorManager.startLightSensor(10000);
+        function lightSensorCallback(data) {
+          if (data?.light && typeof data?.light === 'number') {
+            // currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
+            currentLightData = Number.parseInt((data.light), 10);
+            console.log('LigntSensorData: ', currentLightData);
+            setLight(currentLightData);
+          }
         }
-      }
-      DeviceEventEmitter.addListener('LightSensor', lightSensorCallback);
-      return () => {
-        SensorManager.stopLightSensor();
+        DeviceEventEmitter.addListener('LightSensor', lightSensorCallback);
+        return () => {
+          SensorManager.stopLightSensor();
+        };
+      } else if (Platform.OS === 'ios') {
+        isStopLightTimeout = false;
+        getLightDataIOS((lightValue) => {
+          // console.log('LightData getLightDataIOS: ', lightValue);
+          if (lightValue && !isNaN(lightValue)) {
+            const l = getCalculatedLightIOS(lightValue);
+            l?.toFixed && setLight(l.toFixed(0));
+          }
+        });
+        getLightIOS();
+        return () => {
+          isStopLightTimeout = true;
+        };
       }
     }
 
@@ -294,6 +341,8 @@ const LightData = ({
     }
 
   }, [UserData.LightPermission, light]);
+
+  const lux = !UserData.LightPermission ? 400 : light === -1 ? 0 : light;
 
   return (
     <View>
@@ -406,7 +455,7 @@ const LightData = ({
             }}
             />
             <View style={styles.bulbImage}>
-              <Text style={styles.bulbText}>{light}</Text>
+              <Text style={styles.bulbText}>{lux}</Text>
               <Text style={styles.bulbText}>Lux</Text>
             </View>
           </View>

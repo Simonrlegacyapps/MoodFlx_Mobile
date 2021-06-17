@@ -53,6 +53,7 @@ static void InitializeFlipper(UIApplication *application) {
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  [self getCurrentLight];
   [RNSplashScreen show];
   // [FIRApp configure];
     // Define UNUserNotificationCenter
@@ -108,6 +109,14 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     [RNCPushNotificationIOS didReceiveRemoteNotification:userInfo
     fetchCompletionHandler:^void (UIBackgroundFetchResult result){}];
     completionHandler(UNNotificationPresentationOptionAlert);
+}
+
+//let currentBrightness = UIScreen.mainScreen().brightness
+// this method will be called from the RCTBridge
+- (double) getCurrentLight {
+  double light = [[UIScreen mainScreen]brightness];
+  NSLog (@"appDelegate - getCurrentLight %f", light);
+  return light;
 }
 
 @end

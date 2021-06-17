@@ -51,7 +51,7 @@ export function LightGraph({
     } 
     if (d.length === 0) {
       d.push({
-        data: [0, 0, 0, 0, 0, 0, 0]
+        data: [100, 350, 200, 400, 500, 300, 550]
       });
     }
     console.log('_dataSet', d);
