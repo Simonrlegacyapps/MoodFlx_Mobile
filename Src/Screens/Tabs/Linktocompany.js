@@ -32,7 +32,7 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import PostRequestApi from '../../apirequest/PostRequestApi';
+import PostRequestApi, { getDivisionName } from '../../apirequest/PostRequestApi';
 import {useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
@@ -84,20 +84,19 @@ const Linktocompany = ({navigation}) => {
 
       console.log('=== getDivision params ===', params);
 
-      axios.post('https://admin.moodflo.com/api/getDivision', params)
-        .then(async (res) => {
-          if (Array.isArray(res?.data?.data)) {
-            await dispatch(getDivisions(res.data.data));
-            setDivisions(res.data.data);
-            console.log('getDivision data =>', res.data.data);
-          }
-          // console.log('getDivision =>', res);
-          // console.log('response of division', res.data[0].id);
-          // setSelectedDivisionId(res.data[0].id);
-        })
-        .catch((error) => {
-          console.log('getDivision error: ', error);
-        });
+      getDivisionName(params, dispatch);
+
+      // axios.post('https://admin.moodflo.com/api/getDivision', params)
+      //   .then(async (res) => {
+      //     if (Array.isArray(res?.data?.data)) {
+      //       await dispatch(getDivisions(res.data.data));
+      //       setDivisions(res.data.data);
+      //       console.log('getDivision data =>', res.data.data);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.log('getDivision error: ', error);
+      //   });
     }
   }, [UserData.UserId, UserData.UserEmail]);
 
@@ -130,6 +129,16 @@ const Linktocompany = ({navigation}) => {
           .catch((error) => console.log('error', error));
     }
   }, [UserData.UserDivision]);
+
+  useEffect(() => {
+    if (
+      Array.isArray(UserData.getDivision) &&
+      UserData.getDivision.length > 0
+    ) {
+      console.log('UserData.getDivision: ', UserData.getDivision);
+      setDivisions(UserData.getDivision);
+    }
+  }, [UserData.getDivision]);
 
   const onLink = async (type) => {
     console.log('run');

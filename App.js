@@ -47,7 +47,7 @@ import moment from 'moment';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
-import { GetStaffUserData } from './Src/apirequest/PostRequestApi';
+import { getDivisionName, GetStaffUserData } from './Src/apirequest/PostRequestApi';
 import * as RootNavigation from './Src/navigator/RootNavigation';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
@@ -203,13 +203,13 @@ const App: () => React$Node = () => {
     let UserId = await AsyncStorage.getItem('UserId');
     let anonymous = await AsyncStorage.getItem('Anonymous');
     let p = await AsyncStorage.getItem('Email');
-    let d = await AsyncStorage.getItem('Division');
+    // let d = await AsyncStorage.getItem('Division');
     let Hp = await AsyncStorage.getItem('GiveHealthPerm');
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let Lp = await AsyncStorage.getItem('GiveLightPerm');
    
     let e = await JSON.parse(p);
-    let division = await JSON.parse(d);
+    // let division = await JSON.parse(d);
     let HealthP = await JSON.parse(Hp);
     let WeatherP = await JSON.parse(Wp);
     let Id = await JSON.parse(UserId);
@@ -230,7 +230,7 @@ const App: () => React$Node = () => {
     dispatch(LightPerm(LightP));
     // console.log(`Sleep Permission`, SleepP);
     dispatch(UserEmail(e));
-    dispatch(UserDivision(division));
+    // dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));
     dispatch(WeatherPerm(WeatherP));
     dispatch(GetUserId(Id));
@@ -270,6 +270,7 @@ const App: () => React$Node = () => {
         }
       })
       .catch((error) => console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error));
+      getDivisionName(raw, dispatch);
 
   };
 

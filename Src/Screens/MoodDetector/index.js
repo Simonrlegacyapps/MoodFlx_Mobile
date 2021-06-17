@@ -643,26 +643,30 @@ export default function MoodDetector({navigation}) {
   };
 
   const checkStorage = async () => {
-    await AsyncStorage.setItem('Anonymous', 'true');
-    // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
-    let p = await AsyncStorage.getItem('Email');
-    let d = await AsyncStorage.getItem('Division');
-    let Hp = await AsyncStorage.getItem('GiveHealthPerm');
-    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
-    let e = await JSON.parse(p);
-    let division = await JSON.parse(d);
-    let HealthP = await JSON.parse(Hp);
-    let WeatherP = await JSON.parse(Wp);
-    console.log(`e`, e);
-    console.log(`division`, division);
-    console.log(`HealthPerm`, HealthP);
-    console.log(`WeatherPerm`, WeatherP);
-    await setEmail(e);
-    dispatch(UserEmail(e));
-    dispatch(UserDivision(division));
-    dispatch(HealthPerm(HealthP));
-    dispatch(WeatherPerm(WeatherP));
+    try {
+      await AsyncStorage.setItem('Anonymous', 'true');
+      // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
+      let p = await AsyncStorage.getItem('Email');
+      let d = await AsyncStorage.getItem('Division');
+      let Hp = await AsyncStorage.getItem('GiveHealthPerm');
+      let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+      // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
+      let e = await JSON.parse(p);
+      let division = await JSON.parse(d);
+      let HealthP = await JSON.parse(Hp);
+      let WeatherP = await JSON.parse(Wp);
+      console.log(`e`, e);
+      console.log(`division`, division);
+      console.log(`HealthPerm`, HealthP);
+      console.log(`WeatherPerm`, WeatherP);
+      await setEmail(e);
+      dispatch(UserEmail(e));
+      dispatch(UserDivision(division));
+      dispatch(HealthPerm(HealthP));
+      dispatch(WeatherPerm(WeatherP));
+    } catch (error){
+      console.log('error getting AsyncStorage values', error);
+    }
   };
 
   const getProfileUserData = () => {
