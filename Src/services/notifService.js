@@ -125,7 +125,7 @@ export default class NotifService {
       ongoing: false, // (optional) set whether this is an "ongoing" notification
       //   actions: ['Yes', 'No'], // (Android only) See the doc for notification actions to know more
       invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
-
+      ignoreInForeground: true,
       when: null, // (optionnal) Add a timestamp pertaining to the notification (usually the time the event occurred). For apps targeting Build.VERSION_CODES.N and above, this time is not shown anymore by default and must be opted into by using `showWhen`, default: null.
       usesChronometer: false, // (optional) Show the `when` field as a stopwatch. Instead of presenting `when` as a timestamp, the notification will show an automatically updating display of the minutes and seconds since when. Useful when showing an elapsed time (like an ongoing phone call), default: false.
       timeoutAfter: null, // (optional) Specifies a duration in milliseconds after which this notification should be canceled, if it is not already canceled, default: null
@@ -166,7 +166,7 @@ export default class NotifService {
       ongoing: false, // (optional) set whether this is an "ongoing" notification
       //   actions: ['Yes', 'No'], // (Android only) See the doc for notification actions to know more
       invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
-
+      ignoreInForeground: true,
       when: null, // (optionnal) Add a timestamp pertaining to the notification (usually the time the event occurred). For apps targeting Build.VERSION_CODES.N and above, this time is not shown anymore by default and must be opted into by using `showWhen`, default: null.
       usesChronometer: false, // (optional) Show the `when` field as a stopwatch. Instead of presenting `when` as a timestamp, the notification will show an automatically updating display of the minutes and seconds since when. Useful when showing an elapsed time (like an ongoing phone call), default: false.
       timeoutAfter: null, // (optional) Specifies a duration in milliseconds after which this notification should be canceled, if it is not already canceled, default: null
@@ -317,8 +317,8 @@ export default class NotifService {
     if (id === NotifService.notifData.one.id) {
       // let first = new Date(new Date().setHours(12, 41, 0, 0));
       let first = new Date(
-        // new Date().setHours(NotifService.notifData.one.timeInHour, 0, 0, 0),
-        new Date().setHours(18, 1, 0, 0),
+        new Date().setHours(NotifService.notifData.one.timeInHour, 0, 0, 0),
+        // new Date().setHours(21, 19, 0, 0),
       );
       if (moment().isAfter(first.getTime(), 'second')) {
         first = moment(first.getTime()).add(1, 'days').toDate();
@@ -330,8 +330,8 @@ export default class NotifService {
       });
     } else if (id === NotifService.notifData.two.id) {
       let second = new Date(
-        // new Date().setHours(NotifService.notifData.two.timeInHour, 0, 0, 0),
-        new Date().setHours(18, 1, 30, 0),
+        new Date().setHours(NotifService.notifData.two.timeInHour, 0, 0, 0),
+        // new Date().setHours(21, 19, 30, 0),
       );
       // let second = new Date(new Date().setHours(12, 41, 30, 0));
       if (moment().isAfter(second.getTime(), 'second')) {

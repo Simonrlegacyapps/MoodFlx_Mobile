@@ -30,6 +30,7 @@ import {
   COMPANY_NAME,
   GET_SLEEP_PERM,
   GET_LIGHT_PERM,
+  SET_NOTIFICATION,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -215,6 +216,13 @@ export const IsAnonymous = (data) => {
 export const CompanyName = (data) => {
   return {
     type: COMPANY_NAME,
+    payload: data,
+  };
+};
+
+export const SetNotification = (data) => {
+  return {
+    type: SET_NOTIFICATION,
     payload: data,
   };
 };

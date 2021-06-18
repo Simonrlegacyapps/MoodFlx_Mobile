@@ -34,6 +34,7 @@ import {
   LightPerm,
   Long,
   Moods,
+  SetNotification,
   SleepPerm,
   UserDetail,
   UserDivision,
@@ -140,6 +141,42 @@ const App: () => React$Node = () => {
     //   console.warn(e);
     // }
   }, []);
+
+  useEffect(() => {
+    let isCurrentRoute = false;
+    if (UserData.notification) {
+      if (
+        UserData.notification?.data?.question &&
+        UserData.notification?.data?.id
+      ) {
+        // console.log(
+        //   'Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++',
+        // );
+        // if (isUnmounted === false && isMoodDetectorScreenFocused === true) {
+        //   setNotifData(notification);
+        //   setIsNotificationQuestionModalVisible(true);
+        // }
+        // currentNotif = notification;
+        const currentRoute = RootNavigation.getCurrentRoute();
+        if (currentRoute && currentRoute.name !== 'MoodEmotionDetector') {
+          isCurrentRoute = true;
+          // console.log('----navigate to MoodEmotionDetector----');
+          RootNavigation.navigate('MoodEmotionDetector');
+        } else if (!currentRoute) {
+          isCurrentRoute = true;
+        }
+      }
+      UserData.notification?.id &&
+        NotifService.cancelDeliveredNotifications([
+          String(UserData.notification.id),
+        ]);
+      console.log('NOTIFICATION: App', UserData.notification);
+      if (!isCurrentRoute) {
+        // console.log('isCurrentRoute: App', isCurrentRoute);
+        dispatch(SetNotification(null));
+      }
+    }
+  }, [UserData.notification, dispatch]);
 
   const _handleAppStateChange = (nextAppState) => {
     if (
