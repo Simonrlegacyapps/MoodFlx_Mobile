@@ -84,7 +84,7 @@ export async function getDivisionName(params, dispatch) {
                       e.id === result.userData.division_id ? e?.name ?? '' : '';
                   }
                 });
-                if (typeof divisionName === 'string') {
+                if (typeof divisionName === 'string' && divisionName) {
                   // console.log('dispatch UserDivision: ', divisionName);
                   dispatch?.(UserDivision(divisionName));
                   AsyncStorage.setItem('Division', divisionName)

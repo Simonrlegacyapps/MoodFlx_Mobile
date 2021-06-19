@@ -237,7 +237,7 @@ const App = (props) => {
     // console.log(`mood count again`, e);
     let HealthP = await JSON.parse(p);
     dispatch(HealthPerm(HealthP));
-    console.log(`HealthP`, HealthP != null);
+    // console.log(`HealthP`, HealthP);
     if (HealthP != null) {
       await OnAutoSync(function (flag) {
         console.log("onFinish called", flag);
@@ -261,33 +261,35 @@ const App = (props) => {
   };
 
   const checkStorage = async () => {
-    console.log(`called`);
+    // console.log(`checkStorage called`);
     setLoading(UserData.HealthPermission ? true : false);
-    let p = await AsyncStorage.getItem('GiveHealthPerm');
     let MCount = await AsyncStorage.getItem('MoodCount');
     let e = await JSON.parse(MCount);
     setMoodCount(e);
     dispatch(UserMoodCount(e));
     // console.log(`mood count again`, e);
-    let HealthP = await JSON.parse(p);
-    dispatch(HealthPerm(HealthP));
-
-    if (HealthP != null) {
-      console.log('good to go for API in async here at top');
-      await OnAutoSync(function (flag){
-        console.log("onFinish called", flag);
-        const timeoutId = setTimeout(async () => {
-          console.log(`steps`, steps);
-          if (steps) {
-            filterDates();
-            filterSteps();
-            AddDataToFilter();
-          }
-          setLoading(false);
-          clearTimeout(timeoutId);
-        }, 500);
-      });
-    }
+    console.log('good to go for API in async here at top');
+    await OnAutoSync(async function (flag) {
+      // console.log("onFinish called", flag);
+      if (flag === true) {
+        try {
+          await AsyncStorage.setItem('GiveHealthPerm', 'true');
+          dispatch(HealthPerm(true));
+        } catch (error) {
+          console.log('Async set item Health Permission error', error);
+        }
+      }
+      const timeoutId = setTimeout(async () => {
+        console.log(`steps`, steps);
+        if (steps) {
+          filterDates();
+          filterSteps();
+          AddDataToFilter();
+        }
+        setLoading(false);
+        clearTimeout(timeoutId);
+      }, 500);
+    });
   };
 
   // useEffect(() => {

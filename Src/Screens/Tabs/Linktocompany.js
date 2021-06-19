@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -33,7 +33,7 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import PostRequestApi, { getDivisionName } from '../../apirequest/PostRequestApi';
-import {useRoute} from '@react-navigation/native';
+import {useRoute, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 import {PHOTO_URL} from '../../Constants/constants';
@@ -118,17 +118,15 @@ const Linktocompany = ({navigation}) => {
       body: raw,
       redirect: 'follow',
     };
-    {
-      UserData.UserDivision !== null &&
-        fetch('https://admin.moodflo.com/api/getCompanyDetails', requestOptions)
-          .then((response) => response.json())
-          .then((result) => {
-            console.log('getting company details', result);
-            setCompanyDetails(result.companyData);
-          })
-          .catch((error) => console.log('error', error));
-    }
-  }, [UserData.UserDivision]);
+    UserData.UserDivision !== null &&
+      fetch('https://admin.moodflo.com/api/getCompanyDetails', requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log('getting company details', result);
+          setCompanyDetails(result.companyData);
+        })
+        .catch((error) => console.log('error', error));
+  }, [UserData.UserDivision, UserData.UserId]);
 
   useEffect(() => {
     if (
@@ -139,6 +137,23 @@ const Linktocompany = ({navigation}) => {
       setDivisions(UserData.getDivision);
     }
   }, [UserData.getDivision]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (UserData.UserEmail && UserData.UserId) {
+        const deviceId = DeviceInfo.getUniqueId();
+        const params = {
+          device_id: deviceId,
+          user_id: UserData.UserId,
+          email: UserData.UserEmail,
+        };
+
+        console.log('===useFocusEffect getDivision params ===', params);
+
+        getDivisionName(params, dispatch);
+      }
+    }, [UserData.UserId, UserData.UserEmail, dispatch]),
+  );
 
   const onLink = async (type) => {
     console.log('run');

@@ -202,7 +202,7 @@ const FitnessData = ({
         <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
-              await AsyncStorage.setItem('GiveHealthPerm', 'true');
+              // await AsyncStorage.setItem('GiveHealthPerm', 'true');
               // UserData.HealthPermission
               //   ? checkStorage()
               //   :
@@ -494,7 +494,7 @@ const FitnessData = ({
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {
-                await AsyncStorage.setItem('GiveHealthPerm', 'true');
+                // await AsyncStorage.setItem('GiveHealthPerm', 'true');
                 setOpenActionSheet(true);
               }}
               style={{

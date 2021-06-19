@@ -951,6 +951,7 @@ export default function MoodDetector({navigation}) {
             ? route?.params?.question
             : QuestionID,
           mood_id: Id.id,
+          mood_type,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
         });

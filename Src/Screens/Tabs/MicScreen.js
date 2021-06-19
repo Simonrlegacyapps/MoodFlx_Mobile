@@ -28,6 +28,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { GetUserId, UserEmail } from '../../redux/actions/actions';
 import { useFocusEffect } from '@react-navigation/native';
 import { GetStaffUserData } from '../../apirequest/PostRequestApi';
+import { moodTypes } from '../../Constants/constants';
 const { height, width } = Dimensions.get('window');
 const MicScreen = ({ navigation }) => {
   const UserData = useSelector((state) => state.First);
@@ -58,6 +59,10 @@ const MicScreen = ({ navigation }) => {
     let e = await JSON.parse(p);
     console.log(`e`, e);
     dispatch(UserEmail(e));
+    if (!(e && Id)) {
+      setquestions(null);
+      return false;
+    }
     const deviceId = DeviceInfo.getUniqueId();
     var data = JSON.stringify({
       device_id: deviceId,
@@ -119,6 +124,18 @@ const MicScreen = ({ navigation }) => {
       getQuestions();
     }, []),
   );
+
+  const getMoodType = (type) => {
+    if (typeof type !== 'string') {
+      return '';
+    }
+    if (type.toLowerCase() === moodTypes.pretty.toLowerCase()) {
+      return 'Pretty ';  
+    } else if (type.toLowerCase() === moodTypes.very.toLowerCase()) {
+      return 'Very ';  
+    }
+    return '';
+  }
 
   useEffect(() => {
     getQuestions();
@@ -292,6 +309,7 @@ const MicScreen = ({ navigation }) => {
                       <View style={styles.ans}>
                         <Text
                           style={{ flexDirection: 'row', marginHorizontal: 10 }}>
+                          {item.mood_type ? getMoodType(item.mood_type) : ''}
                           {item.name}
                         </Text>
                         {/* <HappyIcon /> */}
