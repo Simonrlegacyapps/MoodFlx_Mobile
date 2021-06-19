@@ -367,7 +367,7 @@ const WeatherData = ({
 
   useEffect(() => {
     getWeather();
-  }, [One, Two, Three, Four, Five]);
+  }, []);
 
   const data = [
     {

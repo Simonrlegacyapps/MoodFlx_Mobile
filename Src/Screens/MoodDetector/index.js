@@ -56,6 +56,7 @@ import {
   Lat,
   Long,
   Moods,
+  SetNotification,
   UserDetail,
   UserDivision,
   UserEmail,
@@ -84,7 +85,7 @@ let lpY = 0;
 
 let isUnmounted = true;
 let isMoodDetectorScreenFocused = false;
-let currentNotif = null;
+// let currentNotif = null;
 
 const hapticOptions = {
   enableVibrateFallback: true,
@@ -643,26 +644,30 @@ export default function MoodDetector({navigation}) {
   };
 
   const checkStorage = async () => {
-    await AsyncStorage.setItem('Anonymous', 'true');
-    // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
-    let p = await AsyncStorage.getItem('Email');
-    let d = await AsyncStorage.getItem('Division');
-    let Hp = await AsyncStorage.getItem('GiveHealthPerm');
-    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
-    let e = await JSON.parse(p);
-    let division = await JSON.parse(d);
-    let HealthP = await JSON.parse(Hp);
-    let WeatherP = await JSON.parse(Wp);
-    console.log(`e`, e);
-    console.log(`division`, division);
-    console.log(`HealthPerm`, HealthP);
-    console.log(`WeatherPerm`, WeatherP);
-    await setEmail(e);
-    dispatch(UserEmail(e));
-    dispatch(UserDivision(division));
-    dispatch(HealthPerm(HealthP));
-    dispatch(WeatherPerm(WeatherP));
+    try {
+      await AsyncStorage.setItem('Anonymous', 'true');
+      // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
+      let p = await AsyncStorage.getItem('Email');
+      let d = await AsyncStorage.getItem('Division');
+      let Hp = await AsyncStorage.getItem('GiveHealthPerm');
+      let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+      // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
+      let e = await JSON.parse(p);
+      let division = await JSON.parse(d);
+      let HealthP = await JSON.parse(Hp);
+      let WeatherP = await JSON.parse(Wp);
+      console.log(`e`, e);
+      console.log(`division`, division);
+      console.log(`HealthPerm`, HealthP);
+      console.log(`WeatherPerm`, WeatherP);
+      await setEmail(e);
+      dispatch(UserEmail(e));
+      dispatch(UserDivision(division));
+      dispatch(HealthPerm(HealthP));
+      dispatch(WeatherPerm(WeatherP));
+    } catch (error){
+      console.log('error getting AsyncStorage values', error);
+    }
   };
 
   const getProfileUserData = () => {
@@ -692,43 +697,44 @@ export default function MoodDetector({navigation}) {
       .catch((error) => console.log('error', error));
   };
 
-  useEffect(() => {
-    isUnmounted = false;
+  // useEffect(() => {
+  //   isUnmounted = false;
 
-    PushNotification.configure({
-      onNotification: function (notification) {
-        if (notification?.data?.question && notification?.data?.id) {
-          console.log(
-            `Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++`,
-          );
-          if(isUnmounted === false && isMoodDetectorScreenFocused === true) {
-            setNotifData(notification);
-            setIsNotificationQuestionModalVisible(true);
-          }
-          currentNotif = notification;
-        }
-        const currentRoute = getCurrentRoute();
-        if(currentRoute?.name !== 'MoodEmotionDetector'){
-          navigate('MoodEmotionDetector');
-        }
-        NotifService.cancelDeliveredNotifications([String(notification.id)])
-        console.log('NOTIFICATION: MoodDetector', notification);
-      },
-    });
-    // const data = NotifService.getLatestNotificationData();
-    // data.finish((e) => {
-    //   console.log(`e of test notif`, e);
-    // });
-    // console.log(`data fro notification`, data);
-    // }, 1000);
-    return () => {
-      isUnmounted = true;
-      currentNotif = null;
-    }
-  }, []);
+  //   PushNotification.configure({
+  //     onNotification: function (notification) {
+  //       if (notification?.data?.question && notification?.data?.id) {
+  //         console.log(
+  //           'Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++',
+  //         );
+  //         if (isUnmounted === false && isMoodDetectorScreenFocused === true) {
+  //           setNotifData(notification);
+  //           setIsNotificationQuestionModalVisible(true);
+  //         }
+  //         currentNotif = notification;
+  //       }
+  //       const currentRoute = getCurrentRoute();
+  //       if (currentRoute?.name !== 'MoodEmotionDetector') {
+  //         console.log('----navigate to MoodEmotionDetector----');
+  //         navigate('MoodEmotionDetector');
+  //       }
+  //       NotifService.cancelDeliveredNotifications([String(notification.id)]);
+  //       console.log('NOTIFICATION: MoodDetector', notification);
+  //     },
+  //   });
+  //   // const data = NotifService.getLatestNotificationData();
+  //   // data.finish((e) => {
+  //   //   console.log(`e of test notif`, e);
+  //   // });
+  //   // console.log(`data fro notification`, data);
+  //   // }, 1000);
+  //   return () => {
+  //     isUnmounted = true;
+  //     currentNotif = null;
+  //   };
+  // }, []);
 
   useEffect(() => {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       checkStorage();
       getProfileUserData();
       UserData.WeatherPermission &&
@@ -749,6 +755,11 @@ export default function MoodDetector({navigation}) {
             console.log('error', code, message);
           });
     }, 150);
+    return () => {
+      timeoutId && clearTimeout(timeoutId);
+      isUnmounted = true;
+      dispatch(SetNotification(null));
+    };
   }, []);
 
   useEffect(() => {
@@ -940,6 +951,7 @@ export default function MoodDetector({navigation}) {
             ? route?.params?.question
             : QuestionID,
           mood_id: Id.id,
+          mood_type,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
         });
@@ -1075,23 +1087,51 @@ export default function MoodDetector({navigation}) {
   useFocusEffect(
     React.useCallback(() => {
       isMoodDetectorScreenFocused = true;
-      if(currentNotif) {
-        setNotifData(currentNotif);
-        setIsNotificationQuestionModalVisible(true);
-      }
+      // if(currentNotif) {
+      //   setNotifData(currentNotif);
+      //   setIsNotificationQuestionModalVisible(true);
+      // }
       // screen isFocused
       // console.log('screen isFocused: ', isActive);
 
       return () => {
         // screen is out of focus
         isMoodDetectorScreenFocused = false;
-        currentNotif = null;
+        dispatch(SetNotification(null));
+        // currentNotif = null;
         setWheelSize(regularWheelSize);
         setScrollerWheelSize(regularWheelSize);
         // console.log('screen is out of focus: ', isActive);
       };
     }, []),
   );
+
+  useEffect(() => {
+    isUnmounted = false;
+    if (UserData.notification) {
+      if (
+        !NotifData &&
+        UserData.notification?.data?.question &&
+        UserData.notification?.data?.id
+      ) {
+        console.log(
+          'Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++',
+        );
+        console.log(
+          'isUnmounted: ',
+          isUnmounted,
+          ' isMoodDetectorScreenFocused: ',
+          isMoodDetectorScreenFocused,
+        );
+        if (isUnmounted === false && isMoodDetectorScreenFocused === true) {
+          setNotifData(UserData.notification);
+          setIsNotificationQuestionModalVisible(true);
+        }
+      }
+      // NotifService.cancelDeliveredNotifications([String(notification.id)]);
+      // console.log('NOTIFICATION: MoodDetector', UserData.notification);
+    }
+  }, [NotifData, UserData.notification, dispatch]);
 
   const setLPXY = () => {
     pan.current.setValue({

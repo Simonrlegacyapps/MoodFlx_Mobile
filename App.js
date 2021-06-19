@@ -34,6 +34,7 @@ import {
   LightPerm,
   Long,
   Moods,
+  SetNotification,
   SleepPerm,
   UserDetail,
   UserDivision,
@@ -47,7 +48,7 @@ import moment from 'moment';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
-import { GetStaffUserData } from './Src/apirequest/PostRequestApi';
+import { getDivisionName, GetStaffUserData } from './Src/apirequest/PostRequestApi';
 import * as RootNavigation from './Src/navigator/RootNavigation';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
@@ -141,6 +142,42 @@ const App: () => React$Node = () => {
     // }
   }, []);
 
+  useEffect(() => {
+    let isCurrentRoute = false;
+    if (UserData.notification) {
+      if (
+        UserData.notification?.data?.question &&
+        UserData.notification?.data?.id
+      ) {
+        // console.log(
+        //   'Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++',
+        // );
+        // if (isUnmounted === false && isMoodDetectorScreenFocused === true) {
+        //   setNotifData(notification);
+        //   setIsNotificationQuestionModalVisible(true);
+        // }
+        // currentNotif = notification;
+        const currentRoute = RootNavigation.getCurrentRoute();
+        if (currentRoute && currentRoute.name !== 'MoodEmotionDetector') {
+          isCurrentRoute = true;
+          // console.log('----navigate to MoodEmotionDetector----');
+          RootNavigation.navigate('MoodEmotionDetector');
+        } else if (!currentRoute) {
+          isCurrentRoute = true;
+        }
+      }
+      UserData.notification?.id &&
+        NotifService.cancelDeliveredNotifications([
+          String(UserData.notification.id),
+        ]);
+      console.log('NOTIFICATION: App', UserData.notification);
+      if (!isCurrentRoute) {
+        // console.log('isCurrentRoute: App', isCurrentRoute);
+        dispatch(SetNotification(null));
+      }
+    }
+  }, [UserData.notification, dispatch]);
+
   const _handleAppStateChange = (nextAppState) => {
     if (
       appState.current.match(/inactive|background/) &&
@@ -203,13 +240,13 @@ const App: () => React$Node = () => {
     let UserId = await AsyncStorage.getItem('UserId');
     let anonymous = await AsyncStorage.getItem('Anonymous');
     let p = await AsyncStorage.getItem('Email');
-    let d = await AsyncStorage.getItem('Division');
+    // let d = await AsyncStorage.getItem('Division');
     let Hp = await AsyncStorage.getItem('GiveHealthPerm');
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let Lp = await AsyncStorage.getItem('GiveLightPerm');
    
     let e = await JSON.parse(p);
-    let division = await JSON.parse(d);
+    // let division = await JSON.parse(d);
     let HealthP = await JSON.parse(Hp);
     let WeatherP = await JSON.parse(Wp);
     let Id = await JSON.parse(UserId);
@@ -230,7 +267,7 @@ const App: () => React$Node = () => {
     dispatch(LightPerm(LightP));
     // console.log(`Sleep Permission`, SleepP);
     dispatch(UserEmail(e));
-    dispatch(UserDivision(division));
+    // dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));
     dispatch(WeatherPerm(WeatherP));
     dispatch(GetUserId(Id));
@@ -270,6 +307,7 @@ const App: () => React$Node = () => {
         }
       })
       .catch((error) => console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error));
+      getDivisionName(raw, dispatch);
 
   };
 

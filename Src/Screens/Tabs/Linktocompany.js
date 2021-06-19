@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -32,8 +32,8 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import PostRequestApi from '../../apirequest/PostRequestApi';
-import {useRoute} from '@react-navigation/native';
+import PostRequestApi, { getDivisionName } from '../../apirequest/PostRequestApi';
+import {useRoute, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 import {PHOTO_URL} from '../../Constants/constants';
@@ -84,20 +84,19 @@ const Linktocompany = ({navigation}) => {
 
       console.log('=== getDivision params ===', params);
 
-      axios.post('https://admin.moodflo.com/api/getDivision', params)
-        .then(async (res) => {
-          if (Array.isArray(res?.data?.data)) {
-            await dispatch(getDivisions(res.data.data));
-            setDivisions(res.data.data);
-            console.log('getDivision data =>', res.data.data);
-          }
-          // console.log('getDivision =>', res);
-          // console.log('response of division', res.data[0].id);
-          // setSelectedDivisionId(res.data[0].id);
-        })
-        .catch((error) => {
-          console.log('getDivision error: ', error);
-        });
+      getDivisionName(params, dispatch);
+
+      // axios.post('https://admin.moodflo.com/api/getDivision', params)
+      //   .then(async (res) => {
+      //     if (Array.isArray(res?.data?.data)) {
+      //       await dispatch(getDivisions(res.data.data));
+      //       setDivisions(res.data.data);
+      //       console.log('getDivision data =>', res.data.data);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.log('getDivision error: ', error);
+      //   });
     }
   }, [UserData.UserId, UserData.UserEmail]);
 
@@ -119,17 +118,42 @@ const Linktocompany = ({navigation}) => {
       body: raw,
       redirect: 'follow',
     };
-    {
-      UserData.UserDivision !== null &&
-        fetch('https://admin.moodflo.com/api/getCompanyDetails', requestOptions)
-          .then((response) => response.json())
-          .then((result) => {
-            console.log('getting company details', result);
-            setCompanyDetails(result.companyData);
-          })
-          .catch((error) => console.log('error', error));
+    UserData.UserDivision !== null &&
+      fetch('https://admin.moodflo.com/api/getCompanyDetails', requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log('getting company details', result);
+          setCompanyDetails(result.companyData);
+        })
+        .catch((error) => console.log('error', error));
+  }, [UserData.UserDivision, UserData.UserId]);
+
+  useEffect(() => {
+    if (
+      Array.isArray(UserData.getDivision) &&
+      UserData.getDivision.length > 0
+    ) {
+      console.log('UserData.getDivision: ', UserData.getDivision);
+      setDivisions(UserData.getDivision);
     }
-  }, [UserData.UserDivision]);
+  }, [UserData.getDivision]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (UserData.UserEmail && UserData.UserId) {
+        const deviceId = DeviceInfo.getUniqueId();
+        const params = {
+          device_id: deviceId,
+          user_id: UserData.UserId,
+          email: UserData.UserEmail,
+        };
+
+        console.log('===useFocusEffect getDivision params ===', params);
+
+        getDivisionName(params, dispatch);
+      }
+    }, [UserData.UserId, UserData.UserEmail, dispatch]),
+  );
 
   const onLink = async (type) => {
     console.log('run');

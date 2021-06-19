@@ -24,6 +24,7 @@ import {
   SET_CALORIES,
   SET_DISTANCE,
   SET_DIVISION,
+  SET_NOTIFICATION,
   SET_DOB,
   SET_MOVING,
   SET_STEPS,
@@ -63,6 +64,7 @@ const intializedState = {
   UserDetails: null,
   Anonymous: true,
   NameCompany: '',
+  notification: null,
 };
 
 export const First = (state = intializedState, action) => {
@@ -188,6 +190,10 @@ export const First = (state = intializedState, action) => {
     case COMPANY_NAME:
       return Object.assign({}, state, {
         NameCompany: action.payload,
+      });
+    case SET_NOTIFICATION:
+      return Object.assign({}, state, {
+        notification: action.payload,
       });
     default:
       return state;

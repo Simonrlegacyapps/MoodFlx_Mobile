@@ -292,25 +292,31 @@ const LightData = ({
             getLightIOS();
           }
         });
-      }, 5000);
+      }, 100);
     }
   }, []);
 
   // Light data using react-native-sensor-manager
   useEffect(() => {
-    if (UserData.LightPermission) {
+    if (UserData.LightPermission && (light === -1 || swiperIndex === 3)) {
+      isStopLightTimeout = false;
       if (Platform.OS === 'android') {
-        SensorManager.startLightSensor(10000);
-        function lightSensorCallback(data) {
-          if (data?.light && typeof data?.light === 'number') {
-            // currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
-            currentLightData = Number.parseInt((data.light), 10);
-            console.log('LigntSensorData: ', currentLightData);
-            setLight(currentLightData);
+        SensorManager.startLightSensor(100);
+        function lightSensorCallback(d) {
+          if(light === -1 || swiperIndex === 3){
+            if (d?.light && typeof d?.light === 'number') {
+              // currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
+              currentLightData = Number.parseInt(d.light, 10);
+              // console.log('LigntSensorData: ', currentLightData);
+              setLight(currentLightData);
+            }
+          } else {
+            SensorManager.stopLightSensor();
           }
         }
         DeviceEventEmitter.addListener('LightSensor', lightSensorCallback);
         return () => {
+          isStopLightTimeout = true;
           SensorManager.stopLightSensor();
         };
       } else if (Platform.OS === 'ios') {
@@ -327,12 +333,17 @@ const LightData = ({
           isStopLightTimeout = true;
         };
       }
+    } else if (UserData.LightPermission && light !== -1 && swiperIndex !== 3) {
+      isStopLightTimeout = true;
     }
-
-  }, [UserData.LightPermission]);
+  }, [UserData.LightPermission, getLightIOS, light, swiperIndex]);
 
   useEffect(() => {
-    if (!isUpdateLightApiCalled.current && UserData.LightPermission && light !== -1) {
+    if (
+      !isUpdateLightApiCalled.current &&
+      UserData.LightPermission &&
+      light !== -1
+    ) {
       callUpdateLightApi(light);
     }
     return () => {
