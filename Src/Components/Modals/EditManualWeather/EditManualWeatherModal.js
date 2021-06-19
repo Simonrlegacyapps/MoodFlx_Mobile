@@ -92,17 +92,14 @@ const EditManualWeatherModal = ({
     return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
   };
 
-  let myname = UserData?.UserDetails?.full_name
-    ? UserData?.UserDetails?.full_name
-    : 'InnoApps';
-
   const _weatherType = WeatherType
     ? WeatherType
     : Weather
-      ? findWeather(Weather?.weather?.[0]?.main)
-      : weatherTypes.Cloudy;
+    ? findWeather(Weather?.weather?.[0]?.main)
+    : weatherTypes.Cloudy;
 
-  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Cloudy;
+  const _weatherAction =
+    weatherActions?.[_weatherType] ?? weatherActions.Cloudy;
 
   const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Cloudy;
   const _smallWeatherIcon = _weatherType === weatherTypes.Rainy ? Constants.Images.RainyHour : _largeWeatherImg;

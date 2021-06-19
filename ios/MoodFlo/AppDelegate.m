@@ -115,7 +115,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 // this method will be called from the RCTBridge
 - (double) getCurrentLight {
   double light = [[UIScreen mainScreen]brightness];
-  NSLog (@"appDelegate - getCurrentLight %f", light);
+//  NSLog (@"appDelegate - getCurrentLight %f", light);
   return light;
 }
 
