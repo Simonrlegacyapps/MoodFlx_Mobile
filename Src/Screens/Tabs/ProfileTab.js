@@ -155,7 +155,7 @@ const ProfileTab = ({navigation}) => {
           await setComingGenderPronoun(result);
       })
       .catch((error) => console.log('error', error));
-  }, []);
+  }, [UserData.UserEmail, UserData.UserId]);
 
   const imagePostFunction = (imageData) => {
     setImageLoading(true);
@@ -555,8 +555,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   profileImage: {
-    height: '100%',
-    width: '100%',
+    height: 150,
+    width: 150,
     resizeMode: 'cover',
     borderRadius: dynamicSize(160),
   },
