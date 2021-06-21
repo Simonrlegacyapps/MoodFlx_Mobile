@@ -282,16 +282,22 @@ const WeatherData = ({
   useEffect(() => {
     let lat = UserData.lat;
     let lng = UserData.lon;
-    if(!UserData.WeatherPermission){
+    if (!UserData.WeatherPermission) {
       lat = defaultLocation.latitude;
       lng = defaultLocation.longitude;
     }
-    CheckForWeather(lat, lng, function(flag) {
-      if(flag === false) {
-        syncWeatherData();
-      }
-    });
-  }, []);
+    if (
+      ((UserData.UserId && UserData.UserEmail) ||
+        (!UserData.UserId && !UserData.UserEmail)) &&
+      ((UserData.lat && UserData.lon) || (!UserData.lat && !UserData.lon))
+    ) {
+      CheckForWeather(lat, lng, function (flag) {
+        if (flag === false) {
+          syncWeatherData();
+        }
+      });
+    }
+  }, [UserData.lat, UserData.lon, UserData.WeatherPermission, UserData.UserId, UserData.UserEmail]);
 
   const CheckForWeather = async (loc_lat = UserData.lat, loc_long = UserData.lon, onFinish) => {
     // let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
