@@ -4,6 +4,7 @@ import {
   FlatList,
   Image,
   Linking,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -26,7 +27,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
 import DeviceInfo from 'react-native-device-info';
 import {UserDetail} from '../../redux/actions/actions';
-import { GetStaffUserData } from '../../apirequest/PostRequestApi';
+import {GetStaffUserData} from '../../apirequest/PostRequestApi';
 
 const listData = [
   {name: 'Name', value: 'Annonymous'},
@@ -76,12 +77,11 @@ const ProfileTab = ({navigation}) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
 
-
   const onRefresh = () => {
     setgender('');
     setPronoun('');
 
-    console.log(`refreshed here`);
+    console.log('refreshed here');
     setRefreshing(true);
     getProfileUserData();
     wait(1000).then(() => setRefreshing(false));
@@ -91,88 +91,26 @@ const ProfileTab = ({navigation}) => {
     getProfileUserData();
   }, []);
 
- useEffect(() => {
-    console.log('useEffect onChangePronoun: ', Pronoun);;
-  }, [Pronoun]);
-
- useEffect(() => {
-    console.log('useEffect onChangeGender: ', gender);;
-  }, [gender]);
-
-  // const renderList = ({item, index}) => {
-  //   return (
-  //     <View style={styles.flatlistViewStyle}>
-  //       <View>
-  //         <Text style={styles.nameTextStyle}>{item.name}</Text>
-  //         {!edit ? (
-  //           <Text style={styles.anonymousTextStyle}>{item.value}</Text>
-  //         ) : (
-  //           <TextInput
-  //             keyboardType={'email-address'}
-  //             returnKeyType={'done'}
-  //             autoCorrect={false}
-  //             autoCapitalize={false}
-  //             autoCompleteType={false}
-  //             placeholder={item.value}
-  //             placeholderTextColor={'black'}
-  //             style={[
-  //               {
-  //                 // height: dynamicSize(50),
-  //                 // width: dynamicSize(250),
-  //                 backgroundColor: 'white',
-  //                 // borderRadius: 10,
-  //                 borderBottomWidth: 1,
-  //                 // paddingLeft: 15,
-  //               },
-  //               styles.anonymousTextStyle,
-  //             ]}
-  //             onChangeText={(text) => {
-  //               onChangeText(text);
-  //             }}
-  //             value={value}
-  //           />
-  //         )}
-  //       </View>
-  //       <TouchableOpacity
-  //         onPress={() => {
-  //           UserData.UserEmail
-  //             ? addAnswer(item, index)
-  //             : addAnswer(item, index); //navigation.navigate('LinkCompanyStackNavigation');
-  //         }}>
-  //         <AddButton />
-  //       </TouchableOpacity>
-  //     </View>
-  //   );
-  // };
 
   const getProfileUserData = () => {
-    console.log(`called called called called called called`);
+    // console.log('called called called called called called');
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
-      device_id: deviceId,
-      email: UserData.UserEmail,
-      user_id: UserData.UserId,
-    });
 
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow',
-    };
-
-    GetStaffUserData({
-      device_id: deviceId,
-      email: UserData.UserEmail,
-      user_id: UserData.UserId,
-    }, dispatch)
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      },
+      dispatch,
+    )
       .then(async (result) => {
         console.log(
           '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
-          result?.userData
+          result?.userData,
         );
         if (result?.userData?.status !== 2) {
           // console.log('UserDetaills', result.userData);
@@ -180,7 +118,9 @@ const ProfileTab = ({navigation}) => {
           setImageLoading(false);
         }
       })
-      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error));
+      .catch((error) =>
+        console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
+      );
     setImageLoading(false);
     // fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
     //   .then((response) => response.json())
@@ -215,7 +155,7 @@ const ProfileTab = ({navigation}) => {
           await setComingGenderPronoun(result);
       })
       .catch((error) => console.log('error', error));
-  }, []);
+  }, [UserData.UserEmail, UserData.UserId]);
 
   const imagePostFunction = (imageData) => {
     setImageLoading(true);
@@ -223,7 +163,7 @@ const ProfileTab = ({navigation}) => {
     const imageResponse = {
       ...imageData,
     };
-    console.log(`imageResponse`, imageResponse);
+    console.log('imageResponse', imageResponse);
     let formData = new FormData();
     formData.append('user_id', UserData.UserId);
     formData.append('email', UserData.UserEmail);
@@ -250,7 +190,7 @@ const ProfileTab = ({navigation}) => {
     })
       .then((res) => res.json())
       .then(async (res) => {
-        console.log(`res`, res);
+        console.log('res', res);
         getProfileUserData();
 
         // setCommentText('');
@@ -294,7 +234,7 @@ const ProfileTab = ({navigation}) => {
       cropping: true,
       // compressImageQuality:0.6
     }).then((i) => {
-      console.log(`i`, i);
+      console.log('i', i);
       let source = {
         uri: i.path,
         type: i.mime,
@@ -322,7 +262,7 @@ const ProfileTab = ({navigation}) => {
 
       imagePostFunction(source);
       setOpenActionSheet(false);
-      console.log(`images`, images);
+      console.log('images', images);
     });
   };
   console.log('ProfileTab Pronoun: ', Pronoun);
@@ -339,7 +279,7 @@ const ProfileTab = ({navigation}) => {
       email: UserData.UserEmail,
       user_id: UserData.UserId,
       full_name:
-      name_ != 'Anonymous'
+        name_ != 'Anonymous'
           ? name_
           : name_ != '' && UserData?.UserDetails?.full_name
           ? UserData?.UserDetails?.full_name
@@ -366,10 +306,13 @@ const ProfileTab = ({navigation}) => {
       redirect: 'follow',
     };
 
-    console.log(`raw`, raw);
+    console.log('raw', raw);
     setLoading(true);
 
-    await fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions)
+    await fetch(
+      'https://admin.moodflo.com/api/updateStaffProfile',
+      requestOptions,
+    )
       .then((response) => response.text())
       .then((result) => {
         console.log('profile updated', result), getProfileUserData();
@@ -389,128 +332,114 @@ const ProfileTab = ({navigation}) => {
     return Id.name;
   };
 
-  const onSetGender = useCallback((value) => {
-    setgender(value);
-    ProfileApiCallHere({_gender: value});
-  }, [setgender, ProfileApiCallHere])
-
-  const onSetPronoun = useCallback((value) => {
-    setPronoun(value);
-    ProfileApiCallHere({_pronoun: value});
-  }, [setPronoun, ProfileApiCallHere])
-
-  const genderData = [{label: 'Male'}, {label: 'Female'}, {label: 'trans'}];
-  const PronounData = [{label: 'He/him'}, {label: 'She/her'}, {label: 'trans'}];
-
-  console.log(
-    `name != '' && UserData?.UserDetails?.full_name`,
-    name != 'Anonymous'
-      ? name
-      : name != '' && UserData?.UserDetails?.full_name
-      ? UserData?.UserDetails?.full_name
-      : name,
+  const onSetGender = useCallback(
+    (value) => {
+      setgender(value);
+      ProfileApiCallHere({_gender: value});
+    },
+    [setgender, ProfileApiCallHere],
   );
+
+  const onSetPronoun = useCallback(
+    (value) => {
+      setPronoun(value);
+      ProfileApiCallHere({_pronoun: value});
+    },
+    [setPronoun, ProfileApiCallHere],
+  );
+
+
+  // console.log(
+  //   "name != '' && UserData?.UserDetails?.full_name",
+  //   name != 'Anonymous'
+  //     ? name
+  //     : name != '' && UserData?.UserDetails?.full_name
+  //     ? UserData?.UserDetails?.full_name
+  //     : name,
+  // );
+
+
 
   return (
     <>
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      style={{flex: 1, backgroundColor: Constants.Colors.WhiteColor}}>
-      <View style={styles.container}>
-        <View style={styles.profileImageStyle}>
-          <View style={styles.imageViewStyle}>
-            {UserData?.UserDetails?.profile_image ? (
-              <View>
-                <Image
-                  style={{
-                    height: '100%',
-                    width: '100%',
-                    resizeMode: 'cover',
-                    borderRadius: dynamicSize(160),
-                  }}
-                  source={{
-                    uri: `https://admin.moodflo.com/${UserData?.UserDetails?.profile_image}`,
-                  }}
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        style={styles.scrollView}>
+        <View style={styles.container}>
+          <View style={styles.profileImageStyle}>
+            <View style={styles.imageViewStyle}>
+              {UserData?.UserDetails?.profile_image ? (
+                <View>
+                  <Image
+                    style={styles.profileImage}
+                    source={{
+                      uri: `https://admin.moodflo.com/${UserData?.UserDetails?.profile_image}`,
+                    }}
+                  />
+                </View>
+              ) : (
+                <ProfilePlaceholder
+                  width={dynamicSize(160)}
+                  height={dynamicSize(160)}
                 />
+              )}
+              <View style={styles.pickupIconStyle}>
+                <TouchableOpacity onPress={() => setOpenActionSheet(true)}>
+                  <PickImageIcon />
+                </TouchableOpacity>
               </View>
-            ) : (
-              <ProfilePlaceholder
-                width={dynamicSize(160)}
-                height={dynamicSize(160)}
-              />
-            )}
-            <View style={styles.pickupIconStyle}>
-              <TouchableOpacity onPress={() => setOpenActionSheet(true)}>
-                <PickImageIcon />
-              </TouchableOpacity>
+              {ImageLoading && (
+                <View style={styles.imageLoader}>
+                  <ActivityIndicator size="large" />
+                </View>
+              )}
             </View>
-            {ImageLoading && (
+            <View style={styles.headerContainerStyle}>
               <View
-                style={{
-                  position: 'absolute',
-                  height: '100%',
-                  width: '100%',
-                  backgroundColor: 'black',
-                  opacity: 0.2,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: dynamicSize(160),
-                }}>
-                <ActivityIndicator size="large" />
-              </View>
-            )}
+                style={[styles.borderStyle, {marginRight: dynamicSize(17)}]}
+              />
+              <Text>PERSONAL DETAILS</Text>
+              <View
+                style={[styles.borderStyle, {marginLeft: dynamicSize(11)}]}
+              />
+            </View>
           </View>
-          <View style={styles.headerContainerStyle}>
-            <View
-              style={[
-                styles.borderStyle,
-                {marginRight: dynamicSize(17)},
-              ]}></View>
-            <Text>PERSONAL DETAILS</Text>
-            <View
-              style={[
-                styles.borderStyle,
-                {marginLeft: dynamicSize(11)},
-              ]}></View>
-          </View>
-        </View>
-        <View style={styles.flatlistContainer}>
-          {/* <FlatList data={listData} renderItem={renderList} /> */}
+          <View style={styles.flatlistContainer}>
+            {/* <FlatList data={listData} renderItem={renderList} /> */}
 
-          <AddAnswer
-            checkedit={UserData?.UserDetails?.full_name ? true : false}
-            ProfileApiCallHere={ProfileApiCallHere}
-            label={'Name'}
-            navigation={navigation}
-            value={
-              name != 'Anonymous'
-                ? name
-                : name != '' && UserData?.UserDetails?.full_name
-                ? UserData?.UserDetails?.full_name
-                : name
-            }
-            onChangeText={setname}
-          />
-          {console.log(`gender`, gender.id)}
-          <AddAnswer
-            checkedit={UserData?.UserDetails?.gender ? true : false}
-            ProfileApiCallHere={(value) => ProfileApiCallHere(value)}
-            data={ComingGenderPronoun ? ComingGenderPronoun?.gender : null}
-            label={'Gender'}
-            navigation={navigation}
-            value={
-              gender
-                ? gender.name
-                : UserData?.UserDetails?.gender && ComingGenderPronoun
-                ? checkGenderName(UserData?.UserDetails?.gender)
-                : gender
-            }
-            onChangeText={onSetGender}
-            popUp
-          />
-          {/* <AddAnswer
+            <AddAnswer
+              checkedit={UserData?.UserDetails?.full_name ? true : false}
+              ProfileApiCallHere={ProfileApiCallHere}
+              label={'Name'}
+              navigation={navigation}
+              value={
+                name != 'Anonymous'
+                  ? name
+                  : name != '' && UserData?.UserDetails?.full_name
+                  ? UserData?.UserDetails?.full_name
+                  : name
+              }
+              onChangeText={setname}
+            />
+            <AddAnswer
+              checkedit={UserData?.UserDetails?.gender ? true : false}
+              ProfileApiCallHere={(value) => ProfileApiCallHere(value)}
+              data={ComingGenderPronoun ? ComingGenderPronoun?.gender : null}
+              label={'Gender'}
+              navigation={navigation}
+              value={
+                gender
+                  ? gender.name
+                  : UserData?.UserDetails?.gender && ComingGenderPronoun
+                  ? checkGenderName(UserData?.UserDetails?.gender)
+                  : gender
+              }
+              onChangeText={onSetGender}
+              popUp
+            />
+            {/* <AddAnswer
             label={'Birthday'}
             value={Birthday}
             navigation={navigation}
@@ -519,66 +448,59 @@ const ProfileTab = ({navigation}) => {
             datePicker
             popUp
           /> */}
-          <AddAnswer
-            checkedit={UserData?.UserDetails?.pronouns ? true : false}
-            ProfileApiCallHere={ProfileApiCallHere}
-            navigation={navigation}
-            data={ComingGenderPronoun ? ComingGenderPronoun?.pronoun : null}
-            label={'Pronouns'}
-            // value={Pronoun}
-            value={
-              Pronoun
-                ? Pronoun.name
-                : UserData?.UserDetails?.pronouns
-                ? UserData?.UserDetails?.pronouns
-                : Pronoun.name
-            }
-            gender={gender}
-            onChangeText={onSetPronoun}
-            popUp
-          />
-        </View>
-        <View style={{flex: 1}}>
-          <View style={styles.headerContainerStyle}>
-            <View
-              style={[
-                styles.borderStyle,
-                {marginRight: dynamicSize(17), width: dynamicSize(134)},
-              ]}></View>
-            <Text>MORE</Text>
-            <View
-              style={[
-                styles.borderStyle,
-                {marginLeft: dynamicSize(11), width: dynamicSize(134)},
-              ]}></View>
+            <AddAnswer
+              checkedit={UserData?.UserDetails?.pronouns ? true : false}
+              ProfileApiCallHere={ProfileApiCallHere}
+              navigation={navigation}
+              data={ComingGenderPronoun ? ComingGenderPronoun?.pronoun : null}
+              label={'Pronouns'}
+              // value={Pronoun}
+              value={
+                Pronoun
+                  ? Pronoun.name
+                  : UserData?.UserDetails?.pronouns
+                  ? UserData?.UserDetails?.pronouns
+                  : Pronoun.name
+              }
+              gender={gender}
+              onChangeText={onSetPronoun}
+              popUp
+            />
+          </View>
+          <View style={styles.bottomContainer}>
+            <View style={styles.headerContainerStyle}>
+              <View
+                style={[
+                  styles.borderStyle,
+                  {marginRight: dynamicSize(17), width: dynamicSize(134)},
+                ]}
+              />
+              <Text>MORE</Text>
+              <View
+                style={[
+                  styles.borderStyle,
+                  {marginLeft: dynamicSize(11), width: dynamicSize(134)},
+                ]}
+              />
+            </View>
+          </View>
+          <View
+            style={[styles.flatlistContainer, {marginBottom: dynamicSize(56)}]}>
+            <FlatList
+              data={bottomList}
+              keyExtractor={(item, index) => `${index}`}
+              renderItem={renderBottomList}
+            />
           </View>
         </View>
-        <View
-          style={[styles.flatlistContainer, {marginBottom: dynamicSize(56)}]}>
-          <FlatList
-            data={bottomList}
-            keyExtractor={(item, index) => `${index}`}
-            renderItem={renderBottomList}
-          />
-        </View>
-      </View>
-      <ActionSheet
-        modalVisible={openActionSheet}
-        dismissModalHandler={() => setOpenActionSheet(false)}
-        selectedValue={(i) => imageSelectType(i)}
-      />
-    </ScrollView>
-    {Loading && !openActionSheet && (
-        <View
-          style={{
-            position: 'absolute',
-            height: '100%',
-            width: '100%',
-            backgroundColor: 'black',
-            opacity: 0.2,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+        <ActionSheet
+          modalVisible={openActionSheet}
+          dismissModalHandler={() => setOpenActionSheet(false)}
+          selectedValue={(i) => imageSelectType(i)}
+        />
+      </ScrollView>
+      {Loading && !openActionSheet && (
+        <View style={styles.loader}>
           <ActivityIndicator size="large" />
         </View>
       )}
@@ -587,6 +509,10 @@ const ProfileTab = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    backgroundColor: Constants.Colors.WhiteColor,
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -594,6 +520,9 @@ const styles = StyleSheet.create({
   profileImageStyle: {
     marginTop: dynamicSize(40),
     alignSelf: 'center',
+  },
+  bottomContainer: {
+    flex: 1,
   },
   borderStyle: {
     height: 1,
@@ -608,21 +537,11 @@ const styles = StyleSheet.create({
     borderRadius: dynamicSize(160),
     alignSelf: 'center',
   },
-  nameTextStyle: {
-    color: Constants.Colors.greyColorCode,
-    fontSize: dynamicSize(14),
-    fontWeight: '400',
-  },
   anonymousTextStyle: {
     color: Constants.Colors.blackColorCode,
     fontSize: dynamicSize(16),
     fontWeight: '500',
     marginTop: dynamicSize(8),
-  },
-  flatlistViewStyle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: dynamicSize(32),
   },
   flatlistContainer: {
     flex: 1,
@@ -635,15 +554,40 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
   },
+  profileImage: {
+    height: 150,
+    width: 150,
+    resizeMode: 'cover',
+    borderRadius: dynamicSize(160),
+  },
   pickupIconStyle: {
     position: 'absolute',
     top: dynamicSize(116),
     right: dynamicSize(0),
   },
+  imageLoader: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    backgroundColor: 'black',
+    opacity: 0.2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: dynamicSize(160),
+  },
   bottomFlatlistContainer: {
     flexDirection: 'row',
     marginTop: dynamicSize(10),
     marginBottom: dynamicSize(20),
+  },
+  loader: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    backgroundColor: 'black',
+    opacity: 0.2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
