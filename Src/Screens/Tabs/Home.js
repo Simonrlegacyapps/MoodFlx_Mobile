@@ -73,6 +73,20 @@ import InstallGoogleFitModal from '../../Components/Modals/InstallGoogleFitModal
 export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 let steps = false;
 let HeartRate = false;
+let workOuts = null;
+let BP = null;
+let dateOfBirth = null;
+let mainCalories = null;
+let mainDistance = null;
+let mainMoving = null;
+let mainWorkout = null;
+let userSteps = 0;
+let userCalories = 0;
+let userDistance = 0;
+let userMoveTime = 0;
+let userWeight = 0;
+let userHeight = 0;
+
 const data = [
   {x: 1, y: 1.2},
   {x: 2, y: 2.3},
@@ -101,22 +115,21 @@ const PERMS = AppleHealthKit.Constants.Permissions;
 const App = (props) => {
   const UserData = useSelector((state) => state.First);
 
-  const [Weight, setWeight] = useState(false);
+  // const [Weight, setWeight] = useState(false);
   const [Weather, setWeather] = useState(false);
   // const [lng, setlng] = useState(false);
   // const [lat, setlat] = useState(false);
-  const [BP, setBP] = useState(false);
+  // const [BP, setBP] = useState(false);
   const [allHeights, setallHeights] = useState(false);
   const [temp, settemp] = useState(false);
   const [StepCount, setStepCount] = useState(false);
   const [BodyFatPerc, setBodyFatPerc] = useState(false);
   const [BMI, setBMI] = useState(false);
   const [DateOfBirth, setDateOfBirth] = useState(false);
-  const [Height, setHeight] = useState(false);
+  // const [Height, setHeight] = useState(false);
   const [Calories, setCalories] = useState(false);
   const [Sleep, setSleep] = useState(false);
   const [_HeartRate, setHeartRate] = useState(false);
-  const [DOB, setDOB] = useState(false);
   const [Distance, setDistance] = useState(false);
   const [LatestWeight, setLatestWeight] = useState(false);
   const [MovingTime, setMovingTime] = useState(false);
@@ -139,7 +152,7 @@ const App = (props) => {
     UserData.HealthPermission ? true : false,
   );
   const [swiperIndex, setSwiperIndex] = useState(0);
-  const [callOneTime, setcallOneTime] = useState('one');
+  // const [callOneTime, setcallOneTime] = useState('one');
   const [TryWeather, setTryWeather] = useState(null);
   const [ScreenDataPermModal, setScreenDataPermModal] = useState(false);
   const route = useRoute();
@@ -158,6 +171,11 @@ const App = (props) => {
     startDate: new Date(a).toISOString(), // required
     endDate: new Date().toISOString(), // optional; default now
   };
+
+  const healthKitWeight = {
+    unit: 'kg',
+  };
+
   const TimeCount = {
     startDate: new Date(a).toISOString(), // required
     endDate: new Date().toISOString(), // optional; default now
@@ -216,17 +234,26 @@ const App = (props) => {
     //   enable_notification: true,
     //   id: userData.id
     // }
-    return () => {
-      HeartRate = null;
-      steps = null;
-    }
   }, []);
 
   useEffect(() => {
-    if (callOneTime === 'one') {
-      callAnApi();
+    callAnApi();
+    return () => {
+      steps = null;
+      HeartRate = null;
+      workOuts = null;
+      BP = null;
+      dateOfBirth = null;
+      mainCalories = null;
+      mainDistance = null;
+      mainMoving = null;
+      mainWorkout = null;
+      userSteps = 0;
+      userCalories = 0;
+      userDistance = 0;
+      userMoveTime = 0;
     }
-  }, [Height]);
+  }, [UserData.UserEmail]);
 
   const callAnApi = async () => {
     let p = await AsyncStorage.getItem('GiveHealthPerm');
@@ -241,19 +268,17 @@ const App = (props) => {
     if (HealthP != null) {
       await OnAutoSync(function (flag) {
         console.log("onFinish called", flag);
+        setLoading(false);
         const timeoutId = setTimeout(async () => {
           // const steps_data = await UserData.MainSteps;
           console.log(`steps_data`, steps);
           if (steps) {
             console.log('good to go for API in async here at top');
-            setLoading(UserData.HealthPermission ? true : false);
-            setcallOneTime('second');
             console.log(`steps`, steps);
             filterDates();
             filterSteps();
             AddDataToFilter();
           }
-          setLoading(false);
           clearTimeout(timeoutId);
         }, 500);
       });
@@ -262,7 +287,7 @@ const App = (props) => {
 
   const checkStorage = async () => {
     // console.log(`checkStorage called`);
-    setLoading(UserData.HealthPermission ? true : false);
+    // setLoading(UserData.HealthPermission ? true : false);
     let MCount = await AsyncStorage.getItem('MoodCount');
     let e = await JSON.parse(MCount);
     setMoodCount(e);
@@ -279,6 +304,7 @@ const App = (props) => {
           console.log('Async set item Health Permission error', error);
         }
       }
+      setLoading(false);
       const timeoutId = setTimeout(async () => {
         console.log(`steps`, steps);
         if (steps) {
@@ -286,43 +312,28 @@ const App = (props) => {
           filterSteps();
           AddDataToFilter();
         }
-        setLoading(false);
         clearTimeout(timeoutId);
       }, 500);
     });
   };
 
-  // useEffect(() => {
-  //   OnAutoSync();
-  //   setTimeout(() => {
-  //     filterDates();
-  //     filterSteps();
-  //     AddDataToFilter();
-  //   }, 1000);
-  // }, [10]);
-
-  // useEffect(() => {
-  //   FitnessData()
-  // }, [])
-
   const OnAutoSync = async (onFinish) => {
     console.log(`auto sync function called`);
     let count = 0;
-    //for ios if count === 10 - call onFinish function
+    //for ios if count === 11 - call onFinish function
     // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
 
     // console.log('moment() month', new Date(a).toISOString());
     // console.log(
     //   `api.openweathermap.org/data/2.5/weather?lat=${this.state.lat}&lon=${this.state.lng}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
     // );
-
     if (Platform.OS === 'ios') {
       const healthKitOptions = {
         permissions: {
           read: [
-            // PERMS.DateOfBirth,
-            // PERMS.Weight,
-            // PERMS.Height,
+            PERMS.DateOfBirth,
+            PERMS.Weight,
+            PERMS.Height,
             // PERMS.BodyMassIndex,
             // PERMS.LeanBodyMass,
             // PERMS.BodyFatPercentage,
@@ -364,15 +375,59 @@ const App = (props) => {
           console.log('error initializing Healthkit: ', err);
           return;
         }
-
+        setLoading(true);
         // Date of Birth Example
         AppleHealthKit.getDateOfBirth(null, async (err, results) => {
+          dateOfBirth = results;
+          dispatch(GetDOB(results));
           setDateOfBirth(results);
           count++;
           console.log(`count==> `, count);
-          count === 10 && onFinish?.(true);
+          count === 11 && onFinish?.(true);
           //  console.log('age', results);
         });
+
+        AppleHealthKit.getLatestWeight(
+          healthKitWeight,
+          (err: string, results: HealthValue) => {
+            if (err) {
+              console.log('error getting latest weight: ', err);
+              return;
+            }
+            // {
+            //   "value": 200,
+            //   "startDate": "2016-07-08T12:00:00.000-0400",
+            //   "endDate": "2016-07-08T12:00:00.000-0400"
+            // }
+            count++;
+            console.log(`count==> `, count);
+            count === 11 && onFinish?.(true);
+            console.log('User weight: ', results);
+            userWeight = results?.value ?? 0;
+          },
+        );
+
+        AppleHealthKit.getLatestHeight(
+          null,
+          (err: string, results: HealthValue) => {
+            if (err) {
+              console.log('error getting latest weight: ', err);
+              return;
+            }
+            // {
+            //   "value": 200,
+            //   "startDate": "2016-07-08T12:00:00.000-0400",
+            //   "endDate": "2016-07-08T12:00:00.000-0400"
+            // }
+            count++;
+            console.log(`count==> `, count);
+            count === 11 && onFinish?.(true);
+            console.log('User Height: ', results);
+            userHeight = results?.value?.toFixed
+              ? Number(results.value.toFixed(2))
+              : 0;
+          },
+        );
 
         AppleHealthKit.getDailyStepCountSamples(
           stepsCount,
@@ -458,34 +513,37 @@ const App = (props) => {
             dispatch(UserSteps(total));
             count++;
             console.log(`count==> `, count);
-            count === 10 && onFinish?.(true);
+            count === 11 && onFinish?.(true);
           // console.log('All steps ++++', results, total);
           },
         );
         AppleHealthKit.getBloodPressureSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            setBP(results);     
+            // setBP(results);
+            BP = results;    
             console.log('All BP', results);
             count++;
             console.log(`count==> `, count);
-            count === 10 && onFinish?.(true);
+            count === 11 && onFinish?.(true);
           },
         );
         // Need to check from here for data ================================================================>>>>>>>>>>>>>>>>>>>>
         AppleHealthKit.getActiveEnergyBurned(
           stepsCount,
           async (err: Object, results: Object) => {
+            mainCalories = results;
             dispatch(GetCalories(results));
             let total = 0;
             setCalories(results);
             for (let i in results) {
               total = total + results[i].value;
             }
+            userCalories = total;
             dispatch(UserCalories(total));
             count++;
             console.log(`count==> `, count);
-            count === 10 && onFinish?.(true);
+            count === 11 && onFinish?.(true);
           // console.log('Active energy count', results);
           },
         );
@@ -493,29 +551,31 @@ const App = (props) => {
         AppleHealthKit.getDailyDistanceWalkingRunningSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
+            mainDistance = results;
             dispatch(GetDistance(results));
             let total = 0;
             setDistance(results);
             for (let i in results) {
               total = total + results[i].value;
             }
+            userDistance = total;
             dispatch(UserDistance(total));
             // console.log('Distance in KMS', results, total);
             count++;
             console.log(`count==> `, count);
-            count === 10 && onFinish?.(true);
+            count === 11 && onFinish?.(true);
           },
         );
 
         AppleHealthKit.getHeartRateSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
-            setHeartRate(results);
             HeartRate = results;
+            setHeartRate(results);
             console.log('Heart Samples', results);
             count++;
             console.log(`count==> `, count);
-            count === 10 && onFinish?.(true);
+            count === 11 && onFinish?.(true);
           },
         );
 
@@ -526,25 +586,14 @@ const App = (props) => {
             // console.log('Sleep Analysis +++++++++======>>>>', results);
             count++;
             console.log(`count==> `, count);
-            count === 10 && onFinish?.(true);
-          },
-        );
-
-        AppleHealthKit.getDateOfBirth(
-          null,
-          async (err: Object, results: Object) => {
-            dispatch(GetDOB(results));
-            setDOB(results);
-            // console.log('DOB', results);
-            count++;
-            console.log(`count==> `, count);
-            count === 10 && onFinish?.(true);
+            count === 11 && onFinish?.(true);
           },
         );
 
         AppleHealthKit.getSamples(
           stepsCount,
           async (err: Object, results: Array<Object>) => {
+            mainMoving = results;
             dispatch(GetMovingTime(results));
             let totalWalkTime = 0;
             if (err) {
@@ -567,7 +616,7 @@ const App = (props) => {
             // );
             count++;
             console.log(`count==> `, count);
-            count === 10 && onFinish?.(true);
+            count === 11 && onFinish?.(true);
           },
         );
 
@@ -578,14 +627,15 @@ const App = (props) => {
               `workout =++++++++++====++++++++======++++++++++++++++==`,
               results,
             );
+            workOuts = results;
             dispatch(GetWorkouts(results));
             if (err) {
               return console.log(`errola`, err);
             }
-            setWorkouts(results);
+            // setWorkouts(results);
             count++;
             console.log(`count==> `, count);
-            count === 10 && onFinish?.(true);
+            count === 11 && onFinish?.(true);
           },
         );
       });
@@ -615,6 +665,7 @@ const App = (props) => {
           Scopes.FITNESS_BODY_READ,
           Scopes.FITNESS_BODY_WRITE,
           Scopes.FITNESS_SLEEP_READ,
+          // Scopes.FITNESS_HEART_RATE_READ,
         ],
       };
       try {
@@ -625,6 +676,7 @@ const App = (props) => {
             .then((authResult) => {
               if (authResult.success) {
                 console.log('AUTH_SUCCESS');
+                setLoading(true);
               } else {
                 console.log('AUTH_DENIED', authResult.message);
               }
@@ -632,6 +684,8 @@ const App = (props) => {
             .catch(() => {
               console.log('AUTH_ERROR');
             });
+        } else {
+          setLoading(true);
         }
       } catch (error) {
         console.log('Google Fit checkAuthorization error: ', error);
@@ -674,11 +728,11 @@ const App = (props) => {
       try {
         await GoogleFit.checkIsAuthorized();
         console.log('isGoogleFitAuthorized: ', GoogleFit.isAuthorized);
-        if(!GoogleFit.isAuthorized){
+        if (!GoogleFit.isAuthorized){
           onFinish?.(false);
           return false;
         }
-      } catch(error) {
+      } catch (error) {
         onFinish?.(false);
         console.log('GoogleFit check authorization error: ', error);
         return false;
@@ -712,7 +766,7 @@ const App = (props) => {
       }
       count++;
       console.log(`count==> `, count);
-      count === 2 && onFinish?.(true);
+      // count === 2 && onFinish?.(true);
       // GoogleFit.onAuthorize(async function fetchData() {
       // });
 
@@ -721,12 +775,15 @@ const App = (props) => {
       // setActivities(Activities);
       console.log('Activities', Activities);
       dispatch(GetWorkouts(Activities));
-      setWorkouts(Activities);
+      // setWorkouts(Activities);
+      workOuts = Activities;
 
       const Calories = await GoogleFit.getDailyCalorieSamples(optCalories);
       // setCalories(Calories);
       if (Calories.length > 0) {
+        userCalories = Math.abs(Calories[0].calorie);
         dispatch(UserCalories(Math.abs(Calories[0].calorie)));
+        mainCalories = Calories[0];
         dispatch(GetCalories(Calories[0]));
       }
       console.log(
@@ -736,12 +793,44 @@ const App = (props) => {
 
       const Distance = await GoogleFit.getDailyDistanceSamples(opt);
       if (Distance.length > 0) {
+        userDistance = Math.ceil(Distance[0].distance);
         dispatch(UserDistance(Math.ceil(Distance[0].distance)));
       }
       console.log('Distance', Distance);
       count++;
       console.log(`count==> `, count);
       count === 2 && onFinish?.(true);
+      // GoogleFit.onAuthorize(async function fetchMoreData() {
+      // });
+      const weightOptions = {
+        unit: "kg", // required; default 'kg'
+        startDate: a, // required
+        endDate: new Date().toISOString(), // required
+        bucketUnit: "DAY", // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+        bucketInterval: 1, // optional - default 1. 
+        ascending: false // optional; default false
+      };
+      const Weight = await GoogleFit.getWeightSamples(weightOptions);
+      if (Array.isArray(Weight) && Weight.length > 0) {
+        userWeight = Math.ceil(Weight?.[0]?.value);
+      }
+      console.log('getWeightSamples Weight', Weight);
+      console.log('userWeight', userWeight);
+
+      const heightOptions = {
+        startDate: a, // required
+        endDate: new Date().toISOString(), // required
+      };
+
+      const Height = await GoogleFit.getHeightSamples(heightOptions);
+      if (Array.isArray(Height) && Height.length > 0) {
+        userHeight = Height?.[0]?.value;
+      }
+      console.log('getHeightSamples Height', Height);
+      console.log('userHeight', userHeight);
+      // count++;
+      // console.log(`count==> `, count);
+      // count === 3 && onFinish?.(true);
       // GoogleFit.onAuthorize(async function fetchMoreData() {
       // });
     }
@@ -770,13 +859,15 @@ const App = (props) => {
   const filterDates = () => {
     console.log(`------------steps in filterdates----------`, steps);
 
-    steps &&
-      steps.map((i) => {
-        var date = moment(i.startDate).format('DD-MMM-YYYY');
-        if (!dates.includes(date)) {
-          dates.push(date);
-        }
-      });
+    // steps &&
+    //   steps.map((i) => {
+    //     var date = moment(i.startDate).format('DD-MMM-YYYY');
+    //     if (!dates.includes(date)) {
+    //       dates.push(date);
+    //     }
+    //   });
+    dates.push(moment().subtract(1, 'days').format('DD-MMM-YYYY'),);
+    dates.push(moment().format('DD-MMM-YYYY'));
     // console.log('dates', dates);
   };
 
@@ -872,26 +963,25 @@ const App = (props) => {
           setSixes(fives);
         }
       }
-      for (let k in UserData.MainDistance) {
-        let iteratedate = moment(UserData.MainDistance[k].startDate).format(
+      for (let k in mainDistance) {
+        let iteratedate = moment(mainDistance[k].startDate).format(
           'DD-MMM-YYYY',
         );
         if (dates[i] === iteratedate) {
-          totalDistance = totalDistance + UserData.MainDistance[k].value;
+          totalDistance = totalDistance + mainDistance[k].value;
         }
       }
-      for (let l in UserData.MainCalories) {
-        let iteratedate = moment(UserData.MainCalories[l].startDate).format(
+      for (let l in mainCalories) {
+        let iteratedate = moment(mainCalories[l].startDate).format(
           'DD-MMM-YYYY',
         );
 
         if (dates[i] === iteratedate) {
           Platform.OS === 'ios'
-            ? (totalCalories = totalCalories + UserData.MainCalories[l].value)
-            : (totalCalories =
-                totalCalories + UserData.MainCalories.calorie / l.length);
+            ? (totalCalories = totalCalories + mainCalories[l].value)
+            : (totalCalories = totalCalories + mainCalories.calorie / l.length);
 
-          console.log(`totalCalories`, UserData.MainCalories);
+          console.log('totalCalories', mainCalories);
         }
       }
       for (let m in HeartRate) {
@@ -907,15 +997,13 @@ const App = (props) => {
           lowBp = lowBp + BP[n].bloodPressureDiastolicValue;
         }
       }
-      for (let r in UserData.MainMoving) {
-        let iteratedate = moment(UserData.MainMoving[r].start).format(
-          'DD-MMM-YYYY',
-        );
+      for (let r in mainMoving) {
+        let iteratedate = moment(mainMoving[r].start).format('DD-MMM-YYYY');
         // console.log(`startTime`, startTime, EndTime);
         // console.log(`end ========== >>>> ${diffDuration} `);
         if (dates[i] === iteratedate) {
-          const startTime = moment(UserData.MainMoving[r].start);
-          const EndTime = moment(UserData.MainMoving[r].end);
+          const startTime = moment(mainMoving[r].start);
+          const EndTime = moment(mainMoving[r].end);
           const diff = EndTime.diff(startTime);
           const diffDuration = moment.duration(diff).asMinutes();
           totalWalkTime = totalWalkTime + diffDuration;
@@ -926,7 +1014,7 @@ const App = (props) => {
         date: dates[i],
         steps: totalSteps,
         distance: totalDistance,
-        calories: UserData.UserCalories,
+        calories: userCalories,
         heart_Rate: totalHeartRate,
         high_bp: highBp,
         low_bp: lowBp,
@@ -972,7 +1060,7 @@ const App = (props) => {
     console.log(`Fsteps at last`, Fsteps);
     console.log(`walkTime at last`, WalkTime > 0);
     console.log(`Fsteps at last`, Fsteps > 0);
-    if (Fsteps.length > 0 && WalkTime.length > 0) {
+    if (Fsteps.length > 0 || WalkTime.length > 0 || workOuts) {
       // console.log('good to go for API');
       // const data = {
       //   device_id: deviceId,
@@ -983,19 +1071,14 @@ const App = (props) => {
       var axios = require('axios');
       var data = JSON.stringify({
         device_id: deviceId,
-        exercise_time: UserData?.MainWorkout ? UserData?.MainWorkout : null,
+        exercise_time: workOuts ? workOuts : null,
         moving_time: WalkTime,
         steps: Fsteps,
         // height: Height != null ? Height.value : 0,
-        height: 0,
-        DOB: DateOfBirth && DateOfBirth.value ? DateOfBirth.value : 0,
-        weight:
-          Platform.OS === 'ios'
-            ? LatestWeight != null
-              ? LatestWeight.value
-              : 0
-            : 0,
-        age: DateOfBirth && DateOfBirth.age ? DateOfBirth.age : 0,
+        height: userHeight,
+        DOB: dateOfBirth?.value ?? 0,
+        weight: userWeight,
+        age: dateOfBirth?.age ?? 0,
         email: UserData.UserEmail,
       });
       console.log(`data1111`, data);
