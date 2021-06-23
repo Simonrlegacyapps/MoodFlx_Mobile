@@ -110,6 +110,7 @@ export default function MoodDetector({navigation}) {
   const [MoodFail, setMoodFail] = useState(false); //not using
   const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
   const [SaveName, setSaveName] = useState(null); //for modal flag
+  const [isScreenFocused, setIsScreenFocused] = useState(false); //for modal flag
   const [
     isSaveMoodConfirmModalVisible,
     setIsSaveMoodConfirmModalVisible,
@@ -1052,7 +1053,7 @@ export default function MoodDetector({navigation}) {
     } else {
       setIsNotificationQuestionModalVisible(false);
     }
-    navigation.navigate('MoodEmotionDetector');
+    // navigation.navigate('MoodEmotionDetector');
   };
 
   const cancelled = () => {
@@ -1087,6 +1088,7 @@ export default function MoodDetector({navigation}) {
   useFocusEffect(
     React.useCallback(() => {
       isMoodDetectorScreenFocused = true;
+      setIsScreenFocused(true);
       // if(currentNotif) {
       //   setNotifData(currentNotif);
       //   setIsNotificationQuestionModalVisible(true);
@@ -1097,7 +1099,9 @@ export default function MoodDetector({navigation}) {
       return () => {
         // screen is out of focus
         isMoodDetectorScreenFocused = false;
+        setIsScreenFocused(false);
         dispatch(SetNotification(null));
+        setNotifData(null);
         // currentNotif = null;
         setWheelSize(regularWheelSize);
         setScrollerWheelSize(regularWheelSize);
@@ -1110,6 +1114,7 @@ export default function MoodDetector({navigation}) {
     isUnmounted = false;
     if (UserData.notification) {
       if (
+        isScreenFocused &&
         !NotifData &&
         UserData.notification?.data?.question &&
         UserData.notification?.data?.id
@@ -1123,15 +1128,15 @@ export default function MoodDetector({navigation}) {
           ' isMoodDetectorScreenFocused: ',
           isMoodDetectorScreenFocused,
         );
-        if (isUnmounted === false && isMoodDetectorScreenFocused === true) {
+        if (isUnmounted === false) {
           setNotifData(UserData.notification);
           setIsNotificationQuestionModalVisible(true);
         }
       }
       // NotifService.cancelDeliveredNotifications([String(notification.id)]);
-      // console.log('NOTIFICATION: MoodDetector', UserData.notification);
+      console.log('NOTIFICATION: MoodDetector', UserData.notification);
     }
-  }, [NotifData, UserData.notification, dispatch]);
+  }, [isScreenFocused, NotifData, UserData.notification, dispatch]);
 
   const setLPXY = () => {
     pan.current.setValue({

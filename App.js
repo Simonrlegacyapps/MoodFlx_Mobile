@@ -128,6 +128,10 @@ const App: () => React$Node = () => {
     } else {
       setShowWelcome(false);
     }
+    PushNotification.popInitialNotification((notification) => {
+      // console.log('popInitialNotification Notification: ', notification);
+      dispatch(SetNotification(notification));
+    });
     // CheckScreen();
 
     // try {
