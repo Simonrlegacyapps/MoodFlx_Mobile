@@ -32,7 +32,7 @@ import {dynamicSize} from '../../Constants/sizeChoose';
 import AnonymousPopUp from '../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
 const FitnessData = ({
   Perm,
@@ -193,7 +193,7 @@ const FitnessData = ({
   // console.log(`UserDistance`, UserDistance);
 
   return (
-    <View>
+    <View style={styles.container}>
       {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -542,6 +542,10 @@ const FitnessData = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: Math.ceil(SIZE),
+  },
   scrollView: {
     // backgroundColor: '#FFF',
     height: '100%',

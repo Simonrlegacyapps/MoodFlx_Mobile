@@ -40,7 +40,7 @@ import { defaultLocation, isCountryIndia, weatherActions, weatherApiDataTypes, w
 
 let weatherData = null;
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
 const IndicatorHelper = ({color, text}) => {
   return (
@@ -173,7 +173,7 @@ const WeatherData = ({
     const v = value?.toLowerCase?.() ?? value;
     return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
   };
-// console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
+  // console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
   const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let WeatherP = await JSON.parse(Wp);
@@ -568,52 +568,31 @@ const WeatherData = ({
   const dataOfWeatherGraph = [
     {
       x: 1,
-      y:
-        AllDayWeather != null && AllDayWeather[0] != undefined
-          ? AllDayWeather[0].temp
-          : 0,
+      y: AllDayWeather?.[0]?.temp ?? 0,
     },
     {
       x: 2,
-      y:
-        AllDayWeather != null && AllDayWeather[3] != undefined
-          ? AllDayWeather[3].temp
-          : 0,
+      y: AllDayWeather?.[3]?.temp ?? 0,
     },
     {
       x: 3,
-      y:
-        AllDayWeather != null && AllDayWeather[7] != undefined
-          ? AllDayWeather[7].temp
-          : 0,
+      y: AllDayWeather?.[7]?.temp ?? 0,
     },
     {
       x: 4,
-      y:
-        AllDayWeather != null && AllDayWeather[11] != undefined
-          ? AllDayWeather[11].temp
-          : 0,
+      y: AllDayWeather?.[11]?.temp ?? 0,
     },
     {
       x: 5,
-      y:
-        AllDayWeather != null && AllDayWeather[15] != undefined
-          ? AllDayWeather[15].temp
-          : 0,
+      y: AllDayWeather?.[15]?.temp ?? 0,
     },
     {
       x: 6,
-      y:
-        AllDayWeather != null && AllDayWeather[19] != undefined
-          ? AllDayWeather[19].temp
-          : 0,
+      y: AllDayWeather?.[19]?.temp ?? 0,
     },
     {
       x: 7,
-      y:
-        AllDayWeather != null && AllDayWeather[23] != undefined
-          ? AllDayWeather[23].temp
-          : 0,
+      y: AllDayWeather?.[23]?.temp ?? 0,
     },
   ];
   // console.log(`AllDayWeather`, AllDayWeather);
@@ -628,9 +607,10 @@ const WeatherData = ({
 
   const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Cloudy;
   const _smallWeatherIcon = _weatherType === weatherTypes.Rainy ? Constants.Images.RainyHour : _largeWeatherImg;
+  const currentTemp = ManualTemp ? ManualTemp : Math.round(Weather?.main?.temp ? Weather.main.temp : '0');
 
   return (
-    <View>
+    <View style={styles.container}>
       {/* {console.log(`data`, data)} */}
       <ScrollView
         showsHorizontalScrollIndicator={false}
@@ -788,9 +768,7 @@ const WeatherData = ({
                               fontSize: dynamicSize(32),
                             },
                           ]}>
-                          {ManualTemp
-                            ? ManualTemp
-                            : Math.round(Weather?.main?.temp ? Weather.main.temp : '0')}
+                           {currentTemp}
                           ºC
                         </Text>
                       </View>
@@ -1022,14 +1000,10 @@ const WeatherData = ({
       <EditManualWeatherModal
         modalVisible={EditManualWeather}
         dismissModalHandler={() => cancelled()}
-        verifyDone={(value) => EditDone(value)}
+        verifyDone={EditDone}
         Weather={Weather}
         hours={hours}
-        Temp={
-          ManualTemp
-            ? ManualTemp
-            : Math.round(Weather ? Weather.main.temp : '0')
-        }
+        Temp={currentTemp}
         EditTemp={setManualTemp}
         Hour={ManulHours ? ManulHours : hours ? hours : 1}
         EditHour={setManulHours}
@@ -1072,6 +1046,10 @@ const WeatherData = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: Math.ceil(SIZE),
+  },
   scrollView: {
     // backgroundColor: '#FFF',
     height: '100%',

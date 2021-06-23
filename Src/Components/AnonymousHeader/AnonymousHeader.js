@@ -130,11 +130,12 @@ const AnonymousHeader = ({backGround}) => {
   };
   useEffect(() => {
     Go();
-    setTimeout(async () => {
+    const timeoutId = setTimeout(async () => {
       if (UserData?.UserDetails?.full_name === '') {
         await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
         dispatch(IsAnonymous(true));
       }
+      clearTimeout(timeoutId);
     }, 1000);
   }, []);
 

@@ -70,7 +70,7 @@ import {
 import RNAndroidInstalledApps from 'react-native-android-installed-apps';
 import InstallGoogleFitModal from '../../Components/Modals/InstallGoogleFitModal/InstallGoogleFitModal';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 let steps = false;
 let HeartRate = false;
 let workOuts = null;
@@ -1259,96 +1259,48 @@ const App = (props) => {
       <Swiper
         // focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
-        dotStyle={{height: 0, width: 0}}
-        activeDotStyle={{height: 0, width: 0}}
-        style={{backgroundColor: 'white'}}
+        dotStyle={{ height: 0, width: 0 }}
+        activeDotStyle={{ height: 0, width: 0 }}
+        style={{ backgroundColor: 'white' }}
         showsButtons={true}
         onIndexChanged={(index) => setSwiperIndex(index)}
         loop={false}>
-        <View>
-          {/* {!Loading &&
-          !UserData.UserMoodCount &&
-          !UserData.UserSteps &&
-          !UserData.UserCalories &&
-          !UserData.UserDistance &&
-          !UserData.UserMoveTime ? (
-            <View>
-              <Text>Hi</Text>
-            </View>
-          ) : (
-            <View>
-              <Text>Loading your data</Text>
-            </View>
-          )} */}
-          <FitnessData
-            swiperIndex={swiperIndex}
-            TodayStep={TodayStep}
-            TodayCalories={TodayCalories}
-            TodayDistance={TodayDistance}
-            MoveTime={MoveTime}
-            Perm={Perm}
-            checkStorage={checkStorage}
-            zero={Ones}
-            ones={Twos}
-            twos={Threes}
-            threes={Fours}
-            fours={Fives}
-            fives={Sixes}
-            MoodCount={MoodCount}
-            Loading={Loading}
-          />
-        </View>
+        <FitnessData
+          swiperIndex={swiperIndex}
+          TodayStep={TodayStep}
+          TodayCalories={TodayCalories}
+          TodayDistance={TodayDistance}
+          MoveTime={MoveTime}
+          Perm={Perm}
+          checkStorage={checkStorage}
+          zero={Ones}
+          ones={Twos}
+          twos={Threes}
+          threes={Fours}
+          fours={Fives}
+          fives={Sixes}
+          MoodCount={MoodCount}
+          Loading={Loading}
+        />
 
-        <View style={styles.slide3}>
-          <SleepData
-            swiperIndex={swiperIndex}
-            data={data}
-            isMoodUpdate={isMoodUpdate}
-            dataLow={dataLow}
-            Weather={Weather}
-            PermScreenTime={PermScreenTime}
-            CheckForSleepData={CheckForSleepData}
-            MoodCount={MoodCount}
-          />
-        </View>
+        <SleepData
+          swiperIndex={swiperIndex}
+          isMoodUpdate={isMoodUpdate}
+          CheckForSleepData={CheckForSleepData}
+          MoodCount={MoodCount}
+        />
 
-        <View>
-          {/* {swiperIndex == 1 ? ( */}
-          {/* {console.log(`tryWeather`, TryWeather)} */}
-          <WeatherData
-            swiperIndex={swiperIndex}
-            MoodCount={MoodCount}
-          />
-          {/* ) : (
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-              }}>
-              <Text> Your Data is updating</Text>
-            </View>
-          )} */}
-        </View>
+        <WeatherData swiperIndex={swiperIndex} MoodCount={MoodCount} />
 
-        <View style={styles.slide3}>
-          <LightData
-            swiperIndex={swiperIndex}
-            MoodCount={MoodCount}
-          />
-        </View>
+        <LightData swiperIndex={swiperIndex} MoodCount={MoodCount} />
 
-        <View style={styles.slide3}>
-          <ScreenData
-            swiperIndex={swiperIndex}
-            // data={data}
-            // dataLow={dataLow}
-            Weather={Weather}
-            PermScreenTime={PermScreenTime}
-            CheckForScreenData={CheckForScreenData}
-            MoodCount={MoodCount}
-          />
-        </View>
+        <ScreenData
+          swiperIndex={swiperIndex}
+          Weather={Weather}
+          PermScreenTime={PermScreenTime}
+          CheckForScreenData={CheckForScreenData}
+          MoodCount={MoodCount}
+        />
       </Swiper>
       {Loading && !isInstallGoogleFitModalVisible && (
         <View
