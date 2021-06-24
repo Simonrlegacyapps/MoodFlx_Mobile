@@ -310,9 +310,10 @@ const App: () => React$Node = () => {
           await dispatch(UserDetail(result?.userData));
         }
       })
-      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error));
-      getDivisionName(raw, dispatch);
-
+      .catch((error) => {
+        console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error);
+      });
+    getDivisionName(raw, dispatch, true);
   };
 
   const requestNotificationPermissions = async () => {

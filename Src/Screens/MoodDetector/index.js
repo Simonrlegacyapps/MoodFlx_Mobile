@@ -105,7 +105,6 @@ const screenWidth = Math.floor(window.width);
 export default function MoodDetector({navigation}) {
   const [lng, setlng] = useState(false); //using in api calls
   const [lat, setlat] = useState(false); //using in api calls
-  const [Email, setEmail] = useState(null); //using in api calls
   const [Loading, setLoading] = useState(false); //using in api calls
   const [MoodFail, setMoodFail] = useState(false); //not using
   const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
@@ -661,7 +660,6 @@ export default function MoodDetector({navigation}) {
       console.log(`division`, division);
       console.log(`HealthPerm`, HealthP);
       console.log(`WeatherPerm`, WeatherP);
-      await setEmail(e);
       dispatch(UserEmail(e));
       dispatch(UserDivision(division));
       dispatch(HealthPerm(HealthP));
@@ -934,7 +932,7 @@ export default function MoodDetector({navigation}) {
         lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
         long: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
 
-        email: Email,
+        email: UserData.UserEmail,
         user_id: UserData.UserId,
         device_token: fcm,
         device_type: Platform.OS,
