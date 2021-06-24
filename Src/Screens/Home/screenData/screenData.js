@@ -26,7 +26,7 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import PopUp from '../../../Components/PopUp/PopUp';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
 const IndicatorHelper = ({color, text}) => {
   return (
@@ -148,7 +148,7 @@ const ScreenData = ({
 
   const ScreenDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
   return (
-    <View>
+    <View style={styles.container}>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -362,6 +362,10 @@ const ScreenData = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: Math.ceil(SIZE),
+  },
   scrollView: {
     height: '100%',
     paddingBottom: 400,

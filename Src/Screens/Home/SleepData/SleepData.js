@@ -45,7 +45,7 @@ import { dataTypes } from '../../../Constants/constants';
 import { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 
 
-export const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
+const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
 const IndicatorHelper = ({ color, text }) => {
   return (
@@ -58,13 +58,9 @@ const IndicatorHelper = ({ color, text }) => {
 
 const SleepData = ({
   CheckForSleepData,
-  PermScreenTime,
-  Weather,
-  data,
-  dataLow,
   MoodCount,
   swiperIndex,
-  isMoodUpdate
+  isMoodUpdate,
 }) => {
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [SleepPopUp, setSleepPopUp] = useState(false);
@@ -288,7 +284,7 @@ const SleepData = ({
   }, [UserData.UserEmail, UserData.UserId]);
 
   return (
-    <View>
+    <View style={styles.container}>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -474,6 +470,10 @@ const SleepData = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: Math.ceil(SIZE),
+  },
   scrollView: {
     height: '100%',
     paddingBottom: 400,

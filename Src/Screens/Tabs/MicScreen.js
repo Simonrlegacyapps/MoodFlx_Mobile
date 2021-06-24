@@ -284,6 +284,7 @@ const MicScreen = ({ navigation }) => {
               return (
                 <TouchableOpacity
                   // disabled={givenDate >= todayDate ? false : true}
+                  key={item?.id ?? index}
                   onPress={() =>
                     givenDate >= todayDate
                       ? navigation.replace('MoodEmotionDetector', {

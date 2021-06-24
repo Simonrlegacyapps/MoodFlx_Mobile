@@ -52,7 +52,7 @@ let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
 let currentLightData = -1;
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
 
 const LightData = ({
@@ -356,7 +356,7 @@ const LightData = ({
   const lux = !UserData.LightPermission ? 400 : light === -1 ? 0 : light;
 
   return (
-    <View>
+    <View style={styles.container}>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -558,6 +558,10 @@ const LightData = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: Math.ceil(SIZE),
+  },
   scrollView: {
     height: '100%',
     paddingBottom: 400,

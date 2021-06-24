@@ -9,6 +9,7 @@ import {
   UserEmail,
 } from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
+import {onUnlinkUpdate} from '../services/commonService';
 
 const PostRequestApi = async (url, params) => {
   return await axios
@@ -42,16 +43,7 @@ export async function GetStaffUserData(params, dispatch) {
         result?.userData,
       );
       if (result?.userData?.status === 2) {
-        await AsyncStorage.removeItem('UserId');
-        await AsyncStorage.removeItem('Anonymous');
-        await AsyncStorage.removeItem('Email');
-        await AsyncStorage.removeItem('Division');
-        await AsyncStorage.removeItem('Email');
-        dispatch?.(UserDivision(null));
-        dispatch?.(UserEmail(null));
-        dispatch?.(GetUserId(null));
-        dispatch?.(IsAnonymous(true));
-        dispatch?.(UserDetail(null));
+        onUnlinkUpdate(dispatch);
       }
       return result;
     })
@@ -60,7 +52,7 @@ export async function GetStaffUserData(params, dispatch) {
     );
 }
 
-export async function getDivisionName(params, dispatch) {
+export async function getDivisionName(params, dispatch, isUnlinkAllowed) {
   var myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
 
@@ -71,11 +63,20 @@ export async function getDivisionName(params, dispatch) {
       // return new Promise((resolve, reject) => {
       if (result?.userData?.status !== 2) {
         axios
-          .post('https://admin.moodflo.com/api/getDivision', params)
+          .post('https://admin.moodflo.com/api/getAllDivision', params)
           .then((res) => {
             let divisionName = '';
             if (Array.isArray(res?.data?.data)) {
-              dispatch(getDivisions(res.data.data));
+              const divisions = res.data.data.filter(e => {
+                if ((e?.total_staff ?? -1) === -1) {
+                  return true;
+                } else if (e.total_staff > (e?.onboard_staff ?? 0)) {
+                  return true;
+                } else {
+                  return false;
+                }
+              });
+              dispatch(getDivisions(divisions));
               // console.log('getDivisions success dispatch getDivision');
               if (result?.userData?.division_id) {
                 res.data.data.forEach((e) => {
@@ -94,6 +95,21 @@ export async function getDivisionName(params, dispatch) {
                     .catch((e) =>
                       console.log('AsyncStorage set division error', e),
                     );
+                }
+              } else if (isUnlinkAllowed) {
+                if (params?.email && params?.user_id) {
+                  const p = {
+                    email: params?.email,
+                    user_id: params?.user_id,
+                  };
+                  PostRequestApi('unlinkToCompany', p)
+                    .then(async (resp) => {
+                      console.log('unlinkToCompany api Success');
+                      onUnlinkUpdate(dispatch);
+                    })
+                    .catch((err) => {
+                      console.log('unlink api failed error: ', err);
+                    });
                 }
               }
               // console.log('getDivision data =>', res.data.data);

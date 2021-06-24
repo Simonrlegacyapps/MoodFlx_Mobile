@@ -128,6 +128,10 @@ const App: () => React$Node = () => {
     } else {
       setShowWelcome(false);
     }
+    PushNotification.popInitialNotification((notification) => {
+      // console.log('popInitialNotification Notification: ', notification);
+      dispatch(SetNotification(notification));
+    });
     // CheckScreen();
 
     // try {
@@ -306,9 +310,10 @@ const App: () => React$Node = () => {
           await dispatch(UserDetail(result?.userData));
         }
       })
-      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error));
-      getDivisionName(raw, dispatch);
-
+      .catch((error) => {
+        console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error);
+      });
+    getDivisionName(raw, dispatch, true);
   };
 
   const requestNotificationPermissions = async () => {

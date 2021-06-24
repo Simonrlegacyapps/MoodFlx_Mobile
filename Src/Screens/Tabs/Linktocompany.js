@@ -32,13 +32,14 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import PostRequestApi, { getDivisionName } from '../../apirequest/PostRequestApi';
+import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
 import {useRoute, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 import {PHOTO_URL} from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
+import {onUnlinkUpdate} from '../../services/commonService';
 
 const Linktocompany = ({navigation}) => {
   const {OTPVerified, setDivision, getDivision} = useSelector(
@@ -83,8 +84,8 @@ const Linktocompany = ({navigation}) => {
       };
 
       console.log('=== getDivision params ===', params);
-
-      getDivisionName(params, dispatch);
+      const isUnlinkAllowed = route?.params?.email ? false : true;
+      getDivisionName(params, dispatch, isUnlinkAllowed);
 
       // axios.post('https://admin.moodflo.com/api/getDivision', params)
       //   .then(async (res) => {
@@ -99,6 +100,12 @@ const Linktocompany = ({navigation}) => {
       //   });
     }
   }, [UserData.UserId, UserData.UserEmail]);
+
+  useEffect(() => {
+    if (!UserData.UserEmail && !UserData.UserId && labelShow) {
+      setLabelShow('');
+    }
+  }, [UserData.UserId, UserData.UserEmail, labelShow]);
 
   useEffect(() => {
     const deviceId = DeviceInfo.getUniqueId();
@@ -149,10 +156,12 @@ const Linktocompany = ({navigation}) => {
         };
 
         console.log('===useFocusEffect getDivision params ===', params);
-
-        getDivisionName(params, dispatch);
+        const isUnlinkAllowed = route?.params?.email ? false : true;
+        getDivisionName(params, dispatch, isUnlinkAllowed);
+      } else if (labelShow) {
+        setLabelShow('');
       }
-    }, [UserData.UserId, UserData.UserEmail, dispatch]),
+    }, [UserData.UserId, UserData.UserEmail, dispatch, labelShow]),
   );
 
   const onLink = async (type) => {
@@ -184,6 +193,7 @@ const Linktocompany = ({navigation}) => {
             JSON.stringify(resp.data.divisionName),
           );
           dispatch(UserDivision(resp.data.divisionName));
+          route.params.email && navigation?.setParams({email: null});
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,
@@ -216,17 +226,19 @@ const Linktocompany = ({navigation}) => {
           console.log('unlink api failed error: ', err);
         });
       dispatch(OTP_Verify(false));
-      dispatch(Division(null));
-      await AsyncStorage.removeItem('UserId');
-      await AsyncStorage.removeItem('Anonymous');
-      await AsyncStorage.removeItem('Email');
-      await AsyncStorage.removeItem('Division');
-      await AsyncStorage.removeItem('Email');
-      dispatch(UserDivision(null));
-      dispatch(UserEmail(null));
-      dispatch(GetUserId(null));
-      dispatch(IsAnonymous(true));
-      dispatch(UserDetail(null));
+      // dispatch(Division(null));
+      // await AsyncStorage.removeItem('UserId');
+      // await AsyncStorage.removeItem('Anonymous');
+      // await AsyncStorage.removeItem('Email');
+      // await AsyncStorage.removeItem('Division');
+      // await AsyncStorage.removeItem('Email');
+      // dispatch(UserDivision(null));
+      // dispatch(UserEmail(null));
+      // dispatch(GetUserId(null));
+      // dispatch(IsAnonymous(true));
+      // dispatch(UserDetail(null));
+      onUnlinkUpdate(dispatch);
+      setLabelShow('');
       setUnlinkConfirm(false);
     } else {
       setUnlinkConfirm(false);
