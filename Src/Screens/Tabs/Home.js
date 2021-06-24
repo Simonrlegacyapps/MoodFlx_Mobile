@@ -163,7 +163,7 @@ const App = (props) => {
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
   // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
   // const a = moment(); //today
-  const a = moment().subtract(1, 'days').startOf('day').toString();
+  const a = moment().subtract(1, 'days').endOf('day').toString();
   const b = moment().subtract(0, 'days').startOf('day').toString();
   // console.log(`b`, Date.parse(b));
 
@@ -660,7 +660,7 @@ const App = (props) => {
       }
 
       console.log(`herer?`);
-      const s = moment().subtract(1, 'days').startOf('day').toISOString();
+      const s = moment().subtract(1, 'days').endOf('day').toISOString();
       const options = {
         scopes: [
           Scopes.FITNESS_ACTIVITY_READ,
@@ -829,7 +829,7 @@ const App = (props) => {
         }
         console.log(
           'Calories????????????????????????----------------',
-          _Calories[0],
+          _Calories,
         );
       } catch (e) {
         console.log('getDailyCalorieSamples error: ', e);
@@ -1189,7 +1189,7 @@ const App = (props) => {
         .then(function (response) {
           console.log(
             '✅ ✅ ✅ ✅ Success Update Staff Health ✅ ✅ ✅ ✅',
-            JSON.stringify(response?.data),
+            response?.data,
           );
         })
         .catch(function (error) {
