@@ -290,6 +290,7 @@ const EditManualWeatherModal = ({
                           // placeholder={Hour.toString()}
                           placeholderTextColor={'#000'}
                           value={hourValue}
+                          underlineColorAndroid="transparent"
                           onChangeText={(text) => {
                             setHourValue(text);
                           }}
@@ -299,9 +300,6 @@ const EditManualWeatherModal = ({
                               marginTop: 2,
                               fontFamily: RubikMedium,
                               fontSize: 18,
-                              borderBottomWidth: 1,
-                              // backgroundColor: 'blue',
-                              // width: 14,
                             },
                           ]}></TextInput>
                         <Text
