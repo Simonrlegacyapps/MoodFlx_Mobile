@@ -63,11 +63,20 @@ export async function getDivisionName(params, dispatch, isUnlinkAllowed) {
       // return new Promise((resolve, reject) => {
       if (result?.userData?.status !== 2) {
         axios
-          .post('https://admin.moodflo.com/api/getDivision', params)
+          .post('https://admin.moodflo.com/api/getAllDivision', params)
           .then((res) => {
             let divisionName = '';
             if (Array.isArray(res?.data?.data)) {
-              dispatch(getDivisions(res.data.data));
+              const divisions = res.data.data.filter(e => {
+                if ((e?.total_staff ?? -1) === -1) {
+                  return true;
+                } else if (e.total_staff > (e?.onboard_staff ?? 0)) {
+                  return true;
+                } else {
+                  return false;
+                }
+              });
+              dispatch(getDivisions(divisions));
               // console.log('getDivisions success dispatch getDivision');
               if (result?.userData?.division_id) {
                 res.data.data.forEach((e) => {

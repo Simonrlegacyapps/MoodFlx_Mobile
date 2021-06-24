@@ -74,8 +74,8 @@ const EditManualWeatherModal = ({
   const [pollenValue, setPollenValue] = useState(
     Pollen ? String(Pollen) : data?.[0]?.name ?? 'Low',
   );
-  const [hourValue, setHourValue] = useState(Hour ? String(Hour) : 0);
-  const [tempValue, setTempValue] = useState(Temp ? String(Temp) : 0);
+  const [hourValue, setHourValue] = useState(Hour ? String(Hour) : '0');
+  const [tempValue, setTempValue] = useState(Temp ? String(Temp) : '0');
   const [weatherTypeValue, setWeatherTypeValue] = useState(WeatherType);
   const [OpenWeatherType, setOpenWeatherType] = useState(false);
   const [TouchTextEdit, setTouchTextEdit] = useState('Temp');
