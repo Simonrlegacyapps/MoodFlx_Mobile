@@ -1,5 +1,6 @@
 import {
   GetUserId,
+  HealthPerm,
   IsAnonymous,
   UserDetail,
   UserDivision,

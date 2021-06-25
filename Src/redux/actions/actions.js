@@ -31,6 +31,7 @@ import {
   GET_SLEEP_PERM,
   GET_LIGHT_PERM,
   SET_NOTIFICATION,
+  GET_NOTIFICATION_PERM,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -102,6 +103,12 @@ export const UserMoveTime = (data) => {
 export const HealthPerm = (data) => {
   return {
     type: GET_HEALTH_PERM,
+    payload: data,
+  };
+};
+export const NotificationPerm = (data) => {
+  return {
+    type: GET_NOTIFICATION_PERM,
     payload: data,
   };
 };

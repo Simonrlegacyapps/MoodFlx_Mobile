@@ -7,6 +7,7 @@ import {
   GET_DIVISION,
   GET_EMAIL,
   GET_HEALTH_PERM,
+  GET_NOTIFICATION_PERM,
   GET_LAT,
   GET_LIGHT_PERM,
   GET_LONG,
@@ -45,6 +46,7 @@ const intializedState = {
   UserDistance: 0,
   UserMoveTime: 0,
   HealthPermission: false,
+  NotificationPermission: false,
   WeatherPermission: false,
   SleepPermission: false,
   LightPermission: false,
@@ -114,6 +116,10 @@ export const First = (state = intializedState, action) => {
     case GET_HEALTH_PERM:
       return Object.assign({}, state, {
         HealthPermission: action.payload,
+      });
+    case GET_NOTIFICATION_PERM:
+      return Object.assign({}, state, {
+        NotificationPermission: action.payload,
       });
     case GET_SLEEP_PERM:
       return Object.assign({}, state, {

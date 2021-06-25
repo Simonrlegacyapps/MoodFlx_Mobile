@@ -40,6 +40,7 @@ const VerifyEmail = ({navigation}) => {
     let fcmToken = await NotifService.getDeviceToken();
     const fcm = await messaging().getToken();
     console.log('fcmToken', fcm, Platform.OS);
+    console.log('fcm', fcm, Platform.OS);
     const params = {
       email: mail,
       otp: Code?.toString().length === 4 ? Code : CodeOnComplete,

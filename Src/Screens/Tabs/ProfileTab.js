@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -12,28 +12,32 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  AppState,
 } from 'react-native';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
 import AddButton from '../../Components/buttons/AddButton';
 import Constants from '../../Constants';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import { dynamicSize } from '../../Constants/sizeChoose';
 import PrivacyIcon from '../../../assets/profileicons/PrivacyIcon';
 import PickImageIcon from '../../../assets/profileicons/PickImageIcon';
 import FaqIcon from '../../../assets/profileicons/FaqIcon';
 import TermsIcon from '../../../assets/profileicons/TermsIcon';
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
 import DeviceInfo from 'react-native-device-info';
-import {UserDetail} from '../../redux/actions/actions';
-import {GetStaffUserData} from '../../apirequest/PostRequestApi';
+import { NotificationPerm, UserDetail } from '../../redux/actions/actions';
+import { GetStaffUserData } from '../../apirequest/PostRequestApi';
+import { AppPermissions } from '../../services/appPermissions';
+import { useFocusEffect } from '@react-navigation/native';
+import { getSleepDataAfterPermissionIOS } from '../Home/SleepData/sleepDataService';
 
 const listData = [
-  {name: 'Name', value: 'Annonymous'},
-  {name: 'Gender', value: 'Annonymous'},
-  {name: 'Birthday', value: 'Annonymous'},
-  {name: 'Pronoun', value: 'Annonymous'},
+  { name: 'Name', value: 'Annonymous' },
+  { name: 'Gender', value: 'Annonymous' },
+  { name: 'Birthday', value: 'Annonymous' },
+  { name: 'Pronoun', value: 'Annonymous' },
 ];
 
 const bottomList = [
@@ -50,7 +54,7 @@ const bottomList = [
   },
 ];
 
-const ProfileTab = ({navigation}) => {
+const ProfileTab = ({ navigation }) => {
   const [openActionSheet, setOpenActionSheet] = useState(false);
   // const [value, onChangeText] = React.useState('');
   const UserData = useSelector((state) => state.First);
@@ -65,6 +69,8 @@ const ProfileTab = ({navigation}) => {
   const [ComingGenderPronoun, setComingGenderPronoun] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
   const [Loading, setLoading] = useState(false);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -87,10 +93,57 @@ const ProfileTab = ({navigation}) => {
     wait(1000).then(() => setRefreshing(false));
   };
 
-  useCallback(() => {
-    getProfileUserData();
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('ProfileTab focused');
+      AppPermissions.checkAppPermissions(dispatch);
+
+      return () => {
+        // screen is out of focus
+        console.log('ProfileTab blured');
+      };
+    }, [dispatch]),
+  );
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
   }, []);
 
+  const _handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      console.log("App has come to the foreground!");
+      AppPermissions.checkAppPermissions(dispatch);
+    }
+
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+    console.log("AppState", appState.current);
+  };
+
+  const requestNotificationPerm = useCallback(async () => {
+    AppPermissions.requestNotificationPermission()
+      .then((result) => {
+        console.log('notificationPermission isGiven', result);
+        if (result === false) {
+          AppPermissions.gotoSettingsPageiOS();
+        } else {
+          dispatch(NotificationPerm(true));
+        }
+      })
+      .catch((error) => {
+        console.log(
+          'requestNotificationPerm notification request error',
+          error,
+        );
+      });
+  }, [dispatch]);
 
   const getProfileUserData = () => {
     // console.log('called called called called called called');
@@ -202,23 +255,6 @@ const ProfileTab = ({navigation}) => {
       });
   };
 
-  const renderBottomList = ({item}) => {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          Linking.openURL(item.link);
-        }}>
-        <View style={styles.bottomFlatlistContainer}>
-          <View style={{marginTop: dynamicSize(5)}}>{item.icon}</View>
-          <Text
-            style={[styles.anonymousTextStyle, {marginLeft: dynamicSize(16)}]}>
-            {item.name}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   const imageSelectType = (select_type) => {
     if (select_type === 1) {
       openCameraFunction();
@@ -267,7 +303,7 @@ const ProfileTab = ({navigation}) => {
   };
   console.log('ProfileTab Pronoun: ', Pronoun);
 
-  const ProfileApiCallHere = async ({_name, _gender, _pronoun}) => {
+  const ProfileApiCallHere = async ({ _name, _gender, _pronoun }) => {
     const name_ = _name ? _name : name;
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
@@ -282,21 +318,21 @@ const ProfileTab = ({navigation}) => {
         name_ != 'Anonymous'
           ? name_
           : name_ != '' && UserData?.UserDetails?.full_name
-          ? UserData?.UserDetails?.full_name
-          : name_,
+            ? UserData?.UserDetails?.full_name
+            : name_,
       pronouns: _pronoun
         ? _pronoun.name
         : UserData?.UserDetails?.pronouns
-        ? UserData?.UserDetails?.pronouns
-        : '',
+          ? UserData?.UserDetails?.pronouns
+          : '',
       date_of_birth: UserData?.UserDetails?.date_of_bitrh
         ? UserData?.UserDetails?.date_of_bitrh
         : Birthday,
       gender: _gender
         ? _gender.id
         : UserData?.UserDetails?.gender
-        ? UserData?.UserDetails?.gender
-        : '',
+          ? UserData?.UserDetails?.gender
+          : '',
     });
 
     var requestOptions = {
@@ -324,7 +360,7 @@ const ProfileTab = ({navigation}) => {
   const checkGenderName = (value) => {
     // console.log(`value`, value, ComingGenderPronoun.gender);
 
-    const Id = ComingGenderPronoun.gender.find(({id}) => {
+    const Id = ComingGenderPronoun.gender.find(({ id }) => {
       // console.log(`name`, id, value);
       return id == value;
     });
@@ -335,7 +371,7 @@ const ProfileTab = ({navigation}) => {
   const onSetGender = useCallback(
     (value) => {
       setgender(value);
-      ProfileApiCallHere({_gender: value});
+      ProfileApiCallHere({ _gender: value });
     },
     [setgender, ProfileApiCallHere],
   );
@@ -343,10 +379,21 @@ const ProfileTab = ({navigation}) => {
   const onSetPronoun = useCallback(
     (value) => {
       setPronoun(value);
-      ProfileApiCallHere({_pronoun: value});
+      ProfileApiCallHere({ _pronoun: value });
     },
     [setPronoun, ProfileApiCallHere],
   );
+
+  const requestSleepPerm = useCallback(() => {
+    if (Platform.OS === 'android') {
+      AppPermissions.requestActivityPermission(dispatch);
+    } else {
+      getSleepDataAfterPermissionIOS({
+        askPermission: true,
+        dispatch: dispatch,
+      });
+    }
+  }, [dispatch]);
 
 
   // console.log(
@@ -398,11 +445,11 @@ const ProfileTab = ({navigation}) => {
             </View>
             <View style={styles.headerContainerStyle}>
               <View
-                style={[styles.borderStyle, {marginRight: dynamicSize(17)}]}
+                style={[styles.borderStyle, { marginRight: dynamicSize(17) }]}
               />
               <Text>PERSONAL DETAILS</Text>
               <View
-                style={[styles.borderStyle, {marginLeft: dynamicSize(11)}]}
+                style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}
               />
             </View>
           </View>
@@ -418,8 +465,8 @@ const ProfileTab = ({navigation}) => {
                 name != 'Anonymous'
                   ? name
                   : name != '' && UserData?.UserDetails?.full_name
-                  ? UserData?.UserDetails?.full_name
-                  : name
+                    ? UserData?.UserDetails?.full_name
+                    : name
               }
               onChangeText={setname}
             />
@@ -433,8 +480,8 @@ const ProfileTab = ({navigation}) => {
                 gender
                   ? gender.name
                   : UserData?.UserDetails?.gender && ComingGenderPronoun
-                  ? checkGenderName(UserData?.UserDetails?.gender)
-                  : gender
+                    ? checkGenderName(UserData?.UserDetails?.gender)
+                    : gender
               }
               onChangeText={onSetGender}
               popUp
@@ -459,38 +506,112 @@ const ProfileTab = ({navigation}) => {
                 Pronoun
                   ? Pronoun.name
                   : UserData?.UserDetails?.pronouns
-                  ? UserData?.UserDetails?.pronouns
-                  : Pronoun.name
+                    ? UserData?.UserDetails?.pronouns
+                    : Pronoun.name
               }
               gender={gender}
               onChangeText={onSetPronoun}
               popUp
             />
           </View>
-          <View style={styles.bottomContainer}>
-            <View style={styles.headerContainerStyle}>
-              <View
-                style={[
-                  styles.borderStyle,
-                  {marginRight: dynamicSize(17), width: dynamicSize(134)},
-                ]}
-              />
-              <Text>MORE</Text>
-              <View
-                style={[
-                  styles.borderStyle,
-                  {marginLeft: dynamicSize(11), width: dynamicSize(134)},
-                ]}
-              />
+          <View style={styles.headerContainerStyle}>
+            <View
+              style={[
+                styles.borderStyle,
+                { marginRight: dynamicSize(17), width: dynamicSize(134) },
+              ]}
+            />
+            <Text>APP PERMISSIONS</Text>
+            <View
+              style={[
+                styles.borderStyle,
+                { marginLeft: dynamicSize(11), width: dynamicSize(134) },
+              ]}
+            />
+          </View>
+          {Platform.OS === 'ios' && (
+            <View style={styles.permissionTileContainer}>
+              <Text style={styles.permissionText}>Notification Permission</Text>
+              {UserData.NotificationPermission ? (
+                <Text style={styles.allowed}>Allowed</Text>
+              ) : (
+                <TouchableOpacity onPress={requestNotificationPerm}>
+                  <AddButton label="Allow" />
+                </TouchableOpacity>
+              )}
             </View>
+          )}
+          <View style={styles.permissionTileContainer}>
+            <Text style={styles.permissionText}>Weather Permission</Text>
+            {UserData.WeatherPermission ? (
+              <Text style={styles.allowed}>Allowed</Text>
+            ) : (
+              <TouchableOpacity
+                onPress={() =>
+                  AppPermissions.requestLocationPermission(dispatch)
+                }>
+                <AddButton label="Allow" />
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.permissionTileContainer}>
+            <Text style={styles.permissionText}>Health Permission</Text>
+            {UserData.HealthPermission ? (
+              <Text style={styles.allowed}>Allowed</Text>
+            ) : (
+              <TouchableOpacity
+                onPress={() =>
+                  AppPermissions.requestActivityPermission(dispatch)
+                }>
+                <AddButton label="Allow" />
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.permissionTileContainer}>
+            <Text style={styles.permissionText}>Sleep Permission</Text>
+            {UserData.SleepPermission ? (
+              <Text style={styles.allowed}>Allowed</Text>
+            ) : (
+              <TouchableOpacity onPress={requestSleepPerm}>
+                <AddButton label="Allow" />
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.headerContainerStyle}>
+            <View
+              style={[
+                styles.borderStyle,
+                { marginRight: dynamicSize(17), width: dynamicSize(134) },
+              ]}
+            />
+            <Text>MORE</Text>
+            <View
+              style={[
+                styles.borderStyle,
+                { marginLeft: dynamicSize(11), width: dynamicSize(134) },
+              ]}
+            />
           </View>
           <View
-            style={[styles.flatlistContainer, {marginBottom: dynamicSize(56)}]}>
-            <FlatList
-              data={bottomList}
-              keyExtractor={(item, index) => `${index}`}
-              renderItem={renderBottomList}
-            />
+            style={[styles.flatlistContainer, { marginBottom: dynamicSize(56) }]}>
+            {bottomList.map((item, idx) => (
+              <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(item.link);
+                }}>
+                <View style={styles.bottomFlatlistContainer}>
+                  <View style={{ marginTop: dynamicSize(5) }}>{item.icon}</View>
+                  <Text
+                    style={[
+                      styles.anonymousTextStyle,
+                      { marginLeft: dynamicSize(16) },
+                    ]}>
+                    {item.name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+            <View style={styles.bottomFlatlistContainer} />
           </View>
         </View>
         <ActionSheet
@@ -521,9 +642,9 @@ const styles = StyleSheet.create({
     marginTop: dynamicSize(40),
     alignSelf: 'center',
   },
-  bottomContainer: {
-    flex: 1,
-  },
+  // bottomContainer: {
+  //   flex: 1,
+  // },
   borderStyle: {
     height: 1,
     width: 77,
@@ -588,6 +709,25 @@ const styles = StyleSheet.create({
     opacity: 0.2,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  permissionTileContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: dynamicSize(32),
+    marginLeft: dynamicSize(20),
+    marginRight: dynamicSize(20),
+    alignItems: 'center',
+  },
+  allowed: {
+    width: dynamicSize(68),
+    color: Constants.Colors.blackColorCode,
+    fontWeight: '500',
+    fontSize: dynamicSize(14),
+  },
+  permissionText: {
+    color: Constants.Colors.blackColorCode,
+    fontWeight: '500',
+    fontSize: dynamicSize(16),
   },
 });
 
