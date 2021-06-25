@@ -83,6 +83,47 @@ const ProfileTab = ({ navigation }) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
 
+  const getProfileUserData = () => {
+    // console.log('called called called called called called');
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      },
+      dispatch,
+    )
+      .then(async (result) => {
+        console.log(
+          '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+          result?.userData,
+        );
+        if (result?.userData?.status !== 2) {
+          // console.log('UserDetaills', result.userData);
+          dispatch(UserDetail(result.userData));
+          setImageLoading(false);
+        }
+      })
+      .catch((error) =>
+        console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
+      );
+    setImageLoading(false);
+    // fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     console.log('UserDetaills', result.userData);
+    //     dispatch(UserDetail(result.userData));
+    //     setImageLoading(false);
+    //   })
+    //   .catch((error) => console.log('error', error));
+    // setImageLoading(false);
+  };
+
   const onRefresh = () => {
     setgender('');
     setPronoun('');
@@ -96,13 +137,14 @@ const ProfileTab = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       console.log('ProfileTab focused');
+      getProfileUserData();
       AppPermissions.checkAppPermissions(dispatch);
 
       return () => {
         // screen is out of focus
         console.log('ProfileTab blured');
       };
-    }, [dispatch]),
+    }, [dispatch, UserData.UserEmail, UserData.UserId]),
   );
 
   useEffect(() => {
@@ -145,50 +187,7 @@ const ProfileTab = ({ navigation }) => {
       });
   }, [dispatch]);
 
-  const getProfileUserData = () => {
-    // console.log('called called called called called called');
-    const deviceId = DeviceInfo.getUniqueId();
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-
-
-    GetStaffUserData(
-      {
-        device_id: deviceId,
-        email: UserData.UserEmail,
-        user_id: UserData.UserId,
-      },
-      dispatch,
-    )
-      .then(async (result) => {
-        console.log(
-          '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
-          result?.userData,
-        );
-        if (result?.userData?.status !== 2) {
-          // console.log('UserDetaills', result.userData);
-          dispatch(UserDetail(result.userData));
-          setImageLoading(false);
-        }
-      })
-      .catch((error) =>
-        console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
-      );
-    setImageLoading(false);
-    // fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
-    //   .then((response) => response.json())
-    //   .then((result) => {
-    //     console.log('UserDetaills', result.userData);
-    //     dispatch(UserDetail(result.userData));
-    //     setImageLoading(false);
-    //   })
-    //   .catch((error) => console.log('error', error));
-    // setImageLoading(false);
-  };
-
   useEffect(() => {
-    getProfileUserData();
-
     var myHeaders = new Headers();
     myHeaders.append(
       'Cookie',
@@ -208,7 +207,7 @@ const ProfileTab = ({ navigation }) => {
           await setComingGenderPronoun(result);
       })
       .catch((error) => console.log('error', error));
-  }, [UserData.UserEmail, UserData.UserId]);
+  }, []);
 
   const imagePostFunction = (imageData) => {
     setImageLoading(true);
