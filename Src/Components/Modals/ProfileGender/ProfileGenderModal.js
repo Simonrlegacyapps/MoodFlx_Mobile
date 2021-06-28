@@ -85,6 +85,7 @@ const ProfileGenderModal = ({
             data.map((item, index) => {
               return (
                 <TouchableOpacity
+                  key={`${index}`}
                   onPress={() => {
                     weatherDrop ? onChangeText(item.name) : onChangeText(item),
                       dismissModalHandler();

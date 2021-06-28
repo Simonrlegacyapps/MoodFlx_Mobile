@@ -1,4 +1,4 @@
-import React, {Component, useState, useCallback} from 'react';
+import React, {Component, useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -88,7 +88,15 @@ const EditManualWeatherModal = ({
   //   );
 
   // console.log(`value`, value);
-  // console.log(`Temp,`, Temp, Hour);
+  // console.log('EditManualWeatherModal Temp: ', Temp);
+
+  useEffect(() => {
+    if (modalVisible) {
+      setTempValue(String(Temp));
+      setHourValue(String(Hour));
+      setWeatherTypeValue(WeatherType);
+    }
+  }, [modalVisible]);
 
   const onVerifyDone = () => {
     // console.log('onVerifyDone tempValue: ', tempValue);
@@ -226,9 +234,7 @@ const EditManualWeatherModal = ({
                         // placeholder={Temp.toString()}
                         placeholderTextColor={'#000'}
                         value={tempValue}
-                        onChangeText={(text) => {
-                          setTempValue(text);
-                        }}
+                        onChangeText={setTempValue}
                         keyboardType={'number-pad'}
                         style={[
                           {
