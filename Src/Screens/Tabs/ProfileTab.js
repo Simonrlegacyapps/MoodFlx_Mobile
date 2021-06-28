@@ -520,7 +520,7 @@ const ProfileTab = ({ navigation }) => {
                 { marginRight: dynamicSize(17), width: dynamicSize(134) },
               ]}
             />
-            <Text>APP PERMISSIONS</Text>
+            <Text>SYNC YOUR DATA</Text>
             <View
               style={[
                 styles.borderStyle,
@@ -530,12 +530,12 @@ const ProfileTab = ({ navigation }) => {
           </View>
           {Platform.OS === 'ios' && (
             <View style={styles.permissionTileContainer}>
-              <Text style={styles.permissionText}>Notification Permission</Text>
+              <Text style={styles.permissionText}>Notification</Text>
               {UserData.NotificationPermission ? (
-                <Text style={styles.allowed}>Allowed</Text>
+                <Text style={styles.allowed}>Enabled</Text>
               ) : (
                 <TouchableOpacity onPress={requestNotificationPerm}>
-                  <AddButton label="Allow" />
+                  <AddButton label="Enable" />
                 </TouchableOpacity>
               )}
             </View>
@@ -543,36 +543,36 @@ const ProfileTab = ({ navigation }) => {
           <View style={styles.permissionTileContainer}>
             <Text style={styles.permissionText}>Weather Permission</Text>
             {UserData.WeatherPermission ? (
-              <Text style={styles.allowed}>Allowed</Text>
+              <Text style={styles.allowed}>Syncing</Text>
             ) : (
               <TouchableOpacity
                 onPress={() =>
                   AppPermissions.requestLocationPermission(dispatch)
                 }>
-                <AddButton label="Allow" />
+                <AddButton label="Sync" />
               </TouchableOpacity>
             )}
           </View>
           <View style={styles.permissionTileContainer}>
             <Text style={styles.permissionText}>Health Permission</Text>
             {UserData.HealthPermission ? (
-              <Text style={styles.allowed}>Allowed</Text>
+              <Text style={styles.allowed}>Syncing</Text>
             ) : (
               <TouchableOpacity
                 onPress={() =>
                   AppPermissions.requestActivityPermission(dispatch)
                 }>
-                <AddButton label="Allow" />
+                <AddButton label="Sync" />
               </TouchableOpacity>
             )}
           </View>
           <View style={styles.permissionTileContainer}>
             <Text style={styles.permissionText}>Sleep Permission</Text>
             {UserData.SleepPermission ? (
-              <Text style={styles.allowed}>Allowed</Text>
+              <Text style={styles.allowed}>Syncing</Text>
             ) : (
               <TouchableOpacity onPress={requestSleepPerm}>
-                <AddButton label="Allow" />
+                <AddButton label="Sync" />
               </TouchableOpacity>
             )}
           </View>
