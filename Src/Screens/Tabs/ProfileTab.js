@@ -549,7 +549,10 @@ const ProfileTab = ({ navigation }) => {
                 onPress={() =>
                   AppPermissions.requestLocationPermission(dispatch)
                 }>
-                <AddButton label="Sync" />
+                <AddButton
+                  containerStyle={styles.startSyncButton}
+                  label="Start Syncing"
+                />
               </TouchableOpacity>
             )}
           </View>
@@ -562,7 +565,10 @@ const ProfileTab = ({ navigation }) => {
                 onPress={() =>
                   AppPermissions.requestActivityPermission(dispatch)
                 }>
-                <AddButton label="Sync" />
+                <AddButton
+                  containerStyle={styles.startSyncButton}
+                  label="Start Syncing"
+                />
               </TouchableOpacity>
             )}
           </View>
@@ -572,7 +578,10 @@ const ProfileTab = ({ navigation }) => {
               <Text style={styles.allowed}>Syncing</Text>
             ) : (
               <TouchableOpacity onPress={requestSleepPerm}>
-                <AddButton label="Sync" />
+                <AddButton
+                  containerStyle={styles.startSyncButton}
+                  label="Start Syncing"
+                />
               </TouchableOpacity>
             )}
           </View>
@@ -727,6 +736,13 @@ const styles = StyleSheet.create({
     color: Constants.Colors.blackColorCode,
     fontWeight: '500',
     fontSize: dynamicSize(16),
+  },
+  startSyncButton: {
+    padding: dynamicSize(10),
+    backgroundColor: Constants.Colors.MagoliaColor,
+    borderRadius: dynamicSize(12),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
