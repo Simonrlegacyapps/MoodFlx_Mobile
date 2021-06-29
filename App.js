@@ -50,6 +50,8 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
 import { getDivisionName, GetStaffUserData } from './Src/apirequest/PostRequestApi';
 import * as RootNavigation from './Src/navigator/RootNavigation';
+import crashlytics from '@react-native-firebase/crashlytics';
+import Analytics from './Src/services/analyticsService';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -105,6 +107,8 @@ const App: () => React$Node = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    Analytics.init();
+    crashlytics().setCrashlyticsCollectionEnabled(true);
     return () => {
       RootNavigation.isReadyRef.current = false;
     };
