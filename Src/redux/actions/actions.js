@@ -32,6 +32,7 @@ import {
   GET_LIGHT_PERM,
   SET_NOTIFICATION,
   GET_NOTIFICATION_PERM,
+  SET_LOCATION,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -230,6 +231,13 @@ export const CompanyName = (data) => {
 export const SetNotification = (data) => {
   return {
     type: SET_NOTIFICATION,
+    payload: data,
+  };
+};
+
+export const SetLocation = (data) => {
+  return {
+    type: SET_LOCATION,
     payload: data,
   };
 };

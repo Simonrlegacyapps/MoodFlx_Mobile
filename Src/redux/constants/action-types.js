@@ -31,3 +31,4 @@ export const USER_DETAIL = 'USER_DETAIL';
 export const IS_ANONYMOUS = 'IS_ANONYMOUS';
 export const COMPANY_NAME = 'COMPANY_NAME';
 export const SET_NOTIFICATION = 'SET_NOTIFICATION';
+export const SET_LOCATION = 'SET_LOCATION';

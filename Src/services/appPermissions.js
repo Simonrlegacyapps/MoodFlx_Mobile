@@ -13,9 +13,10 @@ import AppleHealthKit, {
 } from 'react-native-health';
 import GoogleFit, { Scopes } from 'react-native-google-fit';
 import AsyncStorage from '@react-native-community/async-storage';
+import GetLocation from 'react-native-get-location';
 
 const PERMS = AppleHealthKit.Constants.Permissions;
-import { HealthPerm, NotificationPerm, SleepPerm, WeatherPerm } from '../redux/actions/actions';
+import { HealthPerm, NotificationPerm, SetLocation, SleepPerm, WeatherPerm } from '../redux/actions/actions';
 
 const CAMERA_PERMISSION = {
   ios: PERMISSIONS.IOS.CAMERA,
@@ -191,18 +192,38 @@ class MoodFloPermission {
     }
 
     // Location permission
+    let isLocationPermissionGiven = null;
+    let location = null;
     try {
-      const isLocationPermissionGiven = await this.checkPermission(
+      isLocationPermissionGiven = await this.checkPermission(
         PERMISSION_TYPE.location,
       );
-      dispatch(WeatherPerm(isLocationPermissionGiven));
-      if (isLocationPermissionGiven) {
-        await AsyncStorage.setItem('GiveWeatherPerm', 'true');
-      } else {
-        await AsyncStorage.removeItem('GiveWeatherPerm');
-      }
     } catch (error) {
       console.log('error in location permission', error);
+    }
+    try {
+      if (isLocationPermissionGiven) {
+        location = await GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+        });
+      }
+    } catch (error) {
+      console.log('error in getCurrentPosition', error);
+    }
+    if (location?.latitude !== undefined && location?.longitude !== undefined) {
+      dispatch(
+        SetLocation({
+          lat: location.latitude,
+          lon: location.longitude,
+        }),
+      );
+    }
+    dispatch(WeatherPerm(isLocationPermissionGiven));
+    if (isLocationPermissionGiven) {
+      await AsyncStorage.setItem('GiveWeatherPerm', 'true');
+    } else {
+      await AsyncStorage.removeItem('GiveWeatherPerm');
     }
   };
 

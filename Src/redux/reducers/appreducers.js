@@ -26,6 +26,7 @@ import {
   SET_DISTANCE,
   SET_DIVISION,
   SET_NOTIFICATION,
+  SET_LOCATION,
   SET_DOB,
   SET_MOVING,
   SET_STEPS,
@@ -200,6 +201,11 @@ export const First = (state = intializedState, action) => {
     case SET_NOTIFICATION:
       return Object.assign({}, state, {
         notification: action.payload,
+      });
+    case SET_LOCATION:
+      return Object.assign({}, state, {
+        lat: action.payload?.lat,
+        lon: action.payload?.lon,
       });
     default:
       return state;

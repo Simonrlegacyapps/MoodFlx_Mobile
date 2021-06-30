@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -155,6 +155,7 @@ const App = (props) => {
   const [Loading, setLoading] = useState(
     UserData.HealthPermission ? true : false,
   );
+  const prevHealthPermission = useRef(UserData.HealthPermission);
   const [swiperIndex, setSwiperIndex] = useState(0);
   // const [callOneTime, setcallOneTime] = useState('one');
   const [TryWeather, setTryWeather] = useState(null);
@@ -256,8 +257,27 @@ const App = (props) => {
       userCalories = 0;
       userDistance = 0;
       userMoveTime = 0;
-    }
+    };
   }, [UserData.UserEmail]);
+
+  useEffect(() => {
+    // console.log(
+    //   'HomeTab UserData.HealthPermission: ',
+    //   UserData.HealthPermission,
+    //   ' prevHealthPermission: ',
+    //   prevHealthPermission.current,
+    //   ' steps: ',
+    //   steps,
+    // );
+    if (!prevHealthPermission.current && UserData.HealthPermission && !steps) {
+      // console.log(
+      //   'HomeTab useEffect UserData.HealthPermission: condition true',
+      //   UserData.HealthPermission,
+      // );
+      prevHealthPermission.current = true;
+      callAnApi();
+    }
+  }, [UserData.HealthPermission]);
 
   const callAnApi = async () => {
     let p = await AsyncStorage.getItem('GiveHealthPerm');

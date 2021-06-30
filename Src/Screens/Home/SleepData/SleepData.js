@@ -88,18 +88,16 @@ const SleepData = ({
         askPermission: true,
         onUpdate: function ({sleepData, isPermissionAsked}) {
           setLastThirtyDaySleepData(sleepData);
-          if(isMoodUpdate) {
-            if(sleepData){
-              callSleepDataUpdateApi(sleepData);
-            } else {
-              callGetSleepDataApi();
-            }
+          if (sleepData) {
+            callSleepDataUpdateApi(sleepData);
+          } else {
+            callGetSleepDataApi();
           }
         },
         dispatch
       });
       clearTimeout(timeoutId);
-    }, 500)
+    }, 500);
     // let Sp = await AsyncStorage.getItem('GiveSleepPerm');
     // let SleepP = await JSON.parse(Sp);
     // console.log(`SleepPerm`, SleepP);
@@ -110,22 +108,21 @@ const SleepData = ({
   };
 
   useEffect(() => {
+    console.log('Sleep Data useEffect called');
     fetchSleepDataForLastThirtyDays({
       askPermission: false,
       onUpdate: function ({sleepData, isPermissionAsked}) {
-        console.log('setLastThirtyDaySleepData: ', sleepData)
+        console.log('setLastThirtyDaySleepData: ', sleepData);
         setLastThirtyDaySleepData(sleepData);
-        if(isMoodUpdate) {
-          if(sleepData){
-            callSleepDataUpdateApi(sleepData);
-          } else {
-            callGetSleepDataApi();
-          }
+        if (sleepData) {
+          callSleepDataUpdateApi(sleepData);
+        } else {
+          callGetSleepDataApi();
         }
       },
-      dispatch
+      dispatch,
     });
-  }, []);
+  }, [UserData.SleepPermission]);
 
   useEffect(() => {
     //sleep data for current day
