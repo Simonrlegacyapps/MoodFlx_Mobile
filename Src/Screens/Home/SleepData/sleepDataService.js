@@ -9,6 +9,7 @@ import {
   Platform
 } from 'react-native';
 import GoogleFit, { Scopes } from 'react-native-google-fit';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export const sleepDataPermissionsIOS = {
   permissions: {
@@ -113,7 +114,13 @@ export function getSleepDataAfterPermissionIOS({ askPermission, onUpdate, dispat
           }
 
           if (results === 1) {
-            dispatch?.(SleepPerm(true));
+            AsyncStorage.setItem('GiveSleepPerm', 'true')
+              .then(() => {
+                dispatch?.(SleepPerm(true));
+              })
+              .catch((error) => {
+                console.log('Async storage set GiveSleepPerm Error', error);
+              });
           }
           // console.log('getting sleepData from IOS health app');
           getSleepData(onUpdate);

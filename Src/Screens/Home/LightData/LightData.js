@@ -219,7 +219,7 @@ const LightData = ({
       // _light = isNaN(_light) ? Number.parseInt(_light, 10) : _light;
       const params = {
         "device_id": deviceId,
-        "email": UserData.UserId ?? "",
+        "email": UserData.UserEmail ?? "",
         "user_id": UserData.UserId ?? "",
         "date": moment().format("YYYY-MM-DD HH:mm:ss"),
         "value": _light
@@ -241,7 +241,7 @@ const LightData = ({
     const deviceId = DeviceInfo.getUniqueId();
     const params = {
       "device_id": deviceId,
-      "email": UserData.UserId ?? "",
+      "email": UserData.UserEmail ?? "",
       "user_id": UserData.UserId ?? ""
     };
     console.log('callGetLightApi params ==> ', params);

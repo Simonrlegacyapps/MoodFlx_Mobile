@@ -32,11 +32,12 @@ import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import {dynamicSize, horizontalScale, isTablet} from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
-import {DayTemp, Lat, Long, WeatherPerm} from '../../../redux/actions/actions';
+import {DayTemp, Lat, Long, SetLocation, WeatherPerm} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
 import { defaultLocation, isCountryIndia, weatherActions, weatherApiDataTypes, weatherTypes } from '../../../Constants/constants';
+import { AppPermissions } from '../../../services/appPermissions';
 
 let weatherData = null;
 
@@ -115,9 +116,10 @@ const WeatherData = ({
         .then((location) => {
           console.log('Success', location);
           // setlat(location.latitude);
-          dispatch(Lat(location.latitude));
-          // setlng(location.longitude);
-          dispatch(Long(location.longitude));
+          dispatch(SetLocation({
+            lat: location.latitude,
+            lon: location.longitude,
+            }));
           location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, function (flag){
             location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude);
             resolve(flag);

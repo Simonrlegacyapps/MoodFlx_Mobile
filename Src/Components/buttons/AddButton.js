@@ -3,9 +3,9 @@ import {StyleSheet, View, Text} from 'react-native';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import Constants from '../../Constants';
 
-const AddButton = ({label}) => {
+const AddButton = ({label, containerStyle}) => {
   return (
-    <View style={styles.buttonContainer}>
+    <View style={containerStyle ? containerStyle : styles.buttonContainer}>
       <Text style={styles.textStyle}>{label}</Text>
     </View>
   );

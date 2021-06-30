@@ -7,9 +7,11 @@ target 'MoodFlo' do
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
+  permissions_path = '../node_modules/react-native-permissions/ios'
 
   pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
-
+  pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
+  pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 #  pod 'RCTAppleHealthKit', :path => '../node_modules/rn-apple-healthkit'
 
   pod 'RNCClipboard', :path => '../node_modules/@react-native-community/clipboard'

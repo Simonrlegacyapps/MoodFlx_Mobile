@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.google.gms.google-services"
+apply plugin: 'com.google.firebase.crashlytics'
 import com.android.build.OutputFile
 
 /**
@@ -132,8 +133,8 @@ android {
         applicationId "com.moodflo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 32
-        versionName "1.0.9"
+        versionCode 33
+        versionName "1.1.0"
         multiDexEnabled true
     }
     splits {

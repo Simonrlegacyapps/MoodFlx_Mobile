@@ -221,11 +221,20 @@ const Linktocompany = ({navigation}) => {
     console.log('verify', type);
     if (type === 'Yes') {
       PostRequestApi('unlinkToCompany', params)
-        .then(async (resp) => {})
+        .then(async (resp) => {
+          setUnlinkConfirm(false);
+          const timeoutId = setTimeout(async () => {
+            setLoading(true);
+            const isDone = await onUnlinkUpdate(dispatch);
+            dispatch(OTP_Verify(false));
+            setLabelShow('');
+            setLoading(false);
+            clearTimeout(timeoutId);
+          }, 500);
+        })
         .catch((err) => {
           console.log('unlink api failed error: ', err);
         });
-      dispatch(OTP_Verify(false));
       // dispatch(Division(null));
       // await AsyncStorage.removeItem('UserId');
       // await AsyncStorage.removeItem('Anonymous');
@@ -237,9 +246,6 @@ const Linktocompany = ({navigation}) => {
       // dispatch(GetUserId(null));
       // dispatch(IsAnonymous(true));
       // dispatch(UserDetail(null));
-      onUnlinkUpdate(dispatch);
-      setLabelShow('');
-      setUnlinkConfirm(false);
     } else {
       setUnlinkConfirm(false);
     }

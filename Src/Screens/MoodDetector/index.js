@@ -909,7 +909,7 @@ export default function MoodDetector({navigation}) {
       // console.log(`name`, name);
       return name === emotionText;
     });
-    // console.log(`Id`, Id);
+    console.log(`Id`, Id);
 
     // console.log(`lat, lng`, UserData.lat, UserData.lon);
     const deviceId = DeviceInfo.getUniqueId();
