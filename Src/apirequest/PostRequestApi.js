@@ -52,12 +52,17 @@ export async function GetStaffUserData(params, dispatch) {
     );
 }
 
-export async function getDivisionName(params, dispatch, isUnlinkAllowed) {
+export async function getDivisionName(
+  params,
+  dispatch,
+  isUnlinkAllowed,
+  onFinish,
+) {
   var myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
 
   var raw = JSON.stringify(params);
-
+  let isFinished = false;
   GetStaffUserData(params, dispatch)
     .then(async (result) => {
       // return new Promise((resolve, reject) => {
@@ -70,7 +75,10 @@ export async function getDivisionName(params, dispatch, isUnlinkAllowed) {
               const divisions = res.data.data.filter(e => {
                 if ((e?.total_staff ?? -1) === -1) {
                   return true;
-                } else if (e.total_staff > (e?.onboard_staff ?? 0)) {
+                } else if (
+                  e.total_staff > (e?.onboard_staff ?? 0) ||
+                  (result?.userData?.division_id ?? '-1') === (e?.id ?? '-2')
+                ) {
                   return true;
                 } else {
                   return false;
@@ -114,21 +122,37 @@ export async function getDivisionName(params, dispatch, isUnlinkAllowed) {
               }
               // console.log('getDivision data =>', res.data.data);
             }
+            if (!isFinished && typeof onFinish === 'function') {
+              isFinished = true;
+              onFinish(true);
+            }
             // console.log('divisionName: ', divisionName);
             // resolve(divisionName ? divisionName : false);
           })
           .catch((e) => {
             // resolve(false);
             console.log('error getting diviision', e);
+            if (!isFinished && typeof onFinish === 'function') {
+              isFinished = true;
+              onFinish(true);
+            }
           });
       } else {
+        if (!isFinished && typeof onFinish === 'function') {
+          isFinished = true;
+          onFinish(true);
+        }
         // resolve(false);
       }
       // });
     })
-    .catch((error) =>
-      console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
-    );
+    .catch((error) => {
+      console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error);
+      if (!isFinished && typeof onFinish === 'function') {
+        isFinished = true;
+        onFinish(true);
+      }
+    });
 }
 
 export default PostRequestApi;

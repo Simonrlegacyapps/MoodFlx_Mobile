@@ -55,7 +55,7 @@ const Linktocompany = ({navigation}) => {
   const [Loading, setLoading] = useState(false);
   const [APIfail, setAPIfail] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [labelShow, setLabelShow] = useState('');
+  const [labelShow, setLabelShow] = useState(null);
   const [UnlinkConfirm, setUnlinkConfirm] = useState(false);
   const [CompanyDetails, setCompanyDetails] = useState(null);
 
@@ -85,7 +85,12 @@ const Linktocompany = ({navigation}) => {
 
       console.log('=== getDivision params ===', params);
       const isUnlinkAllowed = route?.params?.email ? false : true;
-      getDivisionName(params, dispatch, isUnlinkAllowed);
+      if (route?.params?.email) {
+        setLoading(true);
+      }
+      getDivisionName(params, dispatch, isUnlinkAllowed, function (isFinish) {
+        setLoading(false);
+      });
 
       // axios.post('https://admin.moodflo.com/api/getDivision', params)
       //   .then(async (res) => {
@@ -103,7 +108,9 @@ const Linktocompany = ({navigation}) => {
 
   useEffect(() => {
     if (!UserData.UserEmail && !UserData.UserId && labelShow) {
-      setLabelShow('');
+      setLabelShow(null);
+      setSelectedDivision('');
+      setSelectedDivisionId('');
     }
   }, [UserData.UserId, UserData.UserEmail, labelShow]);
 
@@ -145,6 +152,30 @@ const Linktocompany = ({navigation}) => {
     }
   }, [UserData.getDivision]);
 
+  useEffect(() => {
+    if (
+      route?.params?.email &&
+      !selectedDivisionId &&
+      !labelShow &&
+      UserData.UserDivision &&
+      Array.isArray(UserData?.getDivision) &&
+      UserData.getDivision.length > 0
+    ) {
+      UserData.getDivision.forEach((e) => {
+        if (e?.name === UserData.UserDivision) {
+          setSelectedDivisionId(e.id);
+          setLabelShow({...e});
+        }
+      });
+    }
+  }, [
+    UserData.UserDivision,
+    UserData.getDivision,
+    labelShow,
+    route?.params?.email,
+    selectedDivisionId,
+  ]);
+
   useFocusEffect(
     useCallback(() => {
       if (UserData.UserEmail && UserData.UserId) {
@@ -159,9 +190,16 @@ const Linktocompany = ({navigation}) => {
         const isUnlinkAllowed = route?.params?.email ? false : true;
         getDivisionName(params, dispatch, isUnlinkAllowed);
       } else if (labelShow) {
-        setLabelShow('');
+        setLabelShow(null);
+        setSelectedDivision('');
+        setSelectedDivisionId('');
       }
-    }, [UserData.UserId, UserData.UserEmail, dispatch, labelShow]),
+    }, [
+      UserData.UserEmail,
+      UserData.UserId,
+      labelShow,
+      dispatch,
+    ]),
   );
 
   const onLink = async (type) => {
@@ -227,7 +265,9 @@ const Linktocompany = ({navigation}) => {
             setLoading(true);
             const isDone = await onUnlinkUpdate(dispatch);
             dispatch(OTP_Verify(false));
-            setLabelShow('');
+            setLabelShow(null);
+            setSelectedDivision('');
+            setSelectedDivisionId('');
             setLoading(false);
             clearTimeout(timeoutId);
           }, 500);
@@ -299,7 +339,7 @@ const Linktocompany = ({navigation}) => {
                     <TouchableOpacity
                       onPress={async () => {
                         setSelectedDivisionId(item.id);
-                        setLabelShow(item);
+                        setLabelShow({...item});
                         setModalVisible(false);
                       }}
                       key={`${index}`}>
@@ -377,7 +417,7 @@ const Linktocompany = ({navigation}) => {
           </TouchableOpacity>
         </View>
       )}
-      {UserData.UserEmail && UserData.UserDivision === null && (
+      {UserData.UserEmail && (UserData.UserDivision === null || route?.params?.email) && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
           {APIfail && (
             <Text
@@ -487,8 +527,6 @@ const Linktocompany = ({navigation}) => {
                 })}
             </Picker> */}
           </TouchableOpacity>
-          {console.log('selectedLanguage', selectedDivisionId)}
-          {console.log('selectedLanguage', selectedDivision)}
           <Text
             style={{
               lineHeight: 28,
@@ -522,7 +560,7 @@ const Linktocompany = ({navigation}) => {
           </TouchableOpacity>
         </View>
       )}
-      {UserData.UserDivision !== null && (
+      {UserData.UserDivision !== null && !route?.params?.email && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
@@ -616,7 +654,7 @@ const Linktocompany = ({navigation}) => {
               marginBottom: 42,
               width: 270,
             }}>
-            {UserData.UserDivision}
+            {UserData?.UserDivision ?? ''}
           </Text>
           <TouchableOpacity
             // disabled={selectedLanguage ? false : true}
