@@ -1,13 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import {
-  getDivisions,
-  GetUserId,
-  IsAnonymous,
-  UserDetail,
-  UserDivision,
-  UserEmail,
-} from '../redux/actions/actions';
+import {getDivisions, UserDivision} from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
 import {onUnlinkUpdate} from '../services/commonService';
 
@@ -72,7 +65,7 @@ export async function getDivisionName(
           .then((res) => {
             let divisionName = '';
             if (Array.isArray(res?.data?.data)) {
-              const divisions = res.data.data.filter(e => {
+              const divisions = res.data.data.filter((e) => {
                 if ((e?.total_staff ?? -1) === -1) {
                   return true;
                 } else if (

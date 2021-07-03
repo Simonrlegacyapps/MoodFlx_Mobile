@@ -48,10 +48,16 @@ import moment from 'moment';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
-import { getDivisionName, GetStaffUserData } from './Src/apirequest/PostRequestApi';
+import PostRequestApi, {
+  getDivisionName,
+  GetStaffUserData,
+} from './Src/apirequest/PostRequestApi';
 import * as RootNavigation from './Src/navigator/RootNavigation';
 import crashlytics from '@react-native-firebase/crashlytics';
 import Analytics from './Src/services/analyticsService';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
+import messaging from '@react-native-firebase/messaging';
+import { onDynamicLinkUpdate } from './Src/services/commonService';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -113,6 +119,79 @@ const App: () => React$Node = () => {
       RootNavigation.isReadyRef.current = false;
     };
   }, []);
+
+  const handleDynamicLink = async (link) => {
+    let email = '';
+    try {
+      let p = await AsyncStorage.getItem('Email');
+      email = await JSON.parse(p);
+    } catch (error) {
+      console.log('error getting email from Async storage');
+    }
+    console.log('handleDynamicLink email: ', email);
+    if (email && typeof email === 'string') {
+      return;
+    }
+    console.log('handleDynamicLink link: ', link);
+    const url = link?.url;
+    const org = url?.split("/org//")?.[1];
+    console.log('handleDynamicLink org: ', org);
+    const deviceId = DeviceInfo.getUniqueId();
+    let fcm = '';
+    try {
+      fcm = await messaging().getToken();
+    } catch (error) {
+      console.log('error getting fcm token');
+    }
+    if (org === 'Mzg=' && deviceId && fcm) {
+      console.log('handleDynamicLink org true: ', org);
+      const params = {
+        device_id: deviceId,
+        user_id: org,
+        device_token: fcm,
+        device_type: Platform.OS,
+      };
+      console.log('getDownloadLink api params: ', params);
+      try {
+        const getDownloadLinkRes = await PostRequestApi('getDownloadLink', params);
+        let userData = null;
+        if (
+          getDownloadLinkRes?.data?.staffData &&
+          getDownloadLinkRes?.data?.user_id
+        ) {
+          userData = {
+            ...getDownloadLinkRes.data.staffData,
+            user_id: getDownloadLinkRes.data.user_id,
+          };
+        }
+        onDynamicLinkUpdate(userData, dispatch, function (data) {
+          if (data !== false) {
+            if (data?.email && data?.division_id) {
+              var raw = {
+                device_id: deviceId,
+                email: data.email,
+                user_id: data?.user_id,
+              };
+              getDivisionName(raw, dispatch, false);
+              console.log('handleDynamicLink user Successfully Connected', data);
+            } else if (data?.email && !data?.division_id) {
+              RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
+                screen: 'LinkCompanyStackNavigation',
+                params: {
+                  screen: 'Linktocompany',
+                  params: { email: data.email },
+                },
+              });
+            }
+          }
+        });
+        console.log('getDownloadLink api res', getDownloadLinkRes);
+        // })
+      } catch (error) {
+        console.log('error calling getDownloadLink api: ', error);
+      }
+    }
+  };
 
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
@@ -393,6 +472,13 @@ const App: () => React$Node = () => {
     checkStorage();
     getProfileUserData();
   }, [UserData.WeatherPermission]);
+
+  useEffect(() => {
+    // const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    dynamicLinks().getInitialLink().then(handleDynamicLink);
+    // handleDynamicLink();
+    // return () => unsubscribe();
+  }, []);
 
   const renderItems = ({item, index}, parallaxProps) => {
     // console.log('item', item.img);
