@@ -240,6 +240,9 @@ PODS:
   - Firebase/Crashlytics (8.1.1):
     - Firebase/CoreOnly
     - FirebaseCrashlytics (~> 8.1.0)
+  - Firebase/DynamicLinks (8.1.1):
+    - Firebase/CoreOnly
+    - FirebaseDynamicLinks (~> 8.1.0)
   - Firebase/Firestore (8.1.1):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 8.1.0)
@@ -288,6 +291,8 @@ PODS:
     - GoogleDataTransport (~> 9.0)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (~> 1.2)
+  - FirebaseDynamicLinks (8.1.0):
+    - FirebaseCore (~> 8.0)
   - FirebaseFirestore (8.1.0):
     - abseil/algorithm (= 0.20200225.0)
     - abseil/base (= 0.20200225.0)
@@ -670,6 +675,11 @@ PODS:
     - Firebase/Crashlytics (= 8.1.1)
     - React-Core
     - RNFBApp
+  - RNFBDynamicLinks (12.1.0):
+    - Firebase/DynamicLinks (= 8.1.1)
+    - GoogleUtilities/AppDelegateSwizzler
+    - React-Core
+    - RNFBApp
   - RNFBFirestore (12.1.0):
     - Firebase/Firestore (= 8.1.1)
     - React-Core
@@ -784,6 +794,7 @@ DEPENDENCIES:
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
+  - "RNFBDynamicLinks (from `../node_modules/@react-native-firebase/dynamic-links`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -806,6 +817,7 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCrashlytics
+    - FirebaseDynamicLinks
     - FirebaseFirestore
     - FirebaseInstallations
     - FirebaseMessaging
@@ -911,6 +923,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBCrashlytics:
     :path: "../node_modules/@react-native-firebase/crashlytics"
+  RNFBDynamicLinks:
+    :path: "../node_modules/@react-native-firebase/dynamic-links"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNFBMessaging:
@@ -947,6 +961,7 @@ SPEC CHECKSUMS:
   FirebaseCore: 389c4ce9a7cce4a7e25eb22326b4bee0050557b2
   FirebaseCoreDiagnostics: 61384f54989065b15c36b5922b65112e86811d3c
   FirebaseCrashlytics: 1b55b3a718f9e20d59d96db46a4652d95a8ba1d2
+  FirebaseDynamicLinks: 12c4a8cc556a7624340dac01826559340a9c3129
   FirebaseFirestore: c4be8314e9fa156f44b54025f7a98ecbff6971a6
   FirebaseInstallations: 9394ea09e242bf0816e95ac30e56a9214cc86ced
   FirebaseMessaging: c8871b0907dcf4e76de81241eb6a62be6d657d2f
@@ -999,6 +1014,7 @@ SPEC CHECKSUMS:
   RNFBAnalytics: 1d620e112afef80e381a2cb5a88c086809536aab
   RNFBApp: 406bc9586c70ccf20504b4d3b54ac4341c98993f
   RNFBCrashlytics: 963a2757f6a52e37ae50adab5832162a7d81f98f
+  RNFBDynamicLinks: eb76e8f5ab0ea943899dd4bbb849f48a30e03e6d
   RNFBFirestore: b96f258a3f5d6a901ff96cd64306e3a2d221ad08
   RNFBMessaging: 154dc7815e2b6c55941793630ffb3a55f03d77e6
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211

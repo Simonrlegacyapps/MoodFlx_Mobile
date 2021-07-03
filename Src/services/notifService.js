@@ -140,7 +140,7 @@ export default class NotifService {
       userInfo: {screen: 'home'}, // (optional) default: {} (using null throws a JSON value '<null>' error)
       //   playSound: !!soundName, // (optional) default: true
       soundName: soundName ? soundName : 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
-      number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
+      // number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
     });
   }
 
@@ -201,6 +201,7 @@ export default class NotifService {
   }
 
   scheduleMoodFloLocalNotif() {
+    NotifService.cancelAll();
     this.getScheduledLocalNotifications((notif) => {
       // console.log(
       //   'scheduleMoodFloLocalNotif before update: ',
@@ -406,7 +407,7 @@ export default class NotifService {
     // });
   }
 
-  cancelAll() {
+  static cancelAll() {
     PushNotification.cancelAllLocalNotifications();
     // this.getScheduledLocalNotifications((notif) => {
     //   console.log('cancelAll scheduledNotification: ', JSON.stringify(notif));

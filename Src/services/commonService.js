@@ -7,6 +7,7 @@ import {
   UserEmail,
 } from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
+import isFunction from 'lodash.isfunction';
 
 export async function onUnlinkUpdate(dispatch) {
   try {
@@ -23,5 +24,39 @@ export async function onUnlinkUpdate(dispatch) {
     return true;
   } catch (error) {
     return false;
+  }
+}
+
+export async function onDynamicLinkUpdate(userData, dispatch, onFinish) {
+  if (!userData || !dispatch) {
+    if (isFunction(onFinish)) {
+      onFinish(false);
+    }
+    return false;
+  }
+  try {
+    if (userData?.email) {
+      const isEmailSet = await AsyncStorage.setItem(
+        'Email',
+        JSON.stringify(userData.email),
+      );
+      dispatch(UserEmail(userData.email));
+    }
+  } catch (error) {
+    console.log('error in AsyncStorage set item for Email');
+  }
+  try {
+    if (userData?.user_id) {
+      const isUserIdSet = await AsyncStorage.setItem(
+        'UserId',
+        JSON.stringify(userData.user_id),
+      );
+      dispatch(GetUserId(userData.user_id));
+    }
+  } catch (error) {
+    console.log('error in AsyncStorage set item for UserId');
+  }
+  if (isFunction(onFinish)) {
+    onFinish(userData);
   }
 }
