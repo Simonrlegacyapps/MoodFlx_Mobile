@@ -108,6 +108,7 @@ const App: () => React$Node = () => {
   const notifService = useRef(new NotifService()).current;
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [email, setEmail] = useState('');
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -175,13 +176,20 @@ const App: () => React$Node = () => {
               getDivisionName(raw, dispatch, false);
               console.log('handleDynamicLink user Successfully Connected', data);
             } else if (data?.email && !data?.division_id) {
-              RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
-                screen: 'LinkCompanyStackNavigation',
-                params: {
-                  screen: 'Linktocompany',
-                  params: { email: data.email },
-                },
-              });
+              console.log('Link success, please Select division - email', data.email);
+              if (RootNavigation?.navigationRef?.current?.navigate) {
+                RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
+                  screen: 'LinkCompanyStackNavigation',
+                  params: {
+                    screen: 'Linktocompany',
+                    params: { email: data.email },
+                  },
+                });
+              } else {
+                setEmail(data.email);
+              }
+            } else {
+              console.log('Dynamic link onDynamicLinkUpdate onFinish else block');
             }
           }
         });
@@ -192,6 +200,17 @@ const App: () => React$Node = () => {
       }
     }
   };
+
+  const goToSelectDivision = useCallback(() => {
+    console.log('goToSelectDivision email: ', email);
+    RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
+      screen: 'LinkCompanyStackNavigation',
+      params: {
+        screen: 'Linktocompany',
+        params: { email: email },
+      },
+    });
+  }, [email]);
 
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
@@ -510,7 +529,14 @@ const App: () => React$Node = () => {
 
   const onNavigationReady = useCallback(() => {
     RootNavigation.isReadyRef.current = true;
-  }, []);
+    if (email) {
+      goToSelectDivision();
+      const timeeoutIdTwo = setTimeout(() => {
+        setEmail('');
+        clearTimeout(timeeoutIdTwo);
+      }, 500);
+    }
+  }, [email, goToSelectDivision]);
 
   return (
     <>
