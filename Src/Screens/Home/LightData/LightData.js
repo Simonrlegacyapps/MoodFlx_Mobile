@@ -36,7 +36,7 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import PopUp from '../../../Components/PopUp/PopUp';
-import {dynamicSize, getLineHeight} from '../../../Constants/sizeChoose';
+import {dynamicSize, getFontSize, getLineHeight, horizontalScale, verticalScale} from '../../../Constants/sizeChoose';
 import { LightPerm } from '../../../redux/actions/actions';
 const {SensorManager} = NativeModules;
 import {useDispatch, useSelector} from 'react-redux';
@@ -46,7 +46,8 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
 import { LightGraph } from '../../../Components/LightGraph/LightGraph';
 import { getLightDataIOS } from '../../../services/moodDataModuleService';
-
+import PostRequestApi from '../../../apirequest/PostRequestApi';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -61,6 +62,10 @@ const LightData = ({
 }) => {
   const [light, setLight] = useState(-1);
   const [Graph, setGraph] = useState(null);
+  const [isDailyInsights, setIsDailyInsights] = useState(true);
+  const [dailyInsights, setDailyInsights] = useState('Today your Saddest mood input was when there was 180 lux in the room');
+  const [weeklyInsights, setWeeklyInsights] = useState('This week your Saddest mood input was when there was 180 lux in the room');
+  const [suggestionText, setSuggestionText] = useState('Try turning up the lights and aim for around 300 lux');
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [lightGraphData, setLightGraphData] = useState(null);
   const isUpdateLightApiCalled = useRef(false);
@@ -203,19 +208,14 @@ const LightData = ({
     }
 
   const VerifyDone = async () => {
-    if(UserData.LightPermission) {
-      callUpdateLightApi(light);
-    } else {
-      await AsyncStorage.setItem('GiveLightPerm', 'true');
-      dispatch(LightPerm(true));
-    }
+    callUpdateLightApi(light);
     setopenActionSheet(false);
   };
 
   const callUpdateLightApi = (_light) => {
     isUpdateLightApiCalled.current = true;
     const deviceId = DeviceInfo.getUniqueId();
-    if(_light !== -1 && UserData.LightPermission) {
+    if (_light !== -1) {
       // _light = isNaN(_light) ? Number.parseInt(_light, 10) : _light;
       const params = {
         "device_id": deviceId,
@@ -258,6 +258,41 @@ const LightData = ({
             setLightGraphData(lightGraphData)
           }
         }
+        return PostRequestApi('getLightInsights', {...params, "status":"daily"});
+      })
+      .then((res) => {
+        console.log('getLightInsights daily res: ', res);
+        /*
+        Weekly api should be called between
+        Friday @ 12pm until Saturday 6pm
+        */
+        let callWeeklyApi = false;
+        const day = moment().day();
+        const startTime = moment().set({
+          hour: 12,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        const endTime = moment().set({
+          hour: 18,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        if (
+          !isNaN(day) &&
+          (Number(day) === 6 || Number(day) === 7) &&
+          moment().isSameOrAfter(startTime) &&
+          moment().isSameOrBefore(endTime)
+        ) {
+          return PostRequestApi('getLightInsights', {...params, "status":"weekly"});
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        console.log('getLightInsights weekly res: ', res);
       })
       .catch(function (error) {
         console.log('❌ ❌ ❌ ❌ Error Get Light Data ❌ ❌ ❌ ❌', error);
@@ -298,7 +333,7 @@ const LightData = ({
 
   // Light data using react-native-sensor-manager
   useEffect(() => {
-    if (UserData.LightPermission && (light === -1 || swiperIndex === 3)) {
+    if (light === -1 || swiperIndex === 3) {
       isStopLightTimeout = false;
       if (Platform.OS === 'android') {
         SensorManager.startLightSensor(100);
@@ -333,27 +368,22 @@ const LightData = ({
           isStopLightTimeout = true;
         };
       }
-    } else if (UserData.LightPermission && light !== -1 && swiperIndex !== 3) {
+    } else if (light !== -1 && swiperIndex !== 3) {
       isStopLightTimeout = true;
     }
-  }, [UserData.LightPermission, getLightIOS, light, swiperIndex]);
+  }, [getLightIOS, light, swiperIndex]);
 
   useEffect(() => {
-    if (
-      !isUpdateLightApiCalled.current &&
-      UserData.LightPermission &&
-      light !== -1
-    ) {
+    if (!isUpdateLightApiCalled.current && light !== -1) {
       callUpdateLightApi(light);
     }
     return () => {
       lightData = null;
       currentLightData = -1;
-    }
+    };
+  }, [light]);
 
-  }, [UserData.LightPermission, light]);
-
-  const lux = !UserData.LightPermission ? 400 : light === -1 ? 0 : light;
+  const lux = light === -1 ? 0 : light;
 
   return (
     <View style={styles.container}>
@@ -409,7 +439,55 @@ const LightData = ({
           </View>
         </View>
         <View>
-          <View
+          <View style={styles.tabContainer}>
+            <View style={styles.tabHeader}>
+              <TouchableOpacity
+                style={
+                  isDailyInsights ? styles.activeTabHeader : styles.inactiveTabHeader
+                }
+                onPress={() => setIsDailyInsights(true)}>
+                <Text
+                  style={
+                    isDailyInsights
+                      ? styles.activeTabHeaderText
+                      : styles.inactiveTabHeaderText
+                  }>
+                  TODAY
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[(!isDailyInsights
+                      ? styles.activeTabHeader
+                    : styles.inactiveTabHeader),
+                  {marginLeft: horizontalScale(10)},
+                ]}
+                onPress={() => setIsDailyInsights(false)}>
+                <Text
+                  style={
+                    !isDailyInsights
+                      ? styles.activeTabHeaderText
+                      : styles.inactiveTabHeaderText
+                  }>
+                  THIS WEEK
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.tabDetailsView}>
+              <Text style={styles.tabDetailsText}>{isDailyInsights ? dailyInsights : weeklyInsights}</Text>
+            </View>
+            <View style={styles.suggestionView}>
+              <Icon
+                name="alert-circle-outline"
+                size={horizontalScale(20)}
+                style={styles.warningImage}
+                color="rgb(136,136,136)"
+              />
+              <View style={styles.suggestionTextView}>
+                <Text style={styles.suggestionText}>{suggestionText}</Text>
+              </View>
+            </View>
+          </View>
+          {/* <View
             style={{
               flex: 1,
               justifyContent: 'center',
@@ -451,7 +529,7 @@ const LightData = ({
               </Text>
               </View>
             )}
-          </View>
+          </View> */}
 
           <View
             style={{
@@ -517,7 +595,7 @@ const LightData = ({
             </View>
           )}
 
-          {!UserData.LightPermission  && (
+          {/* {!UserData.LightPermission  && (
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {
@@ -532,12 +610,12 @@ const LightData = ({
                 backgroundColor: 'black',
                 opacity: 0,
               }}></TouchableOpacity>
-          )}
+          )} */}
         </View>
       </ScrollView>
 
       <PopUp
-        permission={UserData.LightPermission}
+        permission
         ComingUp={false}
         image={Constants.Images.Sleepimage}
         dataType={'light'}
@@ -670,6 +748,84 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontFamily: RubikLight,
     color: '#747690',
+  },
+  tabContainer: {
+    alignItems: 'center',
+  },
+  tabHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeTabHeader: {
+    paddingVertical: horizontalScale(8),
+    paddingHorizontal: horizontalScale(10),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomColor: 'rgb(32,32,32)',
+    borderBottomWidth: 2,
+  },
+  inactiveTabHeader: {
+    paddingVertical: horizontalScale(8),
+    paddingHorizontal: horizontalScale(10),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activeTabHeaderText: {
+    fontSize: getFontSize(16),
+    // fontWeight: '500',
+    fontFamily: RubikMedium,
+    color: 'rgb(32,32,32)',
+  },
+  inactiveTabHeaderText: {
+    fontSize: getFontSize(16),
+    // fontWeight: '500',
+    fontFamily: RubikMedium,
+    color: 'rgb(136,136,136)',
+  },
+  tabDetailsView: {
+    marginTop: horizontalScale(20),
+    alignItems: 'center',
+    marginHorizontal: horizontalScale(50),
+  },
+  tabDetailsText: {
+    fontSize: getFontSize(18),
+    // fontWeight: '500',
+    fontFamily: RubikBold,
+    color: 'rgb(24,24,24)',
+    textAlign: 'center',
+  },
+  blueText: {
+    color: '#5947D0',
+  },
+  suggestionView: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingVertical: horizontalScale(10),
+    paddingHorizontal: horizontalScale(10),
+    backgroundColor: '#FFFFFF',
+    marginTop: horizontalScale(20),
+    width: SIZE * 0.8,
+    shadowColor: 'black',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    borderRadius: horizontalScale(10),
+    shadowRadius: horizontalScale(10),
+    elevation: Platform.OS === 'ios' ? null : 2,
+  },
+  warningImage: {
+    marginRight: horizontalScale(8),
+  },
+  suggestionTextView: {
+    flex: 1,
+  },
+  suggestionText: {
+    fontSize: getFontSize(18),
+    fontFamily: RubikBold,
+    color: 'rgb(24,24,24)',
+  },
+  suggestionTextBlue: {
+    color: 'rgb(25,165,177)',
   },
   swiperText: {
     fontSize: SIZE / 14,

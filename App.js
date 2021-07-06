@@ -10,6 +10,7 @@ import {
   Image,
   Platform,
   AppState,
+  Button,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
@@ -58,6 +59,9 @@ import Analytics from './Src/services/analyticsService';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
 import { onDynamicLinkUpdate } from './Src/services/commonService';
+import Toast, { BaseToast } from 'react-native-toast-message';
+import { getFontSize } from './Src/Constants/sizeChoose';
+import Constants from './Src/Constants';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -101,6 +105,19 @@ const Images = [
     img: require('./assets/OnBoarding/Onboarding4.png'),
   },
 ];
+
+const toastConfig = {
+  error: ({ text2, ...rest }) => (
+    <BaseToast
+      {...rest}
+      leadingIcon={Constants.Images.ErrorIcon}
+      // style={{ borderLeftColor: 'pink' }}
+      // contentContainerStyle={{ paddingHorizontal: 15 }}
+      text2Style={styles.toastText}
+      text2={text2}
+    />
+  ),
+};
 
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
@@ -155,8 +172,20 @@ const App: () => React$Node = () => {
       console.log('getDownloadLink api params: ', params);
       try {
         const getDownloadLinkRes = await PostRequestApi('getDownloadLink', params);
+        console.log('getDownloadLink api res: ', getDownloadLinkRes);
         let userData = null;
         if (
+          !getDownloadLinkRes.data.staffData?.email &&
+          getDownloadLinkRes?.data?.staffData === 'Not found'
+        ) {
+          // console.log('Showing Toast ====>');
+          Toast.show({
+            type: 'error',
+            text2: 'Cannot link this device, please contact your HR manager',
+            visibilityTime: 4000,
+            autoHide: true,
+          });
+        } else if (
           getDownloadLinkRes?.data?.staffData &&
           getDownloadLinkRes?.data?.user_id
         ) {
@@ -167,6 +196,7 @@ const App: () => React$Node = () => {
         }
         onDynamicLinkUpdate(userData, dispatch, function (data) {
           if (data !== false) {
+            // data = {...data, division_id: null};
             if (data?.email && data?.division_id) {
               var raw = {
                 device_id: deviceId,
@@ -349,7 +379,6 @@ const App: () => React$Node = () => {
     // let d = await AsyncStorage.getItem('Division');
     let Hp = await AsyncStorage.getItem('GiveHealthPerm');
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    let Lp = await AsyncStorage.getItem('GiveLightPerm');
    
     let e = await JSON.parse(p);
     // let division = await JSON.parse(d);
@@ -357,7 +386,6 @@ const App: () => React$Node = () => {
     let WeatherP = await JSON.parse(Wp);
     let Id = await JSON.parse(UserId);
     let a = await JSON.parse(anonymous);
-    let LightP = await JSON.parse(Lp);
     // console.log(`e`, e);
     // console.log(`division`, division);
     // console.log(`HealthPerm`, HealthP);
@@ -370,7 +398,6 @@ const App: () => React$Node = () => {
     let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
     let SleepP = await JSON.parse(SleepPer);
     dispatch(SleepPerm(SleepP));
-    dispatch(LightPerm(LightP));
     // console.log(`Sleep Permission`, SleepP);
     dispatch(UserEmail(e));
     // dispatch(UserDivision(division));
@@ -497,6 +524,13 @@ const App: () => React$Node = () => {
     dynamicLinks().getInitialLink().then(handleDynamicLink);
     // handleDynamicLink();
     // return () => unsubscribe();
+    return null;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    // When the component is unmounted, remove the listener
+    return () => unsubscribe();
   }, []);
 
   const renderItems = ({item, index}, parallaxProps) => {
@@ -547,20 +581,28 @@ const App: () => React$Node = () => {
           ref={RootNavigation.navigationRef}
           onReady={onNavigationReady}
         >
-          <SafeAreaView style={{flex: 1}}>
+          <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
               <StackNavigation />
             </View>
           </SafeAreaView>
+          <Toast
+            config={toastConfig}
+            ref={(ref) => Toast.setRef(ref)} />
         </NavigationContainer>
       ) : (
-        <AppIntroSlider
-          renderItem={renderItems}
-          data={Images}
-          onDone={_onDone}
-          showSkipButton={true}
-          onSkip={_onDone}
-        />
+        <>
+          <AppIntroSlider
+            renderItem={renderItems}
+            data={Images}
+            onDone={_onDone}
+            showSkipButton={true}
+            onSkip={_onDone}
+          />
+          <Toast
+            config={toastConfig}
+            ref={(ref) => Toast.setRef(ref)} />
+        </>
       )}
       {/* </Provider> */}
     </>
@@ -636,6 +678,11 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
     // paddingHorizontal:15,
     // paddingVertical: '10@ms', // for custom animation
+  },
+  toastText: {
+    fontSize: getFontSize(15),
+    color: '#B56873',
+    fontWeight: 'bold',
   },
 });
 
