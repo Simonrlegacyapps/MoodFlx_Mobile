@@ -2,7 +2,8 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useCallback
+  useCallback,
+  useReducer,
 } from 'react';
 import {
   View,
@@ -55,6 +56,51 @@ let currentLightData = -1;
 
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
+const lightInsightsInitialState = {
+  dailyInsights: '',
+  weeklyInsights: '',
+  dailySuggestion: '',
+  dailySuggestionType: '',
+  weeklySuggestion: '',
+  weeklySuggestionType: '',
+  demoDailyInsights: 'Today your Saddest mood input was when there was 180 lux in the room',
+  demoWeeklyInsights: 'This week your Saddest mood input was when there was 180 lux in the room',
+  demoSuggestion: 'Try turning up the lights and aim for around 300 lux',
+};
+
+const lightInsightsTypes = {
+  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
+  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
+  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
+  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
+  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
+  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
+  SET_LIGHT_INSIGHTS: 'SET_LIGHT_INSIGHTS',
+};
+
+function lightInsightsReducer(state, action) {
+  switch (action.type) {
+    case lightInsightsTypes.SET_DALIY_INSIGHTS:
+      return {...state, dailyInsights: action.payload};
+    case lightInsightsTypes.SET_WEEKLY_INSIGHTS:
+      return {...state, weeklyInsights: action.payload};
+    case lightInsightsTypes.SET_DAILY_SUGGESTION:
+      return {...state, dailySuggestion: action.payload};
+    case lightInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
+      return {...state, dailySuggestionType: action.payload};
+    case lightInsightsTypes.SET_WEEKLY_SUGGESTION:
+      return {...state, weeklySuggestion: action.payload};
+    case lightInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
+      return {...state, weeklySuggestionType: action.payload};
+    case lightInsightsTypes.SET_LIGHT_INSIGHTS:
+      return action?.payload && typeof action?.payload === 'object'
+        ? {...state, ...action.payload}
+        : state;
+    default:
+      return state;
+  }
+}
+
 
 const LightData = ({
   MoodCount,
@@ -63,9 +109,10 @@ const LightData = ({
   const [light, setLight] = useState(-1);
   const [Graph, setGraph] = useState(null);
   const [isDailyInsights, setIsDailyInsights] = useState(true);
-  const [dailyInsights, setDailyInsights] = useState('Today your Saddest mood input was when there was 180 lux in the room');
-  const [weeklyInsights, setWeeklyInsights] = useState('This week your Saddest mood input was when there was 180 lux in the room');
-  const [suggestionText, setSuggestionText] = useState('Try turning up the lights and aim for around 300 lux');
+  const [insights, setInsights] = useReducer(
+    lightInsightsReducer,
+    lightInsightsInitialState,
+  );
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [lightGraphData, setLightGraphData] = useState(null);
   const isUpdateLightApiCalled = useRef(false);
@@ -262,11 +309,30 @@ const LightData = ({
       })
       .then((res) => {
         console.log('getLightInsights daily res: ', res);
+        let dailyInsightsPayload = {};
+        dailyInsightsPayload.dailyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        dailyInsightsPayload.dailySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        dailyInsightsPayload.dailySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: lightInsightsTypes.SET_LIGHT_INSIGHTS,
+          payload: dailyInsightsPayload,
+        });
         /*
         Weekly api should be called between
         Friday @ 12pm until Saturday 6pm
         */
-        let callWeeklyApi = false;
         const day = moment().day();
         const startTime = moment().set({
           hour: 12,
@@ -293,6 +359,27 @@ const LightData = ({
       })
       .then((res) => {
         console.log('getLightInsights weekly res: ', res);
+        let weeklyInsightsPayload = {};
+        console.log('weeklyInsights: ', res?.data?.insights);
+        weeklyInsightsPayload.weeklyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        weeklyInsightsPayload.weeklySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        weeklyInsightsPayload.weeklySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: lightInsightsTypes.SET_LIGHT_INSIGHTS,
+          payload: weeklyInsightsPayload,
+        });
       })
       .catch(function (error) {
         console.log('❌ ❌ ❌ ❌ Error Get Light Data ❌ ❌ ❌ ❌', error);
@@ -384,6 +471,29 @@ const LightData = ({
   }, [light]);
 
   const lux = light === -1 ? 0 : light;
+  let insightsDetails = isDailyInsights
+    ? insights?.dailyInsights
+      ? insights.dailyInsights
+      : 'No insights available'
+    : insights?.weeklyInsights
+    ? insights.weeklyInsights
+    : 'No weekly insights available';
+
+  let suggestion = isDailyInsights
+    ? insights?.dailySuggestion
+      ? insights.dailySuggestion
+      : ''
+    : insights?.weeklySuggestion
+    ? insights.weeklySuggestion
+    : '';
+
+  let suggestionType = isDailyInsights
+    ? insights?.dailySuggestionType
+      ? insights.dailySuggestionType
+      : ''
+    : insights?.weeklySuggestionType
+    ? insights.weeklySuggestionType
+    : '';
 
   return (
     <View style={styles.container}>
@@ -443,7 +553,9 @@ const LightData = ({
             <View style={styles.tabHeader}>
               <TouchableOpacity
                 style={
-                  isDailyInsights ? styles.activeTabHeader : styles.inactiveTabHeader
+                  isDailyInsights
+                    ? styles.activeTabHeader
+                    : styles.inactiveTabHeader
                 }
                 onPress={() => setIsDailyInsights(true)}>
                 <Text
@@ -457,7 +569,7 @@ const LightData = ({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[(!isDailyInsights
-                      ? styles.activeTabHeader
+                    ? styles.activeTabHeader
                     : styles.inactiveTabHeader),
                   {marginLeft: horizontalScale(10)},
                 ]}
@@ -473,19 +585,23 @@ const LightData = ({
               </TouchableOpacity>
             </View>
             <View style={styles.tabDetailsView}>
-              <Text style={styles.tabDetailsText}>{isDailyInsights ? dailyInsights : weeklyInsights}</Text>
+              <Text style={styles.tabDetailsText}>{insightsDetails}</Text>
             </View>
-            <View style={styles.suggestionView}>
-              <Icon
-                name="alert-circle-outline"
-                size={horizontalScale(20)}
-                style={styles.warningImage}
-                color="rgb(136,136,136)"
-              />
-              <View style={styles.suggestionTextView}>
-                <Text style={styles.suggestionText}>{suggestionText}</Text>
+            {suggestion ? (
+              <View style={styles.suggestionView}>
+                {suggestionType ? (
+                  <Icon
+                    name="alert-circle-outline"
+                    size={horizontalScale(20)}
+                    style={styles.warningImage}
+                    color="rgb(136,136,136)"
+                  />
+                ) : null}
+                <View style={styles.suggestionTextView}>
+                  <Text style={styles.suggestionText}>{suggestion}</Text>
+                </View>
               </View>
-            </View>
+            ) : null}
           </View>
           {/* <View
             style={{
@@ -571,7 +687,7 @@ const LightData = ({
             )}
           </View>
 
-          {!UserData.LightPermission && (
+          {/* {!UserData.LightPermission && (
             <View
               style={{
                 position: 'absolute',
@@ -593,7 +709,7 @@ const LightData = ({
                 Demo
               </Text>
             </View>
-          )}
+          )} */}
 
           {/* {!UserData.LightPermission  && (
             <TouchableOpacity
@@ -792,7 +908,7 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(18),
     // fontWeight: '500',
     fontFamily: RubikBold,
-    color: 'rgb(24,24,24)',
+    color: 'rgb(60,60,60)',
     textAlign: 'center',
   },
   blueText: {
@@ -800,6 +916,7 @@ const styles = StyleSheet.create({
   },
   suggestionView: {
     alignItems: 'center',
+    justifyContent: 'center',
     flexDirection: 'row',
     paddingVertical: horizontalScale(10),
     paddingHorizontal: horizontalScale(10),
@@ -817,12 +934,13 @@ const styles = StyleSheet.create({
     marginRight: horizontalScale(8),
   },
   suggestionTextView: {
-    flex: 1,
+    // flex: 1,
+    // alignItems: 'center'
   },
   suggestionText: {
     fontSize: getFontSize(18),
     fontFamily: RubikBold,
-    color: 'rgb(24,24,24)',
+    color: 'rgb(60,60,60)',
   },
   suggestionTextBlue: {
     color: 'rgb(25,165,177)',
