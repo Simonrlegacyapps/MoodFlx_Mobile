@@ -133,7 +133,7 @@ const App = (props) => {
   // const [Height, setHeight] = useState(false);
   const [Calories, setCalories] = useState(false);
   const [Sleep, setSleep] = useState(false);
-  const [_HeartRate, setHeartRate] = useState(false);
+  // const [HeartRate, setHeartRate] = useState(false);
   const [Distance, setDistance] = useState(false);
   const [LatestWeight, setLatestWeight] = useState(false);
   const [MovingTime, setMovingTime] = useState(false);
@@ -622,7 +622,7 @@ const App = (props) => {
               return;
             }
             HeartRate = results;
-            setHeartRate(results);
+            // setHeartRate(results);
             console.log('Heart Samples', results);
             count++;
             console.log(`count==> `, count);
@@ -1146,7 +1146,7 @@ const App = (props) => {
           steps: totalSteps,
           distance: totalDistance,
           calories: userCalories,
-          heart_Rate: totalHeartRate,
+          heart_rate: totalHeartRate,
           high_bp: highBp,
           low_bp: lowBp,
         });
