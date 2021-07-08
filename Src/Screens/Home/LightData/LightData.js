@@ -48,7 +48,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { LightGraph } from '../../../Components/LightGraph/LightGraph';
 import { getLightDataIOS } from '../../../services/moodDataModuleService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import DataInsights from '../../../Components/DataInsights/DataInsights';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -101,14 +101,12 @@ function lightInsightsReducer(state, action) {
   }
 }
 
-
 const LightData = ({
   MoodCount,
   swiperIndex,
 }) => {
   const [light, setLight] = useState(-1);
   const [Graph, setGraph] = useState(null);
-  const [isDailyInsights, setIsDailyInsights] = useState(true);
   const [insights, setInsights] = useReducer(
     lightInsightsReducer,
     lightInsightsInitialState,
@@ -120,139 +118,45 @@ const LightData = ({
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
-  const lines = [
-    {value: 500, hours: 'Perfect', bold: false},
-    {value: 400, hours: 'Almost', bold: false},
-    {value: 300, hours: 'Good', bold: true},
-    {value: 200, hours: 'Better', bold: false},
-    {value: 100, hours: 'Fine', bold: false},
-    {value: 0, hours: 'Poor', bold: false},
-  ];
-
-  const data = [
-    {
-      x: 1,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 3 : 0) : 3,
-    },
-    {
-      x: 2,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 5 : 0) : 5,
-    },
-    {
-      x: 3,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 4 : 0) : 4,
-    },
-    {
-      x: 4,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 2 : 0) : 2,
-    },
-    {
-      x: 5,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 1 : 0) : 1,
-    },
-    {
-      x: 6,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 5 : 0) : 5,
-    },
-    {
-      x: 7,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 3 : 0) : 3,
-    },
-  ];
-
-  const dataLow = [
-    {
-      x: 1,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 4 : 0) : 4,
-    },
-    {
-      x: 2,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 7 : 0) : 7,
-    },
-    {
-      x: 3,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 4 : 0) : 4,
-    },
-    {
-      x: 4,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 6 : 0) : 6,
-    },
-    {
-      x: 5,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 2 : 0) : 2,
-    },
-    {
-      x: 6,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 0 : 0) : 0,
-    },
-    {
-      x: 7,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 6 : 0) : 6,
-    },
-  ];
-
-  let heightProp = SIZE / 4.3;
-  let widthProp = Math.round(SIZE - 138);
-
-  const max =
-    data &&
-    Math.max.apply(
-      Math,
-      data.map(function (o) {
-        return 5;
-        // return o.y;
-      }),
-    );
-
-  const Lowmax =
-    dataLow &&
-    Math.max.apply(
-      Math,
-      dataLow.map(function (o) {
-        return 7;
-        // return o.y;
-      }),
-    );
-
-    function getLightGraphData(dataArray) {
-      let lightGraphData = [];
-      let weekDates = [];
-      let dates = [6, 5, 4, 3, 2, 1, 0];
-      dates.forEach((e, idx) => {
-        const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
-        weekDates.push(d);
-      });
-      weekDates.forEach((e, idx) => {
-        const eData = moment(e);
-        let data = null;
-        let day = '';
-        day = eData.format('dd');
-        // INBED
-        dataArray.forEach((d) => {
-          const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
-          let value = 0;
-          if(d?.value && !isNaN(d?.value)){
-            value = Number.parseInt(Number(d.value), 10);
-          }
-          if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
-            data = {
-              x: idx + 1,
-              y: value,
-              day,
-            }
-          }
-        });
-        if (data === null) {
+  function getLightGraphData(dataArray) {
+    let lightGraphData = [];
+    let weekDates = [];
+    let dates = [6, 5, 4, 3, 2, 1, 0];
+    dates.forEach((e, idx) => {
+      const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+      weekDates.push(d);
+    });
+    weekDates.forEach((e, idx) => {
+      const eData = moment(e);
+      let data = null;
+      let day = '';
+      day = eData.format('dd');
+      // INBED
+      dataArray.forEach((d) => {
+        const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
+        let value = 0;
+        if (d?.value && !isNaN(d?.value)) {
+          value = Number.parseInt(Number(d.value), 10);
+        }
+        if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
           data = {
             x: idx + 1,
-            y: 0,
-            day
+            y: value,
+            day,
           }
         }
-        lightGraphData.push(data);
       });
-      return lightGraphData;
-    }
+      if (data === null) {
+        data = {
+          x: idx + 1,
+          y: 0,
+          day
+        }
+      }
+      lightGraphData.push(data);
+    });
+    return lightGraphData;
+  }
 
   const VerifyDone = async () => {
     callUpdateLightApi(light);
@@ -471,29 +375,6 @@ const LightData = ({
   }, [light]);
 
   const lux = light === -1 ? 0 : light;
-  let insightsDetails = isDailyInsights
-    ? insights?.dailyInsights
-      ? insights.dailyInsights
-      : 'No insights available'
-    : insights?.weeklyInsights
-    ? insights.weeklyInsights
-    : 'No weekly insights available';
-
-  let suggestion = isDailyInsights
-    ? insights?.dailySuggestion
-      ? insights.dailySuggestion
-      : ''
-    : insights?.weeklySuggestion
-    ? insights.weeklySuggestion
-    : '';
-
-  let suggestionType = isDailyInsights
-    ? insights?.dailySuggestionType
-      ? insights.dailySuggestionType
-      : ''
-    : insights?.weeklySuggestionType
-    ? insights.weeklySuggestionType
-    : '';
 
   return (
     <View style={styles.container}>
@@ -548,61 +429,15 @@ const LightData = ({
             </Text>
           </View>
         </View>
-        <View>
-          <View style={styles.tabContainer}>
-            <View style={styles.tabHeader}>
-              <TouchableOpacity
-                style={
-                  isDailyInsights
-                    ? styles.activeTabHeader
-                    : styles.inactiveTabHeader
-                }
-                onPress={() => setIsDailyInsights(true)}>
-                <Text
-                  style={
-                    isDailyInsights
-                      ? styles.activeTabHeaderText
-                      : styles.inactiveTabHeaderText
-                  }>
-                  TODAY
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[(!isDailyInsights
-                    ? styles.activeTabHeader
-                    : styles.inactiveTabHeader),
-                  {marginLeft: horizontalScale(10)},
-                ]}
-                onPress={() => setIsDailyInsights(false)}>
-                <Text
-                  style={
-                    !isDailyInsights
-                      ? styles.activeTabHeaderText
-                      : styles.inactiveTabHeaderText
-                  }>
-                  THIS WEEK
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.tabDetailsView}>
-              <Text style={styles.tabDetailsText}>{insightsDetails}</Text>
-            </View>
-            {suggestion ? (
-              <View style={styles.suggestionView}>
-                {suggestionType ? (
-                  <Icon
-                    name="alert-circle-outline"
-                    size={horizontalScale(20)}
-                    style={styles.warningImage}
-                    color="rgb(136,136,136)"
-                  />
-                ) : null}
-                <View style={styles.suggestionTextView}>
-                  <Text style={styles.suggestionText}>{suggestion}</Text>
-                </View>
-              </View>
-            ) : null}
-          </View>
+        <View style={styles.subViewTwo}>
+          <DataInsights
+            dailyInsights={insights?.dailyInsights}
+            weeklyInsights={insights?.weeklyInsights}
+            dailySuggestion={insights?.dailySuggestion}
+            dailySuggestionType={insights?.dailySuggestionType}
+            weeklySuggestion={insights?.weeklySuggestion}
+            weeklySuggestionType={insights?.weeklySuggestionType}
+          />
           {/* <View
             style={{
               flex: 1,
@@ -865,85 +700,8 @@ const styles = StyleSheet.create({
     fontFamily: RubikLight,
     color: '#747690',
   },
-  tabContainer: {
-    alignItems: 'center',
-  },
-  tabHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activeTabHeader: {
-    paddingVertical: horizontalScale(8),
-    paddingHorizontal: horizontalScale(10),
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomColor: 'rgb(32,32,32)',
-    borderBottomWidth: 2,
-  },
-  inactiveTabHeader: {
-    paddingVertical: horizontalScale(8),
-    paddingHorizontal: horizontalScale(10),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  activeTabHeaderText: {
-    fontSize: getFontSize(16),
-    // fontWeight: '500',
-    fontFamily: RubikMedium,
-    color: 'rgb(32,32,32)',
-  },
-  inactiveTabHeaderText: {
-    fontSize: getFontSize(16),
-    // fontWeight: '500',
-    fontFamily: RubikMedium,
-    color: 'rgb(136,136,136)',
-  },
-  tabDetailsView: {
+  subViewTwo: {
     marginTop: horizontalScale(20),
-    alignItems: 'center',
-    marginHorizontal: horizontalScale(50),
-  },
-  tabDetailsText: {
-    fontSize: getFontSize(18),
-    // fontWeight: '500',
-    fontFamily: RubikBold,
-    color: 'rgb(60,60,60)',
-    textAlign: 'center',
-  },
-  blueText: {
-    color: '#5947D0',
-  },
-  suggestionView: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    paddingVertical: horizontalScale(10),
-    paddingHorizontal: horizontalScale(10),
-    backgroundColor: '#FFFFFF',
-    marginTop: horizontalScale(20),
-    width: SIZE * 0.8,
-    shadowColor: 'black',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    borderRadius: horizontalScale(10),
-    shadowRadius: horizontalScale(10),
-    elevation: Platform.OS === 'ios' ? null : 2,
-  },
-  warningImage: {
-    marginRight: horizontalScale(8),
-  },
-  suggestionTextView: {
-    // flex: 1,
-    // alignItems: 'center'
-  },
-  suggestionText: {
-    fontSize: getFontSize(18),
-    fontFamily: RubikBold,
-    color: 'rgb(60,60,60)',
-  },
-  suggestionTextBlue: {
-    color: 'rgb(25,165,177)',
   },
   swiperText: {
     fontSize: SIZE / 14,
