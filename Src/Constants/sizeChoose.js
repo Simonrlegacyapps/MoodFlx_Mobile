@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform, Dimensions, PixelRatio } from 'react-native';
 
 const { height, width } = Dimensions.get('window')
-import { hasNotch } from 'react-native-device-info';
+import DeviceInfo, { hasNotch } from 'react-native-device-info';
 
 export const dynamicSize = (size) => {
   const percentage = (size / 812) * 100
@@ -21,6 +21,8 @@ export const PLATFORM = {
   MATERIAL: 'material',
   WEB: 'web'
 };
+
+export const isTablet = DeviceInfo.isTablet();
 
 
 export const isIphoneX =
@@ -55,7 +57,7 @@ export const horizontalScale = size => (width / guidelineBaseWidth) * size;
 export const verticalScale = size => (height / guidelineBaseHeight) * size;
 const moderateScale = (size, factor = 0.5) => size + (horizontalScale(size) - size) * factor;
 export function getFontSize(size) {
-  const newSize = horizontalScale(size)
+  let newSize = horizontalScale(size);
   if (Platform.OS === 'ios') {
     return Math.round(PixelRatio.roundToNearestPixel(newSize))
   } else {

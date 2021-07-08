@@ -30,8 +30,9 @@ import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import AnonymousPopUp from '../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
+import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
 const FitnessData = ({
   Perm,
@@ -93,7 +94,7 @@ const FitnessData = ({
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
+    var raw = {
       device_id: deviceId,
       email: UserData.UserEmail,
       user_id: UserData.UserId,
@@ -103,24 +104,50 @@ const FitnessData = ({
       pronouns: null,
       date_of_birth: null,
       gender: null,
-    });
+    };
 
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
-      body: raw,
+      body: JSON.stringify(raw),
       redirect: 'follow',
     };
 
     console.log(`raw`, raw);
 
-    fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions)
-      .then((response) => response.text())
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      }, dispatch)
+      .then(async (result) => {
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+        } else {
+          raw.user_id = '';
+          raw.email = ''
+          requestOptions.body = JSON.stringify(raw)
+          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+        }
+      })
+      .then(async (result) => result.json())
       .then(async (result) => {
         setShowAddName(false);
-        console.log('profile updated', result), getProfileUserData();
+        if(result){
+          console.log(
+            '✅ ✅ ✅ ✅ Success Update Staff Profile ✅ ✅ ✅ ✅',
+            result
+          );
+          getProfileUserData();
+        }
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Update Staff Profile ❌ ❌ ❌ ❌', error));
+
   };
 
   const getProfileUserData = () => {
@@ -166,7 +193,7 @@ const FitnessData = ({
   // console.log(`UserDistance`, UserDistance);
 
   return (
-    <View>
+    <View style={styles.container}>
       {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -175,7 +202,7 @@ const FitnessData = ({
         <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
-              await AsyncStorage.setItem('GiveHealthPerm', 'true');
+              // await AsyncStorage.setItem('GiveHealthPerm', 'true');
               // UserData.HealthPermission
               //   ? checkStorage()
               //   :
@@ -467,7 +494,7 @@ const FitnessData = ({
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {
-                await AsyncStorage.setItem('GiveHealthPerm', 'true');
+                // await AsyncStorage.setItem('GiveHealthPerm', 'true');
                 setOpenActionSheet(true);
               }}
               style={{
@@ -515,6 +542,10 @@ const FitnessData = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: Math.ceil(SIZE),
+  },
   scrollView: {
     // backgroundColor: '#FFF',
     height: '100%',

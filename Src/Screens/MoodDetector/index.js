@@ -36,6 +36,7 @@ import {hsv2Hex, pSBC} from './moodUtlis';
 import {
   dynamicSize,
   getFontSize,
+  getLineHeight,
   horizontalScale,
   iPhoneXPadding,
   isIphoneX,
@@ -55,6 +56,7 @@ import {
   Lat,
   Long,
   Moods,
+  SetNotification,
   UserDetail,
   UserDivision,
   UserEmail,
@@ -72,12 +74,18 @@ import NotifService from '../../services/notifService';
 import {RubikMedium} from '../../Constants/fonts/Fonts';
 import {useFocusEffect} from '@react-navigation/native';
 import messaging, {firebase} from '@react-native-firebase/messaging';
-import {hapticsTopFlags} from '../../Constants/constants';
+import {defaultLocation, hapticsTopFlags, isCountryIndia, moodTypes} from '../../Constants/constants';
+import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
+import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
 let lpX = 0;
 let lpY = 0;
+
+let isUnmounted = true;
+let isMoodDetectorScreenFocused = false;
+// let currentNotif = null;
 
 const hapticOptions = {
   enableVibrateFallback: true,
@@ -97,11 +105,11 @@ const screenWidth = Math.floor(window.width);
 export default function MoodDetector({navigation}) {
   const [lng, setlng] = useState(false); //using in api calls
   const [lat, setlat] = useState(false); //using in api calls
-  const [Email, setEmail] = useState(null); //using in api calls
   const [Loading, setLoading] = useState(false); //using in api calls
   const [MoodFail, setMoodFail] = useState(false); //not using
   const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
   const [SaveName, setSaveName] = useState(null); //for modal flag
+  const [isScreenFocused, setIsScreenFocused] = useState(false); //for modal flag
   const [
     isSaveMoodConfirmModalVisible,
     setIsSaveMoodConfirmModalVisible,
@@ -110,6 +118,10 @@ export default function MoodDetector({navigation}) {
     isNotificationQuestionModalVisible,
     setIsNotificationQuestionModalVisible,
   ] = useState(false); //for remote question flag
+  const [
+    isSkipMoodInputModalVisible,
+    setIsSkipMoodInputModalVisible,
+  ] = useState(false); 
   const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
   let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
@@ -632,26 +644,29 @@ export default function MoodDetector({navigation}) {
   };
 
   const checkStorage = async () => {
-    await AsyncStorage.setItem('Anonymous', 'true');
-    // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
-    let p = await AsyncStorage.getItem('Email');
-    let d = await AsyncStorage.getItem('Division');
-    let Hp = await AsyncStorage.getItem('GiveHealthPerm');
-    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
-    let e = await JSON.parse(p);
-    let division = await JSON.parse(d);
-    let HealthP = await JSON.parse(Hp);
-    let WeatherP = await JSON.parse(Wp);
-    console.log(`e`, e);
-    console.log(`division`, division);
-    console.log(`HealthPerm`, HealthP);
-    console.log(`WeatherPerm`, WeatherP);
-    await setEmail(e);
-    dispatch(UserEmail(e));
-    dispatch(UserDivision(division));
-    dispatch(HealthPerm(HealthP));
-    dispatch(WeatherPerm(WeatherP));
+    try {
+      await AsyncStorage.setItem('Anonymous', 'true');
+      // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
+      let p = await AsyncStorage.getItem('Email');
+      let d = await AsyncStorage.getItem('Division');
+      let Hp = await AsyncStorage.getItem('GiveHealthPerm');
+      let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+      // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
+      let e = await JSON.parse(p);
+      let division = await JSON.parse(d);
+      let HealthP = await JSON.parse(Hp);
+      let WeatherP = await JSON.parse(Wp);
+      console.log(`e`, e);
+      console.log(`division`, division);
+      console.log(`HealthPerm`, HealthP);
+      console.log(`WeatherPerm`, WeatherP);
+      dispatch(UserEmail(e));
+      dispatch(UserDivision(division));
+      dispatch(HealthPerm(HealthP));
+      dispatch(WeatherPerm(WeatherP));
+    } catch (error){
+      console.log('error getting AsyncStorage values', error);
+    }
   };
 
   const getProfileUserData = () => {
@@ -681,62 +696,69 @@ export default function MoodDetector({navigation}) {
       .catch((error) => console.log('error', error));
   };
 
-  useEffect(() => {
-    // console.log(`tesst`);
-    // setTimeout(() => {
-    // PushNotification.configure({
-    //   onNotification: function (notification) {
-    //     setNotifData(notification);
-    //     setIsNotificationQuestionModalVisible(true);
-    //     console.log('NOTIFICATION: HOME', notification);
-    //   },
-    // });
+  // useEffect(() => {
+  //   isUnmounted = false;
 
-    PushNotification.configure({
-      onNotification: function (notification) {
-        if (notification?.data?.question && notification?.data?.id) {
-          console.log(
-            `Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++`,
-          );
-          setNotifData(notification);
-          setIsNotificationQuestionModalVisible(true);
-        }
-        console.log('NOTIFICATION: HOME', notification);
-      },
-    });
-    // const data = NotifService.getLatestNotificationData();
-    // data.finish((e) => {
-    //   console.log(`e of test notif`, e);
-    // });
-    // console.log(`data fro notification`, data);
-    // }, 1000);
-  }, []);
+  //   PushNotification.configure({
+  //     onNotification: function (notification) {
+  //       if (notification?.data?.question && notification?.data?.id) {
+  //         console.log(
+  //           'Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++',
+  //         );
+  //         if (isUnmounted === false && isMoodDetectorScreenFocused === true) {
+  //           setNotifData(notification);
+  //           setIsNotificationQuestionModalVisible(true);
+  //         }
+  //         currentNotif = notification;
+  //       }
+  //       const currentRoute = getCurrentRoute();
+  //       if (currentRoute?.name !== 'MoodEmotionDetector') {
+  //         console.log('----navigate to MoodEmotionDetector----');
+  //         navigate('MoodEmotionDetector');
+  //       }
+  //       NotifService.cancelDeliveredNotifications([String(notification.id)]);
+  //       console.log('NOTIFICATION: MoodDetector', notification);
+  //     },
+  //   });
+  //   // const data = NotifService.getLatestNotificationData();
+  //   // data.finish((e) => {
+  //   //   console.log(`e of test notif`, e);
+  //   // });
+  //   // console.log(`data fro notification`, data);
+  //   // }, 1000);
+  //   return () => {
+  //     isUnmounted = true;
+  //     currentNotif = null;
+  //   };
+  // }, []);
 
   useEffect(() => {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       checkStorage();
       getProfileUserData();
-
-      {
-        UserData.WeatherPermission &&
-          (UserData.lat == null || UserData.lon == null) &&
-          GetLocation.getCurrentPosition({
-            enableHighAccuracy: true,
-            timeout: 15000,
+      UserData.WeatherPermission &&
+        (UserData.lat == null || UserData.lon == null) &&
+        GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+        })
+          .then((location) => {
+            //   console.log('Success', location);
+            setlat(location.latitude);
+            dispatch(Lat(location.latitude));
+            setlng(location.longitude);
+            dispatch(Long(location.longitude));
           })
-            .then((location) => {
-              //   console.log('Success', location);
-              setlat(location.latitude);
-              dispatch(Lat(location.latitude));
-              setlng(location.longitude);
-              dispatch(Long(location.longitude));
-            })
-            .catch((error) => {
-              const {code, message} = error;
-              console.log('error', code, message);
-            });
-      }
+          .catch((error) => {
+            const { code, message } = error;
+            console.log('error', code, message);
+          });
     }, 150);
+    return () => {
+      timeoutId && clearTimeout(timeoutId);
+      isUnmounted = true;
+      dispatch(SetNotification(null));
+    };
   }, []);
 
   useEffect(() => {
@@ -832,7 +854,7 @@ export default function MoodDetector({navigation}) {
       const closeId = setTimeout(() => {
         onClose?.();
         clearTimeout(closeId);
-      }, 100);
+      }, 300);
       clearTimeout(id);
     }, 1000);
   };
@@ -841,6 +863,13 @@ export default function MoodDetector({navigation}) {
   // console.log(`QuestionId`, QuestionID);
 
   const findId = async () => {
+    let mood_type = moodTypes.regular;
+    if(wheelSize === mediumWheelSize) {
+      mood_type = moodTypes.pretty
+    } else if(wheelSize === largeWheelSize) {
+      mood_type = moodTypes.very
+    }
+            
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
@@ -852,54 +881,62 @@ export default function MoodDetector({navigation}) {
     var state_info = '';
     var city_info = '';
     var country_info = '';
-    await Geocoder.from({
-      lat: UserData.lat,
-      lng: UserData.lon,
-    })
-      .then((data) => {
-        geocode = data.plus_code.compound_code;
-        const address_list = data.results[0].address_components;
-        for (i = 0; i < address_list.length; i++) {
-          if (address_list[i].types.includes('country')) {
-            country_info = address_list[i].long_name;
-          }
-          if (address_list[i].types.includes('administrative_area_level_1')) {
-            state_info = address_list[i].long_name;
-          }
-          if (address_list[i].types.includes('administrative_area_level_2')) {
-            city_info = address_list[i].long_name;
-          }
-        }
+    setLoading(true);
+    if (UserData.lat && UserData.lon) {
+      await Geocoder.from({
+        lat: UserData.lat,
+        lng: UserData.lon,
       })
-      .catch((err) => console.log(`weather api location err`, err));
+        .then((data) => {
+          geocode = data.plus_code.compound_code;
+          const address_list = data.results[0].address_components;
+          for (i = 0; i < address_list.length; i++) {
+            if (address_list?.[i]?.types?.includes?.('country')) {
+              country_info = address_list?.[i]?.long_name ?? '';
+            }
+            if (address_list?.[i]?.types?.includes?.('administrative_area_level_1')) {
+              state_info = address_list?.[i]?.long_name ?? '';
+            }
+            if (address_list?.[i]?.types?.includes?.('administrative_area_level_2')) {
+              city_info = address_list?.[i]?.long_name ?? '';
+            }
+          }
+        })
+        .catch((err) => console.log(`weather api location err`, err));
 
-    const Id = UserData.AllMoods.find(({name}) => {
+    }
+    const Id = UserData.AllMoods.find(({ name }) => {
       // console.log(`name`, name);
       return name === emotionText;
     });
-    // console.log(`Id`, Id);
+    console.log(`Id`, Id);
 
     // console.log(`lat, lng`, UserData.lat, UserData.lon);
     const deviceId = DeviceInfo.getUniqueId();
     if (Id === undefined) {
       // console.log(`fail`);
+      setLoading(false);
       setMoodFail(true);
     } else {
       setLoading(true);
       // console.log(`not fail`);
       // console.log(`Id`, Id.id);
+      const isIndia = isCountryIndia();
       const params = {
         mood_id: Id.id,
         device_id: deviceId,
-        lat: UserData.lat,
-        long: UserData.lon,
-        email: Email,
-        city: city_info,
-        state: state_info,
-        country: country_info,
+        mood_type,
+        city: isIndia && city_info ? defaultLocation.city : city_info,
+        state: isIndia && state_info ? defaultLocation.state : state_info,
+        country: isIndia && country_info ? defaultLocation.country : country_info,
+        lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
+        long: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
+
+        email: UserData.UserEmail,
         user_id: UserData.UserId,
         device_token: fcm,
         device_type: Platform.OS,
+        anonymous: !UserData.Anonymous ? 0 : 1,
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
@@ -913,6 +950,7 @@ export default function MoodDetector({navigation}) {
             ? route?.params?.question
             : QuestionID,
           mood_id: Id.id,
+          mood_type,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
         });
@@ -934,7 +972,8 @@ export default function MoodDetector({navigation}) {
             navigation.navigate('HomeScreen', {screen: 'MicScreen'});
           })
           .catch((error) => {
-            console.log('error', error), setLoading(false);
+            console.log('error', error);
+            setLoading(false);
           });
       } else {
         console.log(`params for mood update`, params);
@@ -960,6 +999,7 @@ export default function MoodDetector({navigation}) {
                     lat: lat,
                     long: lng,
                     screen: 'Home',
+                    isMoodUpdate: true
                   });
                 });
                 const notifService = new NotifService();
@@ -1011,7 +1051,7 @@ export default function MoodDetector({navigation}) {
     } else {
       setIsNotificationQuestionModalVisible(false);
     }
-    navigation.navigate('MoodEmotionDetector');
+    // navigation.navigate('MoodEmotionDetector');
   };
 
   const cancelled = () => {
@@ -1027,21 +1067,74 @@ export default function MoodDetector({navigation}) {
     navigation.navigate('HomeScreen', {screen: 'MicScreen'});
   }, []);
 
+  const dismissSkipMoodInputModal = useCallback(() => {
+    setIsSkipMoodInputModalVisible(false);
+  }, []);
+
+  const onAcceptSkipMoodInput = useCallback(() => {
+    dismissSkipMoodInputModal();
+    const timeoutId = setTimeout(() => {
+      navigation.navigate('HomeScreen', {lat: lat, long: lng});
+      clearTimeout(timeoutId);
+    }, 500);
+  }, [dismissSkipMoodInputModal, lat, lng, navigation]);
+
+  const onDenySkipMoodInput = useCallback(() => {
+    dismissSkipMoodInputModal();
+  }, [dismissSkipMoodInputModal]);
+
   useFocusEffect(
     React.useCallback(() => {
-      let isActive = true;
+      isMoodDetectorScreenFocused = true;
+      setIsScreenFocused(true);
+      // if(currentNotif) {
+      //   setNotifData(currentNotif);
+      //   setIsNotificationQuestionModalVisible(true);
+      // }
       // screen isFocused
       // console.log('screen isFocused: ', isActive);
 
       return () => {
         // screen is out of focus
-        isActive = false;
+        isMoodDetectorScreenFocused = false;
+        setIsScreenFocused(false);
+        dispatch(SetNotification(null));
+        setNotifData(null);
+        // currentNotif = null;
         setWheelSize(regularWheelSize);
         setScrollerWheelSize(regularWheelSize);
         // console.log('screen is out of focus: ', isActive);
       };
     }, []),
   );
+
+  useEffect(() => {
+    isUnmounted = false;
+    if (UserData.notification) {
+      if (
+        isScreenFocused &&
+        !NotifData &&
+        UserData.notification?.data?.question &&
+        UserData.notification?.data?.id
+      ) {
+        console.log(
+          'Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++',
+        );
+        console.log(
+          'isUnmounted: ',
+          isUnmounted,
+          ' isMoodDetectorScreenFocused: ',
+          isMoodDetectorScreenFocused,
+        );
+        if (isUnmounted === false) {
+          setNotifData(UserData.notification);
+          setIsNotificationQuestionModalVisible(true);
+        }
+      }
+      // NotifService.cancelDeliveredNotifications([String(notification.id)]);
+      console.log('NOTIFICATION: MoodDetector', UserData.notification);
+    }
+  }, [isScreenFocused, NotifData, UserData.notification, dispatch]);
 
   const setLPXY = () => {
     pan.current.setValue({
@@ -1056,6 +1149,8 @@ export default function MoodDetector({navigation}) {
   };
 
   const renderBlocks = () => {
+    const fontSize = getFontSize(12)
+    const lineHeight = getLineHeight(fontSize);
     return (
       <View
         ref={blocksContainerRef}
@@ -1103,7 +1198,7 @@ export default function MoodDetector({navigation}) {
             backgroundColor: pSBC(0.25, color),
           }}
         />
-        <View
+        {/* <View
           pointerEvents="none"
           style={{
             width: '100%',
@@ -1115,19 +1210,21 @@ export default function MoodDetector({navigation}) {
           <Text
             // ref={(ref) => this.passiveCalm = ref}
             style={{
-              color: '#fff',
+              color: '#000000',
               //  left: width / 2.4,
+              lineHeight: lineHeight,
+              fontSize: fontSize,
             }}>
             Passive/Calm
           </Text>
-        </View>
-        <View
+        </View> */}
+        {/* <View
           pointerEvents="none"
           style={{
             flexDirection: 'row',
             hieght: blocksContainerSize?.height,
             top: blocksContainerSize
-              ? blocksContainerSize.height / 2 - 6
+              ? (blocksContainerSize.height / 2) - (lineHeight/2)
               : undefined,
             alignItems: 'center',
             position: 'absolute',
@@ -1137,16 +1234,17 @@ export default function MoodDetector({navigation}) {
           <Text
             // ref={(ref) => this.negative = ref}
             style={{
-              color: '#fff',
-              lineHeight: 12,
+              color: '#000000',
+              lineHeight: lineHeight,
+              fontSize: fontSize,
               // flex: 1,
               // justifyContent: 'center',
               //  top: height / 3.05,
             }}>
             Negative
           </Text>
-        </View>
-        <View
+        </View> */}
+        {/* <View
           pointerEvents="none"
           style={{
             width: '100%',
@@ -1158,20 +1256,21 @@ export default function MoodDetector({navigation}) {
           <Text
             // ref={(ref) => this.activeAroused = ref}
             style={{
-              color: '#fff',
-              //  left: width / 2.56,
+              color: '#000000',
+              lineHeight: lineHeight,
+              fontSize: fontSize,
             }}>
             Active/Aroused
           </Text>
-        </View>
-        <View
+        </View> */}
+        {/* <View
           pointerEvents="none"
           style={{
             hieght: '100%',
             justifyContent: 'center',
             position: 'absolute',
             top: blocksContainerSize
-              ? blocksContainerSize.height / 2 - 6
+              ? (blocksContainerSize.height / 2) - (lineHeight/2)
               : undefined,
             right: 6,
             zIndex: 2,
@@ -1179,13 +1278,14 @@ export default function MoodDetector({navigation}) {
           <Text
             // ref={(ref) => this.positive = ref}
             style={{
-              color: '#fff',
+              color: '#000000',
               //  top: height / 3.05,
-              lineHeight: 12,
+              lineHeight: lineHeight,
+              fontSize: fontSize,
             }}>
             Positive
           </Text>
-        </View>
+        </View> */}
       </View>
     );
   };
@@ -1209,7 +1309,7 @@ export default function MoodDetector({navigation}) {
         <TouchableOpacity
           style={{marginLeft: 12}}
           onPress={
-            () => navigation.navigate('HomeScreen', {lat: lat, long: lng})
+            () => setIsSkipMoodInputModalVisible(true)
             // navigation.replace('HomeScreen', {
             //   lat: UserData.lat,
             //   long: UserData.lon,
@@ -1339,6 +1439,13 @@ export default function MoodDetector({navigation}) {
         modalVisible={isNotificationQuestionModalVisible}
         dismissModalHandler={dismissNotificationQuestionModal}
         verifyDone={(value) => verifyNotificationQuestion(value)}
+      />
+
+      <SkipMoodInputModal
+        modalVisible={isSkipMoodInputModalVisible}
+        dismissModalHandler={dismissSkipMoodInputModal}
+        onClickButtonOne={onAcceptSkipMoodInput}
+        onClickButtonTwo={onDenySkipMoodInput}
       />
 
       {Loading && (

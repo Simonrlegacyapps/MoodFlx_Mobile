@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback, useRef} from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import ProfileGenderModal from '../Modals/ProfileGender/ProfileGenderModal';
 
 const AddAnswer = ({
   label,
-  navigation,
   onChangeText,
   value,
   popUp,
@@ -25,16 +24,16 @@ const AddAnswer = ({
   checkedit,
 }) => {
   const [openActionSheet, setOpenActionSheet] = useState(false);
-  //   const [value, onChangeText] = React.useState('');
   const [edit, setedit] = useState(false);
-  // const [userData, setUserData] = useState(null);
 
-  // console.log(`data of add answer`, data);
-  const apicall = (value) => {
-    setedit(!edit);
-    ProfileApiCallHere(value);
-  };
-  const UserData = useSelector((state) => state.First);
+  const onChangeModalValue = useCallback(
+    (value) => {
+      setedit(!edit);
+      onChangeText?.(value);
+    },
+    [edit, onChangeText],
+  );
+
   return (
     <View style={styles.flatlistViewStyle}>
       <View>
@@ -58,6 +57,10 @@ const AddAnswer = ({
             keyboardType={'email-address'}
             returnKeyType={'done'}
             autoCorrect={false}
+            onBlur={() => {
+              setedit(!edit);
+              ProfileApiCallHere({_name: value});
+            }}
             autoCapitalize={'words'}
             autoCompleteType={'off'}
             placeholder={'Annonymous'}
@@ -73,13 +76,11 @@ const AddAnswer = ({
               onChangeText(text);
             }}
             value={value}
-            onSubmitEditing={() => {
-              apicall();
-            }}
           />
         )}
       </View>
-      {!edit ? (
+
+      {!edit && (
         <TouchableOpacity
           onPress={() => {
             popUp && setOpenActionSheet(true);
@@ -87,25 +88,16 @@ const AddAnswer = ({
           }}>
           <AddButton label={checkedit ? 'Edit' : 'Add'} />
         </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          onPress={() => {
-            // UserData.UserEmail
-            //   ?
-            apicall();
-            // : navigation.navigate('LinkCompanyStackNavigation'); //navigation.navigate('LinkCompanyStackNavigation');
-          }}>
-          <AddButton label={'Update'} />
-        </TouchableOpacity>
       )}
       {popUp && (
         <ProfileGenderModal
           datePicker={datePicker}
           data={data}
           modalVisible={openActionSheet}
-          onChangeText={onChangeText}
+          onChangeText={onChangeModalValue}
           value={value}
           dismissModalHandler={() => {
+            setedit(!edit);
             setOpenActionSheet(false);
           }}
           date={date}
@@ -119,23 +111,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-  },
-  profileImageStyle: {
-    marginTop: dynamicSize(40),
-    alignSelf: 'center',
-  },
-  borderStyle: {
-    height: 1,
-    width: 77,
-    backgroundColor: 'rgba(0,0,0,0.1)',
-    alignSelf: 'center',
-  },
-  imageViewStyle: {
-    backgroundColor: '#F4F6FA',
-    width: dynamicSize(160),
-    height: dynamicSize(160),
-    borderRadius: dynamicSize(160),
-    alignSelf: 'center',
   },
   nameTextStyle: {
     color: Constants.Colors.greyColorCode,
@@ -152,27 +127,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: dynamicSize(32),
-  },
-  flatlistContainer: {
-    flex: 1,
-    marginTop: dynamicSize(10),
-    marginLeft: dynamicSize(20),
-    marginRight: dynamicSize(20),
-  },
-  headerContainerStyle: {
-    marginTop: dynamicSize(30),
-    alignSelf: 'center',
-    flexDirection: 'row',
-  },
-  pickupIconStyle: {
-    position: 'absolute',
-    top: dynamicSize(116),
-    right: dynamicSize(0),
-  },
-  bottomFlatlistContainer: {
-    flexDirection: 'row',
-    marginTop: dynamicSize(10),
-    marginBottom: dynamicSize(20),
   },
 });
 

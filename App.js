@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {
   View,
   StatusBar,
@@ -9,6 +9,8 @@ import {
   Dimensions,
   Image,
   Platform,
+  AppState,
+  Button,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
@@ -30,8 +32,10 @@ import {
   HealthPerm,
   IsAnonymous,
   Lat,
+  LightPerm,
   Long,
   Moods,
+  SetNotification,
   SleepPerm,
   UserDetail,
   UserDivision,
@@ -45,6 +49,19 @@ import moment from 'moment';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from './Src/services/notifService';
+import PostRequestApi, {
+  getDivisionName,
+  GetStaffUserData,
+} from './Src/apirequest/PostRequestApi';
+import * as RootNavigation from './Src/navigator/RootNavigation';
+import crashlytics from '@react-native-firebase/crashlytics';
+import Analytics from './Src/services/analyticsService';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
+import messaging from '@react-native-firebase/messaging';
+import { onDynamicLinkUpdate } from './Src/services/commonService';
+import Toast, { BaseToast } from 'react-native-toast-message';
+import { getFontSize } from './Src/Constants/sizeChoose';
+import Constants from './Src/Constants';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -89,13 +106,141 @@ const Images = [
   },
 ];
 
+const toastConfig = {
+  error: ({ text2, ...rest }) => (
+    <BaseToast
+      {...rest}
+      leadingIcon={Constants.Images.ErrorIcon}
+      // style={{ borderLeftColor: 'pink' }}
+      // contentContainerStyle={{ paddingHorizontal: 15 }}
+      text2Style={styles.toastText}
+      text2={text2}
+    />
+  ),
+};
+
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState('');
   const notifService = useRef(new NotifService()).current;
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [email, setEmail] = useState('');
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    Analytics.init();
+    crashlytics().setCrashlyticsCollectionEnabled(true);
+    return () => {
+      RootNavigation.isReadyRef.current = false;
+    };
+  }, []);
+
+  const handleDynamicLink = async (link) => {
+    let email = '';
+    try {
+      let p = await AsyncStorage.getItem('Email');
+      email = await JSON.parse(p);
+    } catch (error) {
+      console.log('error getting email from Async storage');
+    }
+    console.log('handleDynamicLink email: ', email);
+    if (email && typeof email === 'string') {
+      return;
+    }
+    console.log('handleDynamicLink link: ', link);
+    const url = link?.url;
+    const org = url?.split("/org//")?.[1];
+    console.log('handleDynamicLink org: ', org);
+    const deviceId = DeviceInfo.getUniqueId();
+    let fcm = '';
+    try {
+      fcm = await messaging().getToken();
+    } catch (error) {
+      console.log('error getting fcm token');
+    }
+    if (org === 'Mzg=' && deviceId && fcm) {
+      console.log('handleDynamicLink org true: ', org);
+      const params = {
+        device_id: deviceId,
+        user_id: org,
+        device_token: fcm,
+        device_type: Platform.OS,
+      };
+      console.log('getDownloadLink api params: ', params);
+      try {
+        const getDownloadLinkRes = await PostRequestApi('getDownloadLink', params);
+        console.log('getDownloadLink api res: ', getDownloadLinkRes);
+        let userData = null;
+        if (
+          !getDownloadLinkRes.data.staffData?.email &&
+          getDownloadLinkRes?.data?.staffData === 'Not found'
+        ) {
+          // console.log('Showing Toast ====>');
+          Toast.show({
+            type: 'error',
+            text2: 'Cannot link this device, please contact your HR manager',
+            visibilityTime: 4000,
+            autoHide: true,
+          });
+        } else if (
+          getDownloadLinkRes?.data?.staffData &&
+          getDownloadLinkRes?.data?.user_id
+        ) {
+          userData = {
+            ...getDownloadLinkRes.data.staffData,
+            user_id: getDownloadLinkRes.data.user_id,
+          };
+        }
+        onDynamicLinkUpdate(userData, dispatch, function (data) {
+          if (data !== false) {
+            // data = {...data, division_id: null};
+            if (data?.email && data?.division_id) {
+              var raw = {
+                device_id: deviceId,
+                email: data.email,
+                user_id: data?.user_id,
+              };
+              getDivisionName(raw, dispatch, false);
+              console.log('handleDynamicLink user Successfully Connected', data);
+            } else if (data?.email && !data?.division_id) {
+              console.log('Link success, please Select division - email', data.email);
+              if (RootNavigation?.navigationRef?.current?.navigate) {
+                RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
+                  screen: 'LinkCompanyStackNavigation',
+                  params: {
+                    screen: 'Linktocompany',
+                    params: { email: data.email },
+                  },
+                });
+              } else {
+                setEmail(data.email);
+              }
+            } else {
+              console.log('Dynamic link onDynamicLinkUpdate onFinish else block');
+            }
+          }
+        });
+        console.log('getDownloadLink api res', getDownloadLinkRes);
+        // })
+      } catch (error) {
+        console.log('error calling getDownloadLink api: ', error);
+      }
+    }
+  };
+
+  const goToSelectDivision = useCallback(() => {
+    console.log('goToSelectDivision email: ', email);
+    RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
+      screen: 'LinkCompanyStackNavigation',
+      params: {
+        screen: 'Linktocompany',
+        params: { email: email },
+      },
+    });
+  }, [email]);
 
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
@@ -115,6 +260,10 @@ const App: () => React$Node = () => {
     } else {
       setShowWelcome(false);
     }
+    PushNotification.popInitialNotification((notification) => {
+      // console.log('popInitialNotification Notification: ', notification);
+      dispatch(SetNotification(notification));
+    });
     // CheckScreen();
 
     // try {
@@ -127,6 +276,65 @@ const App: () => React$Node = () => {
     // } catch (e) {
     //   console.warn(e);
     // }
+  }, []);
+
+  useEffect(() => {
+    let isCurrentRoute = false;
+    if (UserData.notification) {
+      if (
+        UserData.notification?.data?.question &&
+        UserData.notification?.data?.id
+      ) {
+        // console.log(
+        //   'Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++',
+        // );
+        // if (isUnmounted === false && isMoodDetectorScreenFocused === true) {
+        //   setNotifData(notification);
+        //   setIsNotificationQuestionModalVisible(true);
+        // }
+        // currentNotif = notification;
+        const currentRoute = RootNavigation.getCurrentRoute();
+        if (currentRoute && currentRoute.name !== 'MoodEmotionDetector') {
+          isCurrentRoute = true;
+          // console.log('----navigate to MoodEmotionDetector----');
+          RootNavigation.navigate('MoodEmotionDetector');
+        } else if (!currentRoute) {
+          isCurrentRoute = true;
+        }
+      }
+      UserData.notification?.id &&
+        NotifService.cancelDeliveredNotifications([
+          String(UserData.notification.id),
+        ]);
+      console.log('NOTIFICATION: App', UserData.notification);
+      if (!isCurrentRoute) {
+        // console.log('isCurrentRoute: App', isCurrentRoute);
+        dispatch(SetNotification(null));
+      }
+    }
+  }, [UserData.notification, dispatch]);
+
+  const _handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      console.log("App has come to the foreground!");
+      NotifService.cancelMoodFloSheduledNotifications();
+    }
+
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+    // console.log("AppState", appState.current);
+  };
+
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+    NotifService.cancelMoodFloSheduledNotifications();
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
   }, []);
 
   const checkStorage = async () => {
@@ -168,11 +376,12 @@ const App: () => React$Node = () => {
     let UserId = await AsyncStorage.getItem('UserId');
     let anonymous = await AsyncStorage.getItem('Anonymous');
     let p = await AsyncStorage.getItem('Email');
-    let d = await AsyncStorage.getItem('Division');
+    // let d = await AsyncStorage.getItem('Division');
     let Hp = await AsyncStorage.getItem('GiveHealthPerm');
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+   
     let e = await JSON.parse(p);
-    let division = await JSON.parse(d);
+    // let division = await JSON.parse(d);
     let HealthP = await JSON.parse(Hp);
     let WeatherP = await JSON.parse(Wp);
     let Id = await JSON.parse(UserId);
@@ -181,6 +390,7 @@ const App: () => React$Node = () => {
     // console.log(`division`, division);
     // console.log(`HealthPerm`, HealthP);
     // console.log(`WeatherPerm`, WeatherP);
+    // console.log(`LightPerm`, LightP);
     // console.log(`userId`, Id);
     // console.log(`Anonymous`, a, a === null ? true : a);
 
@@ -190,7 +400,7 @@ const App: () => React$Node = () => {
     dispatch(SleepPerm(SleepP));
     // console.log(`Sleep Permission`, SleepP);
     dispatch(UserEmail(e));
-    dispatch(UserDivision(division));
+    // dispatch(UserDivision(division));
     dispatch(HealthPerm(HealthP));
     dispatch(WeatherPerm(WeatherP));
     dispatch(GetUserId(Id));
@@ -201,11 +411,16 @@ const App: () => React$Node = () => {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
+    var raw = {
       device_id: deviceId,
       email: e,
       user_id: Id,
-    });
+    };
+    // var raw = JSON.stringify({
+    //   device_id: deviceId,
+    //   email: e,
+    //   user_id: Id,
+    // });
 
     var requestOptions = {
       method: 'POST',
@@ -214,13 +429,20 @@ const App: () => React$Node = () => {
       redirect: 'follow',
     };
 
-    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
-      .then((response) => response.json())
+    GetStaffUserData(raw, dispatch)
       .then(async (result) => {
-        console.log('UserDetailsssssssssssssssss', await result?.userData);
-        await dispatch(UserDetail(result?.userData));
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          await dispatch(UserDetail(result?.userData));
+        }
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => {
+        console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error);
+      });
+    getDivisionName(raw, dispatch, true);
   };
 
   const requestNotificationPermissions = async () => {
@@ -267,13 +489,17 @@ const App: () => React$Node = () => {
           .then((location) => {
             //   console.log('Success', location);
             // setlat(location.latitude);
+            console.log(
+              '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
+              JSON.stringify(location),
+            );
             dispatch(Lat(location.latitude));
             // setlng(location.longitude);
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
             const {code, message} = error;
-            console.log('error', code, message);
+            console.log('error getting lat lon from geolocation api', code, message);
           });
     }
     {
@@ -291,6 +517,20 @@ const App: () => React$Node = () => {
     }
     checkStorage();
     getProfileUserData();
+  }, [UserData.WeatherPermission]);
+
+  useEffect(() => {
+    // const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    dynamicLinks().getInitialLink().then(handleDynamicLink);
+    // handleDynamicLink();
+    // return () => unsubscribe();
+    return null;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    // When the component is unmounted, remove the listener
+    return () => unsubscribe();
   }, []);
 
   const renderItems = ({item, index}, parallaxProps) => {
@@ -321,26 +561,48 @@ const App: () => React$Node = () => {
     }
   };
 
+  const onNavigationReady = useCallback(() => {
+    RootNavigation.isReadyRef.current = true;
+    if (email) {
+      goToSelectDivision();
+      const timeeoutIdTwo = setTimeout(() => {
+        setEmail('');
+        clearTimeout(timeeoutIdTwo);
+      }, 500);
+    }
+  }, [email, goToSelectDivision]);
+
   return (
     <>
       {/* {console.log('ShowWelcome--', ShowWelcome)} */}
       {/* <Provider store={store}> */}
       {ShowWelcome === false ? (
-        <NavigationContainer>
-          <SafeAreaView style={{flex: 1}}>
+        <NavigationContainer
+          ref={RootNavigation.navigationRef}
+          onReady={onNavigationReady}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
               <StackNavigation />
             </View>
           </SafeAreaView>
+          <Toast
+            config={toastConfig}
+            ref={(ref) => Toast.setRef(ref)} />
         </NavigationContainer>
       ) : (
-        <AppIntroSlider
-          renderItem={renderItems}
-          data={Images}
-          onDone={_onDone}
-          showSkipButton={true}
-          onSkip={_onDone}
-        />
+        <>
+          <AppIntroSlider
+            renderItem={renderItems}
+            data={Images}
+            onDone={_onDone}
+            showSkipButton={true}
+            onSkip={_onDone}
+          />
+          <Toast
+            config={toastConfig}
+            ref={(ref) => Toast.setRef(ref)} />
+        </>
       )}
       {/* </Provider> */}
     </>
@@ -416,6 +678,11 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
     // paddingHorizontal:15,
     // paddingVertical: '10@ms', // for custom animation
+  },
+  toastText: {
+    fontSize: getFontSize(15),
+    color: '#B56873',
+    fontWeight: 'bold',
   },
 });
 

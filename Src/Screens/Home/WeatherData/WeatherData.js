@@ -30,14 +30,18 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import PopUp from '../../../Components/PopUp/PopUp';
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
-import {dynamicSize} from '../../../Constants/sizeChoose';
+import {dynamicSize, horizontalScale, isTablet} from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
-import {Lat, Long, WeatherPerm} from '../../../redux/actions/actions';
+import {DayTemp, Lat, Long, SetLocation, WeatherPerm} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
+import { defaultLocation, isCountryIndia, weatherActions, weatherApiDataTypes, weatherTypes } from '../../../Constants/constants';
+import { AppPermissions } from '../../../services/appPermissions';
 
-export const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+let weatherData = null;
+
+const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
 const IndicatorHelper = ({color, text}) => {
   return (
@@ -49,7 +53,7 @@ const IndicatorHelper = ({color, text}) => {
 };
 
 const WeatherData = ({
-  CheckForWeather,
+  // CheckForWeather,
   // PermWeather,
   // Weather,
   // data,
@@ -85,7 +89,6 @@ const WeatherData = ({
   const c = moment().subtract(2, 'days').startOf('day').toString();
   const d = moment().subtract(3, 'days').startOf('day').toString();
   const e = moment().subtract(4, 'days').startOf('day').toString();
-  // console.log('tryWeather', tryWeather);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -99,27 +102,37 @@ const WeatherData = ({
     if (swiperIndex == 2 && UserData.WeatherPermission) {
       getUserLocation();
     }
+    return () => {
+      weatherData = null;
+    }
   }, [swiperIndex]);
 
   const getUserLocation = () => {
-    GetLocation.getCurrentPosition({
-      enableHighAccuracy: true,
-      timeout: 15000,
-    })
-      .then((location) => {
-        console.log('Success', location);
-        // setlat(location.latitude);
-        dispatch(Lat(location.latitude));
-        // setlng(location.longitude);
-        dispatch(Long(location.longitude));
-        if (UserData.lat == null || UserData.lon == null) {
-          WeatherDayData(location.latitude, location.longitude);
-        }
+    new Promise((resolve, reject) => {
+      GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000,
       })
-      .catch((error) => {
-        const {code, message} = error;
-        console.log('error', code, message);
-      });
+        .then((location) => {
+          console.log('Success', location);
+          // setlat(location.latitude);
+          dispatch(SetLocation({
+            lat: location.latitude,
+            lon: location.longitude,
+            }));
+          location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, function (flag){
+            location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude);
+            resolve(flag);
+          });
+          // if (UserData.lat == null || UserData.lon == null) {
+          // }
+        })
+        .catch((error) => {
+          const {code, message} = error;
+          resolve(false);
+          console.log('error', code, message);
+        });
+    })
   };
 
   let valueHours = 0;
@@ -132,17 +145,21 @@ const WeatherData = ({
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
-        // console.log(`response.data.hourly`, response.data.hourly);
-        setAllDayWeather(response.data.hourly);
-        if (UserData.DayTemperature) {
-          for (let i in response.data.hourly) {
-            if (
-              Weather.weather[0].description ===
-              response.data.hourly[i].weather[0].description
-            ) {
-              value = value + 1;
-              sethours(value);
-              valueHours = value;
+        // console.log(`weather day data api success response`, response);
+        // console.log(`weather day data api success response`, JSON.stringify(response));
+        response?.data?.hourly && setAllDayWeather(response.data.hourly);
+        if (weatherData) {
+          if (response?.data?.hourly) {
+
+            for (let i in response.data.hourly) {
+              if (
+                (weatherData?.weather?.[0]?.description ?? -1) ===
+                response?.data?.hourly?.[i]?.weather?.[0]?.description
+              ) {
+                value = value + 1;
+                sethours(value);
+                valueHours = value;
+              }
             }
           }
         } else {
@@ -155,38 +172,25 @@ const WeatherData = ({
   };
 
   const findWeather = (value) => {
-    // console.log(`value`, value);
-    let weather = '';
-    if (value) {
-      value == 'clear sky'
-        ? (weather = weather + 'Sunny')
-        : value == 'few clouds' ||
-          value == 'scattered clouds' ||
-          value == 'broken clouds'
-        ? (weather = weather + 'Cloudy')
-        : value == 'rain' || value == 'shower rain'
-        ? (weather = weather + 'Rainy')
-        : value == 'thunderstorm'
-        ? (weather = weather + 'Stormy')
-        : value == 'snow' || value == 'mist'
-        ? (weather = weather + 'Snowy')
-        : value == undefined
-        ? (weather = weather + 'Rainy')
-        : (weather = weather + 'Rainy');
-    }
-
-    return weather;
+    const v = value?.toLowerCase?.() ?? value;
+    return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
   };
-
-  const syncWeatherData = async () => {
+  // console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
+  const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    let WeatherP = await JSON.parse(Wp);
+    if(!WeatherP){
+      console.log('Cannot sync weather data without permisison.');
+      return;
+    }
     let geocode = null;
     Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
     var state_info = '';
     var city_info = '';
     var country_info = '';
     await Geocoder.from({
-      lat: UserData.lat,
-      lng: UserData.lon,
+      lat: lat,
+      lng: lng,
     })
       .then((data) => {
         geocode = data.plus_code.compound_code;
@@ -204,7 +208,7 @@ const WeatherData = ({
         }
       })
       .catch((err) => console.log(`weather api location err`, err));
-
+    const isIndia = isCountryIndia();
     const deviceId = DeviceInfo.getUniqueId();
     const data = JSON.stringify({
       user_id: UserData.UserId,
@@ -213,17 +217,17 @@ const WeatherData = ({
       hours: ManulHours ? ManulHours : hours,
       weather_type: ManualWeatherType
         ? ManualWeatherType
-        : findWeather(UserData?.DayTemperature?.weather[0].description),
+        : findWeather(weatherData?.weather?.[0]?.main),
       pollen: null,
       pollen_type: ManulPollen ? ManulPollen : 'Low',
-      weather_data: UserData.DayTemperature,
-      temp_min: Weather?.main?.temp_min,
-      temp_max: Weather?.main?.temp_max,
-      city: city_info,
-      state: state_info,
-      country: country_info,
-      lat: UserData.lat,
-      lon: UserData.lon,
+      weather_data: weatherData,
+      temp_min: weatherData?.main?.temp_min,
+      temp_max: weatherData?.main?.temp_max,
+      city: isIndia && city_info ? defaultLocation.city : city_info,
+      state: isIndia && state_info ? defaultLocation.state : state_info,
+      country: isIndia && country_info ? defaultLocation.country : country_info,
+      lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
+      lon: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
     });
 
     // console.log('weather', data);
@@ -239,23 +243,28 @@ const WeatherData = ({
 
     axios(config)
       .then(function (response) {
-        console.log(' ✅ ✅ ✅ ✅ Success ✅ ✅ ✅ ✅ ', data);
+        console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ', data);
+        getWeather();
       })
       .catch(function (error) {
-        console.log('❌❌❌❌Fail ❌❌❌❌', error, data);
+        console.log('❌❌❌❌ Update Weather Fail ❌❌❌❌', error, data);
       });
   };
 
-  const th = async () => {
-    WeatherDayData(UserData.lat, UserData.lon);
+  const th = async (index, lat, lng) => {
+    if (index == 2) {
+      WeatherDayData(lat, lng);
+    }
   };
 
   const VerifyDone = async () => {
-    getUserLocation();
+    const v = await getUserLocation();
+    v === false && syncWeatherData();
     await AsyncStorage.setItem('GiveWeatherPerm', 'true');
     setOpenActionSheet(false);
-    // CheckForWeather(UserData.lat, UserData.lon);
-    syncWeatherData();
+    // CheckForWeather(UserData.lat, UserData.lon, function(){
+    //   syncWeatherData();
+    // });
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let WeatherP = await JSON.parse(Wp);
     console.log(`WeatherPerm`, WeatherP);
@@ -263,18 +272,65 @@ const WeatherData = ({
   };
 
   useEffect(() => {
-    th();
+    let lat = UserData.lat;
+    let lng = UserData.lon;
+    if(!UserData.WeatherPermission){
+      lat = defaultLocation.latitude;
+      lng = defaultLocation.longitude;
+    }
+    th(swiperIndex, lat, lng);
   }, [swiperIndex]);
 
   useEffect(() => {
-    // if (swiperIndex == 1) {
-    setTimeout(() => {
-      syncWeatherData();
-    }, 500);
-    // }
-  }, []);
+    let lat = UserData.lat;
+    let lng = UserData.lon;
+    if (!UserData.WeatherPermission) {
+      lat = defaultLocation.latitude;
+      lng = defaultLocation.longitude;
+    }
+    if (
+      ((UserData.UserId && UserData.UserEmail) ||
+        (!UserData.UserId && !UserData.UserEmail)) &&
+      ((UserData.lat && UserData.lon) || (!UserData.lat && !UserData.lon))
+    ) {
+      CheckForWeather(lat, lng, function (flag) {
+        if (flag === false) {
+          syncWeatherData();
+        }
+      });
+    }
+  }, [UserData.lat, UserData.lon, UserData.WeatherPermission, UserData.UserId, UserData.UserEmail]);
 
-  useEffect(() => {
+  const CheckForWeather = async (loc_lat = UserData.lat, loc_long = UserData.lon, onFinish) => {
+    // let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    // let WeatherP = await JSON.parse(Wp);
+    // dispatch(WeatherPerm(WeatherP));
+    if(!(loc_lat && loc_long)) {
+      onFinish?.(false);
+      return;
+    }
+    // if (UserData.WeatherPermission) {
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      )
+      .then(async (response) => {
+        console.log(' ✅ ✅ ✅ ✅ Success CheckForWeather✅ ✅ ✅ ✅ ', response?.data);
+        dispatch(DayTemp(response?.data));
+        weatherData = response?.data ? response?.data : weatherData;
+        syncWeatherData(loc_lat, loc_long);
+        onFinish?.(true);
+        // await setTryWeather(response?.data);
+        // await console.log(`response.data for weather`, response.data);
+      })
+      .catch(function (error) {
+        onFinish?.(false);
+        console.log('Error CheckForWeather❌❌❌❌', error);
+      });
+    // }
+  };
+
+  const getWeather = () => {
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -294,19 +350,32 @@ const WeatherData = ({
       redirect: 'follow',
     };
 
-    setTimeout(() => {
+    let timeOutId = setTimeout(() => {
       console.log(`Weather Graph Data Params`, raw);
       fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
         .then((response) => response.json())
         .then(async (result) => {
-          console.log('weather Graph data', result),
+          console.log('Get weather Graph data', result),
+          console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
             setGraph(result.weatherData);
           data.push({});
-          await syncWeatherData();
+          // await syncWeatherData();
         })
         .catch((error) => console.log('error', error));
+        clearTimeout(timeOutId);
+        timeOutId = null;
     }, 1000);
-  }, [One, Two, Three, Four, Five]);
+    return () => {
+      if(timeOutId !== null) {
+        clearTimeout(timeOutId);
+        timeOutId = null;
+      }
+    }
+  }
+
+  useEffect(() => {
+    getWeather();
+  }, []);
 
   const data = [
     {
@@ -440,8 +509,8 @@ const WeatherData = ({
     },
   ];
 
-  let heightProp = SIZE / 4.3;
-  let widthProp = Math.round(SIZE - 138);
+  let heightProp = isTablet ? horizontalScale(30) : (SIZE / 4.3);
+  let widthProp = isTablet ? Math.round(SIZE - (SIZE * 0.48)) : Math.round(SIZE - 138);
 
   const max =
     data &&
@@ -498,60 +567,52 @@ const WeatherData = ({
     setWeatherDurationModal(false);
   };
 
-  dataOfWeatherGraph = [
+  const dataOfWeatherGraph = [
     {
       x: 1,
-      y:
-        AllDayWeather != null && AllDayWeather[0] != undefined
-          ? AllDayWeather[0].temp
-          : 0,
+      y: AllDayWeather?.[0]?.temp ?? 0,
     },
     {
       x: 2,
-      y:
-        AllDayWeather != null && AllDayWeather[3] != undefined
-          ? AllDayWeather[3].temp
-          : 0,
+      y: AllDayWeather?.[3]?.temp ?? 0,
     },
     {
       x: 3,
-      y:
-        AllDayWeather != null && AllDayWeather[7] != undefined
-          ? AllDayWeather[7].temp
-          : 0,
+      y: AllDayWeather?.[7]?.temp ?? 0,
     },
     {
       x: 4,
-      y:
-        AllDayWeather != null && AllDayWeather[11] != undefined
-          ? AllDayWeather[11].temp
-          : 0,
+      y: AllDayWeather?.[11]?.temp ?? 0,
     },
     {
       x: 5,
-      y:
-        AllDayWeather != null && AllDayWeather[15] != undefined
-          ? AllDayWeather[15].temp
-          : 0,
+      y: AllDayWeather?.[15]?.temp ?? 0,
     },
     {
       x: 6,
-      y:
-        AllDayWeather != null && AllDayWeather[19] != undefined
-          ? AllDayWeather[19].temp
-          : 0,
+      y: AllDayWeather?.[19]?.temp ?? 0,
     },
     {
       x: 7,
-      y:
-        AllDayWeather != null && AllDayWeather[23] != undefined
-          ? AllDayWeather[23].temp
-          : 0,
+      y: AllDayWeather?.[23]?.temp ?? 0,
     },
   ];
   // console.log(`AllDayWeather`, AllDayWeather);
+
+  const _weatherType = ManualWeatherType
+  ? ManualWeatherType
+  : weatherData
+  ? findWeather(Weather?.weather?.[0]?.main)
+  : weatherTypes.Cloudy;
+
+  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Cloudy;
+
+  const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Cloudy;
+  const _smallWeatherIcon = _weatherType === weatherTypes.Rainy ? Constants.Images.RainyHour : _largeWeatherImg;
+  const currentTemp = ManualTemp ? ManualTemp : Math.round(Weather?.main?.temp ? Weather.main.temp : '0');
+
   return (
-    <View>
+    <View style={styles.container}>
       {/* {console.log(`data`, data)} */}
       <ScrollView
         showsHorizontalScrollIndicator={false}
@@ -673,7 +734,7 @@ const WeatherData = ({
                   Today's Weather
                 </Text>
                 <Text style={[styles.SmallThinText, styles.city]}>
-                  {Weather ? Weather?.name : 'Sync your weather'}
+                  {UserData.WeatherPermission ? Weather?.name : 'Sync your weather'}
                 </Text>
                 <View>
                   <TouchableOpacity
@@ -694,16 +755,12 @@ const WeatherData = ({
                       }}>
                       <Image
                         resizeMode={'contain'}
-                        source={Constants.Images.Rain}
+                        source={_largeWeatherImg}
                         style={{margin: 10, marginHorizontal: 20}}
                       />
                       <View>
                         <Text style={[styles.Card1Text]}>
-                          {ManualWeatherType
-                            ? ManualWeatherType
-                            : Weather
-                            ? findWeather(Weather.weather[0].description)
-                            : 'Rainy'}
+                          {_weatherType}
                         </Text>
                         <Text
                           style={[
@@ -713,9 +770,7 @@ const WeatherData = ({
                               fontSize: dynamicSize(32),
                             },
                           ]}>
-                          {ManualTemp
-                            ? ManualTemp
-                            : Math.round(Weather ? Weather.main.temp : '0')}
+                           {currentTemp}
                           ºC
                         </Text>
                       </View>
@@ -743,16 +798,12 @@ const WeatherData = ({
                       <View style={{flexDirection: 'row', padding: 15}}>
                         <Image
                           resizeMode={'contain'}
-                          source={Constants.Images.RainyHour}
+                          source={_smallWeatherIcon}
                           style={styles.SmallCardImage}
                         />
                         <View>
                           <Text style={[styles.smallCardText]}>
-                            {ManualWeatherType
-                              ? ManualWeatherType
-                              : Weather
-                              ? findWeather(Weather.weather[0].description)
-                              : 'Rainy'}
+                            {_weatherAction}
                           </Text>
                           <Text
                             style={[
@@ -951,14 +1002,10 @@ const WeatherData = ({
       <EditManualWeatherModal
         modalVisible={EditManualWeather}
         dismissModalHandler={() => cancelled()}
-        verifyDone={(value) => EditDone(value)}
+        verifyDone={EditDone}
         Weather={Weather}
         hours={hours}
-        Temp={
-          ManualTemp
-            ? ManualTemp
-            : Math.round(Weather ? Weather.main.temp : '0')
-        }
+        Temp={currentTemp}
         EditTemp={setManualTemp}
         Hour={ManulHours ? ManulHours : hours ? hours : 1}
         EditHour={setManulHours}
@@ -1001,6 +1048,10 @@ const WeatherData = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: Math.ceil(SIZE),
+  },
   scrollView: {
     // backgroundColor: '#FFF',
     height: '100%',

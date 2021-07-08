@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -32,12 +32,14 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import PostRequestApi from '../../apirequest/PostRequestApi';
-import {useRoute} from '@react-navigation/native';
+import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
+import {useRoute, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 import {PHOTO_URL} from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
+import axios from 'axios';
+import {onUnlinkUpdate} from '../../services/commonService';
 
 const Linktocompany = ({navigation}) => {
   const {OTPVerified, setDivision, getDivision} = useSelector(
@@ -53,7 +55,7 @@ const Linktocompany = ({navigation}) => {
   const [Loading, setLoading] = useState(false);
   const [APIfail, setAPIfail] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [labelShow, setLabelShow] = useState('');
+  const [labelShow, setLabelShow] = useState(null);
   const [UnlinkConfirm, setUnlinkConfirm] = useState(false);
   const [CompanyDetails, setCompanyDetails] = useState(null);
 
@@ -71,19 +73,46 @@ const Linktocompany = ({navigation}) => {
   // );
 
   useEffect(() => {
-    fetch('https://admin.moodflo.com/api/getDivision')
-      .then((data) => data.json())
-      .then(async (res) => {
-        await dispatch(getDivisions(res.data));
-        setDivisions(res.data);
-        console.log('getDivision =>', res);
-        // console.log('response of division', res.data[0].id);
-        // setSelectedDivisionId(res.data[0].id);
-      })
-      .catch((error) => {
-        console.log('getDivision error: ', error);
+    if (UserData.UserEmail && UserData.UserId) {
+      var myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+      const deviceId = DeviceInfo.getUniqueId();
+      const params = {
+        device_id: deviceId,
+        user_id: UserData.UserId,
+        email: UserData.UserEmail
+      };
+
+      console.log('=== getDivision params ===', params);
+      const isUnlinkAllowed = route?.params?.email ? false : true;
+      if (route?.params?.email) {
+        setLoading(true);
+      }
+      getDivisionName(params, dispatch, isUnlinkAllowed, function (isFinish) {
+        setLoading(false);
       });
-  }, []);
+
+      // axios.post('https://admin.moodflo.com/api/getDivision', params)
+      //   .then(async (res) => {
+      //     if (Array.isArray(res?.data?.data)) {
+      //       await dispatch(getDivisions(res.data.data));
+      //       setDivisions(res.data.data);
+      //       console.log('getDivision data =>', res.data.data);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.log('getDivision error: ', error);
+      //   });
+    }
+  }, [UserData.UserId, UserData.UserEmail]);
+
+  useEffect(() => {
+    if (!UserData.UserEmail && !UserData.UserId && labelShow) {
+      setLabelShow(null);
+      setSelectedDivision('');
+      setSelectedDivisionId('');
+    }
+  }, [UserData.UserId, UserData.UserEmail, labelShow]);
 
   useEffect(() => {
     const deviceId = DeviceInfo.getUniqueId();
@@ -103,17 +132,75 @@ const Linktocompany = ({navigation}) => {
       body: raw,
       redirect: 'follow',
     };
-    {
-      UserData.UserDivision !== null &&
-        fetch('https://admin.moodflo.com/api/getCompanyDetails', requestOptions)
-          .then((response) => response.json())
-          .then((result) => {
-            console.log('getting company details', result);
-            setCompanyDetails(result.companyData);
-          })
-          .catch((error) => console.log('error', error));
+    UserData.UserDivision !== null &&
+      fetch('https://admin.moodflo.com/api/getCompanyDetails', requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log('getting company details', result);
+          setCompanyDetails(result.companyData);
+        })
+        .catch((error) => console.log('error', error));
+  }, [UserData.UserDivision, UserData.UserId]);
+
+  useEffect(() => {
+    if (
+      Array.isArray(UserData.getDivision) &&
+      UserData.getDivision.length > 0
+    ) {
+      console.log('UserData.getDivision: ', UserData.getDivision);
+      setDivisions(UserData.getDivision);
     }
-  }, [UserData.UserDivision]);
+  }, [UserData.getDivision]);
+
+  useEffect(() => {
+    if (
+      route?.params?.email &&
+      !selectedDivisionId &&
+      !labelShow &&
+      UserData.UserDivision &&
+      Array.isArray(UserData?.getDivision) &&
+      UserData.getDivision.length > 0
+    ) {
+      UserData.getDivision.forEach((e) => {
+        if (e?.name === UserData.UserDivision) {
+          setSelectedDivisionId(e.id);
+          setLabelShow({...e});
+        }
+      });
+    }
+  }, [
+    UserData.UserDivision,
+    UserData.getDivision,
+    labelShow,
+    route?.params?.email,
+    selectedDivisionId,
+  ]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (UserData.UserEmail && UserData.UserId) {
+        const deviceId = DeviceInfo.getUniqueId();
+        const params = {
+          device_id: deviceId,
+          user_id: UserData.UserId,
+          email: UserData.UserEmail,
+        };
+
+        console.log('===useFocusEffect getDivision params ===', params);
+        const isUnlinkAllowed = route?.params?.email ? false : true;
+        getDivisionName(params, dispatch, isUnlinkAllowed);
+      } else if (labelShow) {
+        setLabelShow(null);
+        setSelectedDivision('');
+        setSelectedDivisionId('');
+      }
+    }, [
+      UserData.UserEmail,
+      UserData.UserId,
+      labelShow,
+      dispatch,
+    ]),
+  );
 
   const onLink = async (type) => {
     console.log('run');
@@ -144,6 +231,7 @@ const Linktocompany = ({navigation}) => {
             JSON.stringify(resp.data.divisionName),
           );
           dispatch(UserDivision(resp.data.divisionName));
+          route.params.email && navigation?.setParams({email: null});
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,
@@ -171,23 +259,33 @@ const Linktocompany = ({navigation}) => {
     console.log('verify', type);
     if (type === 'Yes') {
       PostRequestApi('unlinkToCompany', params)
-        .then(async (resp) => {})
+        .then(async (resp) => {
+          setUnlinkConfirm(false);
+          const timeoutId = setTimeout(async () => {
+            setLoading(true);
+            const isDone = await onUnlinkUpdate(dispatch);
+            dispatch(OTP_Verify(false));
+            setLabelShow(null);
+            setSelectedDivision('');
+            setSelectedDivisionId('');
+            setLoading(false);
+            clearTimeout(timeoutId);
+          }, 500);
+        })
         .catch((err) => {
           console.log('unlink api failed error: ', err);
         });
-      dispatch(OTP_Verify(false));
-      dispatch(Division(null));
-      await AsyncStorage.removeItem('UserId');
-      await AsyncStorage.removeItem('Anonymous');
-      await AsyncStorage.removeItem('Email');
-      await AsyncStorage.removeItem('Division');
-      await AsyncStorage.removeItem('Email');
-      dispatch(UserDivision(null));
-      dispatch(UserEmail(null));
-      dispatch(GetUserId(null));
-      dispatch(IsAnonymous(true));
-      dispatch(UserDetail(null));
-      setUnlinkConfirm(false);
+      // dispatch(Division(null));
+      // await AsyncStorage.removeItem('UserId');
+      // await AsyncStorage.removeItem('Anonymous');
+      // await AsyncStorage.removeItem('Email');
+      // await AsyncStorage.removeItem('Division');
+      // await AsyncStorage.removeItem('Email');
+      // dispatch(UserDivision(null));
+      // dispatch(UserEmail(null));
+      // dispatch(GetUserId(null));
+      // dispatch(IsAnonymous(true));
+      // dispatch(UserDetail(null));
     } else {
       setUnlinkConfirm(false);
     }
@@ -241,7 +339,7 @@ const Linktocompany = ({navigation}) => {
                     <TouchableOpacity
                       onPress={async () => {
                         setSelectedDivisionId(item.id);
-                        setLabelShow(item);
+                        setLabelShow({...item});
                         setModalVisible(false);
                       }}
                       key={`${index}`}>
@@ -319,7 +417,7 @@ const Linktocompany = ({navigation}) => {
           </TouchableOpacity>
         </View>
       )}
-      {UserData.UserEmail && UserData.UserDivision === null && (
+      {UserData.UserEmail && (UserData.UserDivision === null || route?.params?.email) && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
           {APIfail && (
             <Text
@@ -429,8 +527,6 @@ const Linktocompany = ({navigation}) => {
                 })}
             </Picker> */}
           </TouchableOpacity>
-          {console.log('selectedLanguage', selectedDivisionId)}
-          {console.log('selectedLanguage', selectedDivision)}
           <Text
             style={{
               lineHeight: 28,
@@ -464,7 +560,7 @@ const Linktocompany = ({navigation}) => {
           </TouchableOpacity>
         </View>
       )}
-      {UserData.UserDivision !== null && (
+      {UserData.UserDivision !== null && !route?.params?.email && (
         <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
@@ -558,7 +654,7 @@ const Linktocompany = ({navigation}) => {
               marginBottom: 42,
               width: 270,
             }}>
-            {UserData.UserDivision}
+            {UserData?.UserDivision ?? ''}
           </Text>
           <TouchableOpacity
             // disabled={selectedLanguage ? false : true}

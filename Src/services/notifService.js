@@ -125,7 +125,7 @@ export default class NotifService {
       ongoing: false, // (optional) set whether this is an "ongoing" notification
       //   actions: ['Yes', 'No'], // (Android only) See the doc for notification actions to know more
       invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
-
+      ignoreInForeground: true,
       when: null, // (optionnal) Add a timestamp pertaining to the notification (usually the time the event occurred). For apps targeting Build.VERSION_CODES.N and above, this time is not shown anymore by default and must be opted into by using `showWhen`, default: null.
       usesChronometer: false, // (optional) Show the `when` field as a stopwatch. Instead of presenting `when` as a timestamp, the notification will show an automatically updating display of the minutes and seconds since when. Useful when showing an elapsed time (like an ongoing phone call), default: false.
       timeoutAfter: null, // (optional) Specifies a duration in milliseconds after which this notification should be canceled, if it is not already canceled, default: null
@@ -140,7 +140,7 @@ export default class NotifService {
       userInfo: {screen: 'home'}, // (optional) default: {} (using null throws a JSON value '<null>' error)
       //   playSound: !!soundName, // (optional) default: true
       soundName: soundName ? soundName : 'default', // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
-      number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
+      // number: 10, // (optional) Valid 32 bit integer specified as string. default: none (Cannot be zero)
     });
   }
 
@@ -166,7 +166,7 @@ export default class NotifService {
       ongoing: false, // (optional) set whether this is an "ongoing" notification
       //   actions: ['Yes', 'No'], // (Android only) See the doc for notification actions to know more
       invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
-
+      ignoreInForeground: true,
       when: null, // (optionnal) Add a timestamp pertaining to the notification (usually the time the event occurred). For apps targeting Build.VERSION_CODES.N and above, this time is not shown anymore by default and must be opted into by using `showWhen`, default: null.
       usesChronometer: false, // (optional) Show the `when` field as a stopwatch. Instead of presenting `when` as a timestamp, the notification will show an automatically updating display of the minutes and seconds since when. Useful when showing an elapsed time (like an ongoing phone call), default: false.
       timeoutAfter: null, // (optional) Specifies a duration in milliseconds after which this notification should be canceled, if it is not already canceled, default: null
@@ -201,6 +201,7 @@ export default class NotifService {
   }
 
   scheduleMoodFloLocalNotif() {
+    NotifService.cancelAll();
     this.getScheduledLocalNotifications((notif) => {
       // console.log(
       //   'scheduleMoodFloLocalNotif before update: ',
@@ -214,22 +215,24 @@ export default class NotifService {
         notif.forEach((e) => {
           if (
             e.id === NotifService.notifData.one.id &&
-            e.title === NotifService.notifData.one.title
+            e.title === NotifService.notifData.one.title &&
+            e.date
           ) {
             isOne = true;
           } else if (
             e.id === NotifService.notifData.three.id &&
-            e.title === NotifService.notifData.three.title
+            e.title === NotifService.notifData.three.title &&
+            e.date
           ) {
             isTwo = true;
           } else if (
             e.id === NotifService.notifData.three.id &&
-            e.title === NotifService.notifData.three.title
+            e.title === NotifService.notifData.three.title &&
+            e.date
           ) {
             isThree = true;
-          } else if (e.id !== undefined && typeof e.id === 'number') {
-            this.cancelNotif(e.id);
-          }
+          } 
+          // this.cancelNotif(e?.id);
         });
       if (!isOne) {
         this.scheduleMoodFloNotifWithId(NotifService.notifData.one.id);
@@ -240,12 +243,12 @@ export default class NotifService {
       if (!isThree) {
         this.scheduleMoodFloNotifWithId(NotifService.notifData.three.id);
       }
-      this.getScheduledLocalNotifications((notifications) => {
-        // console.log(
-        //   'scheduleMoodFloLocalNotif after update: ',
-        //   JSON.stringify(notifications),
-        // );
-      });
+      // this.getScheduledLocalNotifications((notifications) => {
+      //   console.log(
+      //     'scheduleMoodFloLocalNotif after update: ',
+      //     JSON.stringify(notifications),
+      //   );
+      // });
     });
   }
 
@@ -303,12 +306,12 @@ export default class NotifService {
         title: NotifService.notifData.three.title,
       });
     }
-    this.getScheduledLocalNotifications((notif) => {
+    // this.getScheduledLocalNotifications((notif) => {
       // console.log(
       //   'checkTimeAndUpdateNotif scheduledNotification: ',
       //   JSON.stringify(notif),
       // );
-    });
+    // });
   }
 
   scheduleMoodFloNotifWithId(id) {
@@ -316,6 +319,7 @@ export default class NotifService {
       // let first = new Date(new Date().setHours(12, 41, 0, 0));
       let first = new Date(
         new Date().setHours(NotifService.notifData.one.timeInHour, 0, 0, 0),
+        // new Date().setHours(21, 19, 0, 0),
       );
       if (moment().isAfter(first.getTime(), 'second')) {
         first = moment(first.getTime()).add(1, 'days').toDate();
@@ -328,6 +332,7 @@ export default class NotifService {
     } else if (id === NotifService.notifData.two.id) {
       let second = new Date(
         new Date().setHours(NotifService.notifData.two.timeInHour, 0, 0, 0),
+        // new Date().setHours(21, 19, 30, 0),
       );
       // let second = new Date(new Date().setHours(12, 41, 30, 0));
       if (moment().isAfter(second.getTime(), 'second')) {
@@ -394,14 +399,38 @@ export default class NotifService {
     if (id === undefined) {
       return;
     }
+    console.log('cancelNotif id: ', id);
+
     PushNotification.cancelLocalNotifications({id: '' + id});
-    this.getScheduledLocalNotifications((notif) => {
-      // console.log('cancelNotif scheduledNotification: ', JSON.stringify(notif));
-    });
+    // this.getScheduledLocalNotifications((notif) => {
+    //   console.log('cancelNotif scheduledNotification: ', JSON.stringify(notif));
+    // });
   }
 
-  cancelAll() {
+  static cancelAll() {
     PushNotification.cancelAllLocalNotifications();
+    // this.getScheduledLocalNotifications((notif) => {
+    //   console.log('cancelAll scheduledNotification: ', JSON.stringify(notif));
+    // });
+  }
+
+  static cancelMoodFloSheduledNotifications() {
+    NotifService.cancelDeliveredNotifications([
+      String(NotifService.notifData.one.id),
+      String(NotifService.notifData.two.id),
+      String(NotifService.notifData.three.id),
+    ])
+  }
+
+  static cancelDeliveredNotifications(identifiers) {
+    console.log('cancelDeliveredNotifications idnetifiers', identifiers);
+    if(Array.isArray(identifiers)){
+      PushNotification.removeDeliveredNotifications(identifiers)
+    } else {
+      if(identifiers){
+        PushNotification.removeDeliveredNotifications([String(identifiers)])
+      }
+    }
   }
 
   abandonPermissions() {

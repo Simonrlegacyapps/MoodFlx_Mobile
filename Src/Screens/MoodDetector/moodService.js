@@ -79,67 +79,67 @@ export const initialEmotionTextData = {
 };
 
 let emotionsTextData = {
-  sad: {
+  upset: {
     //0
     top: [verticalScale(169), verticalScale(301)],
     left: [horizontalScale(0), horizontalScale(93.75)],
-    text: 'Sad',
+    text: 'Upset',
     color: '#1B5083',
     img: '',
   },
-  flat: {
+  anxious: {
     //1
     top: [verticalScale(301), verticalScale(433)],
     left: [horizontalScale(0), horizontalScale(93.75)],
-    text: 'Flat',
+    text: 'Anxious',
     color: '#00407A',
     img: '',
   },
-  wired: {
+  sad: {
     //2
     top: [verticalScale(433), verticalScale(565)],
     left: [horizontalScale(0), horizontalScale(93.75)],
-    text: 'Wired',
+    text: 'Sad',
     color: '#B87F04',
     img: '',
   },
-  anxious: {
+  tired: {
     //3
     top: [verticalScale(565), verticalScale(697)],
     left: [horizontalScale(0), horizontalScale(93.75)],
-    text: 'Anxious',
+    text: 'Tired',
     color: '#DA9602',
     img: '',
   },
-  angry: {
+  cranky: {
     //4
     top: [verticalScale(169), verticalScale(301)],
     left: [horizontalScale(93.75), horizontalScale(187.5)],
-    text: 'Angry',
+    text: 'Cranky',
     color: '#A0181F',
     img: '',
   },
-  rattled: {
+  wired: {
     //5
     top: [verticalScale(302), verticalScale(433)],
     left: [horizontalScale(93.75), horizontalScale(187.5)],
-    text: 'Rattled',
+    text: 'Wired',
     color: '#8F151C',
     img: '',
   },
-  spent: {
+  flat: {
     //6
     top: [verticalScale(434), verticalScale(565)],
     left: [horizontalScale(93.75), horizontalScale(187.5)],
-    text: 'Spent',
+    text: 'Flat',
     color: '#2A7CA7',
     img: '',
   },
-  tired: {
+  spent: {
     //7
     top: [verticalScale(566), verticalScale(697)],
     left: [horizontalScale(93.75), horizontalScale(187.5)],
-    text: 'Tired',
+    text: 'Spent',
     color: '#50A4D3',
     img: '',
   },
@@ -159,19 +159,19 @@ let emotionsTextData = {
     color: '#118F00',
     img: '',
   },
-  sharp: {
+  cool: {
     //10
     top: [verticalScale(433), verticalScale(565)],
     left: [horizontalScale(187.5), horizontalScale(281.25)],
-    text: 'Sharp',
+    text: 'Cool',
     color: '#BBA502',
     img: '',
   },
-  alert: {
+  chilled: {
     //11
     top: [verticalScale(565), verticalScale(697)],
     left: [horizontalScale(187.5), horizontalScale(281.25)],
-    text: 'Alert',
+    text: 'Chilled',
     color: '#E0C400',
     img: '',
   },
@@ -191,19 +191,19 @@ let emotionsTextData = {
     color: '#3EA135',
     img: '',
   },
-  chilled: {
+  content: {
     //14
     top: [verticalScale(434), verticalScale(565)],
     left: [horizontalScale(281.25), horizontalScale(375)],
-    text: 'Chilled',
+    text: 'Content',
     color: '#4FD99C',
     img: '',
   },
-  content: {
+  relaxed: {
     //15
     top: [verticalScale(566), verticalScale(697)],
     left: [horizontalScale(281.25), horizontalScale(375)],
-    text: 'Content',
+    text: 'Relaxed',
     color: '#87E8C3',
     img: '',
   },
@@ -275,28 +275,12 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
   let left = Math.round(x);
   // console.log('top: ', top, 'left: ', left,)
   if (
-    top > emotionsTextData.sad.top[0] &&
-    top < emotionsTextData.sad.top[1] &&
-    left > emotionsTextData.sad.left[0] &&
-    left < emotionsTextData.sad.left[1]
+    top > emotionsTextData.upset.top[0] &&
+    top < emotionsTextData.upset.top[1] &&
+    left > emotionsTextData.upset.left[0] &&
+    left < emotionsTextData.upset.left[1]
   ) {
-    return {...emotionsTextData.sad, img: userData?.AllMoods?.[0]?.icon};
-  }
-  if (
-    top > emotionsTextData.flat.top[0] &&
-    top < emotionsTextData.flat.top[1] &&
-    left > emotionsTextData.flat.left[0] &&
-    left < emotionsTextData.flat.left[1]
-  ) {
-    return {...emotionsTextData.flat, img: userData?.AllMoods?.[1]?.icon};
-  }
-  if (
-    top > emotionsTextData.wired.top[0] &&
-    top < emotionsTextData.wired.top[1] &&
-    left > emotionsTextData.wired.left[0] &&
-    left < emotionsTextData.wired.left[1]
-  ) {
-    return {...emotionsTextData.wired, img: userData?.AllMoods?.[2]?.icon};
+    return {...emotionsTextData.upset, img: userData?.AllMoods?.[0]?.icon};
   }
   if (
     top > emotionsTextData.anxious.top[0] &&
@@ -304,32 +288,15 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.anxious.left[0] &&
     left < emotionsTextData.anxious.left[1]
   ) {
-    // console.log('anxious left: ', left, ' anxious: ', emotionsTextData.anxious, ' gestureState: ', gestureState)
-    return {...emotionsTextData.anxious, img: userData?.AllMoods?.[3]?.icon};
+    return {...emotionsTextData.anxious, img: userData?.AllMoods?.[1]?.icon};
   }
   if (
-    top > emotionsTextData.angry.top[0] &&
-    top < emotionsTextData.angry.top[1] &&
-    left > emotionsTextData.angry.left[0] &&
-    left < emotionsTextData.angry.left[1]
+    top > emotionsTextData.sad.top[0] &&
+    top < emotionsTextData.sad.top[1] &&
+    left > emotionsTextData.sad.left[0] &&
+    left < emotionsTextData.sad.left[1]
   ) {
-    return {...emotionsTextData.angry, img: userData?.AllMoods?.[4]?.icon};
-  }
-  if (
-    top > emotionsTextData.rattled.top[0] &&
-    top < emotionsTextData.rattled.top[1] &&
-    left > emotionsTextData.rattled.left[0] &&
-    left < emotionsTextData.rattled.left[1]
-  ) {
-    return {...emotionsTextData.rattled, img: userData?.AllMoods?.[5]?.icon};
-  }
-  if (
-    top > emotionsTextData.spent.top[0] &&
-    top < emotionsTextData.spent.top[1] &&
-    left > emotionsTextData.spent.left[0] &&
-    left < emotionsTextData.spent.left[1]
-  ) {
-    return {...emotionsTextData.spent, img: userData?.AllMoods?.[6]?.icon};
+    return {...emotionsTextData.sad, img: userData?.AllMoods?.[2]?.icon};
   }
   if (
     top > emotionsTextData.tired.top[0] &&
@@ -337,8 +304,41 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.tired.left[0] &&
     left < emotionsTextData.tired.left[1]
   ) {
+    // console.log('anxious left: ', left, ' anxious: ', emotionsTextData.anxious, ' gestureState: ', gestureState)
+    return {...emotionsTextData.tired, img: userData?.AllMoods?.[3]?.icon};
+  }
+  if (
+    top > emotionsTextData.cranky.top[0] &&
+    top < emotionsTextData.cranky.top[1] &&
+    left > emotionsTextData.cranky.left[0] &&
+    left < emotionsTextData.cranky.left[1]
+  ) {
+    return {...emotionsTextData.cranky, img: userData?.AllMoods?.[4]?.icon};
+  }
+  if (
+    top > emotionsTextData.wired.top[0] &&
+    top < emotionsTextData.wired.top[1] &&
+    left > emotionsTextData.wired.left[0] &&
+    left < emotionsTextData.wired.left[1]
+  ) {
+    return {...emotionsTextData.wired, img: userData?.AllMoods?.[5]?.icon};
+  }
+  if (
+    top > emotionsTextData.flat.top[0] &&
+    top < emotionsTextData.flat.top[1] &&
+    left > emotionsTextData.flat.left[0] &&
+    left < emotionsTextData.flat.left[1]
+  ) {
+    return {...emotionsTextData.flat, img: userData?.AllMoods?.[6]?.icon};
+  }
+  if (
+    top > emotionsTextData.spent.top[0] &&
+    top < emotionsTextData.spent.top[1] &&
+    left > emotionsTextData.spent.left[0] &&
+    left < emotionsTextData.spent.left[1]
+  ) {
     // console.log('tired left: ', left, ' tired: ', emotionsTextData.tired, ' gestureState: ', gestureState)
-    return {...emotionsTextData.tired, img: userData?.AllMoods?.[7]?.icon};
+    return {...emotionsTextData.spent, img: userData?.AllMoods?.[7]?.icon};
   }
   if (
     top > emotionsTextData.pumped.top[0] &&
@@ -358,20 +358,20 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     return {...emotionsTextData.stoked, img: userData?.AllMoods?.[9]?.icon};
   }
   if (
-    top > emotionsTextData.sharp.top[0] &&
-    top < emotionsTextData.sharp.top[1] &&
-    left > emotionsTextData.sharp.left[0] &&
-    left < emotionsTextData.sharp.left[1]
+    top > emotionsTextData.cool.top[0] &&
+    top < emotionsTextData.cool.top[1] &&
+    left > emotionsTextData.cool.left[0] &&
+    left < emotionsTextData.cool.left[1]
   ) {
-    return {...emotionsTextData.sharp, img: userData?.AllMoods?.[10]?.icon};
+    return {...emotionsTextData.cool, img: userData?.AllMoods?.[10]?.icon};
   }
   if (
-    top > emotionsTextData.alert.top[0] &&
-    top < emotionsTextData.alert.top[1] &&
-    left > emotionsTextData.alert.left[0] &&
-    left < emotionsTextData.alert.left[1]
+    top > emotionsTextData.chilled.top[0] &&
+    top < emotionsTextData.chilled.top[1] &&
+    left > emotionsTextData.chilled.left[0] &&
+    left < emotionsTextData.chilled.left[1]
   ) {
-    return {...emotionsTextData.alert, img: userData?.AllMoods?.[11]?.icon};
+    return {...emotionsTextData.chilled, img: userData?.AllMoods?.[11]?.icon};
   }
   if (
     top > emotionsTextData.excited.top[0] &&
@@ -391,20 +391,20 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     return {...emotionsTextData.happy, img: userData?.AllMoods?.[13]?.icon};
   }
   if (
-    top > emotionsTextData.chilled.top[0] &&
-    top < emotionsTextData.chilled.top[1] &&
-    left > emotionsTextData.chilled.left[0] &&
-    left < emotionsTextData.chilled.left[1]
-  ) {
-    return {...emotionsTextData.chilled, img: userData?.AllMoods?.[14]?.icon};
-  }
-  if (
     top > emotionsTextData.content.top[0] &&
     top < emotionsTextData.content.top[1] &&
     left > emotionsTextData.content.left[0] &&
     left < emotionsTextData.content.left[1]
   ) {
-    return {...emotionsTextData.content, img: userData?.AllMoods?.[15]?.icon};
+    return {...emotionsTextData.content, img: userData?.AllMoods?.[14]?.icon};
+  }
+  if (
+    top > emotionsTextData.relaxed.top[0] &&
+    top < emotionsTextData.relaxed.top[1] &&
+    left > emotionsTextData.relaxed.left[0] &&
+    left < emotionsTextData.relaxed.left[1]
+  ) {
+    return {...emotionsTextData.relaxed, img: userData?.AllMoods?.[15]?.icon};
   }
   //rattled
   return emotionData;

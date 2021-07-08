@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import {AppRegistry, Platform} from 'react-native';
+import {AppRegistry, Platform, LogBox} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 import thunk from 'redux-thunk';
@@ -11,12 +11,16 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 import AsyncStorage from '@react-native-community/async-storage';
 import NotifService from './Src/services/notifService';
+import { SetNotification } from './Src/redux/actions/actions';
+LogBox.ignoreAllLogs(true);
+
+const store = createStore(allReducers, applyMiddleware(thunk));
 
 // Must be outside of any component LifeCycle (such as `componentDidMount`).
 PushNotification.configure({
   // (optional) Called when Token is generated (iOS and Android)
   onRegister: async function (token) {
-    // console.log('TOKEN:', token);
+    console.log('TOKEN:', token);
     try {
       await AsyncStorage.setItem('device_token', token.token);
     } catch (e) {
@@ -28,6 +32,7 @@ PushNotification.configure({
   onNotification: function (notification) {
     // console.log('NOTIFICATION:', notification);
     NotifService.setLatestNotificationData(notification);
+    store.dispatch(SetNotification(notification));
     // process the notification
 
     // (required) Called when a remote is received or opened, or local notification is opened
@@ -67,8 +72,6 @@ PushNotification.configure({
    */
   requestPermissions: false,
 });
-
-const store = createStore(allReducers, applyMiddleware(thunk));
 
 const ProvidedApp = () => {
   return (

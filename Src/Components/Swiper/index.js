@@ -16,6 +16,7 @@
    Image
  } from 'react-native'
  import Constants from '../../Constants'
+import { horizontalScale } from '../../Constants/sizeChoose'
  
  /**
   * Default styles
@@ -710,7 +711,7 @@
      let button = null
  
      if (this.props.loop || this.state.index !== this.state.total - 1) {
-       button = this.props.nextButton || <Image source={Constants.Images.Arrow} style={{height:22, width:20, resizeMode:'contain'}}/>
+       button = this.props.nextButton || <Image source={Constants.Images.Arrow} style={{height:22, width:20, margin: horizontalScale(5), resizeMode:'contain'}}/>
        // button = this.props.nextButton || <Text style={styles.buttonText}>›</Text>
      }
  
@@ -728,7 +729,7 @@
      let button = null
  
      if (this.props.loop || this.state.index !== 0) {
-       button = this.props.prevButton || <Image source={Constants.Images.Arrow} style={{transform:[{rotate:"180deg"}], height:22, width:20, resizeMode:'contain'}}/>
+       button = this.props.prevButton || <Image source={Constants.Images.Arrow} style={{transform:[{rotate:"180deg"}], height:22, width:20, margin: horizontalScale(5), resizeMode:'contain'}}/>
        // button = this.props.prevButton || <Text style={styles.buttonText}>‹</Text>
      }
  
