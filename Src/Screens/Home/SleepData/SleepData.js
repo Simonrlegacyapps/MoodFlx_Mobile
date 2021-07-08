@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useReducer } from 'react';
 import {
   View,
   Text,
@@ -31,7 +31,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 // import AppleHealthKit from 'rn-apple-healthkit';
 import moment from 'moment';
-import { dynamicSize } from '../../../Constants/sizeChoose';
+import { dynamicSize, horizontalScale } from '../../../Constants/sizeChoose';
 import { 
   getMonthlySleepData,
   getSleepGraphData,
@@ -42,7 +42,50 @@ import {
   getSleepDataForUpdateApi
 } from './sleepDataService';
 import { dataTypes } from '../../../Constants/constants';
-import { GetStaffUserData } from '../../../apirequest/PostRequestApi';
+import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
+import DataInsights from '../../../Components/DataInsights/DataInsights';
+
+const sleepInsightsInitialState = {
+  dailyInsights: '',
+  weeklyInsights: '',
+  dailySuggestion: '',
+  dailySuggestionType: '',
+  weeklySuggestion: '',
+  weeklySuggestionType: '',
+};
+
+const sleepInsightsTypes = {
+  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
+  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
+  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
+  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
+  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
+  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
+  SET_INSIGHTS: 'SET_INSIGHTS',
+};
+
+function sleepInsightsReducer(state, action) {
+  switch (action.type) {
+    case sleepInsightsTypes.SET_DALIY_INSIGHTS:
+      return {...state, dailyInsights: action.payload};
+    case sleepInsightsTypes.SET_WEEKLY_INSIGHTS:
+      return {...state, weeklyInsights: action.payload};
+    case sleepInsightsTypes.SET_DAILY_SUGGESTION:
+      return {...state, dailySuggestion: action.payload};
+    case sleepInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
+      return {...state, dailySuggestionType: action.payload};
+    case sleepInsightsTypes.SET_WEEKLY_SUGGESTION:
+      return {...state, weeklySuggestion: action.payload};
+    case sleepInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
+      return {...state, weeklySuggestionType: action.payload};
+    case sleepInsightsTypes.SET_INSIGHTS:
+      return action?.payload && typeof action?.payload === 'object'
+        ? {...state, ...action.payload}
+        : state;
+    default:
+      return state;
+  }
+}
 
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
@@ -71,6 +114,10 @@ const SleepData = ({
   const [weeklyAsleepData, setWeeklyAsleepData] = useState(null);
   const [monthlySleepData, setMonthlySleepData] = useState(null);
   const [sleepGraphData, setSleepGraphData] = useState(null);
+  const [insights, setInsights] = useReducer(
+    sleepInsightsReducer,
+    sleepInsightsInitialState,
+  );
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -132,9 +179,10 @@ const SleepData = ({
         const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
         const endDate = e?.end_date ? moment(new Date(e.end_date).getTime()) : null;
         let diff = 0;
-        if (startDate && endDate && startDate.date() === moment().date() && e.type === 'INBED') {
+        if (startDate && endDate && startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') && e.type === 'INBED') {
           diff = endDate.diff(startDate, 'minutes');
           totalMinutes += diff;
+          console.log('======sleep today diff=======', diff, 'total min===', totalMinutes,'---e---', e);
         }
       })
       setSleepMinutesToday(totalMinutes);
@@ -243,20 +291,25 @@ const SleepData = ({
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
+    var params = {
       device_id: deviceId,
       email: UserData?.UserEmail ?? '',
       user_id: UserData?.UserId ?? '',
-    });
+    };
+    // var raw = JSON.stringify({
+    //   device_id: deviceId,
+    //   email: UserData?.UserEmail ?? '',
+    //   user_id: UserData?.UserId ?? '',
+    // });
 
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
-      body: raw,
+      body: JSON.stringify(params),
       // redirect: 'follow',
     };
 
-    console.log(`Get Sleep Data Params`, raw);
+    console.log(`Get Sleep Data Params`, params);
     fetch('https://admin.moodflo.com/api/getSleepQualityReport', requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
@@ -274,9 +327,88 @@ const SleepData = ({
         const graphData = getSleepGraphData({weeklyData: {ASLEEP: asleepArray, INBED: inBedArray}});
         console.log('graphData: ', graphData);
         setSleepGraphData(graphData);
+        return PostRequestApi('getSleepInsights', {...params, status: 'daily'});
+      })
+      .then((res) => {
+        console.log('getSleepInsights daily: ', res?.data?.insights);
+        // console.log('getSleepInsights daily res: ', res);
+        let dailyInsightsPayload = {};
+        dailyInsightsPayload.dailyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        dailyInsightsPayload.dailySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        dailyInsightsPayload.dailySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: sleepInsightsTypes.SET_INSIGHTS,
+          payload: dailyInsightsPayload,
+        });
+        /*
+        Weekly api should be called between
+        Friday @ 12pm until Saturday 6pm
+        */
+        const day = moment().day();
+        const startTime = moment().set({
+          hour: 12,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        const endTime = moment().set({
+          hour: 18,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        if (
+          !isNaN(day) &&
+          (Number(day) === 6 || Number(day) === 7) &&
+          moment().isSameOrAfter(startTime) &&
+          moment().isSameOrBefore(endTime)
+        ) {
+          return PostRequestApi('getSleepInsights', {
+            ...params,
+            status: 'weekly',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        // console.log('getSleepInsights weekly res: ', res);
+        let weeklyInsightsPayload = {};
+        console.log('getSleepInsights weekly: ', res?.data?.insights);
+        weeklyInsightsPayload.weeklyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        weeklyInsightsPayload.weeklySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        weeklyInsightsPayload.weeklySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: sleepInsightsTypes.SET_INSIGHTS,
+          payload: weeklyInsightsPayload,
+        });
       })
       .catch(function (error) {
-        console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, raw);
+        console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, params);
       });
   }, [UserData.UserEmail, UserData.UserId]);
 
@@ -333,38 +465,48 @@ const SleepData = ({
             </Text>
           </View>
         </View>
-        <View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              onPress={() => {
-                setSleepPopUp(true);
-              }}
-              activeOpacity={1}
+        <View style={styles.subViewTwo}>
+          {!UserData.SleepPermission ? (
+            <View
               style={{
-                // fontSize: SIZE / 14,
-                // fontWeight: '500',
+                flex: 1,
+                justifyContent: 'center',
                 alignItems: 'center',
-                width: '100%',
               }}>
-              <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-                SLEEP
+              <TouchableOpacity
+                onPress={() => {
+                  setSleepPopUp(true);
+                }}
+                activeOpacity={1}
+                style={{
+                  alignItems: 'center',
+                  width: '100%',
+                }}>
+                <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
+                  SLEEP
                 </Text>
-              <Text style={styles.swiperText}>
-                You're more likely to be{' '}
-                <Text style={{ color: '#5947D0' }}>excited</Text> and{' '}
-                <Text style={{ color: '#5947D0' }}>happy</Text> when you sleep
+                <Text style={styles.swiperText}>
+                  You're more likely to be{' '}
+                  <Text style={{ color: '#5947D0' }}>excited</Text> and{' '}
+                  <Text style={{ color: '#5947D0' }}>happy</Text> when you sleep
                   more than <Text style={{ color: '#5947D0' }}>7.5hrs</Text>
-              </Text>
-              <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-                Almost there! Try sleep a bit longer
                 </Text>
-            </TouchableOpacity>
-            {UserData.SleepPermission && (
+                <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
+                  Almost there! Try sleep a bit longer
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <DataInsights
+              dailyInsights={insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={insights?.dailySuggestion}
+              dailySuggestionType={insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+            />
+          )}
+          {/* {UserData.SleepPermission && (
               <View
                 style={{
                   position: 'absolute',
@@ -384,8 +526,7 @@ const SleepData = ({
                   Demo
                   </Text>
               </View>
-            )}
-          </View>
+            )} */}
 
           <View style={{ marginBottom: 50 }}>
             <StarProgress
@@ -580,6 +721,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontFamily: RubikLight,
     color: '#747690',
+  },
+  subViewTwo: {
+    marginTop: horizontalScale(20),
   },
   swiperText: {
     fontSize: SIZE / 14,
