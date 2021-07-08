@@ -75,7 +75,7 @@ const lightInsightsTypes = {
   SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
   SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
   SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
-  SET_LIGHT_INSIGHTS: 'SET_LIGHT_INSIGHTS',
+  SET_INSIGHTS: 'SET_INSIGHTS',
 };
 
 function lightInsightsReducer(state, action) {
@@ -92,7 +92,7 @@ function lightInsightsReducer(state, action) {
       return {...state, weeklySuggestion: action.payload};
     case lightInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
       return {...state, weeklySuggestionType: action.payload};
-    case lightInsightsTypes.SET_LIGHT_INSIGHTS:
+    case lightInsightsTypes.SET_INSIGHTS:
       return action?.payload && typeof action?.payload === 'object'
         ? {...state, ...action.payload}
         : state;
@@ -201,7 +201,7 @@ const LightData = ({
         console.log('✅ ✅ ✅ ✅ Success Get Light Data ✅ ✅ ✅ ✅');
         console.log('Get Light Data response: ', response?.data?.lightData);
         console.log('Get Light Data response: ', Object.values(response?.data?.lightData));
-        if(response?.data?.lightData) {
+        if (response?.data?.lightData) {
           const lightArray = Object.values(response?.data?.lightData);
           if(Array.isArray(lightArray) && lightArray.length > 0){
             const lightGraphData = getLightGraphData(lightArray);
@@ -230,7 +230,7 @@ const LightData = ({
             ? res.data.insights.message2Type
             : '';
         setInsights({
-          type: lightInsightsTypes.SET_LIGHT_INSIGHTS,
+          type: lightInsightsTypes.SET_INSIGHTS,
           payload: dailyInsightsPayload,
         });
         /*
@@ -281,7 +281,7 @@ const LightData = ({
             ? res.data.insights.message2Type
             : '';
         setInsights({
-          type: lightInsightsTypes.SET_LIGHT_INSIGHTS,
+          type: lightInsightsTypes.SET_INSIGHTS,
           payload: weeklyInsightsPayload,
         });
       })
