@@ -1198,7 +1198,7 @@ export default function MoodDetector({navigation}) {
             backgroundColor: pSBC(0.25, color),
           }}
         />
-        <View
+        {/* <View
           pointerEvents="none"
           style={{
             width: '100%',
@@ -1217,8 +1217,8 @@ export default function MoodDetector({navigation}) {
             }}>
             Passive/Calm
           </Text>
-        </View>
-        <View
+        </View> */}
+        {/* <View
           pointerEvents="none"
           style={{
             flexDirection: 'row',
@@ -1243,8 +1243,8 @@ export default function MoodDetector({navigation}) {
             }}>
             Negative
           </Text>
-        </View>
-        <View
+        </View> */}
+        {/* <View
           pointerEvents="none"
           style={{
             width: '100%',
@@ -1262,8 +1262,8 @@ export default function MoodDetector({navigation}) {
             }}>
             Active/Aroused
           </Text>
-        </View>
-        <View
+        </View> */}
+        {/* <View
           pointerEvents="none"
           style={{
             hieght: '100%',
@@ -1285,7 +1285,7 @@ export default function MoodDetector({navigation}) {
             }}>
             Positive
           </Text>
-        </View>
+        </View> */}
       </View>
     );
   };
