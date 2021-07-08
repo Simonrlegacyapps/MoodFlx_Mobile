@@ -30,14 +30,30 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import PopUp from '../../../Components/PopUp/PopUp';
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
-import {dynamicSize, horizontalScale, isTablet} from '../../../Constants/sizeChoose';
+import {
+  dynamicSize,
+  horizontalScale,
+  isTablet,
+} from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
-import {DayTemp, Lat, Long, SetLocation, WeatherPerm} from '../../../redux/actions/actions';
+import {
+  DayTemp,
+  Lat,
+  Long,
+  SetLocation,
+  WeatherPerm,
+} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
-import { defaultLocation, isCountryIndia, weatherActions, weatherApiDataTypes, weatherTypes } from '../../../Constants/constants';
-import { AppPermissions } from '../../../services/appPermissions';
+import {
+  defaultLocation,
+  isCountryIndia,
+  weatherActions,
+  weatherApiDataTypes,
+  weatherTypes,
+} from '../../../Constants/constants';
+import {AppPermissions} from '../../../services/appPermissions';
 
 let weatherData = null;
 
@@ -104,7 +120,7 @@ const WeatherData = ({
     }
     return () => {
       weatherData = null;
-    }
+    };
   }, [swiperIndex]);
 
   const getUserLocation = () => {
@@ -116,14 +132,24 @@ const WeatherData = ({
         .then((location) => {
           console.log('Success', location);
           // setlat(location.latitude);
-          dispatch(SetLocation({
-            lat: location.latitude,
-            lon: location.longitude,
-            }));
-          location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, function (flag){
-            location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude);
-            resolve(flag);
-          });
+          dispatch(
+            SetLocation({
+              lat: location.latitude,
+              lon: location.longitude,
+            }),
+          );
+          location?.latitude &&
+            location?.longitude &&
+            CheckForWeather(
+              location?.latitude,
+              location?.longitude,
+              function (flag) {
+                location?.latitude &&
+                  location?.longitude &&
+                  WeatherDayData(location?.latitude, location?.longitude);
+                resolve(flag);
+              },
+            );
           // if (UserData.lat == null || UserData.lon == null) {
           // }
         })
@@ -132,7 +158,7 @@ const WeatherData = ({
           resolve(false);
           console.log('error', code, message);
         });
-    })
+    });
   };
 
   let valueHours = 0;
@@ -150,7 +176,6 @@ const WeatherData = ({
         response?.data?.hourly && setAllDayWeather(response.data.hourly);
         if (weatherData) {
           if (response?.data?.hourly) {
-
             for (let i in response.data.hourly) {
               if (
                 (weatherData?.weather?.[0]?.description ?? -1) ===
@@ -179,7 +204,7 @@ const WeatherData = ({
   const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let WeatherP = await JSON.parse(Wp);
-    if(!WeatherP){
+    if (!WeatherP) {
       console.log('Cannot sync weather data without permisison.');
       return;
     }
@@ -274,7 +299,7 @@ const WeatherData = ({
   useEffect(() => {
     let lat = UserData.lat;
     let lng = UserData.lon;
-    if(!UserData.WeatherPermission){
+    if (!UserData.WeatherPermission) {
       lat = defaultLocation.latitude;
       lng = defaultLocation.longitude;
     }
@@ -299,13 +324,23 @@ const WeatherData = ({
         }
       });
     }
-  }, [UserData.lat, UserData.lon, UserData.WeatherPermission, UserData.UserId, UserData.UserEmail]);
+  }, [
+    UserData.lat,
+    UserData.lon,
+    UserData.WeatherPermission,
+    UserData.UserId,
+    UserData.UserEmail,
+  ]);
 
-  const CheckForWeather = async (loc_lat = UserData.lat, loc_long = UserData.lon, onFinish) => {
+  const CheckForWeather = async (
+    loc_lat = UserData.lat,
+    loc_long = UserData.lon,
+    onFinish,
+  ) => {
     // let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     // let WeatherP = await JSON.parse(Wp);
     // dispatch(WeatherPerm(WeatherP));
-    if(!(loc_lat && loc_long)) {
+    if (!(loc_lat && loc_long)) {
       onFinish?.(false);
       return;
     }
@@ -315,7 +350,10 @@ const WeatherData = ({
         `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
-        console.log(' ✅ ✅ ✅ ✅ Success CheckForWeather✅ ✅ ✅ ✅ ', response?.data);
+        console.log(
+          ' ✅ ✅ ✅ ✅ Success CheckForWeather✅ ✅ ✅ ✅ ',
+          response?.data,
+        );
         dispatch(DayTemp(response?.data));
         weatherData = response?.data ? response?.data : weatherData;
         syncWeatherData(loc_lat, loc_long);
@@ -356,22 +394,22 @@ const WeatherData = ({
         .then((response) => response.json())
         .then(async (result) => {
           console.log('Get weather Graph data', result),
-          console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
-            setGraph(result.weatherData);
+            console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
+          setGraph(result.weatherData);
           data.push({});
           // await syncWeatherData();
         })
         .catch((error) => console.log('error', error));
-        clearTimeout(timeOutId);
-        timeOutId = null;
+      clearTimeout(timeOutId);
+      timeOutId = null;
     }, 1000);
     return () => {
-      if(timeOutId !== null) {
+      if (timeOutId !== null) {
         clearTimeout(timeOutId);
         timeOutId = null;
       }
-    }
-  }
+    };
+  };
 
   useEffect(() => {
     getWeather();
@@ -382,27 +420,27 @@ const WeatherData = ({
       x: 1,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[0]?.temp_max
+          ? !Graph[6]?.temp_max
             ? 0
-            : Graph[0].temp_max
+            : Graph[6] && Graph[6].temp_max
           : 0,
     },
     {
       x: 2,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[1]?.temp_max
+          ? !Graph[5]?.temp_max
             ? 0
-            : Graph[1].temp_max
+            : Graph[5].temp_max
           : 0,
     },
     {
       x: 3,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[2]?.temp_max
+          ? !Graph[4]?.temp_max
             ? 0
-            : Graph[2].temp_max
+            : Graph[4].temp_max
           : 0,
     },
     {
@@ -418,27 +456,27 @@ const WeatherData = ({
       x: 5,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[4]?.temp_max
+          ? !Graph[2]?.temp_max
             ? 0
-            : Graph[4].temp_max
+            : Graph[2].temp_max
           : 0,
     },
     {
       x: 6,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[5]?.temp_max
+          ? !Graph[1]?.temp_max
             ? 0
-            : Graph[5].temp_max
+            : Graph[1].temp_max
           : 0,
     },
     {
       x: 7,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[6]?.temp_max
+          ? !Graph[0]?.temp_max
             ? 0
-            : Graph[6] && Graph[6].temp_max
+            : Graph[0].temp_max
           : 0,
     },
   ];
@@ -448,27 +486,27 @@ const WeatherData = ({
       x: 1,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[0]?.temp_min
+          ? !Graph[6]?.temp_min
             ? 0
-            : Graph[0].temp_min
+            : Graph[6] && Graph[6].temp_min
           : 0,
     },
     {
       x: 2,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[1]?.temp_min
+          ? !Graph[5]?.temp_min
             ? 0
-            : Graph[1].temp_min
+            : Graph[5].temp_min
           : 0,
     },
     {
       x: 3,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[2]?.temp_min
+          ? !Graph[4]?.temp_min
             ? 0
-            : Graph[2].temp_min
+            : Graph[4].temp_min
           : 0,
     },
     {
@@ -484,33 +522,37 @@ const WeatherData = ({
       x: 5,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[4]?.temp_min
+          ? !Graph[2]?.temp_min
             ? 0
-            : Graph[4].temp_min
+            : Graph[2].temp_min
           : 0,
     },
     {
       x: 6,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[5]?.temp_min
+          ? !Graph[1]?.temp_min
             ? 0
-            : Graph[5].temp_min
+            : Graph[1].temp_min
           : 0,
     },
     {
       x: 7,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[6]?.temp_min
+          ? !Graph[0]?.temp_min
             ? 0
-            : Graph[6] && Graph[6].temp_min
+            : Graph[0].temp_min
           : 0,
     },
   ];
 
-  let heightProp = isTablet ? horizontalScale(30) : (SIZE / 4.3);
-  let widthProp = isTablet ? Math.round(SIZE - (SIZE * 0.48)) : Math.round(SIZE - 138);
+  console.log(`data`, data);
+
+  let heightProp = isTablet ? horizontalScale(30) : SIZE / 4.3;
+  let widthProp = isTablet
+    ? Math.round(SIZE - SIZE * 0.48)
+    : Math.round(SIZE - 138);
 
   const max =
     data &&
@@ -600,16 +642,23 @@ const WeatherData = ({
   // console.log(`AllDayWeather`, AllDayWeather);
 
   const _weatherType = ManualWeatherType
-  ? ManualWeatherType
-  : weatherData
-  ? findWeather(Weather?.weather?.[0]?.main)
-  : weatherTypes.Cloudy;
+    ? ManualWeatherType
+    : weatherData
+    ? findWeather(Weather?.weather?.[0]?.main)
+    : weatherTypes.Cloudy;
 
-  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Cloudy;
+  const _weatherAction =
+    weatherActions?.[_weatherType] ?? weatherActions.Cloudy;
 
-  const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Cloudy;
-  const _smallWeatherIcon = _weatherType === weatherTypes.Rainy ? Constants.Images.RainyHour : _largeWeatherImg;
-  const currentTemp = ManualTemp ? ManualTemp : Math.round(Weather?.main?.temp ? Weather.main.temp : '0');
+  const _largeWeatherImg =
+    Constants.Images?.[_weatherType] ?? Constants.Images.Cloudy;
+  const _smallWeatherIcon =
+    _weatherType === weatherTypes.Rainy
+      ? Constants.Images.RainyHour
+      : _largeWeatherImg;
+  const currentTemp = ManualTemp
+    ? ManualTemp
+    : Math.round(Weather?.main?.temp ? Weather.main.temp : '0');
 
   return (
     <View style={styles.container}>
@@ -734,7 +783,9 @@ const WeatherData = ({
                   Today's Weather
                 </Text>
                 <Text style={[styles.SmallThinText, styles.city]}>
-                  {UserData.WeatherPermission ? Weather?.name : 'Sync your weather'}
+                  {UserData.WeatherPermission
+                    ? Weather?.name
+                    : 'Sync your weather'}
                 </Text>
                 <View>
                   <TouchableOpacity
@@ -759,9 +810,7 @@ const WeatherData = ({
                         style={{margin: 10, marginHorizontal: 20}}
                       />
                       <View>
-                        <Text style={[styles.Card1Text]}>
-                          {_weatherType}
-                        </Text>
+                        <Text style={[styles.Card1Text]}>{_weatherType}</Text>
                         <Text
                           style={[
                             ,
@@ -770,7 +819,7 @@ const WeatherData = ({
                               fontSize: dynamicSize(32),
                             },
                           ]}>
-                           {currentTemp}
+                          {currentTemp}
                           ºC
                         </Text>
                       </View>

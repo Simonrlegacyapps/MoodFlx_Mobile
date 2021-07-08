@@ -38,13 +38,13 @@ const BarGraph = ({
         {value: max > 0 ? Math.round(min) : 0, hours: 0}, //5
       ];
 
-  const a = moment().subtract(0, 'days').startOf('day').format('dddd');
-  const b = moment().subtract(1, 'days').startOf('day').format('dddd');
-  const c = moment().subtract(2, 'days').startOf('day').format('dddd');
+  const g = moment().subtract(0, 'days').startOf('day').format('dddd');
+  const f = moment().subtract(1, 'days').startOf('day').format('dddd');
+  const e = moment().subtract(2, 'days').startOf('day').format('dddd');
   const d = moment().subtract(3, 'days').startOf('day').format('dddd');
-  const e = moment().subtract(4, 'days').startOf('day').format('dddd');
-  const f = moment().subtract(5, 'days').startOf('day').format('dddd');
-  const g = moment().subtract(6, 'days').startOf('day').format('dddd');
+  const c = moment().subtract(4, 'days').startOf('day').format('dddd');
+  const b = moment().subtract(5, 'days').startOf('day').format('dddd');
+  const a = moment().subtract(6, 'days').startOf('day').format('dddd');
   // console.log(`a`, a);
 
   const bars = [

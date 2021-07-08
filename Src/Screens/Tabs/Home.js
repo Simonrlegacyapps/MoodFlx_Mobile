@@ -1324,7 +1324,11 @@ const App = (props) => {
 
   return (
     <View style={{flex: 1}}>
-      {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
+      {Platform.OS === 'ios' ? (
+        <StatusBar barStyle="dark-content" />
+      ) : (
+        <StatusBar barStyle="dark-content" backgroundColor={'white'} />
+      )}
       <Swiper
         // focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}

@@ -74,8 +74,13 @@ import NotifService from '../../services/notifService';
 import {RubikMedium} from '../../Constants/fonts/Fonts';
 import {useFocusEffect} from '@react-navigation/native';
 import messaging, {firebase} from '@react-native-firebase/messaging';
-import {defaultLocation, hapticsTopFlags, isCountryIndia, moodTypes} from '../../Constants/constants';
-import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
+import {
+  defaultLocation,
+  hapticsTopFlags,
+  isCountryIndia,
+  moodTypes,
+} from '../../Constants/constants';
+import {getCurrentRoute, navigate} from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 
 let prevXY = {dx: 0, dy: 0};
@@ -121,7 +126,7 @@ export default function MoodDetector({navigation}) {
   const [
     isSkipMoodInputModalVisible,
     setIsSkipMoodInputModalVisible,
-  ] = useState(false); 
+  ] = useState(false);
   const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
   let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
@@ -664,7 +669,7 @@ export default function MoodDetector({navigation}) {
       dispatch(UserDivision(division));
       dispatch(HealthPerm(HealthP));
       dispatch(WeatherPerm(WeatherP));
-    } catch (error){
+    } catch (error) {
       console.log('error getting AsyncStorage values', error);
     }
   };
@@ -750,7 +755,7 @@ export default function MoodDetector({navigation}) {
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
-            const { code, message } = error;
+            const {code, message} = error;
             console.log('error', code, message);
           });
     }, 150);
@@ -864,12 +869,12 @@ export default function MoodDetector({navigation}) {
 
   const findId = async () => {
     let mood_type = moodTypes.regular;
-    if(wheelSize === mediumWheelSize) {
-      mood_type = moodTypes.pretty
-    } else if(wheelSize === largeWheelSize) {
-      mood_type = moodTypes.very
+    if (wheelSize === mediumWheelSize) {
+      mood_type = moodTypes.pretty;
+    } else if (wheelSize === largeWheelSize) {
+      mood_type = moodTypes.very;
     }
-            
+
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
@@ -894,18 +899,25 @@ export default function MoodDetector({navigation}) {
             if (address_list?.[i]?.types?.includes?.('country')) {
               country_info = address_list?.[i]?.long_name ?? '';
             }
-            if (address_list?.[i]?.types?.includes?.('administrative_area_level_1')) {
+            if (
+              address_list?.[i]?.types?.includes?.(
+                'administrative_area_level_1',
+              )
+            ) {
               state_info = address_list?.[i]?.long_name ?? '';
             }
-            if (address_list?.[i]?.types?.includes?.('administrative_area_level_2')) {
+            if (
+              address_list?.[i]?.types?.includes?.(
+                'administrative_area_level_2',
+              )
+            ) {
               city_info = address_list?.[i]?.long_name ?? '';
             }
           }
         })
         .catch((err) => console.log(`weather api location err`, err));
-
     }
-    const Id = UserData.AllMoods.find(({ name }) => {
+    const Id = UserData.AllMoods.find(({name}) => {
       // console.log(`name`, name);
       return name === emotionText;
     });
@@ -928,9 +940,11 @@ export default function MoodDetector({navigation}) {
         mood_type,
         city: isIndia && city_info ? defaultLocation.city : city_info,
         state: isIndia && state_info ? defaultLocation.state : state_info,
-        country: isIndia && country_info ? defaultLocation.country : country_info,
+        country:
+          isIndia && country_info ? defaultLocation.country : country_info,
         lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
-        long: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
+        long:
+          isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
 
         email: UserData.UserEmail,
         user_id: UserData.UserId,
@@ -999,7 +1013,7 @@ export default function MoodDetector({navigation}) {
                     lat: lat,
                     long: lng,
                     screen: 'Home',
-                    isMoodUpdate: true
+                    isMoodUpdate: true,
                   });
                 });
                 const notifService = new NotifService();
@@ -1149,7 +1163,7 @@ export default function MoodDetector({navigation}) {
   };
 
   const renderBlocks = () => {
-    const fontSize = getFontSize(12)
+    const fontSize = getFontSize(12);
     const lineHeight = getLineHeight(fontSize);
     return (
       <View
@@ -1165,7 +1179,11 @@ export default function MoodDetector({navigation}) {
             flex: 1,
           },
         ]}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
+        {Platform.OS === 'ios' ? (
+          <StatusBar barStyle="dark-content" />
+        ) : (
+          <StatusBar barStyle="dark-content" backgroundColor={'white'} />
+        )}
         <View
           pointerEvents="none"
           style={{
