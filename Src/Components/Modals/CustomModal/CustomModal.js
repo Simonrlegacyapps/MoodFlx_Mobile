@@ -52,19 +52,28 @@ const CustomModal = ({
         />
         <View style={styles.upperContainer}>
           <Text style={styles.textOne}>{modalText ?? ''}</Text>
-
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={styles.buttonOne}
-              onPress={onClickButtonOne}>
-              <Text style={styles.buttonOneText}>{buttonOneText ?? 'Yes'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.buttonOne}
-              onPress={onClickButtonTwo}>
-              <Text style={styles.buttonOneText}>{buttonTwoText ?? 'No'}</Text>
-            </TouchableOpacity>
-          </View>
+          {(!!onClickButtonOne || !!onClickButtonTwo) && (
+            <View style={styles.buttonsContainer}>
+              {!!onClickButtonOne && (
+                <TouchableOpacity
+                  style={styles.buttonOne}
+                  onPress={onClickButtonOne}>
+                  <Text style={styles.buttonOneText}>
+                    {buttonOneText ?? 'Yes'}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {!!onClickButtonTwo && (
+                <TouchableOpacity
+                  style={styles.buttonOne}
+                  onPress={onClickButtonTwo}>
+                  <Text style={styles.buttonOneText}>
+                    {buttonTwoText ?? 'No'}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
       </View>
     </Modal>
@@ -114,6 +123,7 @@ const styles = StyleSheet.create({
     // height: (metrics.screenWidth * 0.8) / 1.5,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingBottom: horizontalScale(30),
   },
   textOne: {
     marginTop: horizontalScale(30),
@@ -126,11 +136,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    marginTop: horizontalScale(20),
+    marginTop: horizontalScale(30),
   },
   buttonOne: {
-    marginTop: horizontalScale(40),
-    marginBottom: horizontalScale(30),
+    // marginTop: horizontalScale(40),
+    // marginBottom: horizontalScale(30),
     // width: '100%',
     flex: 0.4,
     backgroundColor: '#7265E3',
