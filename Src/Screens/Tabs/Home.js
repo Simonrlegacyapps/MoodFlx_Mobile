@@ -133,7 +133,7 @@ const App = (props) => {
   // const [Height, setHeight] = useState(false);
   const [Calories, setCalories] = useState(false);
   const [Sleep, setSleep] = useState(false);
-  const [_HeartRate, setHeartRate] = useState(false);
+  // const [HeartRate, setHeartRate] = useState(false);
   const [Distance, setDistance] = useState(false);
   const [LatestWeight, setLatestWeight] = useState(false);
   const [MovingTime, setMovingTime] = useState(false);
@@ -163,6 +163,7 @@ const App = (props) => {
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
   const [isInstallGoogleFitModalVisible, setIsInstallGoogleFitModalVisible] = useState(false);
+  const [healthUpdateApiCount, setHealthUpdateApiCount] = useState(0);
   const {lat, long, isMoodUpdate} = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
@@ -622,7 +623,7 @@ const App = (props) => {
               return;
             }
             HeartRate = results;
-            setHeartRate(results);
+            // setHeartRate(results);
             console.log('Heart Samples', results);
             count++;
             console.log(`count==> `, count);
@@ -1146,7 +1147,7 @@ const App = (props) => {
           steps: totalSteps,
           distance: totalDistance,
           calories: userCalories,
-          heart_Rate: totalHeartRate,
+          heart_rate: totalHeartRate,
           high_bp: highBp,
           low_bp: lowBp,
         });
@@ -1253,6 +1254,7 @@ const App = (props) => {
     setTodayDistance(Fsteps.length > 0 ? (Fsteps[0].distance / 5000) * 100 : 0);
     setTodayCalories(Fsteps.length > 0 ? (Fsteps[0].calories / 1000) * 100 : 0);
     setMoveTime(WalkTime.length > 0 ? (WalkTime[0].walkTime / 120) * 100 : 0);
+    setHealthUpdateApiCount((e) => e + 1);
   };
 
   const dismissInstallGoogleFitModal = useCallback(() => {
@@ -1334,6 +1336,7 @@ const App = (props) => {
           fives={Sixes}
           MoodCount={MoodCount}
           Loading={Loading}
+          healthUpdateApiCount={healthUpdateApiCount}
         />
 
         <SleepData

@@ -58,7 +58,7 @@ function VideoModal({ModalVisible, dismissModalHandler}) {
               repeat
               resizeMode={'contain'}
               //   controls
-              source={require('../../../assets/Video/video.mp4')} // Callback when video cannot be loaded
+              source={require('../../../assets/Video/videoDemo.mp4')} // Callback when video cannot be loaded
               style={{height: '97%', width: '100%', position: 'absolute'}}
             />
           </View>

@@ -2,7 +2,8 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useCallback
+  useCallback,
+  useReducer,
 } from 'react';
 import {
   View,
@@ -36,7 +37,7 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import PopUp from '../../../Components/PopUp/PopUp';
-import {dynamicSize, getLineHeight} from '../../../Constants/sizeChoose';
+import {dynamicSize, getFontSize, getLineHeight, horizontalScale, verticalScale} from '../../../Constants/sizeChoose';
 import { LightPerm } from '../../../redux/actions/actions';
 const {SensorManager} = NativeModules;
 import {useDispatch, useSelector} from 'react-redux';
@@ -46,7 +47,8 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
 import { LightGraph } from '../../../Components/LightGraph/LightGraph';
 import { getLightDataIOS } from '../../../services/moodDataModuleService';
-
+import PostRequestApi from '../../../apirequest/PostRequestApi';
+import DataInsights from '../../../Components/DataInsights/DataInsights';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -54,6 +56,50 @@ let currentLightData = -1;
 
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
+const lightInsightsInitialState = {
+  dailyInsights: '',
+  weeklyInsights: '',
+  dailySuggestion: '',
+  dailySuggestionType: '',
+  weeklySuggestion: '',
+  weeklySuggestionType: '',
+  demoDailyInsights: 'Today your Saddest mood input was when there was 180 lux in the room',
+  demoWeeklyInsights: 'This week your Saddest mood input was when there was 180 lux in the room',
+  demoSuggestion: 'Try turning up the lights and aim for around 300 lux',
+};
+
+const lightInsightsTypes = {
+  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
+  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
+  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
+  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
+  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
+  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
+  SET_INSIGHTS: 'SET_INSIGHTS',
+};
+
+function lightInsightsReducer(state, action) {
+  switch (action.type) {
+    case lightInsightsTypes.SET_DALIY_INSIGHTS:
+      return {...state, dailyInsights: action.payload};
+    case lightInsightsTypes.SET_WEEKLY_INSIGHTS:
+      return {...state, weeklyInsights: action.payload};
+    case lightInsightsTypes.SET_DAILY_SUGGESTION:
+      return {...state, dailySuggestion: action.payload};
+    case lightInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
+      return {...state, dailySuggestionType: action.payload};
+    case lightInsightsTypes.SET_WEEKLY_SUGGESTION:
+      return {...state, weeklySuggestion: action.payload};
+    case lightInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
+      return {...state, weeklySuggestionType: action.payload};
+    case lightInsightsTypes.SET_INSIGHTS:
+      return action?.payload && typeof action?.payload === 'object'
+        ? {...state, ...action.payload}
+        : state;
+    default:
+      return state;
+  }
+}
 
 const LightData = ({
   MoodCount,
@@ -61,6 +107,10 @@ const LightData = ({
 }) => {
   const [light, setLight] = useState(-1);
   const [Graph, setGraph] = useState(null);
+  const [insights, setInsights] = useReducer(
+    lightInsightsReducer,
+    lightInsightsInitialState,
+  );
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [lightGraphData, setLightGraphData] = useState(null);
   const isUpdateLightApiCalled = useRef(false);
@@ -68,154 +118,55 @@ const LightData = ({
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
-  const lines = [
-    {value: 500, hours: 'Perfect', bold: false},
-    {value: 400, hours: 'Almost', bold: false},
-    {value: 300, hours: 'Good', bold: true},
-    {value: 200, hours: 'Better', bold: false},
-    {value: 100, hours: 'Fine', bold: false},
-    {value: 0, hours: 'Poor', bold: false},
-  ];
-
-  const data = [
-    {
-      x: 1,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 3 : 0) : 3,
-    },
-    {
-      x: 2,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 5 : 0) : 5,
-    },
-    {
-      x: 3,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 4 : 0) : 4,
-    },
-    {
-      x: 4,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 2 : 0) : 2,
-    },
-    {
-      x: 5,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 1 : 0) : 1,
-    },
-    {
-      x: 6,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 5 : 0) : 5,
-    },
-    {
-      x: 7,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 3 : 0) : 3,
-    },
-  ];
-
-  const dataLow = [
-    {
-      x: 1,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 4 : 0) : 4,
-    },
-    {
-      x: 2,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 7 : 0) : 7,
-    },
-    {
-      x: 3,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 4 : 0) : 4,
-    },
-    {
-      x: 4,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 6 : 0) : 6,
-    },
-    {
-      x: 5,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 2 : 0) : 2,
-    },
-    {
-      x: 6,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 0 : 0) : 0,
-    },
-    {
-      x: 7,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 6 : 0) : 6,
-    },
-  ];
-
-  let heightProp = SIZE / 4.3;
-  let widthProp = Math.round(SIZE - 138);
-
-  const max =
-    data &&
-    Math.max.apply(
-      Math,
-      data.map(function (o) {
-        return 5;
-        // return o.y;
-      }),
-    );
-
-  const Lowmax =
-    dataLow &&
-    Math.max.apply(
-      Math,
-      dataLow.map(function (o) {
-        return 7;
-        // return o.y;
-      }),
-    );
-
-    function getLightGraphData(dataArray) {
-      let lightGraphData = [];
-      let weekDates = [];
-      let dates = [6, 5, 4, 3, 2, 1, 0];
-      dates.forEach((e, idx) => {
-        const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
-        weekDates.push(d);
-      });
-      weekDates.forEach((e, idx) => {
-        const eData = moment(e);
-        let data = null;
-        let day = '';
-        day = eData.format('dd');
-        // INBED
-        dataArray.forEach((d) => {
-          const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
-          let value = 0;
-          if(d?.value && !isNaN(d?.value)){
-            value = Number.parseInt(Number(d.value), 10);
-          }
-          if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
-            data = {
-              x: idx + 1,
-              y: value,
-              day,
-            }
-          }
-        });
-        if (data === null) {
+  function getLightGraphData(dataArray) {
+    let lightGraphData = [];
+    let weekDates = [];
+    let dates = [6, 5, 4, 3, 2, 1, 0];
+    dates.forEach((e, idx) => {
+      const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+      weekDates.push(d);
+    });
+    weekDates.forEach((e, idx) => {
+      const eData = moment(e);
+      let data = null;
+      let day = '';
+      day = eData.format('dd');
+      // INBED
+      dataArray.forEach((d) => {
+        const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
+        let value = 0;
+        if (d?.value && !isNaN(d?.value)) {
+          value = Number.parseInt(Number(d.value), 10);
+        }
+        if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
           data = {
             x: idx + 1,
-            y: 0,
-            day
+            y: value,
+            day,
           }
         }
-        lightGraphData.push(data);
       });
-      return lightGraphData;
-    }
+      if (data === null) {
+        data = {
+          x: idx + 1,
+          y: 0,
+          day
+        }
+      }
+      lightGraphData.push(data);
+    });
+    return lightGraphData;
+  }
 
   const VerifyDone = async () => {
-    if(UserData.LightPermission) {
-      callUpdateLightApi(light);
-    } else {
-      await AsyncStorage.setItem('GiveLightPerm', 'true');
-      dispatch(LightPerm(true));
-    }
+    callUpdateLightApi(light);
     setopenActionSheet(false);
   };
 
   const callUpdateLightApi = (_light) => {
     isUpdateLightApiCalled.current = true;
     const deviceId = DeviceInfo.getUniqueId();
-    if(_light !== -1 && UserData.LightPermission) {
+    if (_light !== -1) {
       // _light = isNaN(_light) ? Number.parseInt(_light, 10) : _light;
       const params = {
         "device_id": deviceId,
@@ -250,7 +201,7 @@ const LightData = ({
         console.log('✅ ✅ ✅ ✅ Success Get Light Data ✅ ✅ ✅ ✅');
         console.log('Get Light Data response: ', response?.data?.lightData);
         console.log('Get Light Data response: ', Object.values(response?.data?.lightData));
-        if(response?.data?.lightData) {
+        if (response?.data?.lightData) {
           const lightArray = Object.values(response?.data?.lightData);
           if(Array.isArray(lightArray) && lightArray.length > 0){
             const lightGraphData = getLightGraphData(lightArray);
@@ -258,6 +209,81 @@ const LightData = ({
             setLightGraphData(lightGraphData)
           }
         }
+        return PostRequestApi('getLightInsights', {...params, "status":"daily"});
+      })
+      .then((res) => {
+        console.log('getLightInsights daily res: ', res);
+        let dailyInsightsPayload = {};
+        dailyInsightsPayload.dailyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        dailyInsightsPayload.dailySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        dailyInsightsPayload.dailySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: lightInsightsTypes.SET_INSIGHTS,
+          payload: dailyInsightsPayload,
+        });
+        /*
+        Weekly api should be called between
+        Friday @ 12pm until Saturday 6pm
+        */
+        const day = moment().day();
+        const startTime = moment().set({
+          hour: 12,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        const endTime = moment().set({
+          hour: 18,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        if (
+          !isNaN(day) &&
+          (Number(day) === 6 || Number(day) === 7) &&
+          moment().isSameOrAfter(startTime) &&
+          moment().isSameOrBefore(endTime)
+        ) {
+          return PostRequestApi('getLightInsights', {...params, "status":"weekly"});
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        console.log('getLightInsights weekly res: ', res);
+        let weeklyInsightsPayload = {};
+        console.log('weeklyInsights: ', res?.data?.insights);
+        weeklyInsightsPayload.weeklyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        weeklyInsightsPayload.weeklySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        weeklyInsightsPayload.weeklySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: lightInsightsTypes.SET_INSIGHTS,
+          payload: weeklyInsightsPayload,
+        });
       })
       .catch(function (error) {
         console.log('❌ ❌ ❌ ❌ Error Get Light Data ❌ ❌ ❌ ❌', error);
@@ -298,7 +324,7 @@ const LightData = ({
 
   // Light data using react-native-sensor-manager
   useEffect(() => {
-    if (UserData.LightPermission && (light === -1 || swiperIndex === 3)) {
+    if (light === -1 || swiperIndex === 3) {
       isStopLightTimeout = false;
       if (Platform.OS === 'android') {
         SensorManager.startLightSensor(100);
@@ -333,27 +359,22 @@ const LightData = ({
           isStopLightTimeout = true;
         };
       }
-    } else if (UserData.LightPermission && light !== -1 && swiperIndex !== 3) {
+    } else if (light !== -1 && swiperIndex !== 3) {
       isStopLightTimeout = true;
     }
-  }, [UserData.LightPermission, getLightIOS, light, swiperIndex]);
+  }, [getLightIOS, light, swiperIndex]);
 
   useEffect(() => {
-    if (
-      !isUpdateLightApiCalled.current &&
-      UserData.LightPermission &&
-      light !== -1
-    ) {
+    if (!isUpdateLightApiCalled.current && light !== -1) {
       callUpdateLightApi(light);
     }
     return () => {
       lightData = null;
       currentLightData = -1;
-    }
+    };
+  }, [light]);
 
-  }, [UserData.LightPermission, light]);
-
-  const lux = !UserData.LightPermission ? 400 : light === -1 ? 0 : light;
+  const lux = light === -1 ? 0 : light;
 
   return (
     <View style={styles.container}>
@@ -408,8 +429,16 @@ const LightData = ({
             </Text>
           </View>
         </View>
-        <View>
-          <View
+        <View style={styles.subViewTwo}>
+          <DataInsights
+            dailyInsights={insights?.dailyInsights}
+            weeklyInsights={insights?.weeklyInsights}
+            dailySuggestion={insights?.dailySuggestion}
+            dailySuggestionType={insights?.dailySuggestionType}
+            weeklySuggestion={insights?.weeklySuggestion}
+            weeklySuggestionType={insights?.weeklySuggestionType}
+          />
+          {/* <View
             style={{
               flex: 1,
               justifyContent: 'center',
@@ -451,7 +480,7 @@ const LightData = ({
               </Text>
               </View>
             )}
-          </View>
+          </View> */}
 
           <View
             style={{
@@ -493,7 +522,7 @@ const LightData = ({
             )}
           </View>
 
-          {!UserData.LightPermission && (
+          {/* {!UserData.LightPermission && (
             <View
               style={{
                 position: 'absolute',
@@ -515,9 +544,9 @@ const LightData = ({
                 Demo
               </Text>
             </View>
-          )}
+          )} */}
 
-          {!UserData.LightPermission  && (
+          {/* {!UserData.LightPermission  && (
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {
@@ -532,12 +561,12 @@ const LightData = ({
                 backgroundColor: 'black',
                 opacity: 0,
               }}></TouchableOpacity>
-          )}
+          )} */}
         </View>
       </ScrollView>
 
       <PopUp
-        permission={UserData.LightPermission}
+        permission
         ComingUp={false}
         image={Constants.Images.Sleepimage}
         dataType={'light'}
@@ -670,6 +699,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontFamily: RubikLight,
     color: '#747690',
+  },
+  subViewTwo: {
+    marginTop: horizontalScale(20),
   },
   swiperText: {
     fontSize: SIZE / 14,

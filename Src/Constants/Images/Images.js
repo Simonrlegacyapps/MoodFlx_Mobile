@@ -38,4 +38,5 @@ export default {
   Bulb: require('../../../assets/newImage/Bulb/Bulb.png'),
   ScreenPopUpImg: require('../../../assets/newImage/ScreenPopUpImg/ScreenPopUpImg.png'),
   TeamPulse: require('../../../assets/newImage/TeamPulse/teampulse.png'),
+  ErrorIcon: require('../../../assets/generalicons/error.png'),
 };

@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>https://moodflo.page.link</string>
+		<string>applinks:moodflo.page.link</string>
 	</array>
 	<key>com.apple.developer.healthkit</key>
 	<true/>
