@@ -9,7 +9,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import isFunction from 'lodash.isfunction';
 
-export async function onUnlinkUpdate(dispatch) {
+export async function onUnlinkUpdate(dispatch, onFinish) {
   try {
     await AsyncStorage.removeItem('UserId');
     await AsyncStorage.removeItem('Anonymous');
@@ -21,8 +21,14 @@ export async function onUnlinkUpdate(dispatch) {
     dispatch?.(GetUserId(null));
     dispatch?.(IsAnonymous(true));
     dispatch?.(UserDetail(null));
+    if (isFunction(onFinish)) {
+      onFinish(true);
+    }
     return true;
   } catch (error) {
+    if (isFunction(onFinish)) {
+      onFinish(false);
+    }
     return false;
   }
 }
