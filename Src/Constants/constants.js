@@ -85,3 +85,9 @@ export const moodTypes = {
   pretty: "pretty",
   very: "very"
 }
+
+export const getLinkModalText = (existingOrg, newOrg) => {
+  return existingOrg && newOrg
+    ? `You are currently linked to ${existingOrg}. Do you wish to unlink to ${existingOrg} and link to ${newOrg}`
+    : null;
+};
