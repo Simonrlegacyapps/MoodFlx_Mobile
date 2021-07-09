@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState, useRef} from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -17,27 +17,27 @@ import {
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
 import AddButton from '../../Components/buttons/AddButton';
 import Constants from '../../Constants';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import { dynamicSize } from '../../Constants/sizeChoose';
 import PrivacyIcon from '../../../assets/profileicons/PrivacyIcon';
 import PickImageIcon from '../../../assets/profileicons/PickImageIcon';
 import FaqIcon from '../../../assets/profileicons/FaqIcon';
 import TermsIcon from '../../../assets/profileicons/TermsIcon';
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
 import DeviceInfo from 'react-native-device-info';
-import {NotificationPerm, UserDetail} from '../../redux/actions/actions';
-import {GetStaffUserData} from '../../apirequest/PostRequestApi';
-import {AppPermissions} from '../../services/appPermissions';
-import {useFocusEffect} from '@react-navigation/native';
-import {getSleepDataAfterPermissionIOS} from '../Home/SleepData/sleepDataService';
+import { NotificationPerm, UserDetail } from '../../redux/actions/actions';
+import { GetStaffUserData } from '../../apirequest/PostRequestApi';
+import { AppPermissions } from '../../services/appPermissions';
+import { useFocusEffect } from '@react-navigation/native';
+import { getSleepDataAfterPermissionIOS } from '../Home/SleepData/sleepDataService';
 
 const listData = [
-  {name: 'Name', value: 'Annonymous'},
-  {name: 'Gender', value: 'Annonymous'},
-  {name: 'Birthday', value: 'Annonymous'},
-  {name: 'Pronoun', value: 'Annonymous'},
+  { name: 'Name', value: 'Annonymous' },
+  { name: 'Gender', value: 'Annonymous' },
+  { name: 'Birthday', value: 'Annonymous' },
+  { name: 'Pronoun', value: 'Annonymous' },
 ];
 
 const bottomList = [
@@ -54,7 +54,7 @@ const bottomList = [
   },
 ];
 
-const ProfileTab = ({navigation}) => {
+const ProfileTab = ({ navigation }) => {
   const [openActionSheet, setOpenActionSheet] = useState(false);
   // const [value, onChangeText] = React.useState('');
   const UserData = useSelector((state) => state.First);
@@ -302,7 +302,7 @@ const ProfileTab = ({navigation}) => {
   };
   console.log('ProfileTab Pronoun: ', Pronoun);
 
-  const ProfileApiCallHere = async ({_name, _gender, _pronoun}) => {
+  const ProfileApiCallHere = async ({ _name, _gender, _pronoun }) => {
     const name_ = _name ? _name : name;
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
@@ -317,21 +317,21 @@ const ProfileTab = ({navigation}) => {
         name_ != 'Anonymous'
           ? name_
           : name_ != '' && UserData?.UserDetails?.full_name
-          ? UserData?.UserDetails?.full_name
-          : name_,
+            ? UserData?.UserDetails?.full_name
+            : name_,
       pronouns: _pronoun
         ? _pronoun.name
         : UserData?.UserDetails?.pronouns
-        ? UserData?.UserDetails?.pronouns
-        : '',
+          ? UserData?.UserDetails?.pronouns
+          : '',
       date_of_birth: UserData?.UserDetails?.date_of_bitrh
         ? UserData?.UserDetails?.date_of_bitrh
         : Birthday,
       gender: _gender
         ? _gender.id
         : UserData?.UserDetails?.gender
-        ? UserData?.UserDetails?.gender
-        : '',
+          ? UserData?.UserDetails?.gender
+          : '',
     });
 
     var requestOptions = {
@@ -359,7 +359,7 @@ const ProfileTab = ({navigation}) => {
   const checkGenderName = (value) => {
     // console.log(`value`, value, ComingGenderPronoun.gender);
 
-    const Id = ComingGenderPronoun.gender.find(({id}) => {
+    const Id = ComingGenderPronoun.gender.find(({ id }) => {
       // console.log(`name`, id, value);
       return id == value;
     });
@@ -370,7 +370,7 @@ const ProfileTab = ({navigation}) => {
   const onSetGender = useCallback(
     (value) => {
       setgender(value);
-      ProfileApiCallHere({_gender: value});
+      ProfileApiCallHere({ _gender: value });
     },
     [setgender, ProfileApiCallHere],
   );
@@ -378,7 +378,7 @@ const ProfileTab = ({navigation}) => {
   const onSetPronoun = useCallback(
     (value) => {
       setPronoun(value);
-      ProfileApiCallHere({_pronoun: value});
+      ProfileApiCallHere({ _pronoun: value });
     },
     [setPronoun, ProfileApiCallHere],
   );
@@ -441,11 +441,11 @@ const ProfileTab = ({navigation}) => {
             </View>
             <View style={styles.headerContainerStyle}>
               <View
-                style={[styles.borderStyle, {marginRight: dynamicSize(17)}]}
+                style={[styles.borderStyle, { marginRight: dynamicSize(17) }]}
               />
               <Text>PERSONAL DETAILS</Text>
               <View
-                style={[styles.borderStyle, {marginLeft: dynamicSize(11)}]}
+                style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}
               />
             </View>
           </View>
@@ -461,8 +461,8 @@ const ProfileTab = ({navigation}) => {
                 name != 'Anonymous'
                   ? name
                   : name != '' && UserData?.UserDetails?.full_name
-                  ? UserData?.UserDetails?.full_name
-                  : name
+                    ? UserData?.UserDetails?.full_name
+                    : name
               }
               onChangeText={setname}
             />
@@ -476,8 +476,8 @@ const ProfileTab = ({navigation}) => {
                 gender
                   ? gender.name
                   : UserData?.UserDetails?.gender && ComingGenderPronoun
-                  ? checkGenderName(UserData?.UserDetails?.gender)
-                  : gender
+                    ? checkGenderName(UserData?.UserDetails?.gender)
+                    : gender
               }
               onChangeText={onSetGender}
               popUp
@@ -502,8 +502,8 @@ const ProfileTab = ({navigation}) => {
                 Pronoun
                   ? Pronoun.name
                   : UserData?.UserDetails?.pronouns
-                  ? UserData?.UserDetails?.pronouns
-                  : Pronoun.name
+                    ? UserData?.UserDetails?.pronouns
+                    : Pronoun.name
               }
               gender={gender}
               onChangeText={onSetPronoun}
@@ -514,14 +514,14 @@ const ProfileTab = ({navigation}) => {
             <View
               style={[
                 styles.borderStyle,
-                {marginRight: dynamicSize(17), width: dynamicSize(134)},
+                { marginRight: dynamicSize(17), width: dynamicSize(134) },
               ]}
             />
             <Text>SYNC YOUR DATA</Text>
             <View
               style={[
                 styles.borderStyle,
-                {marginLeft: dynamicSize(11), width: dynamicSize(134)},
+                { marginLeft: dynamicSize(11), width: dynamicSize(134) },
               ]}
             />
           </View>
@@ -586,30 +586,30 @@ const ProfileTab = ({navigation}) => {
             <View
               style={[
                 styles.borderStyle,
-                {marginRight: dynamicSize(17), width: dynamicSize(134)},
+                { marginRight: dynamicSize(17), width: dynamicSize(134) },
               ]}
             />
             <Text>MORE</Text>
             <View
               style={[
                 styles.borderStyle,
-                {marginLeft: dynamicSize(11), width: dynamicSize(134)},
+                { marginLeft: dynamicSize(11), width: dynamicSize(134) },
               ]}
             />
           </View>
           <View
-            style={[styles.flatlistContainer, {marginBottom: dynamicSize(56)}]}>
+            style={[styles.flatlistContainer, { marginBottom: dynamicSize(56) }]}>
             {bottomList.map((item, idx) => (
               <TouchableOpacity
                 onPress={() => {
                   Linking.openURL(item.link);
                 }}>
                 <View style={styles.bottomFlatlistContainer}>
-                  <View style={{marginTop: dynamicSize(5)}}>{item.icon}</View>
+                  <View style={{ marginTop: dynamicSize(5) }}>{item.icon}</View>
                   <Text
                     style={[
                       styles.anonymousTextStyle,
-                      {marginLeft: dynamicSize(16)},
+                      { marginLeft: dynamicSize(16) },
                     ]}>
                     {item.name}
                   </Text>
@@ -681,8 +681,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   profileImage: {
-    height: 150,
-    width: 150,
+    height: dynamicSize(160),
+    width: dynamicSize(160),
     resizeMode: 'cover',
     borderRadius: dynamicSize(160),
   },

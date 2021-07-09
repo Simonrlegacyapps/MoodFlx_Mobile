@@ -547,7 +547,7 @@ const WeatherData = ({
     },
   ];
 
-  console.log(`data`, data);
+  // console.log(`data`, data);
 
   let heightProp = isTablet ? horizontalScale(30) : SIZE / 4.3;
   let widthProp = isTablet
