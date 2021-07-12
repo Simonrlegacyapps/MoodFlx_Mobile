@@ -63,7 +63,11 @@ import Toast, { BaseToast } from 'react-native-toast-message';
 import { getFontSize } from './Src/Constants/sizeChoose';
 import Constants from './Src/Constants';
 import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
-import { getLinkModalText, isCountryIndia } from './Src/Constants/constants';
+import {
+  defaultLocation,
+  getLinkModalText,
+  isCountryIndia,
+} from './Src/Constants/constants';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');

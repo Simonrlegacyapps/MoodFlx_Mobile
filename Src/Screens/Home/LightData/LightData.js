@@ -49,6 +49,8 @@ import { LightGraph } from '../../../Components/LightGraph/LightGraph';
 import { getLightDataIOS } from '../../../services/moodDataModuleService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
+import BulbIcon from '../../../../assets/commonicons/BulbIcon';
+import {getBulbColorFromLux} from '../../../services/commonService';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -488,11 +490,10 @@ const LightData = ({
               // justifyContent: 'center',
               marginVertical: 30,
             }}>
-            <Image
-              source={Constants.Images.Bulb}
-              style={{height: 220, width: 220, resizeMode: 'contain', 
-              // tintColor: 'yellow'
-            }}
+            <BulbIcon
+              width={220}
+              height={220}
+              stroke={getBulbColorFromLux(lux)}
             />
             <View style={styles.bulbImage}>
               <Text style={styles.bulbText}>{lux}</Text>
