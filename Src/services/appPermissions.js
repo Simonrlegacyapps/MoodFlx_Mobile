@@ -6,17 +6,21 @@ import {
   requestNotifications,
   checkNotifications,
 } from 'react-native-permissions';
-import { Platform, Linking, Alert } from 'react-native';
-import AppleHealthKit, {
-  HealthValue,
-  HealthKitPermissions,
-} from 'react-native-health';
-import GoogleFit, { Scopes } from 'react-native-google-fit';
+import {Platform, Linking, Alert} from 'react-native';
+import AppleHealthKit from 'react-native-health';
+import GoogleFit, {Scopes} from 'react-native-google-fit';
 import AsyncStorage from '@react-native-community/async-storage';
 import GetLocation from 'react-native-get-location';
 
 const PERMS = AppleHealthKit.Constants.Permissions;
-import { HealthPerm, NotificationPerm, SetLocation, SleepPerm, WeatherPerm } from '../redux/actions/actions';
+import {
+  HealthPerm,
+  NotificationPerm,
+  SetLocation,
+  SleepPerm,
+  WeatherPerm,
+} from '../redux/actions/actions';
+import {defaultLocation, isCountryIndia} from '../Constants/constants';
 
 const CAMERA_PERMISSION = {
   ios: PERMISSIONS.IOS.CAMERA,
@@ -211,6 +215,18 @@ class MoodFloPermission {
     } catch (error) {
       console.log('error in getCurrentPosition', error);
     }
+    const isIndia = isCountryIndia();
+    if (location && isIndia) {
+      location = {
+        latitude: defaultLocation.latitude,
+        longitude: defaultLocation.longitude,
+      };
+    }
+    if (isLocationPermissionGiven) {
+      await AsyncStorage.setItem('GiveWeatherPerm', 'true');
+    } else {
+      await AsyncStorage.removeItem('GiveWeatherPerm');
+    }
     if (location?.latitude !== undefined && location?.longitude !== undefined) {
       dispatch(
         SetLocation({
@@ -220,11 +236,6 @@ class MoodFloPermission {
       );
     }
     dispatch(WeatherPerm(isLocationPermissionGiven));
-    if (isLocationPermissionGiven) {
-      await AsyncStorage.setItem('GiveWeatherPerm', 'true');
-    } else {
-      await AsyncStorage.removeItem('GiveWeatherPerm');
-    }
   };
 
   checkNotificationPermission = async (): Promise<Boolean> => {
@@ -239,7 +250,7 @@ class MoodFloPermission {
     if (Platform.OS === 'android') {
       return true;
     }
-    const { status, settings } = await requestNotifications([
+    const {status, settings} = await requestNotifications([
       'alert',
       'sound',
       'badge',

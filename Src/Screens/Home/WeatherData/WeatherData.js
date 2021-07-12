@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -38,6 +38,7 @@ import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousP
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
 import { defaultLocation, isCountryIndia, weatherActions, weatherApiDataTypes, weatherTypes } from '../../../Constants/constants';
 import { AppPermissions } from '../../../services/appPermissions';
+import isFunction from 'lodash.isfunction';
 
 let weatherData = null;
 
@@ -83,6 +84,7 @@ const WeatherData = ({
   const [AnonymousClick, setAnonymousClick] = useState(false);
   const [WeatherDurationModal, setWeatherDurationModal] = useState(false);
   const [WeatherDuration, setWeatherDuration] = useState('Week');
+  const allDayWeatherData = useRef(null);
 
   const a = moment().subtract(0, 'days').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
@@ -97,16 +99,6 @@ const WeatherData = ({
   let Weather = UserData.DayTemperature;
 
   // console.log(`Weather`, UserData.DayTemperature);
-
-  useEffect(() => {
-    if (swiperIndex == 2 && UserData.WeatherPermission) {
-      getUserLocation();
-    }
-    return () => {
-      weatherData = null;
-    }
-  }, [swiperIndex]);
-
   const getUserLocation = () => {
     new Promise((resolve, reject) => {
       GetLocation.getCurrentPosition({
@@ -114,6 +106,13 @@ const WeatherData = ({
         timeout: 15000,
       })
         .then((location) => {
+          const isIndia = isCountryIndia();
+          if(isIndia){
+            location = {
+              latitude: defaultLocation.latitude,
+              longitude: defaultLocation.longitude
+            };
+          }
           console.log('Success', location);
           // setlat(location.latitude);
           dispatch(SetLocation({
@@ -121,8 +120,10 @@ const WeatherData = ({
             lon: location.longitude,
             }));
           location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, function (flag){
-            location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude);
-            resolve(flag);
+            console.log('WeatherDayData called from getUserLocation');
+            location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude, function (isSuccess) {
+              resolve(isSuccess);
+            });
           });
           // if (UserData.lat == null || UserData.lon == null) {
           // }
@@ -135,19 +136,49 @@ const WeatherData = ({
     })
   };
 
+
+  useEffect(() => {
+    if (UserData.WeatherPermission) {
+      getUserLocation();
+    }
+    return () => {
+      weatherData = null;
+    }
+  }, []);
+
   let valueHours = 0;
-  const WeatherDayData = (loc_lat, loc_long) => {
+  const WeatherDayData = (loc_lat, loc_long, onFinish) => {
+    let startTime;
+    if (isCountryIndia()) {
+      startTime = moment()
+        .utcOffset(defaultLocation.timeZoneOffset)
+        .startOf('day')
+        .toString();
+    } else {
+      startTime = a;
+    }
+    console.log('WeatherDayData function loc_lat: ', loc_lat);
+    console.log('WeatherDayData function loc_long: ', loc_long);
+    console.log('WeatherDayData function args: ', startTime);
     let value = 0;
     axios
       .get(
         `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${loc_lat}&lon=${loc_long}&dt=${
-          Date.parse(a) / 1000
+          Date.parse(startTime) / 1000
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
         // console.log(`weather day data api success response`, response);
         // console.log(`weather day data api success response`, JSON.stringify(response));
         response?.data?.hourly && setAllDayWeather(response.data.hourly);
+        if (response?.data) {
+          allDayWeatherData.current = Object.assign({}, response.data);
+          console.log('allDayWeatherData: ', allDayWeatherData.current);
+          syncWeatherData(loc_lat, loc_long);
+          if (isFunction(onFinish)) {
+            onFinish(true);
+          }
+        }
         if (weatherData) {
           if (response?.data?.hourly) {
 
@@ -167,6 +198,9 @@ const WeatherData = ({
         }
       })
       .catch(function (error) {
+        if (isFunction(onFinish)) {
+          onFinish(false);
+        }
         console.log(`error for weather here`, error);
       });
   };
@@ -179,8 +213,12 @@ const WeatherData = ({
   const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let WeatherP = await JSON.parse(Wp);
-    if(!WeatherP){
+    if (!WeatherP && !UserData.WeatherPermission) {
       console.log('Cannot sync weather data without permisison.');
+      return;
+    }
+    if (!allDayWeatherData.current) {
+      console.log('Cannot call update weather api without weather data');
       return;
     }
     let geocode = null;
@@ -220,7 +258,7 @@ const WeatherData = ({
         : findWeather(weatherData?.weather?.[0]?.main),
       pollen: null,
       pollen_type: ManulPollen ? ManulPollen : 'Low',
-      weather_data: weatherData,
+      weather_data: allDayWeatherData.current,
       temp_min: weatherData?.main?.temp_min,
       temp_max: weatherData?.main?.temp_max,
       city: isIndia && city_info ? defaultLocation.city : city_info,
@@ -251,35 +289,39 @@ const WeatherData = ({
       });
   };
 
-  const th = async (index, lat, lng) => {
-    if (index == 2) {
-      WeatherDayData(lat, lng);
-    }
+  const th = async (lat, lng) => {
+    console.log('called from th');
+    WeatherDayData(lat, lng);
   };
 
   const VerifyDone = async () => {
     const v = await getUserLocation();
-    v === false && syncWeatherData();
-    await AsyncStorage.setItem('GiveWeatherPerm', 'true');
+    const timeoutIdOut = setTimeout(() => {
+      AppPermissions.checkAppPermissions(dispatch);
+      const timeoutIdIn = setTimeout(() => {
+        AppPermissions.checkAppPermissions(dispatch);
+        syncWeatherData();
+        clearTimeout(timeoutIdIn);
+      }, 1000);
+      clearTimeout(timeoutIdOut);
+    }, 1000);
+    // await AsyncStorage.setItem('GiveWeatherPerm', 'true');
     setOpenActionSheet(false);
-    // CheckForWeather(UserData.lat, UserData.lon, function(){
-    //   syncWeatherData();
-    // });
-    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    let WeatherP = await JSON.parse(Wp);
-    console.log(`WeatherPerm`, WeatherP);
-    dispatch(WeatherPerm(WeatherP));
+    // let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
+    // let WeatherP = await JSON.parse(Wp);
+    // console.log(`WeatherPerm`, WeatherP);
+    // dispatch(WeatherPerm(WeatherP));
   };
 
-  useEffect(() => {
-    let lat = UserData.lat;
-    let lng = UserData.lon;
-    if(!UserData.WeatherPermission){
-      lat = defaultLocation.latitude;
-      lng = defaultLocation.longitude;
-    }
-    th(swiperIndex, lat, lng);
-  }, [swiperIndex]);
+  // useEffect(() => {
+  //   let lat = UserData.lat;
+  //   let lng = UserData.lon;
+  //   if (!UserData.WeatherPermission){
+  //     lat = defaultLocation.latitude;
+  //     lng = defaultLocation.longitude;
+  //   }
+  //   th(lat, lng);
+  // }, []);
 
   useEffect(() => {
     let lat = UserData.lat;
@@ -294,8 +336,14 @@ const WeatherData = ({
       ((UserData.lat && UserData.lon) || (!UserData.lat && !UserData.lon))
     ) {
       CheckForWeather(lat, lng, function (flag) {
-        if (flag === false) {
-          syncWeatherData();
+        if (flag === true) {
+          if (UserData.lat && UserData.lon && UserData.WeatherPermission) {
+            console.log('called from userEffect checkForWeather');
+            console.log('called from userEffect checkForWeather UserData.lat: ', UserData.lat);
+            console.log('called from userEffect checkForWeather UserData.lon: ', UserData.lon);
+            console.log('called from userEffect checkForWeather');
+            th(UserData.lat, UserData.lon);
+          }
         }
       });
     }
@@ -318,7 +366,6 @@ const WeatherData = ({
         console.log(' ✅ ✅ ✅ ✅ Success CheckForWeather✅ ✅ ✅ ✅ ', response?.data);
         dispatch(DayTemp(response?.data));
         weatherData = response?.data ? response?.data : weatherData;
-        syncWeatherData(loc_lat, loc_long);
         onFinish?.(true);
         // await setTryWeather(response?.data);
         // await console.log(`response.data for weather`, response.data);
