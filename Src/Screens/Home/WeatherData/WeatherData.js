@@ -733,6 +733,7 @@ const WeatherData = ({
               100
               // : 0
             }
+            MoodCount={JSON.parse(MoodCount)}
             height={10}
             backgroundColor="#CB9866"
           />

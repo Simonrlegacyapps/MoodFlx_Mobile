@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -29,12 +29,12 @@ import Toast from 'react-native-toast-message';
 import UsageStats from 'react-native-usage-stats';
 import moment from 'moment';
 
-const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
-const IndicatorHelper = ({color, text}) => {
+const IndicatorHelper = ({ color, text }) => {
   return (
     <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
+      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
       <Text style={styles.indicatorText}>{text}</Text>
     </View>
   );
@@ -195,7 +195,7 @@ const ScreenData = ({
       });
   };
 
-  const ScreenDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
+  const ScreenDurations = [{ label: 'Day' }, { label: 'Week' }, { label: 'Month' }];
   return (
     <View style={styles.container}>
       <ScrollView
@@ -214,11 +214,11 @@ const ScreenData = ({
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{height: 20, width: 20}}
+                style={{ height: 20, width: 20 }}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
               <Text style={styles.lightText}>Sync your</Text>
               <Text style={styles.normalText}>Screen data</Text>
             </View>
@@ -235,16 +235,17 @@ const ScreenData = ({
               100
               // : 0
             }
+            MoodCount={JSON.parse(MoodCount)}
             height={10}
             backgroundColor="#CB9866"
           />
-          <View style={{flexDirection: 'row'}}>
-            <Text style={[styles.SmallThinText, {flex: 1}]}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={[styles.SmallThinText, { flex: 1 }]}>
               Try add 3 moods per day
             </Text>
             <Text
               style={
-                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
+                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
               }>
               {JSON.parse(MoodCount) === null ? 0 : JSON.parse(MoodCount)}/3
             </Text>
@@ -257,16 +258,16 @@ const ScreenData = ({
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+            <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
               SCREEN TIME
             </Text>
             <Text style={styles.swiperText}>
-              You become more <Text style={{color: '#5947D0'}}>tired</Text> and{' '}
-              <Text style={{color: '#5947D0'}}>anxious</Text> as your screen
-              time <Text style={{color: '#5947D0'}}>increased</Text> above{' '}
-              <Text style={{color: '#5947D0'}}>3hrs</Text> per day
+              You become more <Text style={{ color: '#5947D0' }}>tired</Text> and{' '}
+              <Text style={{ color: '#5947D0' }}>anxious</Text> as your screen
+              time <Text style={{ color: '#5947D0' }}>increased</Text> above{' '}
+              <Text style={{ color: '#5947D0' }}>3hrs</Text> per day
             </Text>
-            <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+            <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
               Try get less than 3hrs a day
             </Text>
           </View>
@@ -276,7 +277,7 @@ const ScreenData = ({
             click={() => setScreenTimeDuration(false)}
             value={ScreenDuration}
           />
-          <View style={{marginBottom: 50, alignItems: 'center'}}>
+          <View style={{ marginBottom: 50, alignItems: 'center' }}>
             {swiperIndex == 4 && (
               <BarGraph color={'#7265E3'} ShowPollen={false} RightBar={false} />
             )}
@@ -305,7 +306,7 @@ const ScreenData = ({
                       H={9}
                     />*/}
                   </View>
-                  <View style={{marginTop: 20}}>
+                  <View style={{ marginTop: 20 }}>
                     {/* <BezierGraphAuto data={dataLow} color={'#70DEEC'} /> */}
                     {/* <GraphBezierCustom
                       heightProp={heightProp}
@@ -321,7 +322,7 @@ const ScreenData = ({
             </View>
           </View>
 
-          <View style={{marginBottom: 20}}>
+          <View style={{ marginBottom: 20 }}>
             <ScreenCircleBar
               DarkColor="#0DDE79"
               lightColor="#CFF9ED"
@@ -364,7 +365,7 @@ const ScreenData = ({
                   fontFamily: RubikExtraBold,
                   fontSize: SIZE / 3.5,
                   color: '#E0DDED',
-                  transform: [{rotate: '-15deg'}],
+                  transform: [{ rotate: '-15deg' }],
                 }}>
                 Demo
               </Text>
@@ -532,7 +533,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

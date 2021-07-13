@@ -32,7 +32,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // import AppleHealthKit from 'rn-apple-healthkit';
 import moment from 'moment';
 import { dynamicSize, horizontalScale } from '../../../Constants/sizeChoose';
-import { 
+import {
   getMonthlySleepData,
   getSleepGraphData,
   getWeeklySleepData,
@@ -67,20 +67,20 @@ const sleepInsightsTypes = {
 function sleepInsightsReducer(state, action) {
   switch (action.type) {
     case sleepInsightsTypes.SET_DALIY_INSIGHTS:
-      return {...state, dailyInsights: action.payload};
+      return { ...state, dailyInsights: action.payload };
     case sleepInsightsTypes.SET_WEEKLY_INSIGHTS:
-      return {...state, weeklyInsights: action.payload};
+      return { ...state, weeklyInsights: action.payload };
     case sleepInsightsTypes.SET_DAILY_SUGGESTION:
-      return {...state, dailySuggestion: action.payload};
+      return { ...state, dailySuggestion: action.payload };
     case sleepInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
-      return {...state, dailySuggestionType: action.payload};
+      return { ...state, dailySuggestionType: action.payload };
     case sleepInsightsTypes.SET_WEEKLY_SUGGESTION:
-      return {...state, weeklySuggestion: action.payload};
+      return { ...state, weeklySuggestion: action.payload };
     case sleepInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
-      return {...state, weeklySuggestionType: action.payload};
+      return { ...state, weeklySuggestionType: action.payload };
     case sleepInsightsTypes.SET_INSIGHTS:
       return action?.payload && typeof action?.payload === 'object'
-        ? {...state, ...action.payload}
+        ? { ...state, ...action.payload }
         : state;
     default:
       return state;
@@ -133,7 +133,7 @@ const SleepData = ({
       // onSleepDataPerm();
       fetchSleepDataForLastThirtyDays({
         askPermission: true,
-        onUpdate: function ({sleepData, isPermissionAsked}) {
+        onUpdate: function ({ sleepData, isPermissionAsked }) {
           setLastThirtyDaySleepData(sleepData);
           if (sleepData) {
             callSleepDataUpdateApi(sleepData);
@@ -158,7 +158,7 @@ const SleepData = ({
     console.log('Sleep Data useEffect called');
     fetchSleepDataForLastThirtyDays({
       askPermission: false,
-      onUpdate: function ({sleepData, isPermissionAsked}) {
+      onUpdate: function ({ sleepData, isPermissionAsked }) {
         console.log('setLastThirtyDaySleepData: ', sleepData);
         setLastThirtyDaySleepData(sleepData);
         if (sleepData) {
@@ -173,7 +173,7 @@ const SleepData = ({
 
   useEffect(() => {
     //sleep data for current day
-    if(Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) { 
+    if (Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
       let totalMinutes = 0;
       lastThirtyDaySleepData.forEach((e, idx) => {
         const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
@@ -182,7 +182,7 @@ const SleepData = ({
         if (startDate && endDate && startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') && e.type === 'INBED') {
           diff = endDate.diff(startDate, 'minutes');
           totalMinutes += diff;
-          console.log('======sleep today diff=======', diff, 'total min===', totalMinutes,'---e---', e);
+          console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
         }
       })
       setSleepMinutesToday(totalMinutes);
@@ -191,7 +191,7 @@ const SleepData = ({
 
   useEffect(() => {
     //sleep data for last 7 days
-    if(Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
+    if (Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
       setSleepDataLastThirtyDays(lastThirtyDaySleepData);
       const weeklyData = getWeeklySleepData();
       // console.log('weeklyData: ', JSON.stringify(weeklyData));
@@ -199,10 +199,10 @@ const SleepData = ({
       setWeeklySleepData(weeklyData);
     }
   }, [lastThirtyDaySleepData]);
-  
+
   useEffect(() => {
     //sleep data for this month
-    if(Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
+    if (Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
       setSleepDataLastThirtyDays(lastThirtyDaySleepData);
       const montlhlySleep = getMonthlySleepData();
       // console.log('monthlySleep: ', JSON.stringify(montlhlySleep));
@@ -212,12 +212,12 @@ const SleepData = ({
   }, [lastThirtyDaySleepData]);
 
   const callSleepDataUpdateApi = useCallback((sData) => {
-    if(!(Array.isArray(sData) && sData.length > 0)) {
+    if (!(Array.isArray(sData) && sData.length > 0)) {
       return;
     }
     setSleepDataLastThirtyDays(sData);
     const sleepData = getSleepDataForUpdateApi();
-    if(!(Array.isArray(sleepData) && sleepData.length > 0)) {
+    if (!(Array.isArray(sleepData) && sleepData.length > 0)) {
       return;
     }
     console.log('api sleep data: ', sleepData);
@@ -260,7 +260,7 @@ const SleepData = ({
         }
       })
       .then(async (result) => {
-        if(result){
+        if (result) {
           console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
           const timeoutId = setTimeout(() => {
             callGetSleepDataApi();
@@ -324,10 +324,10 @@ const SleepData = ({
           console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  asleep', asleepArray);
           setWeeklyAsleepData(asleepArray);
         }
-        const graphData = getSleepGraphData({weeklyData: {ASLEEP: asleepArray, INBED: inBedArray}});
+        const graphData = getSleepGraphData({ weeklyData: { ASLEEP: asleepArray, INBED: inBedArray } });
         console.log('graphData: ', graphData);
         setSleepGraphData(graphData);
-        return PostRequestApi('getSleepInsights', {...params, status: 'daily'});
+        return PostRequestApi('getSleepInsights', { ...params, status: 'daily' });
       })
       .then((res) => {
         console.log('getSleepInsights daily: ', res?.data?.insights);
@@ -335,17 +335,17 @@ const SleepData = ({
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
           res?.data?.insights?.message1 &&
-          typeof res.data.insights.message1 === 'string'
+            typeof res.data.insights.message1 === 'string'
             ? res.data.insights.message1
             : '';
         dailyInsightsPayload.dailySuggestion =
           res?.data?.insights?.message2 &&
-          typeof res.data.insights.message2 === 'string'
+            typeof res.data.insights.message2 === 'string'
             ? res.data.insights.message2
             : '';
         dailyInsightsPayload.dailySuggestionType =
           res?.data?.insights?.message2Type &&
-          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
         setInsights({
@@ -389,17 +389,17 @@ const SleepData = ({
         console.log('getSleepInsights weekly: ', res?.data?.insights);
         weeklyInsightsPayload.weeklyInsights =
           res?.data?.insights?.message1 &&
-          typeof res.data.insights.message1 === 'string'
+            typeof res.data.insights.message1 === 'string'
             ? res.data.insights.message1
             : '';
         weeklyInsightsPayload.weeklySuggestion =
           res?.data?.insights?.message2 &&
-          typeof res.data.insights.message2 === 'string'
+            typeof res.data.insights.message2 === 'string'
             ? res.data.insights.message2
             : '';
         weeklyInsightsPayload.weeklySuggestionType =
           res?.data?.insights?.message2Type &&
-          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
         setInsights({
@@ -450,6 +450,7 @@ const SleepData = ({
               100
               // : 0
             }
+            MoodCount={JSON.parse(MoodCount)}
             height={10}
             backgroundColor="#CB9866"
           />
@@ -540,7 +541,7 @@ const SleepData = ({
               }}>
             </View>
           </View>
-          <GraphicChart 
+          <GraphicChart
             isDailyDisabled={true}
             sleepGraphData={sleepGraphData}
             graphType={dataTypes.sleep}
