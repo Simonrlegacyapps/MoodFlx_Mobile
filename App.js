@@ -727,9 +727,9 @@ const App: () => React$Node = () => {
         dismissModalHandler={onLinkCancel}
         modalText={linkModalText}
         onClickButtonOne={onLinkConfirm}
-        buttonOneText="Yes"
+        buttonOneText="Unlink"
         onClickButtonTwo={onLinkCancel}
-        buttonTwoText="No"
+        buttonTwoText="Cancel"
       />
     </>
   );
