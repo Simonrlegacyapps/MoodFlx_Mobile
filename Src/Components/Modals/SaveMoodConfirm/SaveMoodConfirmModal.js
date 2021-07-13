@@ -19,6 +19,11 @@ import {
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
 import { metrics, getFontSize, getLineHeight, dynamicSize, horizontalScale } from '../../../Constants/sizeChoose';
+import { IsAnonymous, UserDetail } from '../../../redux/actions/actions';
+import AddNameModal from '../AddNameModal/AddNameModal';
+import DeviceInfo from 'react-native-device-info';
+import AsyncStorage from '@react-native-community/async-storage';
+import { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 
 type props = {
   modalVisible: Boolean,
@@ -35,6 +40,126 @@ const SaveMoodConfirmModal = ({
   onClickButtonTwo
 }: props) => {
   const [color, setcolor] = useState('black');
+  const [AnonymousStatus, setAnonymousStatus] = useState(true)
+  const [ShowAddName, setShowAddName] = useState(false);
+  const [name, setname] = useState('');
+
+  const dispatch = useDispatch()
+  const UserData = useSelector((state) => state.First);
+
+  const Anonymous = async () => {
+    setAnonymousStatus(!AnonymousStatus)
+    await AsyncStorage.setItem('Anonymous', JSON.stringify(AnonymousStatus));
+    dispatch(IsAnonymous(AnonymousStatus));
+    if (!AnonymousStatus && UserData?.UserDetails?.full_name == null) {
+      setShowAddName(true);
+    }
+  }
+
+  console.log(`ShowAddName`, AnonymousStatus)
+
+  const cancelled = async () => {
+    await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
+    setShowAddName(false);
+    dispatch(IsAnonymous(true));
+  };
+
+  const VerifyDone = async () => {
+    ProfileApiCallHere();
+  };
+
+  const ProfileApiCallHere = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Accept', 'application/json');
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = {
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+      full_name: UserData?.UserDetails?.full_name
+        ? UserData?.UserDetails?.full_name
+        : name,
+      pronouns: null,
+      date_of_birth: null,
+      gender: null,
+    };
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify(raw),
+      redirect: 'follow',
+    };
+
+    console.log(`raw`, raw);
+
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      }, dispatch)
+      .then(async (result) => {
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+        } else {
+          raw.email = '';
+          raw.user_id = '';
+          requestOptions.body = JSON.stringify(raw);
+          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+        }
+      })
+      .then(async (result) => {
+        if (result) {
+          await AsyncStorage.setItem('Anonymous', JSON.stringify(false));
+          dispatch(IsAnonymous(false));
+          setShowAddName(false);
+          // console.log('profile updated', result), getProfileUserData();
+          console.log(
+            '✅ ✅ ✅ ✅ Success Update Staff Profile ✅ ✅ ✅ ✅',
+            result
+          );
+          getProfileUserData();
+        }
+      })
+      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Update Staff Profile ❌ ❌ ❌ ❌', error));
+
+  };
+
+  const getProfileUserData = () => {
+    console.log(`called called called called called called`);
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      device_id: deviceId,
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log('UserDetail', result.userData);
+        dispatch(UserDetail(result.userData));
+      })
+      .catch((error) => console.log('error', error));
+  };
+
 
   return (
     <Modal
@@ -69,10 +194,13 @@ const SaveMoodConfirmModal = ({
             style={styles.textThree}>
             Your input was: <Text style={styles.textThreeBold}>{emotionText}</Text>
           </Text>
-          <TouchableOpacity activeOpacity={0.7}>
-            <Text style={styles.AnonymousButton}>
-              Saved as Anonymous
-            </Text>
+          <TouchableOpacity onPress={() => Anonymous()} activeOpacity={0.7}>
+            {UserData?.UserDetails?.full_name ? <Text style={styles.AnonymousButton}>
+              Saved as {UserData.Anonymous ? "Anonymous" : `${UserData?.UserDetails?.full_name}`}
+            </Text> :
+              <Text style={styles.AnonymousButton}>
+                Click to add the name
+            </Text>}
           </TouchableOpacity>
           <View style={styles.inputBox}>
             <TextInput style={{ letterSpacing: 1, }} placeholder={`Quick note about why you're ${emotionText} today?`} multiline={true} />
@@ -101,6 +229,14 @@ const SaveMoodConfirmModal = ({
 
 
       </View>
+      <AddNameModal
+        dataType={'weather'}
+        modalVisible={ShowAddName}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={() => VerifyDone()}
+        value={name}
+        onChangeText={setname}
+      />
     </Modal>
   );
 };

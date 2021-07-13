@@ -32,6 +32,7 @@ import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 import { AppPermissions } from '../../services/appPermissions';
 import { useFocusEffect } from '@react-navigation/native';
 import { getSleepDataAfterPermissionIOS } from '../Home/SleepData/sleepDataService';
+import BackIcon from '../../../assets/svg/backIcon';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -449,6 +450,9 @@ const ProfileTab = ({ navigation }) => {
               />
             </View>
           </View>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20, top: 10 }}>
+            <BackIcon />
+          </TouchableOpacity>
           <View style={styles.flatlistContainer}>
             {/* <FlatList data={listData} renderItem={renderList} /> */}
 

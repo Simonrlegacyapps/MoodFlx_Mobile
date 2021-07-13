@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, Image} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image } from 'react-native';
 import Constants from '../../Constants';
 import ToggleSwitch from 'toggle-switch-react-native';
 import AnonymousIcon from '../../../assets/commonicons/AnonymousIcon';
@@ -8,16 +8,16 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import {useDispatch, useSelector} from 'react-redux';
-import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { IsAnonymous, UserDetail } from '../../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
-import {PHOTO_URL} from '../../Constants/constants';
+import { PHOTO_URL } from '../../Constants/constants';
 import AddNameModal from '../Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import { dynamicSize } from '../../Constants/sizeChoose';
 import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 
-const AnonymousHeader = ({backGround}) => {
+const AnonymousHeader = ({ backGround }) => {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   const [Anonymous, setAnonymous] = useState(false);
@@ -77,7 +77,7 @@ const AnonymousHeader = ({backGround}) => {
         }
       })
       .then(async (result) => {
-        if(result){
+        if (result) {
           await AsyncStorage.setItem('Anonymous', JSON.stringify(false));
           dispatch(IsAnonymous(false));
           setShowAddName(false);
@@ -154,7 +154,7 @@ const AnonymousHeader = ({backGround}) => {
         justifyContent: 'center',
         marginVertical: 20,
         shadowColor: 'black',
-        shadowOffset: {height: 2},
+        shadowOffset: { height: 2 },
         shadowOpacity: 0.3,
       }}>
       <AddNameModal
@@ -191,7 +191,7 @@ const AnonymousHeader = ({backGround}) => {
             }}>
             {UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
               <Image
-                style={{height: '100%', width: '100%', resizeMode: 'cover'}}
+                style={{ height: '100%', width: '100%', resizeMode: 'cover' }}
                 source={{
                   uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
                 }}
@@ -214,7 +214,7 @@ const AnonymousHeader = ({backGround}) => {
             )}
           </View>
         </View>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <Text
             style={{
               fontSize: 16,
@@ -225,8 +225,8 @@ const AnonymousHeader = ({backGround}) => {
             {UserData.Anonymous
               ? 'Anonymous'
               : UserData?.UserDetails?.full_name
-              ? UserData?.UserDetails?.full_name
-              : 'Anonymous'}
+                ? UserData?.UserDetails?.full_name
+                : 'Anonymous'}
           </Text>
           <Text
             style={{
@@ -240,12 +240,12 @@ const AnonymousHeader = ({backGround}) => {
               : 'Saving this mood as you'}
           </Text>
         </View>
-        <View style={{marginHorizontal: 16}}>
+        <View style={{ marginHorizontal: 16 }}>
           <ToggleSwitch
             disabled={true}
             isOn={UserData.Anonymous}
             onColor="#7FE3F0"
-            labelStyle={{color: 'black', fontWeight: '900'}}
+            labelStyle={{ color: 'black', fontWeight: '900' }}
             size="large"
             onToggle={async (isOn) => {
               Go();
@@ -289,7 +289,7 @@ const AnonymousHeader = ({backGround}) => {
           }}>
           {UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
             <Image
-              style={{height: '100%', width: '100%', resizeMode: 'cover'}}
+              style={{ height: '100%', width: '100%', resizeMode: 'cover' }}
               source={{
                 uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
               }}
@@ -312,31 +312,32 @@ const AnonymousHeader = ({backGround}) => {
           )}
         </View>
       </View>
-      <View style={{flex: 1}}>
-        <Text style={{fontSize: 16, fontWeight: '500', marginBottom: 5}}>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: 16, fontWeight: '500', marginBottom: 5 }}>
           {UserData.Anonymous
             ? 'Anonymous'
             : UserData?.UserDetails?.full_name
-            ? UserData?.UserDetails?.full_name
-            : 'Anonymous'}
+              ? UserData?.UserDetails?.full_name
+              : 'Anonymous'}
         </Text>
-        <Text style={{fontSize: 13, fontWeight: '400', color: 'grey'}}>
+        <Text style={{ fontSize: 13, fontWeight: '400', color: 'grey' }}>
           {UserData.Anonymous
             ? 'Your data is private'
             : 'Saving this mood as you'}
         </Text>
       </View>
-      <View style={{marginHorizontal: 16}}>
+      <View style={{ marginHorizontal: 16 }}>
         <ToggleSwitch
           isOn={UserData.Anonymous}
           onColor="#7FE3F0"
-          labelStyle={{color: 'black', fontWeight: '900'}}
+          labelStyle={{ color: 'black', fontWeight: '900' }}
           size="large"
           onToggle={async (isOn) => {
             await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
             dispatch(IsAnonymous(isOn));
             console.log(
               `UserData.Anonymous === false`,
+              isOn,
               UserData?.UserDetails?.full_name,
             );
             if (isOn === false && !UserData?.UserDetails?.full_name) {

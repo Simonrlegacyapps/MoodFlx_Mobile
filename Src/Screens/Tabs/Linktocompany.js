@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -10,9 +10,9 @@ import {
   View,
 } from 'react-native';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import Constants from '../../Constants';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Division,
   getDivisions,
@@ -25,28 +25,28 @@ import {
   UserEmail,
   WeatherPerm,
 } from '../../redux/actions/actions';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import { dynamicSize } from '../../Constants/sizeChoose';
 import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
 import {
   RubikBlack,
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
-import {useRoute, useFocusEffect} from '@react-navigation/native';
+import PostRequestApi, { getDivisionName } from '../../apirequest/PostRequestApi';
+import { useRoute, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
-import {PHOTO_URL} from '../../Constants/constants';
+import { PHOTO_URL } from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
-import {onUnlinkUpdate} from '../../services/commonService';
+import { onUnlinkUpdate } from '../../services/commonService';
 
-const Linktocompany = ({navigation}) => {
-  const {OTPVerified, setDivision, getDivision} = useSelector(
+const Linktocompany = ({ navigation }) => {
+  const { OTPVerified, setDivision, getDivision } = useSelector(
     (state) => state.First,
   );
 
-  const {width, height} = Dimensions.get('window');
+  const { width, height } = Dimensions.get('window');
 
   const [Linked, setLinked] = useState('Link');
   const [selectedDivisionId, setSelectedDivisionId] = useState('');
@@ -164,7 +164,7 @@ const Linktocompany = ({navigation}) => {
       UserData.getDivision.forEach((e) => {
         if (e?.name === UserData.UserDivision) {
           setSelectedDivisionId(e.id);
-          setLabelShow({...e});
+          setLabelShow({ ...e });
         }
       });
     }
@@ -231,7 +231,7 @@ const Linktocompany = ({navigation}) => {
             JSON.stringify(resp.data.divisionName),
           );
           dispatch(UserDivision(resp.data.divisionName));
-          route.params.email && navigation?.setParams({email: null});
+          route.params.email && navigation?.setParams({ email: null });
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,
           //   mail: value,
@@ -291,10 +291,10 @@ const Linktocompany = ({navigation}) => {
     }
     // setLinked(type);
   };
-  // console.log(`UserData ---------->>>>`, UserData.UserDetails);
+  // console.log(`UserData ---------->>>>`, Divisions);
   // console.log(`UserData.NameCompany`, UserData.NameCompany);
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       {/* {console.log('REDUX DATA ==============>', getDivision[0].id)} */}
       <View>
         <Modal
@@ -339,7 +339,7 @@ const Linktocompany = ({navigation}) => {
                     <TouchableOpacity
                       onPress={async () => {
                         setSelectedDivisionId(item.id);
-                        setLabelShow({...item});
+                        setLabelShow({ ...item });
                         setModalVisible(false);
                       }}
                       key={`${index}`}>
@@ -374,8 +374,8 @@ const Linktocompany = ({navigation}) => {
       <AnonymousHeader backGround />
       {!UserData.UserDivision && !UserData.UserEmail && (
         <View
-          style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(95)}}>
-          <Text style={{fontWeight: '500', fontSize: dynamicSize(24)}}>
+          style={{ flex: 1, alignItems: 'center', marginTop: dynamicSize(95) }}>
+          <Text style={{ fontWeight: '500', fontSize: dynamicSize(24) }}>
             Connect to a company
           </Text>
           <Text
@@ -418,7 +418,7 @@ const Linktocompany = ({navigation}) => {
         </View>
       )}
       {UserData.UserEmail && (UserData.UserDivision === null || route?.params?.email) && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
           {APIfail && (
             <Text
               style={{
@@ -435,7 +435,7 @@ const Linktocompany = ({navigation}) => {
               Sever Error: Please try again
             </Text>
           )}
-          <Text style={{fontWeight: '500', fontSize: dynamicSize(24)}}>
+          <Text style={{ fontWeight: '500', fontSize: dynamicSize(24) }}>
             What division are you in?
           </Text>
           <Text
@@ -481,7 +481,7 @@ const Linktocompany = ({navigation}) => {
               justifyContent: 'center',
               flexDirection: 'row',
               shadowColor: 'black',
-              shadowOffset: {height: 2},
+              shadowOffset: { height: 2 },
               shadowOpacity: 0.3,
             }}>
             <Text
@@ -497,7 +497,7 @@ const Linktocompany = ({navigation}) => {
             </Text>
             <Image
               resizeMode={'contain'}
-              style={{marginHorizontal: dynamicSize(16), height: 15, width: 15}}
+              style={{ marginHorizontal: dynamicSize(16), height: 15, width: 15 }}
               source={Constants.Images.DropDown}
             />
 
@@ -553,7 +553,7 @@ const Linktocompany = ({navigation}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
                 Done
               </Text>
             </View>
@@ -561,7 +561,7 @@ const Linktocompany = ({navigation}) => {
         </View>
       )}
       {UserData.UserDivision !== null && !route?.params?.email && (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
           {/* <Text style={{fontWeight: '500', fontSize: 26}}>
             What division are you in?
           </Text> */}
@@ -583,13 +583,13 @@ const Linktocompany = ({navigation}) => {
                     'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
                   // UserData?.NameCompany?.company_logo,
                 }}
-                // style={{backgroundColor: '#4C5980'}}
+              // style={{backgroundColor: '#4C5980'}}
               />
             ) : CompanyDetails && CompanyDetails?.logo ? (
               <View
                 style={{
                   shadowColor: '#ebebeb',
-                  shadowOffset: {width: 0, height: 2},
+                  shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.8,
                   shadowRadius: 2,
                   borderRadius: 5,
@@ -607,7 +607,7 @@ const Linktocompany = ({navigation}) => {
                     uri: 'https://super.moodflo.com/' + CompanyDetails?.logo,
                     // UserData?.NameCompany?.company_logo,
                   }}
-                  // style={{backgroundColor: '#4C5980'}}
+                // style={{backgroundColor: '#4C5980'}}
                 />
               </View>
             ) : (
@@ -624,7 +624,7 @@ const Linktocompany = ({navigation}) => {
                   uri: 'https://admin.launchnet.works/images/logo/ic_mood.jpg',
                   // UserData?.NameCompany?.company_logo,
                 }}
-                // style={{backgroundColor: '#4C5980'}}
+              // style={{backgroundColor: '#4C5980'}}
               />
             )}
           </View>

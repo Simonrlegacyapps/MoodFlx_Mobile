@@ -145,8 +145,8 @@ const Progress = props => {
         </Animated.View>
       </Animated.View>
       <View style={[{ left: 0, }, styles.circleView, styles.circle]} >{MoodCount >= 0 && <View style={[{ backgroundColor: '#7265E3', }, styles.smallCircle]} />}</View>
-      <View style={[{ right: "33.3%", }, styles.circleView, styles.circle]} >{MoodCount >= 1 && <TickProgressBar />}</View>
-      <View style={[{ right: "66.6%", }, styles.circleView, styles.circle]} >{MoodCount >= 2 && <TickProgressBar />}</View>
+      <View style={[{ right: "33.3%", }, styles.circleView, styles.circle]} >{MoodCount >= 2 && <TickProgressBar />}</View>
+      <View style={[{ right: "66.6%", }, styles.circleView, styles.circle]} >{MoodCount >= 1 && <TickProgressBar />}</View>
       <View style={[{ right: 0, }, styles.circleView, styles.circle]} >{MoodCount >= 3 && <View style={[{ backgroundColor: '#58A0E3', }, styles.smallCircle]} />}</View>
     </View>
   );
