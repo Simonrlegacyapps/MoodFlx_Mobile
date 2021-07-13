@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -32,7 +32,7 @@ import {
   setIsHapticsEnabledFlag,
   getIsHapticsEnabled,
 } from './moodService';
-import {hsv2Hex, pSBC} from './moodUtlis';
+import { hsv2Hex, pSBC } from './moodUtlis';
 import {
   dynamicSize,
   getFontSize,
@@ -42,7 +42,7 @@ import {
   isIphoneX,
 } from '../../Constants/sizeChoose';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CloseIcon from '../../../assets/commonicons/CloseIcon';
 import QuestionMarkIcon from '../../../assets/commonicons/QuestionMarkIcon';
 import moment from 'moment';
@@ -62,7 +62,7 @@ import {
   UserEmail,
   WeatherPerm,
 } from '../../redux/actions/actions';
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import SaveMoodConfirmModal from '../../Components/Modals/SaveMoodConfirm/SaveMoodConfirmModal';
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -71,14 +71,14 @@ import NotificationQuestion from '../../Components/Modals/NotificationQuestion/N
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from '../../services/notifService';
-import {RubikMedium} from '../../Constants/fonts/Fonts';
-import {useFocusEffect} from '@react-navigation/native';
-import messaging, {firebase} from '@react-native-firebase/messaging';
-import {defaultLocation, hapticsTopFlags, isCountryIndia, moodTypes} from '../../Constants/constants';
+import { RubikMedium } from '../../Constants/fonts/Fonts';
+import { useFocusEffect } from '@react-navigation/native';
+import messaging, { firebase } from '@react-native-firebase/messaging';
+import { defaultLocation, hapticsTopFlags, isCountryIndia, moodTypes } from '../../Constants/constants';
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 
-let prevXY = {dx: 0, dy: 0};
+let prevXY = { dx: 0, dy: 0 };
 let moveCount = 0;
 let lpX = 0;
 let lpY = 0;
@@ -102,7 +102,7 @@ const screenWidth = Math.floor(window.width);
 
 // import imagePath from '../assets/images';
 
-export default function MoodDetector({navigation}) {
+export default function MoodDetector({ navigation }) {
   const [lng, setlng] = useState(false); //using in api calls
   const [lat, setlat] = useState(false); //using in api calls
   const [Loading, setLoading] = useState(false); //using in api calls
@@ -121,10 +121,10 @@ export default function MoodDetector({navigation}) {
   const [
     isSkipMoodInputModalVisible,
     setIsSkipMoodInputModalVisible,
-  ] = useState(false); 
+  ] = useState(false);
   const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
-  let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
+  let [toolTipData, setToolTipData] = useState({ ...initialEmotionTextData });
   const [emotionText, setEmotionText] = useState(initialEmotionTextData.text);
   const [color, setColor] = useState(toolTipData.color);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -143,7 +143,7 @@ export default function MoodDetector({navigation}) {
   const UserData = useSelector((state) => state.First);
 
   const pan = useRef(
-    new Animated.ValueXY({x: screenWidth / 2, y: window.height / 2}),
+    new Animated.ValueXY({ x: screenWidth / 2, y: window.height / 2 }),
   );
   const prevEmotionData = useRef({});
   const scrollerRef = useRef(null);
@@ -169,7 +169,8 @@ export default function MoodDetector({navigation}) {
   const previousWheelCenter = useRef(null);
   const userData = useRef(UserData);
   const wheelSizeChangeDisabled = useRef(true);
-  const hsvColor = useRef({h: 0, s: 0, v: 100});
+  const hsvColor = useRef({ h: 0, s: 0, v: 100 });
+  const shouldPlayHaptics = useRef(false);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -184,6 +185,7 @@ export default function MoodDetector({navigation}) {
       onStartShouldSetPanResponderCapture: (event, gestureState) => {
         // console.log('onStartShouldSetPanResponderCapture: ', Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1);
         setisHapticsEnabled(true);
+        shouldPlayHaptics.current = true;
         const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
         const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
         if (getScrollerWheelSize() !== regularWheelSize) {
@@ -195,7 +197,7 @@ export default function MoodDetector({navigation}) {
         if (offsetSize.current) {
           const panX = offsetSize.current.xMin + x;
           const panY = offsetSize.current.yMin + y;
-          pan.current.setValue({x: panX, y: panY});
+          pan.current.setValue({ x: panX, y: panY });
           const left = blocksSize.current.left + x;
           const top = blocksSize.current.top + y;
           updateColorData(left, top);
@@ -230,6 +232,7 @@ export default function MoodDetector({navigation}) {
         });
         // console.log('onPanResponderGrant gesture started');
         setisHapticsEnabled(true);
+        shouldPlayHaptics.current = true;
 
         // enlarge buubble on long press
         if (Math.abs(gestureState.dx) >= 1 || Math.abs(gestureState.dy) >= 1) {
@@ -269,7 +272,7 @@ export default function MoodDetector({navigation}) {
           }
           wheelSizeChangeDisabled.current = true;
           onPanResponderMove(event, gestureState);
-          pan.current.setValue({x: panX, y: panY});
+          pan.current.setValue({ x: panX, y: panY });
           startLongPressGesture(event, gestureState);
         } else {
           if (longPressPopUpTimeoutId.current === null && moveCount === 0) {
@@ -277,20 +280,21 @@ export default function MoodDetector({navigation}) {
           }
           moveCount += 1;
         }
-        prevXY = {dx: gestureState.dx, dy: gestureState.dy};
+        prevXY = { dx: gestureState.dx, dy: gestureState.dy };
         return true;
       },
       onPanResponderRelease: (event, gestureState) => {
         console.log('onPanResponderRelease');
         // pan.current.flattenOffset();
         setisHapticsEnabled(false);
+        shouldPlayHaptics.current = false;
         const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
         const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
-        let panXY = {x, y};
+        let panXY = { x, y };
         if (offsetSize.current) {
           let panX = offsetSize.current.xMin + x;
           let panY = offsetSize.current.yMin + y;
-          panXY = {...panXY, x: panX, y: panY};
+          panXY = { ...panXY, x: panX, y: panY };
         }
         wheelSizeChangeDisabled.current = true;
         clearLongPressTimeouts({
@@ -316,7 +320,7 @@ export default function MoodDetector({navigation}) {
 
   //color wheel caluclations
 
-  const polar = ({locationX, locationY}) => {
+  const polar = ({ locationX, locationY }) => {
     const lx = locationX,
       ly = locationY;
     if (!lx || !ly) {
@@ -342,14 +346,14 @@ export default function MoodDetector({navigation}) {
     if (!polarData) {
       return;
     }
-    let {deg, radius} = polarData;
+    let { deg, radius } = polarData;
     if (radius > 1) {
       radius = 1;
     }
     const h = deg,
       s = 100 * radius,
       v = hsvColor.current.v;
-    const hsv = {h, s, v};
+    const hsv = { h, s, v };
     const currentColor = hsv2Hex(hsv);
     hsvColor.current = hsv;
     setColor(hsv2Hex(hsv));
@@ -358,8 +362,8 @@ export default function MoodDetector({navigation}) {
   const updateColorData = (x, y, gestureState) => {
     const left = x;
     const top = y;
-    updateHueSaturation({locationX: left, locationY: y});
-    previousWheelCenter.current = {left, top};
+    updateHueSaturation({ locationX: left, locationY: y });
+    previousWheelCenter.current = { left, top };
     const emotionData = getEmotionsTextData(
       top,
       left,
@@ -377,7 +381,7 @@ export default function MoodDetector({navigation}) {
     // console.log('emotionData => ', emotionData);
     if (prevEmotionData?.current?.text === emotionData.text) {
       const color = pSBC(count.current / 100, toolTipData.color);
-      setToolTipData(Object.assign(toolTipData, {...emotionData}));
+      setToolTipData(Object.assign(toolTipData, { ...emotionData }));
       setEmotionText(emotionData?.text ?? '');
       // setColor(color);
       if (count.current === 40) {
@@ -389,7 +393,7 @@ export default function MoodDetector({navigation}) {
       count.current = count.current + addValue.current;
     } else {
       updateOffset();
-      setToolTipData(Object.assign(toolTipData, {...emotionData}));
+      setToolTipData(Object.assign(toolTipData, { ...emotionData }));
       setEmotionText(emotionData?.text ?? '');
       const color = pSBC(count.current / 100, emotionData.color);
       // setColor(color);
@@ -472,11 +476,11 @@ export default function MoodDetector({navigation}) {
             });
             setShowLongPressText(false);
           }
-          clearLongPressTimeouts({longPressTimeoutId});
+          clearLongPressTimeouts({ longPressTimeoutId });
         }, longPressDuration * 1000);
-        clearLongPressTimeouts({mediumPressTimeoutId});
+        clearLongPressTimeouts({ mediumPressTimeoutId });
       }, mediumPressDuration * 1000);
-      clearLongPressTimeouts({longPressPopUpTimeoutId});
+      clearLongPressTimeouts({ longPressPopUpTimeoutId });
     }, longPressPopupDuration * 1000);
   };
 
@@ -515,7 +519,7 @@ export default function MoodDetector({navigation}) {
         //   x: pan.current.x._value,
         //   y: pan.current.y._value
         // });
-        pan.current.setValue({x: 0, y: 0});
+        pan.current.setValue({ x: 0, y: 0 });
         pan.current.setValue(panXY);
       }
       // console.log('setting wheelSize to Regular =>', regularWheelSize);
@@ -555,7 +559,7 @@ export default function MoodDetector({navigation}) {
       blocksSize.current,
       screenContainerSize.current,
     );
-    let {xMin, xMax, yMin, yMax, initialX, initialY} = offSetSize;
+    let { xMin, xMax, yMin, yMax, initialX, initialY } = offSetSize;
     // console.log('updatePanResponder ', offSetSize);
     offsetSize.current = offSetSize;
     constrainedX.current = pan.current.x.interpolate({
@@ -576,7 +580,7 @@ export default function MoodDetector({navigation}) {
     // }
 
     if (emotionText === initialEmotionTextData.text && isInitialUpdate) {
-      pan.current.setOffset({x: 0, y: 0});
+      pan.current.setOffset({ x: 0, y: 0 });
       pan.current.setValue({
         x: initialX,
         y: initialY,
@@ -591,7 +595,7 @@ export default function MoodDetector({navigation}) {
     }
     blocksContainerRef.current.measureInWindow((x, y, width, height) => {
       setEmotionsTextData(y, x, height, width);
-      const size = {left: x, top: y, width, height};
+      const size = { left: x, top: y, width, height };
       if (screenContainerSize.current) {
         size.top = y - screenContainerSize.current.top;
       }
@@ -607,7 +611,7 @@ export default function MoodDetector({navigation}) {
       return;
     }
     toolTipRef?.current?.measureInWindow((x, y, width, height) => {
-      toolTipSize.current = {left: x, top: y, width, height};
+      toolTipSize.current = { left: x, top: y, width, height };
       !isInitialPanResponderUpdated.current && updatePanResponder();
     });
   };
@@ -617,7 +621,7 @@ export default function MoodDetector({navigation}) {
       return;
     }
     scrollerContainerRef?.current?.measureInWindow((x, y, width, height) => {
-      scrollerContainerSize.current = {left: x, top: y, width, height};
+      scrollerContainerSize.current = { left: x, top: y, width, height };
       // console.log('scrollerContainerSize x,y,width,height', x, y, width, height)
       // console.log('scrollerContainerSize scrollerContainerSize.current', scrollerContainerSize.current)
       !isInitialPanResponderUpdated.current && updatePanResponder();
@@ -629,7 +633,7 @@ export default function MoodDetector({navigation}) {
       return;
     }
     screenContainerRef?.current?.measureInWindow((x, y, width, height) => {
-      const size = {left: x, top: y, width, height};
+      const size = { left: x, top: y, width, height };
       screenContainerSize.current = size;
       if (blocksSize.current) {
         blocksSize.current = {
@@ -664,7 +668,7 @@ export default function MoodDetector({navigation}) {
       dispatch(UserDivision(division));
       dispatch(HealthPerm(HealthP));
       dispatch(WeatherPerm(WeatherP));
-    } catch (error){
+    } catch (error) {
       console.log('error getting AsyncStorage values', error);
     }
   };
@@ -744,7 +748,7 @@ export default function MoodDetector({navigation}) {
         })
           .then((location) => {
             const isIndia = isCountryIndia();
-            if (isIndia){
+            if (isIndia) {
               location = {
                 latitude: defaultLocation.latitude,
                 longitude: defaultLocation.longitude,
@@ -775,11 +779,15 @@ export default function MoodDetector({navigation}) {
   }, [UserData]);
 
   const playHaptics = useCallback(() => {
-    console.log('playHaptics isHapticsEnabled', isHapticsEnabled);
-    if (isHapticsEnabled) {
+    console.log('playHaptics shouldPlayHaptics.current', shouldPlayHaptics.current);
+    if (shouldPlayHaptics.current) {
       const data = hapticsData.current ?? {};
-      let {hapticType, timeInterval, percentage, isLeft} = data;
+      let { hapticType, timeInterval, percentage, isLeft } = data;
       if (percentage < 0) {
+        setIsHapticsEnabledFlag({
+          isEnabled: false,
+          directionFlag: hapticsTopFlags.both,
+        });
         let interval = 0.1;
         if (percentage) {
           interval = (100 - Math.abs(percentage)) / 1000;
@@ -826,16 +834,18 @@ export default function MoodDetector({navigation}) {
         hapticTimeoutId.current = null;
       }
     }
-  }, [isHapticsEnabled]);
+  }, []);
 
   useEffect(() => {
     // console.log('isHapticsEnabled =>', isHapticsEnabled, hapticsData.current);
-    playHaptics();
-    !isHapticsEnabled &&
+    if (isHapticsEnabled) {
+      playHaptics();
+    } else {
       setIsHapticsEnabledFlag({
         isEnabled: false,
         directionFlag: hapticsTopFlags.both,
       });
+    }
 
     // if (isHapticsEnabled && !hapticTimeoutId.current) {
     //   hapticTimeoutId.current = setInterval(() => {
@@ -852,7 +862,7 @@ export default function MoodDetector({navigation}) {
     // }
 
     // return () => hapticTimeoutId.current && clearInterval(hapticTimeoutId.current);
-  }, [isHapticsEnabled]);
+  }, [isHapticsEnabled, playHaptics]);
 
   const showMoodSaveConfirmModal = (onClose) => {
     setIsSaveMoodConfirmModalVisible(true);
@@ -871,12 +881,12 @@ export default function MoodDetector({navigation}) {
 
   const findId = async () => {
     let mood_type = moodTypes.regular;
-    if(wheelSize === mediumWheelSize) {
+    if (wheelSize === mediumWheelSize) {
       mood_type = moodTypes.pretty
-    } else if(wheelSize === largeWheelSize) {
+    } else if (wheelSize === largeWheelSize) {
       mood_type = moodTypes.very
     }
-            
+
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
@@ -976,7 +986,7 @@ export default function MoodDetector({navigation}) {
           .then((result) => {
             console.log('quesstion updated', result);
             setLoading(false);
-            navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+            navigation.navigate('HomeScreen', { screen: 'MicScreen' });
           })
           .catch((error) => {
             console.log('error', error);
@@ -999,7 +1009,7 @@ export default function MoodDetector({navigation}) {
               //   deviceID: deviceId,
               // });
               if (route?.params?.question != undefined) {
-                navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+                navigation.navigate('HomeScreen', { screen: 'MicScreen' });
               } else {
                 showMoodSaveConfirmModal(() => {
                   navigation.replace('HomeScreen', {
@@ -1071,7 +1081,7 @@ export default function MoodDetector({navigation}) {
 
   const dismissNotificationQuestionModal = useCallback(() => {
     setIsNotificationQuestionModalVisible(false);
-    navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+    navigation.navigate('HomeScreen', { screen: 'MicScreen' });
   }, []);
 
   const dismissSkipMoodInputModal = useCallback(() => {
@@ -1081,7 +1091,7 @@ export default function MoodDetector({navigation}) {
   const onAcceptSkipMoodInput = useCallback(() => {
     dismissSkipMoodInputModal();
     const timeoutId = setTimeout(() => {
-      navigation.navigate('HomeScreen', {lat: lat, long: lng});
+      navigation.navigate('HomeScreen', { lat: lat, long: lng });
       clearTimeout(timeoutId);
     }, 500);
   }, [dismissSkipMoodInputModal, lat, lng, navigation]);
@@ -1314,7 +1324,7 @@ export default function MoodDetector({navigation}) {
           flexDirection: 'row',
         }}>
         <TouchableOpacity
-          style={{marginLeft: 12}}
+          style={{ marginLeft: 12 }}
           onPress={
             () => setIsSkipMoodInputModalVisible(true)
             // navigation.replace('HomeScreen', {
@@ -1356,7 +1366,7 @@ export default function MoodDetector({navigation}) {
             alignItems: 'center',
           }}>
           <View />
-          <Text style={{textAlign: 'center', fontSize: 18}}>Save</Text>
+          <Text style={{ textAlign: 'center', fontSize: 18 }}>Save</Text>
         </TouchableOpacity>
         {/* {MoodFail && (
           <Text style={styles.ErrorText}>Please select a mood</Text>
@@ -1371,7 +1381,7 @@ export default function MoodDetector({navigation}) {
     <View
       onLayout={onLayoutScreenContainer}
       ref={screenContainerRef}
-      style={[styles.container, {backgroundColor: topBottomColor}]}>
+      style={[styles.container, { backgroundColor: topBottomColor }]}>
       <TouchableOpacity disabled={true} style={styles.anonymousHeaderView}>
         <AnonymousHeader />
       </TouchableOpacity>
@@ -1395,9 +1405,9 @@ export default function MoodDetector({navigation}) {
         scrollerStyle={{
           ...pan.current.getLayout(),
           ...(constrainedX.current !== null &&
-          constrainedY.current !== null &&
-          wheelSize === regularWheelSize
-            ? {left: constrainedX.current, top: constrainedY.current}
+            constrainedY.current !== null &&
+            wheelSize === regularWheelSize
+            ? { left: constrainedX.current, top: constrainedY.current }
             : {}),
         }}
         scrollerPanResponder={panResponder}
@@ -1406,8 +1416,8 @@ export default function MoodDetector({navigation}) {
           wheelSize === regularWheelSize || emotionText === 'Slide finger'
             ? emotionText
             : wheelSize === mediumWheelSize
-            ? `Pretty ${emotionText}`
-            : `Very ${emotionText}`
+              ? `Pretty ${emotionText}`
+              : `Very ${emotionText}`
         }
         toolTipRef={toolTipRef}
         // forceUpdate={forceUpdate}
@@ -1418,7 +1428,7 @@ export default function MoodDetector({navigation}) {
         scrollerRef={(ref) => (scrollerRef.current = ref)}
         scrollerContainerRef={scrollerContainerRef}
         onLayoutScrollerContainer={onLayoutScrollerContainer}
-        // toolTipSize={toolTipSize.current}
+      // toolTipSize={toolTipSize.current}
       />
 
       <VideoModal

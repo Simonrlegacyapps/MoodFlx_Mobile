@@ -1,12 +1,12 @@
-import {Dimensions} from 'react-native';
-import {hapticsConfigs, hapticsTopFlags} from '../../Constants/constants';
+import { Dimensions } from 'react-native';
+import { hapticsConfigs, hapticsTopFlags } from '../../Constants/constants';
 import {
   horizontalScale,
   iPhoneXPadding,
   isIphoneX,
   verticalScale,
 } from '../../Constants/sizeChoose';
-const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export const regularWheelSize = 74;
@@ -27,7 +27,7 @@ export const setScrollerWheelSize = (size) => {
 
 export const getScrollerWheelSize = () => scrollerWheelSize;
 
-export const setIsHapticsEnabledFlag = ({isEnabled, directionFlag}) => {
+export const setIsHapticsEnabledFlag = ({ isEnabled, directionFlag }) => {
   console.log('setIsHapticsEnabledFlag =>', isEnabled, directionFlag);
   if (directionFlag === hapticsTopFlags.both) {
     jawsThemeCount = 0;
@@ -280,7 +280,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.upset.left[0] &&
     left < emotionsTextData.upset.left[1]
   ) {
-    return {...emotionsTextData.upset, img: userData?.AllMoods?.[0]?.icon};
+    return { ...emotionsTextData.upset, img: userData?.AllMoods?.[0]?.icon };
   }
   if (
     top > emotionsTextData.anxious.top[0] &&
@@ -288,7 +288,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.anxious.left[0] &&
     left < emotionsTextData.anxious.left[1]
   ) {
-    return {...emotionsTextData.anxious, img: userData?.AllMoods?.[1]?.icon};
+    return { ...emotionsTextData.anxious, img: userData?.AllMoods?.[1]?.icon };
   }
   if (
     top > emotionsTextData.sad.top[0] &&
@@ -296,7 +296,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.sad.left[0] &&
     left < emotionsTextData.sad.left[1]
   ) {
-    return {...emotionsTextData.sad, img: userData?.AllMoods?.[2]?.icon};
+    return { ...emotionsTextData.sad, img: userData?.AllMoods?.[2]?.icon };
   }
   if (
     top > emotionsTextData.tired.top[0] &&
@@ -305,7 +305,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left < emotionsTextData.tired.left[1]
   ) {
     // console.log('anxious left: ', left, ' anxious: ', emotionsTextData.anxious, ' gestureState: ', gestureState)
-    return {...emotionsTextData.tired, img: userData?.AllMoods?.[3]?.icon};
+    return { ...emotionsTextData.tired, img: userData?.AllMoods?.[3]?.icon };
   }
   if (
     top > emotionsTextData.cranky.top[0] &&
@@ -313,7 +313,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.cranky.left[0] &&
     left < emotionsTextData.cranky.left[1]
   ) {
-    return {...emotionsTextData.cranky, img: userData?.AllMoods?.[4]?.icon};
+    return { ...emotionsTextData.cranky, img: userData?.AllMoods?.[4]?.icon };
   }
   if (
     top > emotionsTextData.wired.top[0] &&
@@ -321,7 +321,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.wired.left[0] &&
     left < emotionsTextData.wired.left[1]
   ) {
-    return {...emotionsTextData.wired, img: userData?.AllMoods?.[5]?.icon};
+    return { ...emotionsTextData.wired, img: userData?.AllMoods?.[5]?.icon };
   }
   if (
     top > emotionsTextData.flat.top[0] &&
@@ -329,7 +329,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.flat.left[0] &&
     left < emotionsTextData.flat.left[1]
   ) {
-    return {...emotionsTextData.flat, img: userData?.AllMoods?.[6]?.icon};
+    return { ...emotionsTextData.flat, img: userData?.AllMoods?.[6]?.icon };
   }
   if (
     top > emotionsTextData.spent.top[0] &&
@@ -338,7 +338,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left < emotionsTextData.spent.left[1]
   ) {
     // console.log('tired left: ', left, ' tired: ', emotionsTextData.tired, ' gestureState: ', gestureState)
-    return {...emotionsTextData.spent, img: userData?.AllMoods?.[7]?.icon};
+    return { ...emotionsTextData.spent, img: userData?.AllMoods?.[7]?.icon };
   }
   if (
     top > emotionsTextData.pumped.top[0] &&
@@ -347,7 +347,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left < emotionsTextData.pumped.left[1]
   ) {
     // console.log('pumped left: ', left, ' pumped: ', emotionsTextData.pumped, ' gestureState: ', gestureState)
-    return {...emotionsTextData.pumped, img: userData?.AllMoods?.[8]?.icon};
+    return { ...emotionsTextData.pumped, img: userData?.AllMoods?.[8]?.icon };
   }
   if (
     top > emotionsTextData.stoked.top[0] &&
@@ -355,7 +355,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.stoked.left[0] &&
     left < emotionsTextData.stoked.left[1]
   ) {
-    return {...emotionsTextData.stoked, img: userData?.AllMoods?.[9]?.icon};
+    return { ...emotionsTextData.stoked, img: userData?.AllMoods?.[9]?.icon };
   }
   if (
     top > emotionsTextData.cool.top[0] &&
@@ -363,7 +363,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.cool.left[0] &&
     left < emotionsTextData.cool.left[1]
   ) {
-    return {...emotionsTextData.cool, img: userData?.AllMoods?.[10]?.icon};
+    return { ...emotionsTextData.cool, img: userData?.AllMoods?.[10]?.icon };
   }
   if (
     top > emotionsTextData.chilled.top[0] &&
@@ -371,7 +371,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.chilled.left[0] &&
     left < emotionsTextData.chilled.left[1]
   ) {
-    return {...emotionsTextData.chilled, img: userData?.AllMoods?.[11]?.icon};
+    return { ...emotionsTextData.chilled, img: userData?.AllMoods?.[11]?.icon };
   }
   if (
     top > emotionsTextData.excited.top[0] &&
@@ -380,7 +380,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left < emotionsTextData.excited.left[1]
   ) {
     // console.log('excited left: ', left, ' excited: ', emotionsTextData.excited, ' gestureState: ', gestureState)
-    return {...emotionsTextData.excited, img: userData?.AllMoods?.[12]?.icon};
+    return { ...emotionsTextData.excited, img: userData?.AllMoods?.[12]?.icon };
   }
   if (
     top > emotionsTextData.happy.top[0] &&
@@ -388,7 +388,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.happy.left[0] &&
     left < emotionsTextData.happy.left[1]
   ) {
-    return {...emotionsTextData.happy, img: userData?.AllMoods?.[13]?.icon};
+    return { ...emotionsTextData.happy, img: userData?.AllMoods?.[13]?.icon };
   }
   if (
     top > emotionsTextData.content.top[0] &&
@@ -396,7 +396,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.content.left[0] &&
     left < emotionsTextData.content.left[1]
   ) {
-    return {...emotionsTextData.content, img: userData?.AllMoods?.[14]?.icon};
+    return { ...emotionsTextData.content, img: userData?.AllMoods?.[14]?.icon };
   }
   if (
     top > emotionsTextData.relaxed.top[0] &&
@@ -404,7 +404,7 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
     left > emotionsTextData.relaxed.left[0] &&
     left < emotionsTextData.relaxed.left[1]
   ) {
-    return {...emotionsTextData.relaxed, img: userData?.AllMoods?.[15]?.icon};
+    return { ...emotionsTextData.relaxed, img: userData?.AllMoods?.[15]?.icon };
   }
   //rattled
   return emotionData;
@@ -414,7 +414,7 @@ const isIphoneXFlag = isIphoneX;
 const getLandscapePaddingHorizontal = () => {
   return isIphoneXFlag
     ? iPhoneXPadding.landscape.paddingLeft +
-        iPhoneXPadding.landscape.paddingRight
+    iPhoneXPadding.landscape.paddingRight
     : 0;
 };
 const getPortraitPaddingHorizontal = () => {
@@ -425,7 +425,7 @@ const getPortraitPaddingHorizontal = () => {
 const getLandscapePaddingVertical = () => {
   return isIphoneXFlag
     ? iPhoneXPadding.landscape.paddingBottom +
-        iPhoneXPadding.landscape.paddingTop
+    iPhoneXPadding.landscape.paddingTop
     : 0;
 };
 const getPortraitPaddingVertical = () => {
@@ -493,9 +493,9 @@ export const getHapticStats = (y, x, blocksSize, offsetSize) => {
   let percentage = 0;
   let isLeft = false;
   if (y < blocksSize.top) {
-    return {hapticType, timeInterval, percentage, isLeft};
+    return { hapticType, timeInterval, percentage, isLeft };
   } else if (y > blocksSize.top + blocksSize.height) {
-    return {hapticType, timeInterval, percentage, isLeft};
+    return { hapticType, timeInterval, percentage, isLeft };
   }
   const yPosInBlock = y - blocksSize.top;
   const blockSizeHalf = blocksSize.height / 2;
@@ -529,7 +529,7 @@ export const getHapticStats = (y, x, blocksSize, offsetSize) => {
   if (x < screenWidth / 2) {
     isLeft = true;
   }
-  return {hapticType, timeInterval, percentage, isLeft};
+  return { hapticType, timeInterval, percentage, isLeft };
 };
 
 export const playHapticJawsTheme = (callback) => {
@@ -546,18 +546,35 @@ export const playHapticJawsTheme = (callback) => {
   };
 
   let timeoutId = null;
-
+  let c = 0;
   function playHaptics(count) {
-    for (let i = 0; i <= count; i++) {
+    if (!getIsHapticsEnabled(true)) {
+      return;
+    }
+    if (c === 0) {
       ReactNativeHapticFeedback.trigger(hapticsConfigs.car.high, hapticOptions);
-      // ReactNativeHapticFeedback.trigger('selection', hapticOptions);
-      // ReactNativeHapticFeedback.trigger('rigid', hapticOptions);
+      c++;
+    }
+    if (c <= count) {
+      let playHapticsTimeoutId = setTimeout(() => {
+        if (getIsHapticsEnabled(true)) {
+          ReactNativeHapticFeedback.trigger(
+            hapticsConfigs.car.high,
+            hapticOptions,
+          );
+        }
+        clearTimeout(playHapticsTimeoutId);
+        playHapticsTimeoutId = null;
+        c++;
+        playHaptics(count);
+      }, 700);
     }
   }
 
   if (jawsThemeCount <= 3) {
     timeoutId = setTimeout(() => {
       if (getIsHapticsEnabled(true)) {
+        c = 0;
         playHaptics(8);
         jawsThemeCount++;
       }
@@ -568,6 +585,7 @@ export const playHapticJawsTheme = (callback) => {
   } else {
     timeoutId = setTimeout(() => {
       if (getIsHapticsEnabled(true)) {
+        c = 0;
         playHaptics(3);
         jawsThemeCount++;
       }
@@ -592,21 +610,38 @@ export const playHapticCircusTheme = (callback) => {
   };
 
   let timeoutId = null;
-
+  let c = 0;
   function playHaptics(count) {
-    for (let i = 0; i <= count; i++) {
-      // if(i === 0){
-      //   ReactNativeHapticFeedback.trigger(hapticsConfigs.car.high, hapticOptions);
-      // } else {
-      //   ReactNativeHapticFeedback.trigger(hapticsConfigs.car.medium, hapticOptions);
-      // }
+    // for (let i = 0; i <= count; i++) {
+    //   ReactNativeHapticFeedback.trigger(hapticsConfigs.car.high, hapticOptions);
+    // }
+    if (!getIsHapticsEnabled(false)) {
+      return;
+    }
+    if (c === 0) {
       ReactNativeHapticFeedback.trigger(hapticsConfigs.car.high, hapticOptions);
+      c++;
+    }
+    if (c <= count) {
+      let playHapticsTimeoutId = setTimeout(() => {
+        if (getIsHapticsEnabled(false)) {
+          ReactNativeHapticFeedback.trigger(
+            hapticsConfigs.car.high,
+            hapticOptions,
+          );
+        }
+        clearTimeout(playHapticsTimeoutId);
+        playHapticsTimeoutId = null;
+        c++;
+        playHaptics(count);
+      }, 700);
     }
   }
 
   if (circusThemeCount <= 1 || circusThemeCount >= 3) {
     timeoutId = setTimeout(() => {
       if (getIsHapticsEnabled(false)) {
+        c = 0;
         playHaptics(1);
         if (circusThemeCount === 6) {
           circusThemeCount = -1;
@@ -623,6 +658,7 @@ export const playHapticCircusTheme = (callback) => {
   } else {
     timeoutId = setTimeout(() => {
       if (getIsHapticsEnabled(false)) {
+        c = 0;
         playHaptics(5);
         circusThemeCount++;
       }
