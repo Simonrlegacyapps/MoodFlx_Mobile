@@ -25,6 +25,9 @@ import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDu
 import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import PopUp from '../../../Components/PopUp/PopUp';
+import Toast from 'react-native-toast-message';
+import UsageStats from 'react-native-usage-stats';
+import moment from 'moment';
 
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 
@@ -144,6 +147,52 @@ const ScreenData = ({
     //   let SleepP = await JSON.parse(Sp);
     //   console.log(`SleepPerm`, SleepP);
     //   dispatch(SleepPerm(SleepP));
+  };
+
+  const requestUsageStatsPermission = () => {
+    if (!UsageStats.showUsageAccessSettings) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats showUsageAccessSettings not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    UsageStats.showUsageAccessSettings('com.moodflo');
+  };
+
+  const getUsageStats = () => {
+    if (!UsageStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    if (!UsageStats.queryUsageStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats queryUsageStats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    const s = moment().startOf('day').subtract(1, 'day').toDate();
+    UsageStats.queryUsageStats(
+      UsageStats.INTERVAL_DAILY,
+      s.getTime(),
+      new Date().getTime(),
+    )
+      .then((data) => {
+        console.log('SCREEN TIME DATA: ', data);
+      })
+      .catch((error) => {
+        console.log('Error in getting SCREEN TIME DATA: ', error);
+      });
   };
 
   const ScreenDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
