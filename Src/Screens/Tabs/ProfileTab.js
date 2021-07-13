@@ -32,6 +32,7 @@ import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 import { AppPermissions } from '../../services/appPermissions';
 import { useFocusEffect } from '@react-navigation/native';
 import { getSleepDataAfterPermissionIOS } from '../Home/SleepData/sleepDataService';
+import BackIcon from '../../../assets/svg/backIcon';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -83,12 +84,15 @@ const ProfileTab = ({ navigation }) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
 
+  const updateName = useCallback((text) => {
+    setname('Tester');
+  }, []);
+
   const getProfileUserData = () => {
     // console.log('called called called called called called');
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-
 
     GetStaffUserData(
       {
@@ -148,25 +152,25 @@ const ProfileTab = ({ navigation }) => {
   );
 
   useEffect(() => {
-    AppState.addEventListener("change", _handleAppStateChange);
+    AppState.addEventListener('change', _handleAppStateChange);
 
     return () => {
-      AppState.removeEventListener("change", _handleAppStateChange);
+      AppState.removeEventListener('change', _handleAppStateChange);
     };
   }, []);
 
   const _handleAppStateChange = (nextAppState) => {
     if (
       appState.current.match(/inactive|background/) &&
-      nextAppState === "active"
+      nextAppState === 'active'
     ) {
-      console.log("App has come to the foreground!");
+      console.log('App has come to the foreground!');
       AppPermissions.checkAppPermissions(dispatch);
     }
 
     appState.current = nextAppState;
     setAppStateVisible(appState.current);
-    console.log("AppState", appState.current);
+    console.log('AppState', appState.current);
   };
 
   const requestNotificationPerm = useCallback(async () => {
@@ -242,7 +246,8 @@ const ProfileTab = ({ navigation }) => {
     })
       .then((res) => res.json())
       .then(async (res) => {
-        console.log('res', res);
+        // console.log('res', res);
+        console.warn('res of image succed', res);
         getProfileUserData();
 
         // setCommentText('');
@@ -394,7 +399,6 @@ const ProfileTab = ({ navigation }) => {
     }
   }, [dispatch]);
 
-
   // console.log(
   //   "name != '' && UserData?.UserDetails?.full_name",
   //   name != 'Anonymous'
@@ -403,8 +407,6 @@ const ProfileTab = ({ navigation }) => {
   //     ? UserData?.UserDetails?.full_name
   //     : name,
   // );
-
-
 
   return (
     <>
@@ -452,6 +454,9 @@ const ProfileTab = ({ navigation }) => {
               />
             </View>
           </View>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20, top: 10 }}>
+            <BackIcon />
+          </TouchableOpacity>
           <View style={styles.flatlistContainer}>
             {/* <FlatList data={listData} renderItem={renderList} /> */}
 
@@ -467,7 +472,7 @@ const ProfileTab = ({ navigation }) => {
                     ? UserData?.UserDetails?.full_name
                     : name
               }
-              onChangeText={setname}
+              onChangeText={updateName}
             />
             <AddAnswer
               checkedit={UserData?.UserDetails?.gender ? true : false}
@@ -684,8 +689,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   profileImage: {
-    height: 150,
-    width: 150,
+    height: dynamicSize(160),
+    width: dynamicSize(160),
     resizeMode: 'cover',
     borderRadius: dynamicSize(160),
   },

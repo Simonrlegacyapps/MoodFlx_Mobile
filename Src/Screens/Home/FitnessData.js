@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef, useReducer} from 'react';
+import React, { useEffect, useState, useRef, useReducer } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import Constants from '../../Constants';
 import {
   RubikExtraBold,
@@ -23,13 +23,13 @@ import {
 } from '../../Constants/fonts/Fonts';
 import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import AsyncStorage from '@react-native-community/async-storage';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PopUp from '../../Components/PopUp/PopUp';
 import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
-import {IsAnonymous, UserDetail} from '../../redux/actions/actions';
+import { IsAnonymous, UserDetail } from '../../redux/actions/actions';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
-import {dynamicSize, horizontalScale} from '../../Constants/sizeChoose';
+import { dynamicSize, horizontalScale } from '../../Constants/sizeChoose';
 import AnonymousPopUp from '../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import PostRequestApi, {
   GetStaffUserData,
@@ -59,27 +59,27 @@ const fitnessInsightsTypes = {
 function fitnessInsightsReducer(state, action) {
   switch (action.type) {
     case fitnessInsightsTypes.SET_DALIY_INSIGHTS:
-      return {...state, dailyInsights: action.payload};
+      return { ...state, dailyInsights: action.payload };
     case fitnessInsightsTypes.SET_WEEKLY_INSIGHTS:
-      return {...state, weeklyInsights: action.payload};
+      return { ...state, weeklyInsights: action.payload };
     case fitnessInsightsTypes.SET_DAILY_SUGGESTION:
-      return {...state, dailySuggestion: action.payload};
+      return { ...state, dailySuggestion: action.payload };
     case fitnessInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
-      return {...state, dailySuggestionType: action.payload};
+      return { ...state, dailySuggestionType: action.payload };
     case fitnessInsightsTypes.SET_WEEKLY_SUGGESTION:
-      return {...state, weeklySuggestion: action.payload};
+      return { ...state, weeklySuggestion: action.payload };
     case fitnessInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
-      return {...state, weeklySuggestionType: action.payload};
+      return { ...state, weeklySuggestionType: action.payload };
     case fitnessInsightsTypes.SET_INSIGHTS:
       return action?.payload && typeof action?.payload === 'object'
-        ? {...state, ...action.payload}
+        ? { ...state, ...action.payload }
         : state;
     default:
       return state;
   }
 }
 
-const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
 const FitnessData = ({
   Perm,
@@ -155,23 +155,23 @@ const FitnessData = ({
         email: UserData.UserEmail ?? '',
         user_id: UserData.UserId ?? '',
       };
-      PostRequestApi('getActivityInsights', {...params, status: 'daily'})
+      PostRequestApi('getActivityInsights', { ...params, status: 'daily' })
         .then((res) => {
           console.log('getLightInsights daily res: ', res);
           let dailyInsightsPayload = {};
           dailyInsightsPayload.dailyInsights =
             res?.data?.insights?.message1 &&
-            typeof res.data.insights.message1 === 'string'
+              typeof res.data.insights.message1 === 'string'
               ? res.data.insights.message1
               : '';
           dailyInsightsPayload.dailySuggestion =
             res?.data?.insights?.message2 &&
-            typeof res.data.insights.message2 === 'string'
+              typeof res.data.insights.message2 === 'string'
               ? res.data.insights.message2
               : '';
           dailyInsightsPayload.dailySuggestionType =
             res?.data?.insights?.message2Type &&
-            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+              res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
               ? res.data.insights.message2Type
               : '';
           setInsights({
@@ -215,17 +215,17 @@ const FitnessData = ({
           // console.log('getActivityInsights weeklyInsights: ', res?.data?.insights);
           weeklyInsightsPayload.weeklyInsights =
             res?.data?.insights?.message1 &&
-            typeof res.data.insights.message1 === 'string'
+              typeof res.data.insights.message1 === 'string'
               ? res.data.insights.message1
               : '';
           weeklyInsightsPayload.weeklySuggestion =
             res?.data?.insights?.message2 &&
-            typeof res.data.insights.message2 === 'string'
+              typeof res.data.insights.message2 === 'string'
               ? res.data.insights.message2
               : '';
           weeklyInsightsPayload.weeklySuggestionType =
             res?.data?.insights?.message2Type &&
-            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+              res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
               ? res.data.insights.message2Type
               : '';
           setInsights({
@@ -290,7 +290,7 @@ const FitnessData = ({
       .then(async (result) => result.json())
       .then(async (result) => {
         setShowAddName(false);
-        if(result){
+        if (result) {
           console.log(
             '✅ ✅ ✅ ✅ Success Update Staff Profile ✅ ✅ ✅ ✅',
             result
@@ -370,11 +370,11 @@ const FitnessData = ({
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{height: 20, width: 20}}
+                style={{ height: 20, width: 20 }}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
               <Text style={styles.lightText}>
                 {UserData.HealthPermission ? 'Syncing your' : 'Sync your'}
               </Text>
@@ -392,22 +392,23 @@ const FitnessData = ({
             progress={
               swiperIndex == 0
                 ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
-                    3) *
-                  100
+                  3) *
+                100
                 : 0
             }
+            MoodCount={UserMoodCount}
             height={10}
             backgroundColor="#CB9866"
           />
-          <View style={{flexDirection: 'row'}}>
-            <Text numberOfLines={1} style={[styles.SmallThinText, {flex: 1}]}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text numberOfLines={1} style={[styles.SmallThinText, { flex: 1 }]}>
               {UserMoodCount < 3
                 ? 'Try add 3 moods per day'
                 : `Boom! You've added ${UserMoodCount} moods today`}
             </Text>
             <Text
               style={
-                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
+                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
               }>
               {UserMoodCount === null ? 0 : UserMoodCount}/3
             </Text>
@@ -449,7 +450,7 @@ const FitnessData = ({
               weeklySuggestionType={insights?.weeklySuggestionType}
             />
           )}
-            {/* {UserData.HealthPermission && (
+          {/* {UserData.HealthPermission && (
               <View
                 style={{
                   position: 'absolute',
@@ -464,7 +465,7 @@ const FitnessData = ({
                     fontFamily: RubikExtraBold,
                     fontSize: SIZE / 5.5,
                     color: '#E0DDED',
-                    transform: [{rotate: '-15deg'}],
+                    transform: [{ rotate: '-15deg' }],
                   }}>
                   Demo
                 </Text>
@@ -477,7 +478,7 @@ const FitnessData = ({
           UserData.UserCalories !== null &&
           UserData.UserDistance !== null &&
           UserData.UserMoveTime !== null && ( */}
-          <View style={[styles.forCircle, {marginTop: 30}]}>
+          <View style={[styles.forCircle, { marginTop: 30 }]}>
             {/* {setTimeout(() => {
                 
               }, timeout)} */}
@@ -505,17 +506,17 @@ const FitnessData = ({
                 source={Constants.Images.RunningBackground}>
                 <Image
                   source={Constants.Images.RunningMan}
-                  style={{height: 30, width: 30, marginTop: 25}}
+                  style={{ height: 30, width: 30, marginTop: 25 }}
                 />
                 <Text
-                  style={[styles.swiperText, {fontSize: 24, marginTop: 10}]}>
+                  style={[styles.swiperText, { fontSize: 24, marginTop: 10 }]}>
                   {/* {(TodayStep * 100).toFixed(0)} */}
                   {UserSteps.toFixed(0)}
                 </Text>
                 <Text
                   style={[
                     styles.SmallThinText,
-                    {paddingVertical: 0, color: '#3B456D'},
+                    { paddingVertical: 0, color: '#3B456D' },
                   ]}>
                   steps
                 </Text>
@@ -550,10 +551,10 @@ const FitnessData = ({
               <View style={styles.absolute}>
                 <Image
                   source={Constants.Images.Calories}
-                  style={{height: 25, width: 25, marginTop: -25}}
+                  style={{ height: 25, width: 25, marginTop: -25 }}
                 />
               </View>
-              <View style={{marginTop: 10}}>
+              <View style={{ marginTop: 10 }}>
                 <Text style={[styles.SmallThinBlackText]}>
                   {UserCalories.toFixed(0)} kcal
                 </Text>
@@ -577,10 +578,10 @@ const FitnessData = ({
               <View style={styles.absolute}>
                 <Image
                   source={Constants.Images.Distance}
-                  style={{height: 25, width: 25, marginTop: -25}}
+                  style={{ height: 25, width: 25, marginTop: -25 }}
                 />
               </View>
-              <View style={{marginTop: 10}}>
+              <View style={{ marginTop: 10 }}>
                 <Text style={[styles.SmallThinBlackText]}>
                   {((UserDistance / 5000) * 5).toFixed(1)} km
                 </Text>
@@ -604,10 +605,10 @@ const FitnessData = ({
               <View style={styles.absolute}>
                 <Image
                   source={Constants.Images.Time}
-                  style={{height: 25, width: 25, marginTop: -25}}
+                  style={{ height: 25, width: 25, marginTop: -25 }}
                 />
               </View>
-              <View style={{marginTop: 10}}>
+              <View style={{ marginTop: 10 }}>
                 <Text style={[styles.SmallThinBlackText]}>
                   {UserMoveTime.toFixed(0)} min
                 </Text>
@@ -645,7 +646,7 @@ const FitnessData = ({
                   fontFamily: RubikExtraBold,
                   fontSize: SIZE / 3.5,
                   color: '#E0DDED',
-                  transform: [{rotate: '-15deg'}],
+                  transform: [{ rotate: '-15deg' }],
                 }}>
                 Demo
               </Text>
@@ -815,7 +816,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
+  forCircle: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   BigCircleBackgroundImage: {
     height: 140,
     width: 130,
@@ -827,7 +828,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

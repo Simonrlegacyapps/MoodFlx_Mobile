@@ -63,7 +63,11 @@ import Toast, { BaseToast } from 'react-native-toast-message';
 import { getFontSize } from './Src/Constants/sizeChoose';
 import Constants from './Src/Constants';
 import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
-import { getLinkModalText } from './Src/Constants/constants';
+import {
+  defaultLocation,
+  getLinkModalText,
+  isCountryIndia,
+} from './Src/Constants/constants';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -595,6 +599,13 @@ const App: () => React$Node = () => {
           .then((location) => {
             //   console.log('Success', location);
             // setlat(location.latitude);
+            const isIndia = isCountryIndia();
+            if(isIndia){
+              location = {
+                latitude: defaultLocation.latitude,
+                longitude: defaultLocation.longitude
+              };
+            }
             console.log(
               '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
               JSON.stringify(location),
@@ -716,9 +727,9 @@ const App: () => React$Node = () => {
         dismissModalHandler={onLinkCancel}
         modalText={linkModalText}
         onClickButtonOne={onLinkConfirm}
-        buttonOneText="Yes"
+        buttonOneText="Unlink"
         onClickButtonTwo={onLinkCancel}
-        buttonTwoText="No"
+        buttonTwoText="Cancel"
       />
     </>
   );

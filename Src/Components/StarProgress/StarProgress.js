@@ -135,7 +135,9 @@ const StarProgress = ({ sleepMinutes }) => {
             paddingHorizontal: 3,
             justifyContent: 'center',
             alignItems: 'center',
-          }}>
+            overflow: 'hidden'
+          }}
+          imageStyle={styles.innerContainer}>
           <View
             style={{
               alignItems: 'center',
@@ -264,7 +266,10 @@ const styles = StyleSheet.create({
   almostView: {
     left: horizontalScale(12),
     top: 0
-  }
+  },
+  innerContainer: {
+    tintColor: '#7965F6',
+  },
 });
 
 export default StarProgress;

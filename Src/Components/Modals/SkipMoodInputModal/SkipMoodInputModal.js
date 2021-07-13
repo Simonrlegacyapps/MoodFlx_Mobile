@@ -1,4 +1,4 @@
-import React, {Component, useState} from 'react';
+import React, { Component, useState } from 'react';
 import {
   View,
   Text,
@@ -14,9 +14,10 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import {metrics, getFontSize, getLineHeight, horizontalScale} from '../../../Constants/sizeChoose';
+import { metrics, getFontSize, getLineHeight, horizontalScale } from '../../../Constants/sizeChoose';
+import SkipMood from '../../../../assets/svg/skipMood';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const SkipMoodInputModal = ({
   modalVisible,
   dismissModalHandler,
@@ -38,35 +39,39 @@ const SkipMoodInputModal = ({
       }}
       customBackdrop={
         <TouchableWithoutFeedback onPress={dismissModalHandler}>
-          <View style={{flex: 1, backgroundColor: '#000000'}} />
+          <View style={{ flex: 1, backgroundColor: '#000000' }} />
         </TouchableWithoutFeedback>
       }>
       <View style={styles.container}>
         <TouchableOpacity
           onPress={dismissModalHandler}
-          style={[styles.dismissView, {backgroundColor: color}]} />
+          style={[styles.dismissView, { backgroundColor: color }]} />
         <View style={styles.upperContainer}>
+          <View style={{ width: '100%', marginTop: 20 }}>
+            <SkipMood />
+          </View>
           <Text
             style={styles.textOne}>
             Skip adding your mood this time?
           </Text>
-
-          <TouchableOpacity style={[styles.buttonOne, { 
-              marginTop: horizontalScale(40),
-              marginBottom: horizontalScale(10),
-              }]} onPress={onClickButtonOne}>
-          <Text
-            style={styles.buttonOneText}>
-            {"Yes, I'm done"}
-          </Text>
+          <TouchableOpacity style={[styles.buttonOne, {
+            marginTop: horizontalScale(40),
+            marginBottom: horizontalScale(10),
+            paddingVertical: 15
+          }]} onPress={onClickButtonTwo}>
+            <Text
+              style={styles.buttonOneText}>
+              {"No, let's do this!"}
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.buttonOne, { 
-              marginBottom: horizontalScale(30),
-              }]} onPress={onClickButtonTwo}>
-          <Text
-            style={styles.buttonOneText}>
-            {"No, let's do this!"}
-          </Text>
+          <TouchableOpacity style={[styles.buttonOne, {
+            marginBottom: horizontalScale(30),
+            backgroundColor: "white"
+          }]} onPress={onClickButtonOne}>
+            <Text
+              style={styles.buttonTwoText}>
+              {"I want to skip"}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -75,10 +80,10 @@ const SkipMoodInputModal = ({
 };
 
 SkipMoodInputModal.propTypes = {
-    modalVisible: PropTypes.bool,
-    dismissModalHandler: PropTypes.func,
-    onClickButtonOne: PropTypes.func,
-    buttonOneText: PropTypes.string,
+  modalVisible: PropTypes.bool,
+  dismissModalHandler: PropTypes.func,
+  onClickButtonOne: PropTypes.func,
+  buttonOneText: PropTypes.string,
 };
 
 export default SkipMoodInputModal;
@@ -125,13 +130,18 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#7265E3',
     paddingVertical: horizontalScale(10),
-    borderRadius: horizontalScale(5),
+    borderRadius: horizontalScale(15),
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonOneText: {
     fontFamily: RubikRegular,
-    fontSize: getFontSize(18),
+    fontSize: getFontSize(15),
     color: '#FFFFFF'
   },
+  buttonTwoText: {
+    fontFamily: RubikRegular,
+    fontSize: getFontSize(15),
+    color: '#9C9EB9'
+  }
 });

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useRef} from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -25,7 +25,7 @@ import AppleHealthKit, {
 
 import GetLocation from 'react-native-get-location';
 import DeviceInfo from 'react-native-device-info';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import {
   RubikBlack,
   RubikBold,
@@ -36,12 +36,12 @@ import {
 } from '../../Constants/fonts/Fonts';
 import Swiper from '../../Components/Swiper';
 import AsyncStorage from '@react-native-community/async-storage';
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
 import ScreenData from '../Home/screenData/screenData';
 import SleepData from '../Home/SleepData/SleepData';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   DaySteps,
   DayTemp,
@@ -60,9 +60,9 @@ import {
   UserSteps,
   WeatherPerm,
 } from '../../redux/actions/actions';
-import messaging, {firebase} from '@react-native-firebase/messaging';
+import messaging, { firebase } from '@react-native-firebase/messaging';
 import LightData from '../Home/LightData/LightData';
-import GoogleFit, {Scopes} from 'react-native-google-fit';
+import GoogleFit, { Scopes } from 'react-native-google-fit';
 import {
   AppInstalledChecker,
   CheckPackageInstallation,
@@ -74,7 +74,7 @@ import {
   activityHealthKitOptions,
 } from '../../services/appPermissions';
 
-const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
 let HeartRate = false;
 let workOuts = null;
@@ -92,23 +92,23 @@ let userWeight = 0;
 let userHeight = 0;
 
 const data = [
-  {x: 1, y: 1.2},
-  {x: 2, y: 2.3},
-  {x: 3, y: 2.42},
-  {x: 4, y: 1.1},
-  {x: 5, y: 2.41},
-  {x: 6, y: 2.43},
-  {x: 7, y: 2.2},
+  { x: 1, y: 1.2 },
+  { x: 2, y: 2.3 },
+  { x: 3, y: 2.42 },
+  { x: 4, y: 1.1 },
+  { x: 5, y: 2.41 },
+  { x: 6, y: 2.43 },
+  { x: 7, y: 2.2 },
 ];
 
 const dataLow = [
-  {x: 1, y: 10},
-  {x: 2, y: 20},
-  {x: 3, y: 29},
-  {x: 4, y: 18},
-  {x: 5, y: 22},
-  {x: 6, y: 20},
-  {x: 7, y: 23},
+  { x: 1, y: 10 },
+  { x: 2, y: 20 },
+  { x: 3, y: 29 },
+  { x: 4, y: 18 },
+  { x: 5, y: 22 },
+  { x: 6, y: 20 },
+  { x: 7, y: 23 },
 ];
 
 // const points = monotoneCubicInterpolation({data, range: 30});
@@ -164,7 +164,7 @@ const App = (props) => {
   const [loadAgain, setloadAgain] = useState(1);
   const [isInstallGoogleFitModalVisible, setIsInstallGoogleFitModalVisible] = useState(false);
   const [healthUpdateApiCount, setHealthUpdateApiCount] = useState(0);
-  const {lat, long, isMoodUpdate} = route.params.cord;
+  const { lat, long, isMoodUpdate } = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
   // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
@@ -292,7 +292,7 @@ const App = (props) => {
     // console.log(`HealthP`, HealthP);
     if (HealthP != null) {
       await OnAutoSync(function (flag) {
-        console.log("onFinish called", flag);
+        console.log('onFinish called', flag);
         setLoading(false);
         const timeoutId = setTimeout(async () => {
           // const steps_data = await UserData.MainSteps;
@@ -469,7 +469,11 @@ const App = (props) => {
             steps = results;
             for (let j in results) {
               total = total + (results[j]?.value ?? 0);
-              if (results?.[j]?.startDate && moment(results[j].startDate).isValid() && results?.[j]?.value) {
+              if (
+                results?.[j]?.startDate &&
+                moment(results[j].startDate).isValid() &&
+                results?.[j]?.value
+              ) {
                 if (
                   moment(results[j].startDate).startOf('day') <
                   moment(results[j].startDate) &&
@@ -538,7 +542,7 @@ const App = (props) => {
             count++;
             console.log(`count==> `, count);
             count === 11 && onFinish?.(true);
-          // console.log('All steps ++++', results, total);
+            // console.log('All steps ++++', results, total);
           },
         );
         AppleHealthKit.getBloodPressureSamples(
@@ -552,7 +556,7 @@ const App = (props) => {
               return;
             }
             // setBP(results);
-            BP = results;    
+            BP = results;
             console.log('All BP', results);
             count++;
             console.log(`count==> `, count);
@@ -582,7 +586,7 @@ const App = (props) => {
             count++;
             console.log(`count==> `, count);
             count === 11 && onFinish?.(true);
-          // console.log('Active energy count', results);
+            // console.log('Active energy count', results);
           },
         );
 
@@ -712,10 +716,16 @@ const App = (props) => {
     if (Platform.OS === 'android') {
       let isGoogleFitInstalled = '-1';
       try {
-        isGoogleFitInstalled = await AppInstalledChecker.checkPackageName('com.google.android.apps.fitness');
-        console.log('AppInstalledChecker com.google.android.apps.fitness isInstalled?: ', isGoogleFitInstalled);
+        isGoogleFitInstalled = await AppInstalledChecker.checkPackageName(
+          'com.google.android.apps.fitness',
+        );
+        console.log(
+          'AppInstalledChecker com.google.android.apps.fitness isInstalled?: ',
+          isGoogleFitInstalled,
+        );
         if (isGoogleFitInstalled === false) {
-          !isInstallGoogleFitModalVisible && setIsInstallGoogleFitModalVisible(true);
+          !isInstallGoogleFitModalVisible &&
+            setIsInstallGoogleFitModalVisible(true);
           onFinish?.(false);
           return false;
         }
@@ -787,7 +797,7 @@ const App = (props) => {
         startDate: s, // required
         endDate: new Date().toISOString(), // required
         bucketUnit: 'DAY', // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
-        bucketInterval: 1, // optional - default 1. 
+        bucketInterval: 1, // optional - default 1.
         ascending: false, // optional; default false
       };
 
@@ -807,7 +817,7 @@ const App = (props) => {
       try {
         await GoogleFit.checkIsAuthorized();
         console.log('isGoogleFitAuthorized: ', GoogleFit.isAuthorized);
-        if (!GoogleFit.isAuthorized){
+        if (!GoogleFit.isAuthorized) {
           onFinish?.(false);
           return false;
         }
@@ -826,11 +836,12 @@ const App = (props) => {
         let rawSteps = null;
         if (Array.isArray(res) && res.length > 0) {
           res.forEach((e, eIdx) => {
-            if (e.source === 'com.google.android.gms:estimated_steps' &&
+            if (
+              e.source === 'com.google.android.gms:estimated_steps' &&
               Array.isArray(e?.steps) &&
               e.steps.length > 0
             ) {
-              e.steps.forEach(s => {
+              e.steps.forEach((s) => {
                 if (
                   userSteps === -1 &&
                   s.date &&
@@ -970,7 +981,6 @@ const App = (props) => {
       //   }
       // });
     };
-
   };
 
   const dates = [];
@@ -1022,9 +1032,7 @@ const App = (props) => {
 
     for (let i in dates) {
       for (let j in steps) {
-        let iteratedate = moment(steps[j].startDate).format(
-          'DD-MMM-YYYY',
-        );
+        let iteratedate = moment(steps[j].startDate).format('DD-MMM-YYYY');
         if (dates[i] === iteratedate) {
           Platform.OS === 'ios'
             ? (totalSteps = totalSteps + steps[j].value)
@@ -1032,27 +1040,27 @@ const App = (props) => {
         }
         if (
           moment(steps[j].startDate).startOf('day') <
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <
-            moment(steps[j].startDate).startOf('day').hours(4)
+          moment(steps[j].startDate).startOf('day').hours(4)
         ) {
           console.log(`0`);
           zero = zero + steps[j].value;
           setOnes(zero);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(4) <
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <
-            moment(steps[j].startDate).startOf('day').hours(8)
+          moment(steps[j].startDate).startOf('day').hours(8)
         ) {
           console.log(`2`, steps[j].value);
           ones = ones + steps[j].value;
           setTwos(ones);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(8) <=
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <=
-            moment(steps[j].startDate).startOf('day').hours(12)
+          moment(steps[j].startDate).startOf('day').hours(12)
         ) {
           twos = twos + steps[j].value;
           console.log(`3`, twos);
@@ -1060,18 +1068,18 @@ const App = (props) => {
           //add setzeros to this.
         } else if (
           moment(steps[j].startDate).startOf('day').hours(12) <=
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <=
-            moment(steps[j].startDate).startOf('day').hours(16)
+          moment(steps[j].startDate).startOf('day').hours(16)
         ) {
           threes = threes + steps[j].value;
           console.log(`4`, threes);
           setFours(threes);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(16) <
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <
-            moment(steps[j].startDate).startOf('day').hours(20)
+          moment(steps[j].startDate).startOf('day').hours(20)
         ) {
           fours = fours + steps[j].value;
           console.log(`5`, steps[j].value);
@@ -1171,7 +1179,6 @@ const App = (props) => {
     // console.log(`Workouts |||||||||||| ppppppp =========`, Workouts);
   };
 
-
   const CheckForSleepData = async () => {
     console.log(`Implement screen data`);
     let Wp = await Sleep.getItem('GiveSleepPerm');
@@ -1186,7 +1193,6 @@ const App = (props) => {
     // let WeatherP = await JSON.parse(Wp);
     // dispatch(SleepPerm(WeatherP));
   };
-
 
   const AddDataToFilter = async () => {
     const deviceId = DeviceInfo.getUniqueId();
@@ -1204,9 +1210,12 @@ const App = (props) => {
       dateOfBirth?.age ||
       userWeight !== 0
     ) {
-      let exercise_time = Array.isArray(workOuts) && workOuts.length > 0 ? workOuts : null;
-      let moving_time = Array.isArray(WalkTime) && WalkTime.length > 0 ? WalkTime : null;
-      let steps_data = Array.isArray(Fsteps) && Fsteps.length > 0 ? Fsteps : null;
+      let exercise_time =
+        Array.isArray(workOuts) && workOuts.length > 0 ? workOuts : null;
+      let moving_time =
+        Array.isArray(WalkTime) && WalkTime.length > 0 ? WalkTime : null;
+      let steps_data =
+        Array.isArray(Fsteps) && Fsteps.length > 0 ? Fsteps : null;
       // console.log('good to go for API');
       // const data = {
       //   device_id: deviceId,
@@ -1247,7 +1256,10 @@ const App = (props) => {
           );
         })
         .catch(function (error) {
-          console.log('❌ ❌ ❌ ❌ Error Update Staff Health ❌ ❌ ❌ ❌', error);
+          console.log(
+            '❌ ❌ ❌ ❌ Error Update Staff Health ❌ ❌ ❌ ❌',
+            error,
+          );
         });
     }
     setTodayStep(Fsteps.length > 0 ? (Fsteps[0].steps / 10000) * 100 : 0);
@@ -1262,20 +1274,21 @@ const App = (props) => {
   }, [setIsInstallGoogleFitModalVisible]);
 
   const onInstallGoogleFit = useCallback(async () => {
-    const googleFitPlayStoreUrl = 'https://play.google.com/store/apps/details?id=com.google.android.apps.fitness';
+    const googleFitPlayStoreUrl =
+      'https://play.google.com/store/apps/details?id=com.google.android.apps.fitness';
     const supported = await Linking.canOpenURL(googleFitPlayStoreUrl);
-      if (supported) {
-        // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-        // by some browser in the mobile
-        dismissInstallGoogleFitModal();
-        const timeoutId = setTimeout(async () => {
-          await Linking.openURL(googleFitPlayStoreUrl);
-          clearTimeout(timeoutId);
-        }, 500);
-      } else {
-        console.log(`Don't know how to open this URL: ${googleFitPlayStoreUrl}`);
-      }
-  }, [])
+    if (supported) {
+      // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+      // by some browser in the mobile
+      dismissInstallGoogleFitModal();
+      const timeoutId = setTimeout(async () => {
+        await Linking.openURL(googleFitPlayStoreUrl);
+        clearTimeout(timeoutId);
+      }, 500);
+    } else {
+      console.log(`Don't know how to open this URL: ${googleFitPlayStoreUrl}`);
+    }
+  }, []);
 
   // const FitnessData = () => {
   //   return <FitnessData Perm={Perm} checkStorage={checkStorage} />;
@@ -1309,8 +1322,12 @@ const App = (props) => {
   };
 
   return (
-    <View style={{flex: 1}}>
-      {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
+    <View style={{ flex: 1 }}>
+      {Platform.OS === 'ios' ? (
+        <StatusBar barStyle="dark-content" />
+      ) : (
+        <StatusBar barStyle="dark-content" backgroundColor={'white'} />
+      )}
       <Swiper
         // focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
@@ -1376,7 +1393,7 @@ const App = (props) => {
         modalVisible={!Loading && isInstallGoogleFitModalVisible}
         dismissModalHandler={dismissInstallGoogleFitModal}
         onClickButtonOne={onInstallGoogleFit}
-        buttonOneText='Install Google Fit'
+        buttonOneText="Install Google Fit"
       />
     </View>
   );
@@ -1487,7 +1504,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
+  forCircle: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   BigCircleBackgroundImage: {
     height: 140,
     width: 130,
@@ -1499,7 +1516,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

@@ -8,6 +8,7 @@ import EmailConfirmation from '../Screens/EmailConfirmation/EmailConfirmation';
 import VerifyEmail from '../Screens/VerifyEmail/VerifyEmail';
 import { Animated, Easing } from 'react-native';
 import ButtonCheck from '../Screens/ButtonCheck/ButtonCheck';
+import ProfileTab from '../Screens/Tabs/ProfileTab';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,11 @@ const StackNavigation = () => {
       <Stack.Screen
         name="buttonCheck"
         component={ButtonCheck}
+        options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="ProfileTab"
+        component={ProfileTab}
         options={{ header: () => null }}
       />
     </Stack.Navigator>

@@ -1,11 +1,11 @@
 import * as React from "react"
 import Svg, { Path } from "react-native-svg"
 
-const PickImageIcon = () => {
+const PickImageIcon = ({ w, h }) => {
     return (
         <Svg
-            width={48}
-            height={48}
+            width={w ? w : 48}
+            height={h ? h : 48}
             viewBox="0 0 48 48"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

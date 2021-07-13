@@ -37,10 +37,10 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import PopUp from '../../../Components/PopUp/PopUp';
-import {dynamicSize, getFontSize, getLineHeight, horizontalScale, verticalScale} from '../../../Constants/sizeChoose';
+import { dynamicSize, getFontSize, getLineHeight, horizontalScale, verticalScale } from '../../../Constants/sizeChoose';
 import { LightPerm } from '../../../redux/actions/actions';
-const {SensorManager} = NativeModules;
-import {useDispatch, useSelector} from 'react-redux';
+const { SensorManager } = NativeModules;
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
@@ -49,12 +49,14 @@ import { LightGraph } from '../../../Components/LightGraph/LightGraph';
 import { getLightDataIOS } from '../../../services/moodDataModuleService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
+import BulbIcon from '../../../../assets/commonicons/BulbIcon';
+import { getBulbColorFromLux } from '../../../services/commonService';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
 let currentLightData = -1;
 
-const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
 const lightInsightsInitialState = {
   dailyInsights: '',
@@ -81,20 +83,20 @@ const lightInsightsTypes = {
 function lightInsightsReducer(state, action) {
   switch (action.type) {
     case lightInsightsTypes.SET_DALIY_INSIGHTS:
-      return {...state, dailyInsights: action.payload};
+      return { ...state, dailyInsights: action.payload };
     case lightInsightsTypes.SET_WEEKLY_INSIGHTS:
-      return {...state, weeklyInsights: action.payload};
+      return { ...state, weeklyInsights: action.payload };
     case lightInsightsTypes.SET_DAILY_SUGGESTION:
-      return {...state, dailySuggestion: action.payload};
+      return { ...state, dailySuggestion: action.payload };
     case lightInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
-      return {...state, dailySuggestionType: action.payload};
+      return { ...state, dailySuggestionType: action.payload };
     case lightInsightsTypes.SET_WEEKLY_SUGGESTION:
-      return {...state, weeklySuggestion: action.payload};
+      return { ...state, weeklySuggestion: action.payload };
     case lightInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
-      return {...state, weeklySuggestionType: action.payload};
+      return { ...state, weeklySuggestionType: action.payload };
     case lightInsightsTypes.SET_INSIGHTS:
       return action?.payload && typeof action?.payload === 'object'
-        ? {...state, ...action.payload}
+        ? { ...state, ...action.payload }
         : state;
     default:
       return state;
@@ -178,13 +180,13 @@ const LightData = ({
       console.log('callUpdateLightApi params ==> ', params);
       // return;
       axios.post('https://admin.moodflo.com/api/updateLightData', params)
-      .then(function (response) {
-        console.log('✅ ✅ ✅ ✅ Success Update Light Data ✅ ✅ ✅ ✅', params);
-        callGetLightApi();
-      })
-      .catch(function (error) {
-        console.log('❌ ❌ ❌ ❌ Error Update Light Data ❌ ❌ ❌ ❌', error);
-      });
+        .then(function (response) {
+          console.log('✅ ✅ ✅ ✅ Success Update Light Data ✅ ✅ ✅ ✅', params);
+          callGetLightApi();
+        })
+        .catch(function (error) {
+          console.log('❌ ❌ ❌ ❌ Error Update Light Data ❌ ❌ ❌ ❌', error);
+        });
     }
   }
 
@@ -203,30 +205,30 @@ const LightData = ({
         console.log('Get Light Data response: ', Object.values(response?.data?.lightData));
         if (response?.data?.lightData) {
           const lightArray = Object.values(response?.data?.lightData);
-          if(Array.isArray(lightArray) && lightArray.length > 0){
+          if (Array.isArray(lightArray) && lightArray.length > 0) {
             const lightGraphData = getLightGraphData(lightArray);
             console.log('lightGraphData: ', lightGraphData)
             setLightGraphData(lightGraphData)
           }
         }
-        return PostRequestApi('getLightInsights', {...params, "status":"daily"});
+        return PostRequestApi('getLightInsights', { ...params, "status": "daily" });
       })
       .then((res) => {
         console.log('getLightInsights daily res: ', res);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
           res?.data?.insights?.message1 &&
-          typeof res.data.insights.message1 === 'string'
+            typeof res.data.insights.message1 === 'string'
             ? res.data.insights.message1
             : '';
         dailyInsightsPayload.dailySuggestion =
           res?.data?.insights?.message2 &&
-          typeof res.data.insights.message2 === 'string'
+            typeof res.data.insights.message2 === 'string'
             ? res.data.insights.message2
             : '';
         dailyInsightsPayload.dailySuggestionType =
           res?.data?.insights?.message2Type &&
-          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
         setInsights({
@@ -256,7 +258,7 @@ const LightData = ({
           moment().isSameOrAfter(startTime) &&
           moment().isSameOrBefore(endTime)
         ) {
-          return PostRequestApi('getLightInsights', {...params, "status":"weekly"});
+          return PostRequestApi('getLightInsights', { ...params, "status": "weekly" });
         } else {
           return new Promise((resolve, reject) => resolve(null));
         }
@@ -267,17 +269,17 @@ const LightData = ({
         console.log('weeklyInsights: ', res?.data?.insights);
         weeklyInsightsPayload.weeklyInsights =
           res?.data?.insights?.message1 &&
-          typeof res.data.insights.message1 === 'string'
+            typeof res.data.insights.message1 === 'string'
             ? res.data.insights.message1
             : '';
         weeklyInsightsPayload.weeklySuggestion =
           res?.data?.insights?.message2 &&
-          typeof res.data.insights.message2 === 'string'
+            typeof res.data.insights.message2 === 'string'
             ? res.data.insights.message2
             : '';
         weeklyInsightsPayload.weeklySuggestionType =
           res?.data?.insights?.message2Type &&
-          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
         setInsights({
@@ -329,7 +331,7 @@ const LightData = ({
       if (Platform.OS === 'android') {
         SensorManager.startLightSensor(100);
         function lightSensorCallback(d) {
-          if(light === -1 || swiperIndex === 3){
+          if (light === -1 || swiperIndex === 3) {
             if (d?.light && typeof d?.light === 'number') {
               // currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
               currentLightData = Number.parseInt(d.light, 10);
@@ -393,11 +395,11 @@ const LightData = ({
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{height: 20, width: 20}}
+                style={{ height: 20, width: 20 }}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
               <Text style={styles.lightText}>Sync your</Text>
               <Text style={styles.normalText}>Light data</Text>
             </View>
@@ -414,16 +416,17 @@ const LightData = ({
               100
               // : 0
             }
+            MoodCount={JSON.parse(MoodCount)}
             height={10}
             backgroundColor="#CB9866"
           />
-          <View style={{flexDirection: 'row'}}>
-            <Text style={[styles.SmallThinText, {flex: 1}]}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={[styles.SmallThinText, { flex: 1 }]}>
               Try add 3 moods per day
             </Text>
             <Text
               style={
-                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
+                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
               }>
               {JSON.parse(MoodCount) === null ? 0 : JSON.parse(MoodCount)}/3
             </Text>
@@ -488,24 +491,23 @@ const LightData = ({
               // justifyContent: 'center',
               marginVertical: 30,
             }}>
-            <Image
-              source={Constants.Images.Bulb}
-              style={{height: 220, width: 220, resizeMode: 'contain', 
-              // tintColor: 'yellow'
-            }}
+            <BulbIcon
+              width={220}
+              height={220}
+              stroke={getBulbColorFromLux(lux)}
             />
             <View style={styles.bulbImage}>
               <Text style={styles.bulbText}>{lux}</Text>
               <Text style={styles.bulbText}>Lux</Text>
             </View>
           </View>
-          <View style={{marginBottom: 100, alignItems: 'center'}}>
+          <View style={{ marginBottom: 100, alignItems: 'center' }}>
             {swiperIndex == 3 && (
               <LightGraph
                 data={lightGraphData}
                 graphWidth={SIZE}
-                // yAxisLabel='Lux'
-                // duration='Lux'
+              // yAxisLabel='Lux'
+              // duration='Lux'
               />
               // <BarGraph
               //   BarsMarginLeft={dynamicSize(44)}
@@ -711,7 +713,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,
@@ -733,7 +735,7 @@ const styles = StyleSheet.create({
     lineHeight: 23,
     letterSpacing: 1,
     color: '#000000'
-    },
+  },
 });
 
 export default LightData;
