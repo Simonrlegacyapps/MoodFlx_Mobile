@@ -69,12 +69,13 @@ export const weatherActions = {
 }
 
 export const defaultLocation = {
-  latitude: "37.8130398",
-  longitude: "144.9660029",
+  latitude: "37.8112451",
+  longitude: "144.9543962",
   city: "Melbourne",
   state: "Victoria",
-  country: "Australia"
-}
+  country: "Australia",
+  timeZoneOffset: 600,
+};
 
 
 
@@ -85,3 +86,9 @@ export const moodTypes = {
   pretty: "pretty",
   very: "very"
 }
+
+export const getLinkModalText = (existingOrg, newOrg) => {
+  return existingOrg && newOrg
+    ? `You are currently linked to ${existingOrg}. You will be unlinked if you want to join ${newOrg}.`
+    : null;
+};

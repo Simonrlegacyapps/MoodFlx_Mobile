@@ -49,6 +49,8 @@ import { LightGraph } from '../../../Components/LightGraph/LightGraph';
 import { getLightDataIOS } from '../../../services/moodDataModuleService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
+import BulbIcon from '../../../../assets/commonicons/BulbIcon';
+import {getBulbColorFromLux} from '../../../services/commonService';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -75,7 +77,7 @@ const lightInsightsTypes = {
   SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
   SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
   SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
-  SET_LIGHT_INSIGHTS: 'SET_LIGHT_INSIGHTS',
+  SET_INSIGHTS: 'SET_INSIGHTS',
 };
 
 function lightInsightsReducer(state, action) {
@@ -92,7 +94,7 @@ function lightInsightsReducer(state, action) {
       return {...state, weeklySuggestion: action.payload};
     case lightInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
       return {...state, weeklySuggestionType: action.payload};
-    case lightInsightsTypes.SET_LIGHT_INSIGHTS:
+    case lightInsightsTypes.SET_INSIGHTS:
       return action?.payload && typeof action?.payload === 'object'
         ? {...state, ...action.payload}
         : state;
@@ -201,7 +203,7 @@ const LightData = ({
         console.log('✅ ✅ ✅ ✅ Success Get Light Data ✅ ✅ ✅ ✅');
         console.log('Get Light Data response: ', response?.data?.lightData);
         console.log('Get Light Data response: ', Object.values(response?.data?.lightData));
-        if(response?.data?.lightData) {
+        if (response?.data?.lightData) {
           const lightArray = Object.values(response?.data?.lightData);
           if(Array.isArray(lightArray) && lightArray.length > 0){
             const lightGraphData = getLightGraphData(lightArray);
@@ -230,7 +232,7 @@ const LightData = ({
             ? res.data.insights.message2Type
             : '';
         setInsights({
-          type: lightInsightsTypes.SET_LIGHT_INSIGHTS,
+          type: lightInsightsTypes.SET_INSIGHTS,
           payload: dailyInsightsPayload,
         });
         /*
@@ -281,7 +283,7 @@ const LightData = ({
             ? res.data.insights.message2Type
             : '';
         setInsights({
-          type: lightInsightsTypes.SET_LIGHT_INSIGHTS,
+          type: lightInsightsTypes.SET_INSIGHTS,
           payload: weeklyInsightsPayload,
         });
       })
@@ -488,11 +490,10 @@ const LightData = ({
               // justifyContent: 'center',
               marginVertical: 30,
             }}>
-            <Image
-              source={Constants.Images.Bulb}
-              style={{height: 220, width: 220, resizeMode: 'contain', 
-              // tintColor: 'yellow'
-            }}
+            <BulbIcon
+              width={220}
+              height={220}
+              stroke={getBulbColorFromLux(lux)}
             />
             <View style={styles.bulbImage}>
               <Text style={styles.bulbText}>{lux}</Text>

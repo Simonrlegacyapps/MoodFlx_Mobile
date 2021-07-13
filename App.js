@@ -58,10 +58,16 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import Analytics from './Src/services/analyticsService';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
-import { onDynamicLinkUpdate } from './Src/services/commonService';
+import { onDynamicLinkUpdate, onUnlinkUpdate } from './Src/services/commonService';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import { getFontSize } from './Src/Constants/sizeChoose';
 import Constants from './Src/Constants';
+import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
+import {
+  defaultLocation,
+  getLinkModalText,
+  isCountryIndia,
+} from './Src/Constants/constants';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -126,6 +132,9 @@ const App: () => React$Node = () => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [email, setEmail] = useState('');
+  const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
+  const [linkModalText, setLinkModalText] = useState('');
+  const newOrg = useRef(null);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -138,98 +147,199 @@ const App: () => React$Node = () => {
     };
   }, []);
 
-  const handleDynamicLink = async (link) => {
-    let email = '';
+  const linkCompany = useCallback(
+    async (org) => {
+      const deviceId = DeviceInfo.getUniqueId();
+      let fcm = '';
+      try {
+        fcm = await messaging().getToken();
+      } catch (error) {
+        console.log('error getting fcm token');
+      }
+      if (!org) {
+        org = newOrg.current;
+      }
+      if (typeof org === 'string' && deviceId && fcm) {
+        console.log('handleDynamicLink org true: ', org);
+        const params = {
+          device_id: deviceId,
+          user_id: org ?? newOrg.current,
+          device_token: fcm,
+          device_type: Platform.OS,
+        };
+        newOrg.current = null;
+        console.log('getDownloadLink api params: ', params);
+        try {
+          const getDownloadLinkRes = await PostRequestApi('getDownloadLink', params);
+          console.log('getDownloadLink api res: ', getDownloadLinkRes);
+          let userData = null;
+          if (
+            !getDownloadLinkRes.data.staffData?.email &&
+            getDownloadLinkRes?.data?.staffData === 'Not found'
+          ) {
+            // console.log('Showing Toast ====>');
+            Toast.show({
+              type: 'error',
+              text2: 'Cannot link this device, please contact your HR manager',
+              visibilityTime: 4000,
+              autoHide: true,
+            });
+          } else if (
+            getDownloadLinkRes?.data?.staffData &&
+            getDownloadLinkRes?.data?.user_id
+          ) {
+            userData = {
+              ...getDownloadLinkRes.data.staffData,
+              user_id: getDownloadLinkRes.data.user_id,
+            };
+          }
+          onDynamicLinkUpdate(userData, dispatch, function (data) {
+            if (data !== false) {
+              // data = {...data, division_id: null};
+              if (data?.email && data?.division_id) {
+                var raw = {
+                  device_id: deviceId,
+                  email: data.email,
+                  user_id: data?.user_id,
+                };
+                getDivisionName(raw, dispatch, false);
+                console.log('handleDynamicLink user Successfully Connected', data);
+              } else if (data?.email && !data?.division_id) {
+                console.log('Link success, please Select division - email', data.email);
+                if (RootNavigation?.navigationRef?.current?.navigate) {
+                  RootNavigation?.navigationRef?.current?.navigate(
+                    'HomeScreen',
+                    {
+                      screen: 'LinkCompanyStackNavigation',
+                      params: {
+                        screen: 'Linktocompany',
+                        params: {email: data.email},
+                      },
+                    },
+                  );
+                } else {
+                  setEmail(data.email);
+                }
+              } else {
+                console.log('Dynamic link onDynamicLinkUpdate onFinish else block');
+              }
+            }
+          });
+          console.log('getDownloadLink api res', getDownloadLinkRes);
+          // })
+        } catch (error) {
+          console.log('error calling getDownloadLink api: ', error);
+        }
+      }
+    }, [dispatch]);
+
+  const onLinkConfirm = useCallback(async () => {
+    setLinkModalText('');
+    setIsLinkModalVisible(false);
+    const showFailedTouUnlinkToast = () => {
+      Toast.show({
+        type: 'error',
+        text2: 'Unlink company failed',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+    };
+    let userEmail;
+    let userId;
     try {
       let p = await AsyncStorage.getItem('Email');
-      email = await JSON.parse(p);
+      userEmail = await JSON.parse(p);
     } catch (error) {
       console.log('error getting email from Async storage');
     }
-    console.log('handleDynamicLink email: ', email);
-    if (email && typeof email === 'string') {
+    try {
+      let id = await AsyncStorage.getItem('UserId');
+      userId = await JSON.parse(id);
+    } catch (error) {
+      console.log('error getting email from Async storage');
+    }
+    if (!userEmail || !userId) {
+      showFailedTouUnlinkToast();
+      newOrg.current = null;
       return;
     }
+    const params = {
+      email: userEmail,
+      user_id: userId,
+    };
+    PostRequestApi('unlinkToCompany', params)
+      .then(async (resp) => {
+        const isDone = await onUnlinkUpdate(dispatch);
+        console.log('unlinkToCompanyDone isDone =====', isDone);
+        if (isDone) {
+          linkCompany();
+        } else {
+          newOrg.current = null;
+        }
+      })
+      .catch((err) => {
+        showFailedTouUnlinkToast();
+        newOrg.current = null;
+        console.log('unlink api failed error: ', err);
+      });
+  }, [dispatch, linkCompany]);
+
+  const onLinkCancel = useCallback(() => {
+    setLinkModalText('');
+    setIsLinkModalVisible(false);
+    newOrg.current = null;
+  }, []);
+
+  const handleDynamicLink = async (link) => {
+    let userEmail;
+    let existingOrgName;
+    try {
+      let p = await AsyncStorage.getItem('Email');
+      userEmail = await JSON.parse(p);
+      existingOrgName = userEmail.split?.('@')?.pop?.().split?.('.')?.[0];
+      // const modalText = getLinkModalText(company)
+      // alert(`company - ${company}`);
+    } catch (error) {
+      console.log('error getting email from Async storage');
+    }
+    console.log('handleDynamicLink email: ', userEmail);
+    // if (email && typeof email === 'string') {
+    //   return;
+    // }
     console.log('handleDynamicLink link: ', link);
     const url = link?.url;
-    const org = url?.split("/org//")?.[1];
-    console.log('handleDynamicLink org: ', org);
-    const deviceId = DeviceInfo.getUniqueId();
-    let fcm = '';
-    try {
-      fcm = await messaging().getToken();
-    } catch (error) {
-      console.log('error getting fcm token');
+    // const url = 'https://moodflo/org/Mzg=/n/aia';
+    let org = url?.split?.("/org//")?.[1];
+    const newOrgName = url?.split?.('/n/')?.pop?.();
+    if (!org) {
+      org = url?.split?.('/org/')?.pop?.()?.split?.('/n')?.[0];
     }
-    if (org === 'Mzg=' && deviceId && fcm) {
-      console.log('handleDynamicLink org true: ', org);
-      const params = {
-        device_id: deviceId,
-        user_id: org,
-        device_token: fcm,
-        device_type: Platform.OS,
-      };
-      console.log('getDownloadLink api params: ', params);
-      try {
-        const getDownloadLinkRes = await PostRequestApi('getDownloadLink', params);
-        console.log('getDownloadLink api res: ', getDownloadLinkRes);
-        let userData = null;
-        if (
-          !getDownloadLinkRes.data.staffData?.email &&
-          getDownloadLinkRes?.data?.staffData === 'Not found'
-        ) {
-          // console.log('Showing Toast ====>');
-          Toast.show({
-            type: 'error',
-            text2: 'Cannot link this device, please contact your HR manager',
-            visibilityTime: 4000,
-            autoHide: true,
-          });
-        } else if (
-          getDownloadLinkRes?.data?.staffData &&
-          getDownloadLinkRes?.data?.user_id
-        ) {
-          userData = {
-            ...getDownloadLinkRes.data.staffData,
-            user_id: getDownloadLinkRes.data.user_id,
-          };
-        }
-        onDynamicLinkUpdate(userData, dispatch, function (data) {
-          if (data !== false) {
-            // data = {...data, division_id: null};
-            if (data?.email && data?.division_id) {
-              var raw = {
-                device_id: deviceId,
-                email: data.email,
-                user_id: data?.user_id,
-              };
-              getDivisionName(raw, dispatch, false);
-              console.log('handleDynamicLink user Successfully Connected', data);
-            } else if (data?.email && !data?.division_id) {
-              console.log('Link success, please Select division - email', data.email);
-              if (RootNavigation?.navigationRef?.current?.navigate) {
-                RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
-                  screen: 'LinkCompanyStackNavigation',
-                  params: {
-                    screen: 'Linktocompany',
-                    params: { email: data.email },
-                  },
-                });
-              } else {
-                setEmail(data.email);
-              }
-            } else {
-              console.log('Dynamic link onDynamicLinkUpdate onFinish else block');
-            }
-          }
-        });
-        console.log('getDownloadLink api res', getDownloadLinkRes);
-        // })
-      } catch (error) {
-        console.log('error calling getDownloadLink api: ', error);
-      }
+    console.log('org user id====', org);
+    if (!newOrgName && email) {
+      return;
+    }
+    if (
+      org &&
+      typeof org === 'string' &&
+      newOrgName &&
+      typeof newOrgName === 'string' &&
+      existingOrgName &&
+      typeof existingOrgName === 'string' &&
+      newOrgName.toLowerCase() !== existingOrgName.toLowerCase()
+    ) {
+      const modalText = getLinkModalText(
+        existingOrgName.toUpperCase(),
+        newOrgName.toUpperCase(),
+      );
+      newOrg.current = org;
+      setLinkModalText(modalText);
+      setIsLinkModalVisible(true);
+    } else if (!userEmail) {
+      console.log('handleDynamicLink org: ', org);
+      linkCompany(org);
     }
   };
+
 
   const goToSelectDivision = useCallback(() => {
     console.log('goToSelectDivision email: ', email);
@@ -489,6 +599,13 @@ const App: () => React$Node = () => {
           .then((location) => {
             //   console.log('Success', location);
             // setlat(location.latitude);
+            const isIndia = isCountryIndia();
+            if(isIndia){
+              location = {
+                latitude: defaultLocation.latitude,
+                longitude: defaultLocation.longitude
+              };
+            }
             console.log(
               '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
               JSON.stringify(location),
@@ -605,6 +722,15 @@ const App: () => React$Node = () => {
         </>
       )}
       {/* </Provider> */}
+      <CustomModal
+        modalVisible={!!linkModalText && isLinkModalVisible}
+        dismissModalHandler={onLinkCancel}
+        modalText={linkModalText}
+        onClickButtonOne={onLinkConfirm}
+        buttonOneText="Unlink"
+        onClickButtonTwo={onLinkCancel}
+        buttonTwoText="Cancel"
+      />
     </>
   );
 };

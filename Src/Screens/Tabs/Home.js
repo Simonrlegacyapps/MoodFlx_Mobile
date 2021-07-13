@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useRef} from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -25,7 +25,7 @@ import AppleHealthKit, {
 
 import GetLocation from 'react-native-get-location';
 import DeviceInfo from 'react-native-device-info';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import {
   RubikBlack,
   RubikBold,
@@ -36,12 +36,12 @@ import {
 } from '../../Constants/fonts/Fonts';
 import Swiper from '../../Components/Swiper';
 import AsyncStorage from '@react-native-community/async-storage';
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
 import ScreenData from '../Home/screenData/screenData';
 import SleepData from '../Home/SleepData/SleepData';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   DaySteps,
   DayTemp,
@@ -60,9 +60,9 @@ import {
   UserSteps,
   WeatherPerm,
 } from '../../redux/actions/actions';
-import messaging, {firebase} from '@react-native-firebase/messaging';
+import messaging, { firebase } from '@react-native-firebase/messaging';
 import LightData from '../Home/LightData/LightData';
-import GoogleFit, {Scopes} from 'react-native-google-fit';
+import GoogleFit, { Scopes } from 'react-native-google-fit';
 import {
   AppInstalledChecker,
   CheckPackageInstallation,
@@ -74,7 +74,7 @@ import {
   activityHealthKitOptions,
 } from '../../services/appPermissions';
 
-const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
 let HeartRate = false;
 let workOuts = null;
@@ -92,23 +92,23 @@ let userWeight = 0;
 let userHeight = 0;
 
 const data = [
-  {x: 1, y: 1.2},
-  {x: 2, y: 2.3},
-  {x: 3, y: 2.42},
-  {x: 4, y: 1.1},
-  {x: 5, y: 2.41},
-  {x: 6, y: 2.43},
-  {x: 7, y: 2.2},
+  { x: 1, y: 1.2 },
+  { x: 2, y: 2.3 },
+  { x: 3, y: 2.42 },
+  { x: 4, y: 1.1 },
+  { x: 5, y: 2.41 },
+  { x: 6, y: 2.43 },
+  { x: 7, y: 2.2 },
 ];
 
 const dataLow = [
-  {x: 1, y: 10},
-  {x: 2, y: 20},
-  {x: 3, y: 29},
-  {x: 4, y: 18},
-  {x: 5, y: 22},
-  {x: 6, y: 20},
-  {x: 7, y: 23},
+  { x: 1, y: 10 },
+  { x: 2, y: 20 },
+  { x: 3, y: 29 },
+  { x: 4, y: 18 },
+  { x: 5, y: 22 },
+  { x: 6, y: 20 },
+  { x: 7, y: 23 },
 ];
 
 // const points = monotoneCubicInterpolation({data, range: 30});
@@ -133,7 +133,7 @@ const App = (props) => {
   // const [Height, setHeight] = useState(false);
   const [Calories, setCalories] = useState(false);
   const [Sleep, setSleep] = useState(false);
-  const [_HeartRate, setHeartRate] = useState(false);
+  // const [HeartRate, setHeartRate] = useState(false);
   const [Distance, setDistance] = useState(false);
   const [LatestWeight, setLatestWeight] = useState(false);
   const [MovingTime, setMovingTime] = useState(false);
@@ -162,11 +162,9 @@ const App = (props) => {
   const [ScreenDataPermModal, setScreenDataPermModal] = useState(false);
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
-  const [
-    isInstallGoogleFitModalVisible,
-    setIsInstallGoogleFitModalVisible,
-  ] = useState(false);
-  const {lat, long, isMoodUpdate} = route.params.cord;
+  const [isInstallGoogleFitModalVisible, setIsInstallGoogleFitModalVisible] = useState(false);
+  const [healthUpdateApiCount, setHealthUpdateApiCount] = useState(0);
+  const { lat, long, isMoodUpdate } = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
   // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
@@ -478,27 +476,27 @@ const App = (props) => {
               ) {
                 if (
                   moment(results[j].startDate).startOf('day') <
-                    moment(results[j].startDate) &&
+                  moment(results[j].startDate) &&
                   moment(results[j].startDate) <
-                    moment(results[j].startDate).startOf('day').hours(4)
+                  moment(results[j].startDate).startOf('day').hours(4)
                 ) {
                   console.log(`0`);
                   zero = zero + results[j].value;
                   setOnes(zero);
                 } else if (
                   moment(results[j].startDate).startOf('day').hours(4) <
-                    moment(results[j].startDate) &&
+                  moment(results[j].startDate) &&
                   moment(results[j].startDate) <
-                    moment(results[j].startDate).startOf('day').hours(8)
+                  moment(results[j].startDate).startOf('day').hours(8)
                 ) {
                   console.log(`2`, results[j].value);
                   ones = ones + results[j].value;
                   setTwos(ones);
                 } else if (
                   moment(results[j].startDate).startOf('day').hours(8) <=
-                    moment(results[j].startDate) &&
+                  moment(results[j].startDate) &&
                   moment(results[j].startDate) <=
-                    moment(results[j].startDate).startOf('day').hours(12)
+                  moment(results[j].startDate).startOf('day').hours(12)
                 ) {
                   twos = twos + results[j].value;
                   console.log(`3`, twos);
@@ -506,18 +504,18 @@ const App = (props) => {
                   //add setzeros to this.
                 } else if (
                   moment(results[j].startDate).startOf('day').hours(12) <=
-                    moment(results[j].startDate) &&
+                  moment(results[j].startDate) &&
                   moment(results[j].startDate) <=
-                    moment(results[j].startDate).startOf('day').hours(16)
+                  moment(results[j].startDate).startOf('day').hours(16)
                 ) {
                   threes = threes + results[j].value;
                   console.log(`4`, threes);
                   setFours(threes);
                 } else if (
                   moment(results[j].startDate).startOf('day').hours(16) <
-                    moment(results[j].startDate) &&
+                  moment(results[j].startDate) &&
                   moment(results[j].startDate) <
-                    moment(results[j].startDate).startOf('day').hours(20)
+                  moment(results[j].startDate).startOf('day').hours(20)
                 ) {
                   fours = fours + results[j].value;
                   console.log(`5`, results[j].value);
@@ -629,7 +627,7 @@ const App = (props) => {
               return;
             }
             HeartRate = results;
-            setHeartRate(results);
+            // setHeartRate(results);
             console.log('Heart Samples', results);
             count++;
             console.log(`count==> `, count);
@@ -1042,27 +1040,27 @@ const App = (props) => {
         }
         if (
           moment(steps[j].startDate).startOf('day') <
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <
-            moment(steps[j].startDate).startOf('day').hours(4)
+          moment(steps[j].startDate).startOf('day').hours(4)
         ) {
           console.log(`0`);
           zero = zero + steps[j].value;
           setOnes(zero);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(4) <
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <
-            moment(steps[j].startDate).startOf('day').hours(8)
+          moment(steps[j].startDate).startOf('day').hours(8)
         ) {
           console.log(`2`, steps[j].value);
           ones = ones + steps[j].value;
           setTwos(ones);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(8) <=
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <=
-            moment(steps[j].startDate).startOf('day').hours(12)
+          moment(steps[j].startDate).startOf('day').hours(12)
         ) {
           twos = twos + steps[j].value;
           console.log(`3`, twos);
@@ -1070,18 +1068,18 @@ const App = (props) => {
           //add setzeros to this.
         } else if (
           moment(steps[j].startDate).startOf('day').hours(12) <=
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <=
-            moment(steps[j].startDate).startOf('day').hours(16)
+          moment(steps[j].startDate).startOf('day').hours(16)
         ) {
           threes = threes + steps[j].value;
           console.log(`4`, threes);
           setFours(threes);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(16) <
-            moment(steps[j].startDate) &&
+          moment(steps[j].startDate) &&
           moment(steps[j].startDate) <
-            moment(steps[j].startDate).startOf('day').hours(20)
+          moment(steps[j].startDate).startOf('day').hours(20)
         ) {
           fours = fours + steps[j].value;
           console.log(`5`, steps[j].value);
@@ -1157,7 +1155,7 @@ const App = (props) => {
           steps: totalSteps,
           distance: totalDistance,
           calories: userCalories,
-          heart_Rate: totalHeartRate,
+          heart_rate: totalHeartRate,
           high_bp: highBp,
           low_bp: lowBp,
         });
@@ -1268,6 +1266,7 @@ const App = (props) => {
     setTodayDistance(Fsteps.length > 0 ? (Fsteps[0].distance / 5000) * 100 : 0);
     setTodayCalories(Fsteps.length > 0 ? (Fsteps[0].calories / 1000) * 100 : 0);
     setMoveTime(WalkTime.length > 0 ? (WalkTime[0].walkTime / 120) * 100 : 0);
+    setHealthUpdateApiCount((e) => e + 1);
   };
 
   const dismissInstallGoogleFitModal = useCallback(() => {
@@ -1323,7 +1322,7 @@ const App = (props) => {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       {Platform.OS === 'ios' ? (
         <StatusBar barStyle="dark-content" />
       ) : (
@@ -1332,9 +1331,9 @@ const App = (props) => {
       <Swiper
         // focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
-        dotStyle={{height: 0, width: 0}}
-        activeDotStyle={{height: 0, width: 0}}
-        style={{backgroundColor: 'white'}}
+        dotStyle={{ height: 0, width: 0 }}
+        activeDotStyle={{ height: 0, width: 0 }}
+        style={{ backgroundColor: 'white' }}
         showsButtons={true}
         onIndexChanged={(index) => setSwiperIndex(index)}
         loop={false}>
@@ -1354,6 +1353,7 @@ const App = (props) => {
           fives={Sixes}
           MoodCount={MoodCount}
           Loading={Loading}
+          healthUpdateApiCount={healthUpdateApiCount}
         />
 
         <SleepData
@@ -1504,7 +1504,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
+  forCircle: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   BigCircleBackgroundImage: {
     height: 140,
     width: 130,
@@ -1516,7 +1516,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

@@ -9,7 +9,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import isFunction from 'lodash.isfunction';
 
-export async function onUnlinkUpdate(dispatch) {
+export async function onUnlinkUpdate(dispatch, onFinish) {
   try {
     await AsyncStorage.removeItem('UserId');
     await AsyncStorage.removeItem('Anonymous');
@@ -21,8 +21,14 @@ export async function onUnlinkUpdate(dispatch) {
     dispatch?.(GetUserId(null));
     dispatch?.(IsAnonymous(true));
     dispatch?.(UserDetail(null));
+    if (isFunction(onFinish)) {
+      onFinish(true);
+    }
     return true;
   } catch (error) {
+    if (isFunction(onFinish)) {
+      onFinish(false);
+    }
     return false;
   }
 }
@@ -60,3 +66,22 @@ export async function onDynamicLinkUpdate(userData, dispatch, onFinish) {
     onFinish(userData);
   }
 }
+
+export const getBulbColorFromLux = (v) => {
+  if (!isNaN(v)) {
+    v = Number(v);
+    if (v >= 0 && v <= 100) {
+      return '#f9eac8';
+    } else if (v > 100 && v <= 200) {
+      return '#ead092';
+    } else if (v > 200 && v <= 300) {
+      return '#f9dd80';
+    } else if (v > 300 && v <= 400) {
+      return '#ead251';
+    } else if (v > 400) {
+      return '#dcbc36';
+    }
+  } else {
+    return '#dcbc36';
+  }
+};

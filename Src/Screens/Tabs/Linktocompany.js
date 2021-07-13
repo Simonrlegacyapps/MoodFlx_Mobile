@@ -40,6 +40,7 @@ import { PHOTO_URL } from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
 import { onUnlinkUpdate } from '../../services/commonService';
+import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 
 const Linktocompany = ({ navigation }) => {
   const { OTPVerified, setDivision, getDivision } = useSelector(
@@ -58,6 +59,7 @@ const Linktocompany = ({ navigation }) => {
   const [labelShow, setLabelShow] = useState(null);
   const [UnlinkConfirm, setUnlinkConfirm] = useState(false);
   const [CompanyDetails, setCompanyDetails] = useState(null);
+  const [noDivisionMdalVisible, setNoDivisionMdalVisible] = useState(false);
 
   const dispatch = useDispatch();
   const route = useRoute();
@@ -143,14 +145,33 @@ const Linktocompany = ({ navigation }) => {
   }, [UserData.UserDivision, UserData.UserId]);
 
   useEffect(() => {
-    if (
-      Array.isArray(UserData.getDivision) &&
-      UserData.getDivision.length > 0
-    ) {
+    if (Array.isArray(UserData.getDivision)) {
       console.log('UserData.getDivision: ', UserData.getDivision);
       setDivisions(UserData.getDivision);
     }
   }, [UserData.getDivision]);
+
+  useEffect(() => {
+    if (modalVisible && Array.isArray(Divisions)) {
+      if (Divisions.length === 0) {
+        setModalVisible(false);
+        setNoDivisionMdalVisible(true);
+      }
+    }
+  }, [modalVisible, Divisions]);
+
+  const closeNoDivisionModal = useCallback(async () => {
+    setNoDivisionMdalVisible(false);
+    const timeoutId = setTimeout(async () => {
+      setLoading(true);
+      const isDone = await onUnlinkUpdate(dispatch);
+      dispatch(OTP_Verify(false));
+      setLabelShow(null);
+      setSelectedDivision('');
+      setSelectedDivisionId('');
+      setLoading(false);
+    }, 500);
+  }, [dispatch]);
 
   useEffect(() => {
     if (
@@ -188,6 +209,7 @@ const Linktocompany = ({ navigation }) => {
 
         console.log('===useFocusEffect getDivision params ===', params);
         const isUnlinkAllowed = route?.params?.email ? false : true;
+        setDivisions(null);
         getDivisionName(params, dispatch, isUnlinkAllowed);
       } else if (labelShow) {
         setLabelShow(null);
@@ -247,6 +269,10 @@ const Linktocompany = ({ navigation }) => {
   };
   // console.log(`UserData.UserDivision`, UserData.UserDivision);
 
+  const onOpenModal = useCallback(() => {
+    setModalVisible(true);
+  });
+
   const cancelled = () => {
     setUnlinkConfirm(false);
   };
@@ -300,10 +326,9 @@ const Linktocompany = ({ navigation }) => {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={modalVisible}
+          visible={modalVisible && Divisions?.length > 0}
           onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
+            setModalVisible(false);
           }}>
           <TouchableOpacity
             activeOpacity={1}
@@ -718,6 +743,14 @@ const Linktocompany = ({ navigation }) => {
         modalVisible={UnlinkConfirm}
         dismissModalHandler={() => cancelled()}
         verifyDone={(value) => VerifyDone(value)}
+      />
+      {console.log('Loading: ', Loading, 'noDivisionModalVisible: ', noDivisionMdalVisible)}
+      <CustomModal
+        modalVisible={!Loading && noDivisionMdalVisible}
+        dismissModalHandler={closeNoDivisionModal}
+        modalText="There's no room for you to join right now, please speak with your HR Manager or email us at help@moodflo.com"
+        onClickButtonOne={closeNoDivisionModal}
+        buttonOneText="Okay"
       />
     </View>
   );

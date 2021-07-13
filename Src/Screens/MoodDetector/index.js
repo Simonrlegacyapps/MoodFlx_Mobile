@@ -766,7 +766,14 @@ export default function MoodDetector({ navigation }) {
           timeout: 15000,
         })
           .then((location) => {
-            //   console.log('Success', location);
+            const isIndia = isCountryIndia();
+            if (isIndia){
+              location = {
+                latitude: defaultLocation.latitude,
+                longitude: defaultLocation.longitude,
+              };
+            }
+            console.log('Success', location);
             setlat(location.latitude);
             dispatch(Lat(location.latitude));
             setlng(location.longitude);

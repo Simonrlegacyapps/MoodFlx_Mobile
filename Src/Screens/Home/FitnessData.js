@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useReducer } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Dimensions,
   StatusBar,
+  Platform,
 } from 'react-native';
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
@@ -28,9 +29,55 @@ import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
 import { IsAnonymous, UserDetail } from '../../redux/actions/actions';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
-import { dynamicSize } from '../../Constants/sizeChoose';
+import { dynamicSize, horizontalScale } from '../../Constants/sizeChoose';
 import AnonymousPopUp from '../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
-import { GetStaffUserData } from '../../apirequest/PostRequestApi';
+import PostRequestApi, {
+  GetStaffUserData,
+} from '../../apirequest/PostRequestApi';
+import DataInsights from '../../Components/DataInsights/DataInsights';
+import moment from 'moment';
+
+const fitnessInsightsInitialState = {
+  dailyInsights: '',
+  weeklyInsights: '',
+  dailySuggestion: '',
+  dailySuggestionType: '',
+  weeklySuggestion: '',
+  weeklySuggestionType: '',
+};
+
+const fitnessInsightsTypes = {
+  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
+  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
+  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
+  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
+  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
+  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
+  SET_INSIGHTS: 'SET_INSIGHTS',
+};
+
+function fitnessInsightsReducer(state, action) {
+  switch (action.type) {
+    case fitnessInsightsTypes.SET_DALIY_INSIGHTS:
+      return { ...state, dailyInsights: action.payload };
+    case fitnessInsightsTypes.SET_WEEKLY_INSIGHTS:
+      return { ...state, weeklyInsights: action.payload };
+    case fitnessInsightsTypes.SET_DAILY_SUGGESTION:
+      return { ...state, dailySuggestion: action.payload };
+    case fitnessInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
+      return { ...state, dailySuggestionType: action.payload };
+    case fitnessInsightsTypes.SET_WEEKLY_SUGGESTION:
+      return { ...state, weeklySuggestion: action.payload };
+    case fitnessInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
+      return { ...state, weeklySuggestionType: action.payload };
+    case fitnessInsightsTypes.SET_INSIGHTS:
+      return action?.payload && typeof action?.payload === 'object'
+        ? { ...state, ...action.payload }
+        : state;
+    default:
+      return state;
+  }
+}
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -50,6 +97,7 @@ const FitnessData = ({
   MoodCount,
   Loading,
   swiperIndex,
+  healthUpdateApiCount,
 }) => {
   // useEffect(() => {
   //   checkThis();
@@ -62,6 +110,12 @@ const FitnessData = ({
   const [ShowAddName, setShowAddName] = useState(false);
   const [FitnessPopUp, setFitnessPopUp] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
+  const [insights, setInsights] = useReducer(
+    fitnessInsightsReducer,
+    fitnessInsightsInitialState,
+  );
+  const prevHealthUpdateApiCount = useRef(healthUpdateApiCount);
+
   // console.log(`UserData`, UserData);
 
   const {
@@ -88,6 +142,104 @@ const FitnessData = ({
   const VerifyAddName = () => {
     ProfileApiCallHere();
   };
+
+  useEffect(() => {
+    // console.log('FitnessData healthUpdateApiCount=======', healthUpdateApiCount);
+    if (
+      prevHealthUpdateApiCount.current !== healthUpdateApiCount &&
+      healthUpdateApiCount > 0
+    ) {
+      const deviceId = DeviceInfo.getUniqueId();
+      const params = {
+        device_id: deviceId,
+        email: UserData.UserEmail ?? '',
+        user_id: UserData.UserId ?? '',
+      };
+      PostRequestApi('getActivityInsights', { ...params, status: 'daily' })
+        .then((res) => {
+          console.log('getLightInsights daily res: ', res);
+          let dailyInsightsPayload = {};
+          dailyInsightsPayload.dailyInsights =
+            res?.data?.insights?.message1 &&
+              typeof res.data.insights.message1 === 'string'
+              ? res.data.insights.message1
+              : '';
+          dailyInsightsPayload.dailySuggestion =
+            res?.data?.insights?.message2 &&
+              typeof res.data.insights.message2 === 'string'
+              ? res.data.insights.message2
+              : '';
+          dailyInsightsPayload.dailySuggestionType =
+            res?.data?.insights?.message2Type &&
+              res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+              ? res.data.insights.message2Type
+              : '';
+          setInsights({
+            type: fitnessInsightsTypes.SET_INSIGHTS,
+            payload: dailyInsightsPayload,
+          });
+          /*
+          Weekly api should be called between
+          Friday @ 12pm until Saturday 6pm
+          */
+          const day = moment().day();
+          const startTime = moment().set({
+            hour: 12,
+            minute: 0,
+            second: 0,
+            millisecond: 0,
+          });
+          const endTime = moment().set({
+            hour: 18,
+            minute: 0,
+            second: 0,
+            millisecond: 0,
+          });
+          if (
+            !isNaN(day) &&
+            (Number(day) === 6 || Number(day) === 7) &&
+            moment().isSameOrAfter(startTime) &&
+            moment().isSameOrBefore(endTime)
+          ) {
+            return PostRequestApi('getActivityInsights', {
+              ...params,
+              status: 'weekly',
+            });
+          } else {
+            return new Promise((resolve, reject) => resolve(null));
+          }
+        })
+        .then((res) => {
+          console.log('getActivityInsights weekly res: ', res);
+          let weeklyInsightsPayload = {};
+          // console.log('getActivityInsights weeklyInsights: ', res?.data?.insights);
+          weeklyInsightsPayload.weeklyInsights =
+            res?.data?.insights?.message1 &&
+              typeof res.data.insights.message1 === 'string'
+              ? res.data.insights.message1
+              : '';
+          weeklyInsightsPayload.weeklySuggestion =
+            res?.data?.insights?.message2 &&
+              typeof res.data.insights.message2 === 'string'
+              ? res.data.insights.message2
+              : '';
+          weeklyInsightsPayload.weeklySuggestionType =
+            res?.data?.insights?.message2Type &&
+              res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+              ? res.data.insights.message2Type
+              : '';
+          setInsights({
+            type: fitnessInsightsTypes.SET_INSIGHTS,
+            payload: weeklyInsightsPayload,
+          });
+        })
+        .catch(function (error) {
+          console.log('❌ ❌ ❌ ❌ Error Get Activity Insights ❌ ❌ ❌ ❌', error);
+        });
+      prevHealthUpdateApiCount.current = healthUpdateApiCount;
+    }
+  }, [healthUpdateApiCount, UserData.UserEmail, UserData.UserId]);
+
   const ProfileApiCallHere = () => {
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
@@ -263,32 +415,42 @@ const FitnessData = ({
           </View>
         </View>
 
-        <View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-              ACTIVITY
-            </Text>
-            <TouchableOpacity
-              activeOpacity={1}
+        <View style={styles.subViewTwo}>
+          {!UserData.HealthPermission ? (
+            <View
               style={{
-                // fontSize: SIZE / 14,
-                // fontWeight: '500',
+                flex: 1,
+                justifyContent: 'center',
                 alignItems: 'center',
-                width: '100%',
-              }}
-              onPress={() => setFitnessPopUp(true)}>
-              <Text style={styles.swiperText}>
-                You are the <Text style={{ color: '#5947D0' }}>happiest</Text>{' '}
-                when you walk over <Text style={{ color: '#5947D0' }}>5000</Text>{' '}
-                steps before <Text style={{ color: '#5947D0' }}>2PM</Text>
+              }}>
+              <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
+                ACTIVITY
               </Text>
-            </TouchableOpacity>
-            {UserData.HealthPermission && (
+              <TouchableOpacity
+                activeOpacity={1}
+                style={{
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+                onPress={() => setFitnessPopUp(true)}>
+                <Text style={styles.swiperText}>
+                  You are the <Text style={{ color: '#5947D0' }}>happiest</Text>{' '}
+                  when you walk over <Text style={{ color: '#5947D0' }}>5000</Text>{' '}
+                  steps before <Text style={{ color: '#5947D0' }}>2PM</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <DataInsights
+              dailyInsights={insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={insights?.dailySuggestion}
+              dailySuggestionType={insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+            />
+          )}
+          {/* {UserData.HealthPermission && (
               <View
                 style={{
                   position: 'absolute',
@@ -308,8 +470,7 @@ const FitnessData = ({
                   Demo
                 </Text>
               </View>
-            )}
-          </View>
+            )} */}
           {/* {UserData.TodayAllSteps !== null &&
           !Loading &&
           UserData.UserMoodCount !== null &&
@@ -631,6 +792,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontFamily: RubikLight,
     color: '#747690',
+  },
+  subViewTwo: {
+    marginTop: horizontalScale(20),
   },
   SmallThinBlackText: {
     fontFamily: RubikLight,

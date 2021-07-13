@@ -82,6 +82,7 @@ const AddAnswer = ({
 
       {!edit && (
         <TouchableOpacity
+          disabled={label === 'Name' && checkedit}
           onPress={() => {
             popUp && setOpenActionSheet(true);
             setedit(!edit);
