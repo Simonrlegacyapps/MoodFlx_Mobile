@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -23,16 +23,26 @@ import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import moment from 'moment';
 import axios from 'axios';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Geocoder from 'react-native-geocoding';
 import AsyncStorage from '@react-native-community/async-storage';
 import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
 import PopUp from '../../../Components/PopUp/PopUp';
 import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
-import {dynamicSize, horizontalScale, isTablet} from '../../../Constants/sizeChoose';
+import {
+  dynamicSize,
+  horizontalScale,
+  isTablet,
+} from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
-import {DayTemp, Lat, Long, SetLocation, WeatherPerm} from '../../../redux/actions/actions';
+import {
+  DayTemp,
+  Lat,
+  Long,
+  SetLocation,
+  WeatherPerm,
+} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
@@ -42,12 +52,12 @@ import isFunction from 'lodash.isfunction';
 
 let weatherData = null;
 
-const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
-const IndicatorHelper = ({color, text}) => {
+const IndicatorHelper = ({ color, text }) => {
   return (
     <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
+      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
       <Text style={styles.indicatorText}>{text}</Text>
     </View>
   );
@@ -107,7 +117,7 @@ const WeatherData = ({
       })
         .then((location) => {
           const isIndia = isCountryIndia();
-          if(isIndia){
+          if (isIndia) {
             location = {
               latitude: defaultLocation.latitude,
               longitude: defaultLocation.longitude
@@ -118,8 +128,8 @@ const WeatherData = ({
           dispatch(SetLocation({
             lat: location.latitude,
             lon: location.longitude,
-            }));
-          location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, function (flag){
+          }));
+          location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, function (flag) {
             console.log('WeatherDayData called from getUserLocation');
             location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude, function (isSuccess) {
               resolve(isSuccess);
@@ -129,11 +139,11 @@ const WeatherData = ({
           // }
         })
         .catch((error) => {
-          const {code, message} = error;
+          const { code, message } = error;
           resolve(false);
           console.log('error', code, message);
         });
-    })
+    });
   };
 
 
@@ -163,8 +173,7 @@ const WeatherData = ({
     let value = 0;
     axios
       .get(
-        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${loc_lat}&lon=${loc_long}&dt=${
-          Date.parse(startTime) / 1000
+        `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${loc_lat}&lon=${loc_long}&dt=${Date.parse(startTime) / 1000
         }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
@@ -181,7 +190,6 @@ const WeatherData = ({
         }
         if (weatherData) {
           if (response?.data?.hourly) {
-
             for (let i in response.data.hourly) {
               if (
                 (weatherData?.weather?.[0]?.description ?? -1) ===
@@ -347,13 +355,23 @@ const WeatherData = ({
         }
       });
     }
-  }, [UserData.lat, UserData.lon, UserData.WeatherPermission, UserData.UserId, UserData.UserEmail]);
+  }, [
+    UserData.lat,
+    UserData.lon,
+    UserData.WeatherPermission,
+    UserData.UserId,
+    UserData.UserEmail,
+  ]);
 
-  const CheckForWeather = async (loc_lat = UserData.lat, loc_long = UserData.lon, onFinish) => {
+  const CheckForWeather = async (
+    loc_lat = UserData.lat,
+    loc_long = UserData.lon,
+    onFinish,
+  ) => {
     // let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     // let WeatherP = await JSON.parse(Wp);
     // dispatch(WeatherPerm(WeatherP));
-    if(!(loc_lat && loc_long)) {
+    if (!(loc_lat && loc_long)) {
       onFinish?.(false);
       return;
     }
@@ -363,7 +381,10 @@ const WeatherData = ({
         `https://api.openweathermap.org/data/2.5/weather?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
       )
       .then(async (response) => {
-        console.log(' ✅ ✅ ✅ ✅ Success CheckForWeather✅ ✅ ✅ ✅ ', response?.data);
+        console.log(
+          ' ✅ ✅ ✅ ✅ Success CheckForWeather✅ ✅ ✅ ✅ ',
+          response?.data,
+        );
         dispatch(DayTemp(response?.data));
         weatherData = response?.data ? response?.data : weatherData;
         onFinish?.(true);
@@ -403,22 +424,22 @@ const WeatherData = ({
         .then((response) => response.json())
         .then(async (result) => {
           console.log('Get weather Graph data', result),
-          console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
-            setGraph(result.weatherData);
+            console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
+          setGraph(result.weatherData);
           data.push({});
           // await syncWeatherData();
         })
         .catch((error) => console.log('error', error));
-        clearTimeout(timeOutId);
-        timeOutId = null;
+      clearTimeout(timeOutId);
+      timeOutId = null;
     }, 1000);
     return () => {
-      if(timeOutId !== null) {
+      if (timeOutId !== null) {
         clearTimeout(timeOutId);
         timeOutId = null;
       }
-    }
-  }
+    };
+  };
 
   useEffect(() => {
     getWeather();
@@ -429,27 +450,27 @@ const WeatherData = ({
       x: 1,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[0]?.temp_max
+          ? !Graph[6]?.temp_max
             ? 0
-            : Graph[0].temp_max
+            : Graph[6] && Graph[6].temp_max
           : 0,
     },
     {
       x: 2,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[1]?.temp_max
+          ? !Graph[5]?.temp_max
             ? 0
-            : Graph[1].temp_max
+            : Graph[5].temp_max
           : 0,
     },
     {
       x: 3,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[2]?.temp_max
+          ? !Graph[4]?.temp_max
             ? 0
-            : Graph[2].temp_max
+            : Graph[4].temp_max
           : 0,
     },
     {
@@ -465,27 +486,27 @@ const WeatherData = ({
       x: 5,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[4]?.temp_max
+          ? !Graph[2]?.temp_max
             ? 0
-            : Graph[4].temp_max
+            : Graph[2].temp_max
           : 0,
     },
     {
       x: 6,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[5]?.temp_max
+          ? !Graph[1]?.temp_max
             ? 0
-            : Graph[5].temp_max
+            : Graph[1].temp_max
           : 0,
     },
     {
       x: 7,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[6]?.temp_max
+          ? !Graph[0]?.temp_max
             ? 0
-            : Graph[6] && Graph[6].temp_max
+            : Graph[0].temp_max
           : 0,
     },
   ];
@@ -495,27 +516,27 @@ const WeatherData = ({
       x: 1,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[0]?.temp_min
+          ? !Graph[6]?.temp_min
             ? 0
-            : Graph[0].temp_min
+            : Graph[6] && Graph[6].temp_min
           : 0,
     },
     {
       x: 2,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[1]?.temp_min
+          ? !Graph[5]?.temp_min
             ? 0
-            : Graph[1].temp_min
+            : Graph[5].temp_min
           : 0,
     },
     {
       x: 3,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[2]?.temp_min
+          ? !Graph[4]?.temp_min
             ? 0
-            : Graph[2].temp_min
+            : Graph[4].temp_min
           : 0,
     },
     {
@@ -531,33 +552,37 @@ const WeatherData = ({
       x: 5,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[4]?.temp_min
+          ? !Graph[2]?.temp_min
             ? 0
-            : Graph[4].temp_min
+            : Graph[2].temp_min
           : 0,
     },
     {
       x: 6,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[5]?.temp_min
+          ? !Graph[1]?.temp_min
             ? 0
-            : Graph[5].temp_min
+            : Graph[1].temp_min
           : 0,
     },
     {
       x: 7,
       y:
         Graph && WeatherDuration === 'Week'
-          ? !Graph[6]?.temp_min
+          ? !Graph[0]?.temp_min
             ? 0
-            : Graph[6] && Graph[6].temp_min
+            : Graph[0].temp_min
           : 0,
     },
   ];
 
-  let heightProp = isTablet ? horizontalScale(30) : (SIZE / 4.3);
-  let widthProp = isTablet ? Math.round(SIZE - (SIZE * 0.48)) : Math.round(SIZE - 138);
+  // console.log(`data`, data);
+
+  let heightProp = isTablet ? horizontalScale(30) : SIZE / 4.3;
+  let widthProp = isTablet
+    ? Math.round(SIZE - SIZE * 0.48)
+    : Math.round(SIZE - 138);
 
   const max =
     data &&
@@ -586,7 +611,7 @@ const WeatherData = ({
       }),
     );
 
-  const WeatherDurations = [{label: 'Day'}, {label: 'Week'}, {label: 'Month'}];
+  const WeatherDurations = [{ label: 'Day' }, { label: 'Week' }, { label: 'Month' }];
 
   // console.log(`Lowmax`, data, dataLow);
 
@@ -647,16 +672,23 @@ const WeatherData = ({
   // console.log(`AllDayWeather`, AllDayWeather);
 
   const _weatherType = ManualWeatherType
-  ? ManualWeatherType
-  : weatherData
-  ? findWeather(Weather?.weather?.[0]?.main)
-  : weatherTypes.Cloudy;
+    ? ManualWeatherType
+    : weatherData
+      ? findWeather(Weather?.weather?.[0]?.main)
+      : weatherTypes.Cloudy;
 
-  const _weatherAction = weatherActions?.[_weatherType] ?? weatherActions.Cloudy;
+  const _weatherAction =
+    weatherActions?.[_weatherType] ?? weatherActions.Cloudy;
 
-  const _largeWeatherImg = Constants.Images?.[_weatherType] ?? Constants.Images.Cloudy;
-  const _smallWeatherIcon = _weatherType === weatherTypes.Rainy ? Constants.Images.RainyHour : _largeWeatherImg;
-  const currentTemp = ManualTemp ? ManualTemp : Math.round(Weather?.main?.temp ? Weather.main.temp : '0');
+  const _largeWeatherImg =
+    Constants.Images?.[_weatherType] ?? Constants.Images.Cloudy;
+  const _smallWeatherIcon =
+    _weatherType === weatherTypes.Rainy
+      ? Constants.Images.RainyHour
+      : _largeWeatherImg;
+  const currentTemp = ManualTemp
+    ? ManualTemp
+    : Math.round(Weather?.main?.temp ? Weather.main.temp : '0');
 
   return (
     <View style={styles.container}>
@@ -676,11 +708,11 @@ const WeatherData = ({
             }}>
             <View style={styles.syncButtonView}>
               <Image
-                style={{height: 20, width: 20}}
+                style={{ height: 20, width: 20 }}
                 source={Constants.Images.Sync}
               />
             </View>
-            <View style={{alignContent: 'center', paddingHorizontal: 15}}>
+            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
               <Text style={styles.lightText}>
                 {UserData.WeatherPermission ? 'Syncing your' : 'Sync your'}
               </Text>
@@ -701,18 +733,19 @@ const WeatherData = ({
               100
               // : 0
             }
+            MoodCount={JSON.parse(MoodCount)}
             height={10}
             backgroundColor="#CB9866"
           />
-          <View style={{flexDirection: 'row'}}>
-            <Text numberOfLines={1} style={[styles.SmallThinText, {flex: 1}]}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text numberOfLines={1} style={[styles.SmallThinText, { flex: 1 }]}>
               {JSON.parse(MoodCount) < 3
                 ? 'Try add 3 moods per day'
                 : `Boom! You've added ${JSON.parse(MoodCount)} moods today`}
             </Text>
             <Text
               style={
-                (styles.SmallThinText, {paddingTop: 10, paddingVertical: 0})
+                (styles.SmallThinText, { paddingTop: 10, paddingVertical: 0 })
               }>
               {JSON.parse(MoodCount) === null ? 0 : JSON.parse(MoodCount)}
               /3
@@ -726,7 +759,7 @@ const WeatherData = ({
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text style={[styles.SmallThinText, {paddingVertical: 9}]}>
+            <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
               WEATHER
             </Text>
             <TouchableOpacity
@@ -739,11 +772,11 @@ const WeatherData = ({
               }}
               onPress={() => setWeatherPopUp(true)}>
               <Text style={styles.swiperText}>
-                You are more <Text style={{color: '#5947D0'}}>energetic</Text>{' '}
+                You are more <Text style={{ color: '#5947D0' }}>energetic</Text>{' '}
                 when the temperature is below{' '}
-                <Text style={{color: '#5947D0'}}>20°</Text> and it{' '}
-                <Text style={{color: '#5947D0'}}>rains</Text> around{' '}
-                <Text style={{color: '#5947D0'}}>2hrs</Text>
+                <Text style={{ color: '#5947D0' }}>20°</Text> and it{' '}
+                <Text style={{ color: '#5947D0' }}>rains</Text> around{' '}
+                <Text style={{ color: '#5947D0' }}>2hrs</Text>
               </Text>
             </TouchableOpacity>
 
@@ -762,7 +795,7 @@ const WeatherData = ({
                     fontFamily: RubikExtraBold,
                     fontSize: SIZE / 5.5,
                     color: '#E0DDED',
-                    transform: [{rotate: '-15deg'}],
+                    transform: [{ rotate: '-15deg' }],
                   }}>
                   Demo
                 </Text>
@@ -776,12 +809,14 @@ const WeatherData = ({
                 <Text
                   style={[
                     styles.SmallThinText,
-                    {paddingVertical: 0, paddingBottom: 4},
+                    { paddingVertical: 0, paddingBottom: 4 },
                   ]}>
                   Today's Weather
                 </Text>
                 <Text style={[styles.SmallThinText, styles.city]}>
-                  {UserData.WeatherPermission ? Weather?.name : 'Sync your weather'}
+                  {UserData.WeatherPermission
+                    ? Weather?.name
+                    : 'Sync your weather'}
                 </Text>
                 <View>
                   <TouchableOpacity
@@ -803,12 +838,10 @@ const WeatherData = ({
                       <Image
                         resizeMode={'contain'}
                         source={_largeWeatherImg}
-                        style={{margin: 10, marginHorizontal: 20}}
+                        style={{ margin: 10, marginHorizontal: 20 }}
                       />
                       <View>
-                        <Text style={[styles.Card1Text]}>
-                          {_weatherType}
-                        </Text>
+                        <Text style={[styles.Card1Text]}>{_weatherType}</Text>
                         <Text
                           style={[
                             ,
@@ -817,7 +850,7 @@ const WeatherData = ({
                               fontSize: dynamicSize(32),
                             },
                           ]}>
-                           {currentTemp}
+                          {currentTemp}
                           ºC
                         </Text>
                       </View>
@@ -842,7 +875,7 @@ const WeatherData = ({
                       activeOpacity={1}
                       onPress={editTemp}
                       style={styles.card2View}>
-                      <View style={{flexDirection: 'row', padding: 15}}>
+                      <View style={{ flexDirection: 'row', padding: 15 }}>
                         <Image
                           resizeMode={'contain'}
                           source={_smallWeatherIcon}
@@ -887,7 +920,7 @@ const WeatherData = ({
                         backgroundColor: 'white',
                         borderRadius: 15,
                       }}>
-                      <View style={{flexDirection: 'row', padding: 15}}>
+                      <View style={{ flexDirection: 'row', padding: 15 }}>
                         <Image
                           resizeMode={'contain'}
                           source={Constants.Images.Pollen}
@@ -940,7 +973,7 @@ const WeatherData = ({
             click={() => setWeatherDurationModal(true)}
             value={WeatherDuration}
           />
-          <View style={{marginBottom: 50, alignItems: 'center'}}>
+          <View style={{ marginBottom: 50, alignItems: 'center' }}>
             {swiperIndex == 2 && (
               <BarGraph
                 max={max}
@@ -974,7 +1007,7 @@ const WeatherData = ({
                       H={9}
                     />
                   </View>
-                  <View style={{marginTop: 20}}>
+                  <View style={{ marginTop: 20 }}>
                     <GraphBezierCustom
                       heightProp={heightProp}
                       stroke="#70DEEC"
@@ -1022,7 +1055,7 @@ const WeatherData = ({
                   fontFamily: RubikExtraBold,
                   fontSize: SIZE / 3.5,
                   color: '#E0DDED',
-                  transform: [{rotate: '-15deg'}],
+                  transform: [{ rotate: '-15deg' }],
                 }}>
                 Demo
               </Text>
@@ -1274,7 +1307,7 @@ const styles = StyleSheet.create({
   //     flex: 1,
   //     position: 'absolute',
   //   },
-  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
+  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

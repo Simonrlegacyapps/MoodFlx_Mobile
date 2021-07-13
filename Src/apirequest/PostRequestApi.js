@@ -1,8 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import {getDivisions, UserDivision} from '../redux/actions/actions';
+import { getDivisions, UserDivision } from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
-import {onUnlinkUpdate} from '../services/commonService';
+import { onUnlinkUpdate } from '../services/commonService';
 
 const PostRequestApi = async (url, params) => {
   return await axios
@@ -13,6 +13,7 @@ const PostRequestApi = async (url, params) => {
 };
 
 export async function GetStaffUserData(params, dispatch) {
+  console.log(`params of get user profile`, params)
   var myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
 

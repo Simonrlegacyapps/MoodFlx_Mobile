@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import Modal from 'react-native-modal';
+import {useSelector} from 'react-redux';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
 import {dynamicSize} from '../../Constants/sizeChoose';
 type props = {
@@ -24,6 +25,7 @@ const ActionSheet = ({
   modalRef,
 }: props) => {
   const [color, setcolor] = useState('black');
+  const UserData = useSelector((state) => state.First);
   return (
     <Modal
       style={styles.modalView}
@@ -64,9 +66,17 @@ const ActionSheet = ({
           <TouchableOpacity
             onPress={() => selectedValue(2)}
             activeOpacity={0.9}
-            style={[styles.buttonsStyle, {borderBottomWidth: 0}]}>
+            style={[styles.buttonsStyle, {borderBottomWidth: 1}]}>
             <Text style={styles.textStyles}>Photo Library</Text>
           </TouchableOpacity>
+          {UserData?.UserDetails?.profile_image && (
+            <TouchableOpacity
+              onPress={() => selectedValue(3)}
+              activeOpacity={0.9}
+              style={[styles.buttonsStyle, {borderBottomWidth: 0}]}>
+              <Text style={styles.textStyles}>Remove Photo</Text>
+            </TouchableOpacity>
+          )}
         </View>
         {/* <TouchableOpacity
           onPress={dismissModalHandler}

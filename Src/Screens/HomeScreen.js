@@ -1,6 +1,6 @@
 import React from 'react';
-import {Image, View, Dimensions} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { Image, View, Dimensions } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './Tabs/Home';
 import Linktocompany from './Tabs/Linktocompany';
 import MicScreen from './Tabs/MicScreen';
@@ -16,19 +16,20 @@ import LinkActive from '../../assets/tabicons/LinkActive';
 import LinkIcon from '../../assets/tabicons/LinkIcon';
 import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation';
 import MoodEmotionDetector from './MoodEmotionDetector';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import MainProfileTab from './Profile/MainProfileTab';
 
 const Tab = createBottomTabNavigator();
 const WIDTH = Dimensions.get('screen').width;
 
-const HomeScreen = ({navigation, route}) => {
+const HomeScreen = ({ navigation, route }) => {
   // console.log(`route`, route);
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <Tab.Navigator
         initialRouteName={route.params.screen}
-        screenOptions={({route}) => ({
-          tabBarIcon: ({focused, color, size}) => {
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
             let iconName;
             if (route.name === 'Home') {
               iconName = focused ? <HomeActiveIcon /> : <HomeIcon />;
@@ -40,7 +41,7 @@ const HomeScreen = ({navigation, route}) => {
                   onPress={() => navigation.replace('MoodEmotionDetector')}>
                   <Image
                     resizeMode={'contain'}
-                    style={{marginBottom: 75, width: 65, height: 65}}
+                    style={{ marginBottom: 75, width: 65, height: 65 }}
                     source={require('../../assets/tabicons/logo.png')}
                   />
                 </TouchableOpacity>
@@ -65,14 +66,13 @@ const HomeScreen = ({navigation, route}) => {
               );
             } else if (route.name === 'LinkCompanyStackNavigation') {
               iconName = focused ? <LinkActive /> : <LinkIcon />;
-            } else if (route.name === 'ProfileTab') {
+            } else if (route.name === 'MainProfileTab') {
               iconName = focused ? <ProfileActive /> : <Profile />;
             }
             return iconName;
           },
         })}
         tabBarOptions={{
-          // keyboardHidesTabBar: true,
           showLabel: false,
           style: {
             backgroundColor: 'transparent',
@@ -80,52 +80,43 @@ const HomeScreen = ({navigation, route}) => {
             position: 'absolute',
             zIndex: 9999,
             elevation: 0,
-            // left: 50,
-            // right: 50,
-            // bottom: 20,
-            // height: 100,
           },
         }}>
         <Tab.Screen
           name={'Home'}
           component={Home}
-          initialParams={{cord: route.params}}
+          initialParams={{ cord: route.params }}
         />
         <Tab.Screen name={'MicScreen'} component={MicScreen} />
         <Tab.Screen
           name={'LogoTab'}
           component={LogoTab}
-          //   options={{tabBarVisible: false}}
+        //   options={{tabBarVisible: false}}
         />
         <Tab.Screen
           name={'LinkCompanyStackNavigation'}
           component={LinkCompanyStackNavigation}
         />
-        <Tab.Screen name={'ProfileTab'} component={ProfileTab} />
+        {/* <Tab.Screen name={'ProfileTab'} component={ProfileTab} /> */}
+        <Tab.Screen name={'MainProfileTab'} component={MainProfileTab} />
       </Tab.Navigator>
       <View
         style={{
           position: 'absolute',
-          // height: 20,
           alignSelf: 'flex-end',
           justifyContent: 'flex-end',
-          // width: '100%',
-          // backgroundColor: 'grey',
           bottom: 0,
           shadowColor: 'black',
-          // shadowOffset: {height: 2},
           shadowOpacity: 0.3,
-
           shadowOffset: {
             width: 0,
             height: 3,
           },
-          // shadowOpacity: 0.27,
           shadowRadius: 4.65,
         }}>
         <Image
           resizeMode={'stretch'}
-          style={{tintColor: 'white', height: 60, width: WIDTH}}
+          style={{ tintColor: 'white', height: 60, width: WIDTH }}
           source={require('../../assets/tabicons/Rectangle.png')}
         />
       </View>
