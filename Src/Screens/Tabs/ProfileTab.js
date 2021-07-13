@@ -83,6 +83,10 @@ const ProfileTab = ({ navigation }) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
 
+  const updateName = useCallback((text) => {
+    setname('Tester');
+  }, []);
+
   const getProfileUserData = () => {
     // console.log('called called called called called called');
     const deviceId = DeviceInfo.getUniqueId();
@@ -467,7 +471,7 @@ const ProfileTab = ({ navigation }) => {
                     ? UserData?.UserDetails?.full_name
                     : name
               }
-              onChangeText={setname}
+              onChangeText={updateName}
             />
             <AddAnswer
               checkedit={UserData?.UserDetails?.gender ? true : false}
