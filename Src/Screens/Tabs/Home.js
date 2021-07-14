@@ -1254,6 +1254,7 @@ const App = (props) => {
             '✅ ✅ ✅ ✅ Success Update Staff Health ✅ ✅ ✅ ✅',
             response?.data,
           );
+          setHealthUpdateApiCount((e) => e + 1);
         })
         .catch(function (error) {
           console.log(
@@ -1266,7 +1267,6 @@ const App = (props) => {
     setTodayDistance(Fsteps.length > 0 ? (Fsteps[0].distance / 5000) * 100 : 0);
     setTodayCalories(Fsteps.length > 0 ? (Fsteps[0].calories / 1000) * 100 : 0);
     setMoveTime(WalkTime.length > 0 ? (WalkTime[0].walkTime / 120) * 100 : 0);
-    setHealthUpdateApiCount((e) => e + 1);
   };
 
   const dismissInstallGoogleFitModal = useCallback(() => {

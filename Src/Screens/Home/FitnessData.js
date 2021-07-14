@@ -157,7 +157,7 @@ const FitnessData = ({
       };
       PostRequestApi('getActivityInsights', { ...params, status: 'daily' })
         .then((res) => {
-          console.log('getLightInsights daily res: ', res);
+          console.log('getActivityInsights daily res: ', res);
           let dailyInsightsPayload = {};
           dailyInsightsPayload.dailyInsights =
             res?.data?.insights?.message1 &&
