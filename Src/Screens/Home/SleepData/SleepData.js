@@ -566,7 +566,7 @@ const SleepData = ({
                   transform: [{ rotate: '-15deg' }],
                 }}>
                 Demo
-            </Text>
+              </Text>
             </View>
           )}
           {!UserData.SleepPermission && (

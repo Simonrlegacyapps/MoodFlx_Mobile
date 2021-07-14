@@ -43,8 +43,8 @@ const StarProgress = ({ sleepMinutes }) => {
 
   useEffect(() => {
     const hours = Number.parseInt(String(sleepMinutes / 60));
-    let s = sleepMinutes > 480 ? 480 : sleepMinutes;
-    s = Math.round((s * 5) / 480);
+    let s = sleepMinutes > 600 ? 600 : sleepMinutes;
+    s = Math.round((s * 5) / 600);
     // console.log('calculated step: ', s);
     setStep(s);
     const timeoutId = setTimeout(() => {
@@ -61,7 +61,7 @@ const StarProgress = ({ sleepMinutes }) => {
   useEffect(() => {
     // setToolTipPosition(-Width + (Width * step) / 10);
     // console.log('StarProgress animation: ', toolTipPosition);
-    if(!(toolTipPosition <= 0)) {
+    if (!(toolTipPosition <= 0)) {
       Animated.timing(animatedValue, {
         toValue: toolTipPosition,
         duration: 1000,
@@ -72,7 +72,7 @@ const StarProgress = ({ sleepMinutes }) => {
 
   const calculateToolTipPosition = useCallback((_step) => {
     let stepss = _step !== undefined ? _step : step;
-    if (progressSize.current && (_step >=0 || step >= 0)) {
+    if (progressSize.current && (_step >= 0 || step >= 0)) {
       console.log('calculateToolTipPosition stepss: ', stepss);
       console.log('calculateToolTipPosition _step: ', _step);
       const { left, top, width, height } = progressSize.current;
@@ -85,7 +85,7 @@ const StarProgress = ({ sleepMinutes }) => {
 
   const onProgressLayout = useCallback((e) => {
     progressRef?.current?.measureInWindow((x, y, width, height) => {
-      progressSize.current = {left: x, top: y, width, height};
+      progressSize.current = { left: x, top: y, width, height };
       // console.log('StarProgress onProgressLayout: ', progressSize.current);
       calculateToolTipPosition();
     })
@@ -97,11 +97,11 @@ const StarProgress = ({ sleepMinutes }) => {
     //   setCurrentFont(currentFont - 1);
     // }
     // return;
-    if(toolTipText.length < 8 && currentFont !== 17) {
+    if (toolTipText.length < 8 && currentFont !== 17) {
       setCurrentFont(17)
-    } else if(toolTipText.length === 8 && currentFont !== 15) {
+    } else if (toolTipText.length === 8 && currentFont !== 15) {
       setCurrentFont(15)
-    } else if(lines.length > 1) {
+    } else if (lines.length > 1) {
       setCurrentFont(currentFont - 1);
     }
   }, [currentFont, setCurrentFont, sleepMinutes])
@@ -112,7 +112,7 @@ const StarProgress = ({ sleepMinutes }) => {
         width: wid,
         alignSelf: 'center',
         justifyContent: 'space-evenly',
-        overflow: 'hidden',
+        overflow: 'visible',
         marginTop: dynamicSize(18),
       }}
       onLayout={(e) => {
@@ -147,7 +147,7 @@ const StarProgress = ({ sleepMinutes }) => {
               // flex: 1,
             }}>
             <Text
-            onTextLayout={onTextLayout}
+              onTextLayout={onTextLayout}
               style={{
                 color: '#fff',
                 // flex: 1,
@@ -220,24 +220,24 @@ const StarProgress = ({ sleepMinutes }) => {
           />
         }
       </View>
-      <View style={{ alignItems: 'center', marginTop: 20 }}>
+      <View style={{ alignItems: 'center', marginTop: 20, overflow: 'visible' }}>
         <Image
           resizeMode={'contain'}
           source={Constants.Images.Scale}
-          style={{ height: 20, width: wid }}
+          style={{ height: 20, width: wid - horizontalScale(20) }}
         />
         <View style={styles.qualitiesView}>
-          <View>
-            <Text style={styles.qualitiesText}>Poor</Text>
+          <View style={styles.qualityViewOne}>
+            <Text style={styles.qualitiesText}>That's rough</Text>
           </View>
-          <View style={styles.goodView}>
-            <Text style={styles.qualitiesText}>Good</Text>
+          <View style={styles.qualityViewTwo}>
+            <Text style={styles.qualitiesText}>Almost</Text>
           </View>
-          <View style={styles.almostView}>
-            <Text style={[styles.qualitiesText, { color: '#000000' }]}>Almost</Text>
+          <View style={styles.qualityViewThree}>
+            <Text style={[styles.qualitiesText, { color: '#000000' }]}>Perfect!</Text>
           </View>
-          <View>
-            <Text style={styles.qualitiesText}>Perfect!</Text>
+          <View style={styles.qualityViewFour}>
+            <Text style={styles.qualitiesText}>Bit too much</Text>
           </View>
         </View>
       </View>
@@ -252,6 +252,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: horizontalScale(10),
+    overflow: 'visible',
   },
   qualitiesText: {
     color: '#4C5980',
@@ -259,13 +260,22 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(12),
     fontFamily: RubikRegular,
   },
-  goodView: {
-    left: horizontalScale(4),
-    top: 0
+  qualityViewOne: {
+    left: horizontalScale(35),
+    top: 0,
   },
-  almostView: {
-    left: horizontalScale(12),
-    top: 0
+  qualityViewTwo: {
+    left: horizontalScale(50),
+    top: 0,
+  },
+  qualityViewThree: {
+    left: horizontalScale(40),
+    top: 0,
+  },
+  qualityViewFour: {
+    left: horizontalScale(20),
+    top: 0,
+    overflow: 'visible',
   },
   innerContainer: {
     tintColor: '#7965F6',
