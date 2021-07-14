@@ -57,7 +57,7 @@ const googleFitScopes = {
 const activityHealthKitOptions = {
   permissions: {
     read: [
-      PERMS.DateOfBirth,
+      // PERMS.DateOfBirth,
       PERMS.Weight,
       PERMS.Height,
       // PERMS.BodyMassIndex,
