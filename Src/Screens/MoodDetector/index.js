@@ -1485,7 +1485,7 @@ export default function MoodDetector({ navigation }) {
 
       <SaveMoodConfirmModal
         modalVisible={isSaveMoodConfirmModalVisible}
-        dismissModalHandler={dismissSaveMoodConfirmModal}
+        dismissModalHandler={SaveMood}
         emotionText={emotionText}
         onClickButtonOne={() => SaveMood()}
       />

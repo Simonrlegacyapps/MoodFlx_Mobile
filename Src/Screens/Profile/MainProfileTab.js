@@ -26,8 +26,8 @@ const MainProfileTab = ({ navigation }) => {
             <ProfileHeader navigation={navigation} />
             <View style={{ flexDirection: 'row', marginHorizontal: 15 }}>
                 <View style={styles.nameTexts}>
-                    <Text style={styles.since}>Your Ranking</Text>
-                    <Text style={styles.name}>Mood Legend</Text>
+                    <Text style={styles.since}>Points</Text>
+                    <Text style={styles.name}>You've earned</Text>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                     <LinearGradient
@@ -37,7 +37,7 @@ const MainProfileTab = ({ navigation }) => {
                         style={styles.linearGradient}>
                         <View style={{ marginHorizontal: 15 }}>
                             <Text style={{ color: 'white', fontFamily: RubikRegular }}>
-                                <Crown /> 12600
+                                <Text style={{ paddingTop: 4 }}><Crown /></Text> 12,600
               </Text>
                         </View>
                     </LinearGradient>
