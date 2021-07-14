@@ -211,82 +211,7 @@ const SleepData = ({
     }
   }, [lastThirtyDaySleepData]);
 
-  const callSleepDataUpdateApi = useCallback((sData) => {
-    if (!(Array.isArray(sData) && sData.length > 0)) {
-      return;
-    }
-    setSleepDataLastThirtyDays(sData);
-    const sleepData = getSleepDataForUpdateApi();
-    if (!(Array.isArray(sleepData) && sleepData.length > 0)) {
-      return;
-    }
-    console.log('api sleep data: ', sleepData);
-    // return;
-    const deviceId = DeviceInfo.getUniqueId();
-    let data = {
-      device_id: deviceId,
-      email: UserData.UserEmail ?? '',
-      user_id: UserData.UserId ?? '',
-      sleep_data: sleepData
-    };
-    var config = {
-      method: 'post',
-      url: 'https://admin.moodflo.com/api/updateSleepQuality',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
-      },
-      data: JSON.stringify(data),
-    };
-
-    GetStaffUserData(
-      {
-        device_id: deviceId,
-        email: UserData.UserEmail ?? '',
-        user_id: UserData.UserId ?? '',
-      }, dispatch)
-      .then(async (result) => {
-        // console.log(
-        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
-        //   result?.userData
-        // );
-        if (result?.userData?.status !== 2) {
-          return axios(config);
-        } else {
-          data.user_id = '';
-          data.email = '';
-          config.data = JSON.stringify(data);
-          return axios(config);
-        }
-      })
-      .then(async (result) => {
-        if (result) {
-          console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
-          const timeoutId = setTimeout(() => {
-            callGetSleepDataApi();
-            clearTimeout(timeoutId);
-          }, 500);
-        }
-      })
-      .catch(function (error) {
-        console.log('❌❌❌❌Fail Update Sleep Data❌❌❌❌', error, data);
-      });
-
-
-    // axios(config)
-    //   .then(function (response) {
-    //     console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
-    //     const timeoutId = setTimeout(() => {
-    //       callGetSleepDataApi();
-    //       clearTimeout(timeoutId);
-    //     }, 500);
-    //   })
-    //   .catch(function (error) {
-    //     console.log('❌❌❌❌Fail Sleep Data❌❌❌❌', error, data);
-    //   });
-  }, [UserData.UserEmail, UserData.UserId]);
-
-  const callGetSleepDataApi = useCallback(() => {
+  const callInsightsApi = () => {
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -296,56 +221,26 @@ const SleepData = ({
       email: UserData?.UserEmail ?? '',
       user_id: UserData?.UserId ?? '',
     };
-    // var raw = JSON.stringify({
-    //   device_id: deviceId,
-    //   email: UserData?.UserEmail ?? '',
-    //   user_id: UserData?.UserId ?? '',
-    // });
 
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify(params),
-      // redirect: 'follow',
-    };
-
-    console.log(`Get Sleep Data Params`, params);
-    fetch('https://admin.moodflo.com/api/getSleepQualityReport', requestOptions)
-      .then((response) => response.json())
-      .then(async (result) => {
-        console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', JSON.stringify(result));
-        const inBedArray = result?.sleepData?.INBED ? Object.values(result.sleepData.INBED) : [];
-        const asleepArray = result?.sleepData?.ASLEEP ? Object.values(result.sleepData.ASLEEP) : [];
-        if (Array.isArray(inBedArray) && inBedArray.length > 0) {
-          console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  inBed', inBedArray);
-          setWeeklyInBedData(inBedArray);
-        }
-        if (Array.isArray(asleepArray) && asleepArray.length > 0) {
-          console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  asleep', asleepArray);
-          setWeeklyAsleepData(asleepArray);
-        }
-        const graphData = getSleepGraphData({ weeklyData: { ASLEEP: asleepArray, INBED: inBedArray } });
-        console.log('graphData: ', graphData);
-        setSleepGraphData(graphData);
-        return PostRequestApi('getSleepInsights', { ...params, status: 'daily' });
-      })
+    console.log(`Sleep Insights Api Params`, params);
+    PostRequestApi('getSleepInsights', {...params, status: 'daily'})
       .then((res) => {
         console.log('getSleepInsights daily: ', res?.data?.insights);
         // console.log('getSleepInsights daily res: ', res);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
           res?.data?.insights?.message1 &&
-            typeof res.data.insights.message1 === 'string'
+          typeof res.data.insights.message1 === 'string'
             ? res.data.insights.message1
             : '';
         dailyInsightsPayload.dailySuggestion =
           res?.data?.insights?.message2 &&
-            typeof res.data.insights.message2 === 'string'
+          typeof res.data.insights.message2 === 'string'
             ? res.data.insights.message2
             : '';
         dailyInsightsPayload.dailySuggestionType =
           res?.data?.insights?.message2Type &&
-            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
         setInsights({
@@ -410,7 +305,124 @@ const SleepData = ({
       .catch(function (error) {
         console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, params);
       });
-  }, [UserData.UserEmail, UserData.UserId]);
+  };
+
+  const callGetSleepDataApi = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var params = {
+      device_id: deviceId,
+      email: UserData?.UserEmail ?? '',
+      user_id: UserData?.UserId ?? '',
+    };
+    // var raw = JSON.stringify({
+    //   device_id: deviceId,
+    //   email: UserData?.UserEmail ?? '',
+    //   user_id: UserData?.UserId ?? '',
+    // });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify(params),
+      // redirect: 'follow',
+    };
+
+    console.log(`Get Sleep Data Params`, params);
+    fetch('https://admin.moodflo.com/api/getSleepQualityReport', requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', JSON.stringify(result));
+        const inBedArray = result?.sleepData?.INBED ? Object.values(result.sleepData.INBED) : [];
+        const asleepArray = result?.sleepData?.ASLEEP ? Object.values(result.sleepData.ASLEEP) : [];
+        if (Array.isArray(inBedArray) && inBedArray.length > 0) {
+          console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  inBed', inBedArray);
+          setWeeklyInBedData(inBedArray);
+        }
+        if (Array.isArray(asleepArray) && asleepArray.length > 0) {
+          console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  asleep', asleepArray);
+          setWeeklyAsleepData(asleepArray);
+        }
+        const graphData = getSleepGraphData({ weeklyData: { ASLEEP: asleepArray, INBED: inBedArray } });
+        console.log('graphData: ', graphData);
+        setSleepGraphData(graphData);
+      })
+      .catch(function (error) {
+        console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, params);
+      });
+  };
+
+  const callSleepDataUpdateApi = (sData) => {
+    if (!(Array.isArray(sData) && sData.length > 0)) {
+      return;
+    }
+    setSleepDataLastThirtyDays(sData);
+    const sleepData = getSleepDataForUpdateApi();
+
+    if (!(Array.isArray(sleepData) && sleepData.length > 0)) {
+      callGetSleepDataApi();
+      return;
+    }
+    console.log('api sleep data: ', sleepData);
+    // return;
+    const deviceId = DeviceInfo.getUniqueId();
+    let data = {
+      device_id: deviceId,
+      email: UserData.UserEmail ?? '',
+      user_id: UserData.UserId ?? '',
+      sleep_data: sleepData,
+    };
+    var config = {
+      method: 'post',
+      url: 'https://admin.moodflo.com/api/updateSleepQuality',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
+      },
+      data: JSON.stringify(data),
+    };
+
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail ?? '',
+        user_id: UserData.UserId ?? '',
+      },
+      dispatch,
+    )
+      .then(async (result) => {
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          return axios(config);
+        } else {
+          data.user_id = '';
+          data.email = '';
+          config.data = JSON.stringify(data);
+          return axios(config);
+        }
+      })
+      .then(async (result) => {
+        if (result) {
+          console.log(
+            ' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ',
+            data,
+          );
+          const timeoutId = setTimeout(() => {
+            callInsightsApi();
+            callGetSleepDataApi();
+            clearTimeout(timeoutId);
+          }, 500);
+        }
+      })
+      .catch(function (error) {
+        console.log('❌❌❌❌Fail Update Sleep Data❌❌❌❌', error, data);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -499,8 +511,16 @@ const SleepData = ({
             </View>
           ) : (
             <DataInsights
-              dailyInsights={insights?.dailyInsights}
-              weeklyInsights={insights?.weeklyInsights}
+              dailyInsights={
+                insights?.dailyInsights
+                  ? insights.dailyInsights
+                  : 'Not enough high quality sleep data yet'
+              }
+              weeklyInsights={
+                insights?.weeklyInsights
+                  ? insights.weeklyInsights
+                  : 'Not enough high quality sleep data yet'
+              }
               dailySuggestion={insights?.dailySuggestion}
               dailySuggestionType={insights?.dailySuggestionType}
               weeklySuggestion={insights?.weeklySuggestion}
