@@ -199,7 +199,7 @@ const SaveMoodConfirmModal = ({
               Saved as {UserData.Anonymous ? "Anonymous" : `${UserData?.UserDetails?.full_name}`}
             </Text> :
               <Text style={styles.AnonymousButton}>
-                Click to add the name
+                Saved as Anonymous
             </Text>}
           </TouchableOpacity>
           <View style={styles.inputBox}>

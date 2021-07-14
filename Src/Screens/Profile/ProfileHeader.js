@@ -32,7 +32,7 @@ const ProfileHeader = ({ navigation }) => {
             </View>
             <View style={styles.nameTexts} >
                 <Text style={styles.since}>Since March 3rd</Text>
-                <Text style={styles.name}>{UserData?.UserDetails?.full_name ? UserData?.UserDetails?.full_name : "Please Add your name"}</Text>
+                <Text style={styles.name}>{UserData?.UserDetails?.full_name ? UserData?.UserDetails?.full_name : "Anonymous"}</Text>
             </View>
             <TouchableOpacity onPress={() => { navigation.navigate("ProfileTab") }} style={styles.edit}>
                 <EditProfile />
