@@ -36,28 +36,28 @@ import {
   isTablet,
 } from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
-import {
-  DayTemp,
-  Lat,
-  Long,
-  SetLocation,
-  WeatherPerm,
-} from '../../../redux/actions/actions';
+import {DayTemp, SetLocation} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
-import { defaultLocation, isCountryIndia, weatherActions, weatherApiDataTypes, weatherTypes } from '../../../Constants/constants';
-import { AppPermissions } from '../../../services/appPermissions';
+import {
+  defaultLocation,
+  isCountryIndia,
+  weatherActions,
+  weatherTypes,
+} from '../../../Constants/constants';
+import {AppPermissions} from '../../../services/appPermissions';
 import isFunction from 'lodash.isfunction';
+import {findWeather} from './weatherService';
 
 let weatherData = null;
 
-const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
+const {width: SIZE} = Dimensions.get('window');
 
-const IndicatorHelper = ({ color, text }) => {
+const IndicatorHelper = ({color, text}) => {
   return (
     <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
+      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
       <Text style={styles.indicatorText}>{text}</Text>
     </View>
   );
@@ -134,12 +134,13 @@ const WeatherData = ({
             location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude, function (isSuccess) {
               resolve(isSuccess);
             });
-          });
+              },
+            );
           // if (UserData.lat == null || UserData.lon == null) {
           // }
         })
         .catch((error) => {
-          const { code, message } = error;
+          const {code, message} = error;
           resolve(false);
           console.log('error', code, message);
         });
@@ -213,10 +214,10 @@ const WeatherData = ({
       });
   };
 
-  const findWeather = (value) => {
-    const v = value?.toLowerCase?.() ?? value;
-    return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
-  };
+  // const findWeather = (value) => {
+  //   const v = value?.toLowerCase?.() ?? value;
+  //   return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
+  // };
   // console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
   const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');

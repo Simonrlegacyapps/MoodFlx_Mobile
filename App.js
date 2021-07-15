@@ -68,6 +68,7 @@ import {
   getLinkModalText,
   isCountryIndia,
 } from './Src/Constants/constants';
+import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -589,49 +590,45 @@ const App: () => React$Node = () => {
   };
   useEffect(() => {
     // console.log(`LightSensor`, LightSensor);
-    {
-      UserData.WeatherPermission &&
-        (UserData.lat == null || UserData.lon == null) &&
-        GetLocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 15000,
+    UserData.WeatherPermission &&
+      (UserData.lat == null || UserData.lon == null) &&
+      GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000,
+      })
+        .then((location) => {
+          //   console.log('Success', location);
+          // setlat(location.latitude);
+          const isIndia = isCountryIndia();
+          if (isIndia) {
+            location = {
+              latitude: defaultLocation.latitude,
+              longitude: defaultLocation.longitude
+            };
+          }
+          console.log(
+            '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
+            JSON.stringify(location),
+          );
+          dispatch(Lat(location.latitude));
+          // setlng(location.longitude);
+          dispatch(Long(location.longitude));
         })
-          .then((location) => {
-            //   console.log('Success', location);
-            // setlat(location.latitude);
-            const isIndia = isCountryIndia();
-            if(isIndia){
-              location = {
-                latitude: defaultLocation.latitude,
-                longitude: defaultLocation.longitude
-              };
-            }
-            console.log(
-              '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
-              JSON.stringify(location),
-            );
-            dispatch(Lat(location.latitude));
-            // setlng(location.longitude);
-            dispatch(Long(location.longitude));
-          })
-          .catch((error) => {
-            const {code, message} = error;
-            console.log('error getting lat lon from geolocation api', code, message);
-          });
-    }
-    {
-      UserData.AllMoods == null &&
-        fetch('https://admin.moodflo.com/api/getMood')
-          .then((data) => data.json())
-          .then(async (res) => {
-            // await setGetMoods(res.data);
-            await dispatch(Moods(res.data));
-          })
-          .catch((error) => {
-            // const {code, message} = error;
-            console.log('error', error);
-          });
-    }
+        .catch((error) => {
+          const { code, message } = error;
+          console.log('error getting lat lon from geolocation api', code, message);
+        });
+    UserData.AllMoods == null &&
+      fetch('https://admin.moodflo.com/api/getMood')
+        .then((data) => data.json())
+        .then(async (res) => {
+          // await setGetMoods(res.data);
+          await dispatch(Moods(res.data));
+        })
+        .catch((error) => {
+          // const {code, message} = error;
+          console.log('error', error);
+        });
     checkStorage();
     getProfileUserData();
   }, [UserData.WeatherPermission]);
@@ -641,7 +638,7 @@ const App: () => React$Node = () => {
     dynamicLinks().getInitialLink().then(handleDynamicLink);
     // handleDynamicLink();
     // return () => unsubscribe();
-    return null;
+    // return null;
   }, []);
 
   useEffect(() => {
@@ -649,6 +646,15 @@ const App: () => React$Node = () => {
     // When the component is unmounted, remove the listener
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (
+      (UserData.UserId && UserData.UserEmail) ||
+      (!UserData.UserId && !UserData.UserEmail)
+    ) {
+      syncWeatherData();
+    }
+  }, [UserData.UserId, UserData.UserEmail]);
 
   const renderItems = ({item, index}, parallaxProps) => {
     // console.log('item', item.img);
