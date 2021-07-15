@@ -124,6 +124,16 @@ const toastConfig = {
       text2={text2}
     />
   ),
+  info: ({ text2, ...rest }) => (
+    <BaseToast
+      {...rest}
+      leadingIcon={Constants.Images.InfoIcon}
+      // style={{ borderLeftColor: 'pink' }}
+      // contentContainerStyle={{ paddingHorizontal: 15 }}
+      text2Style={styles.toastInfoText}
+      text2={text2}
+    />
+  ),
 };
 
 const App: () => React$Node = () => {
@@ -815,6 +825,12 @@ const styles = ScaledSheet.create({
     fontSize: getFontSize(15),
     color: '#B56873',
     fontWeight: 'bold',
+  },
+  toastInfoText: {
+    fontSize: getFontSize(13),
+    // color: '#9C9EB9',
+    color: 'rgb(66,66,66)',
+    // fontWeight: 'bold',
   },
 });
 

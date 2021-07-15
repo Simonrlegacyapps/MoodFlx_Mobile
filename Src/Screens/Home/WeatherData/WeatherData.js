@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef, useReducer} from 'react';
 import {
   View,
   Text,
@@ -49,10 +49,54 @@ import {
 import {AppPermissions} from '../../../services/appPermissions';
 import isFunction from 'lodash.isfunction';
 import {findWeather} from './weatherService';
+import PostRequestApi from '../../../apirequest/PostRequestApi';
+import DataInsights from '../../../Components/DataInsights/DataInsights';
 
 let weatherData = null;
 
 const {width: SIZE} = Dimensions.get('window');
+
+const weatherInsightsInitialState = {
+  dailyInsights: '',
+  weeklyInsights: '',
+  dailySuggestion: '',
+  dailySuggestionType: '',
+  weeklySuggestion: '',
+  weeklySuggestionType: '',
+};
+
+const weatherInsightsTypes = {
+  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
+  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
+  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
+  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
+  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
+  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
+  SET_INSIGHTS: 'SET_INSIGHTS',
+};
+
+function weatherInsightsReducer(state, action) {
+  switch (action.type) {
+    case weatherInsightsTypes.SET_DALIY_INSIGHTS:
+      return {...state, dailyInsights: action.payload};
+    case weatherInsightsTypes.SET_WEEKLY_INSIGHTS:
+      return {...state, weeklyInsights: action.payload};
+    case weatherInsightsTypes.SET_DAILY_SUGGESTION:
+      return {...state, dailySuggestion: action.payload};
+    case weatherInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
+      return {...state, dailySuggestionType: action.payload};
+    case weatherInsightsTypes.SET_WEEKLY_SUGGESTION:
+      return {...state, weeklySuggestion: action.payload};
+    case weatherInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
+      return {...state, weeklySuggestionType: action.payload};
+    case weatherInsightsTypes.SET_INSIGHTS:
+      return action?.payload && typeof action?.payload === 'object'
+        ? {...state, ...action.payload}
+        : state;
+    default:
+      return state;
+  }
+}
 
 const IndicatorHelper = ({color, text}) => {
   return (
@@ -94,6 +138,10 @@ const WeatherData = ({
   const [AnonymousClick, setAnonymousClick] = useState(false);
   const [WeatherDurationModal, setWeatherDurationModal] = useState(false);
   const [WeatherDuration, setWeatherDuration] = useState('Week');
+  const [insights, setInsights] = useReducer(
+    weatherInsightsReducer,
+    weatherInsightsInitialState,
+  );
   const allDayWeatherData = useRef(null);
 
   const a = moment().subtract(0, 'days').startOf('day').toString();
@@ -219,6 +267,108 @@ const WeatherData = ({
   //   return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
   // };
   // console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
+
+  const callInsightsApi = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var params = {
+      device_id: deviceId,
+      email: UserData?.UserEmail ?? '',
+      user_id: UserData?.UserId ?? '',
+    };
+
+    console.log(`Weather Insights Api Params`, params);
+    PostRequestApi('getWeatherInsights', {...params, status: 'daily'})
+      .then((res) => {
+        console.log('getWeatherInsights daily: ', res?.data?.insights);
+        // console.log('getSleepInsights daily res: ', res);
+        let dailyInsightsPayload = {};
+        dailyInsightsPayload.dailyInsights =
+          !!res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        dailyInsightsPayload.dailySuggestion =
+          !!res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        dailyInsightsPayload.dailySuggestionType =
+          !!res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: weatherInsightsTypes.SET_INSIGHTS,
+          payload: dailyInsightsPayload,
+        });
+        /*
+        Weekly api should be called between
+        Friday @ 12pm until Saturday 6pm
+        */
+        const day = moment().day();
+        const startTime = moment().set({
+          hour: 12,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        const endTime = moment().set({
+          hour: 18,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        if (
+          !isNaN(day) &&
+          (Number(day) === 6 || Number(day) === 7) &&
+          moment().isSameOrAfter(startTime) &&
+          moment().isSameOrBefore(endTime)
+        ) {
+          return PostRequestApi('getWeatherInsights', {
+            ...params,
+            status: 'weekly',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        // console.log('getSleepInsights weekly res: ', res);
+        let weeklyInsightsPayload = {};
+        console.log('getWeatherInsights weekly: ', res?.data?.insights);
+        weeklyInsightsPayload.weeklyInsights =
+          !!res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        weeklyInsightsPayload.weeklySuggestion =
+          !!res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        weeklyInsightsPayload.weeklySuggestionType =
+          !!res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: weatherInsightsTypes.SET_INSIGHTS,
+          payload: weeklyInsightsPayload,
+        });
+      })
+      .catch(function (error) {
+        console.log(
+          '❌❌❌❌Fail Get Weather Insights ❌❌❌❌',
+          error,
+          params,
+        );
+      });
+  };
+
+
   const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let WeatherP = await JSON.parse(Wp);
@@ -290,11 +440,14 @@ const WeatherData = ({
 
     axios(config)
       .then(function (response) {
-        console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ', data);
+        // console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ', data);
+        console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ');
+        callInsightsApi();
         getWeather();
       })
       .catch(function (error) {
-        console.log('❌❌❌❌ Update Weather Fail ❌❌❌❌', error, data);
+        // console.log('❌❌❌❌ Update Weather Fail ❌❌❌❌', error, data);
+        console.log('❌❌❌❌ Update Weather Fail ❌❌❌❌', error);
       });
   };
 
@@ -754,55 +907,44 @@ const WeatherData = ({
           </View>
         </View>
         <View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-              WEATHER
-            </Text>
-            <TouchableOpacity
-              activeOpacity={1}
+          {!UserData.WeatherPermission ? (
+            <View
               style={{
-                // fontSize: SIZE / 14,
-                // fontWeight: '500',
+                flex: 1,
+                justifyContent: 'center',
                 alignItems: 'center',
-                width: '100%',
-              }}
-              onPress={() => setWeatherPopUp(true)}>
-              <Text style={styles.swiperText}>
-                You are more <Text style={{ color: '#5947D0' }}>energetic</Text>{' '}
-                when the temperature is below{' '}
-                <Text style={{ color: '#5947D0' }}>20°</Text> and it{' '}
-                <Text style={{ color: '#5947D0' }}>rains</Text> around{' '}
-                <Text style={{ color: '#5947D0' }}>2hrs</Text>
+              }}>
+              <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
+                WEATHER
               </Text>
-            </TouchableOpacity>
-
-            {UserData.WeatherPermission && (
-              <View
+              <TouchableOpacity
+                activeOpacity={1}
                 style={{
-                  position: 'absolute',
-                  zIndex: -234234,
-                  justifyContent: 'center',
-                  top: SIZE / 2.2,
-                }}>
-                <Text
-                  style={{
-                    marginTop: -160,
-                    fontWeight: '700',
-                    fontFamily: RubikExtraBold,
-                    fontSize: SIZE / 5.5,
-                    color: '#E0DDED',
-                    transform: [{ rotate: '-15deg' }],
-                  }}>
-                  Demo
+                  // fontSize: SIZE / 14,
+                  // fontWeight: '500',
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+                onPress={() => setWeatherPopUp(true)}>
+                <Text style={styles.swiperText}>
+                  You are more <Text style={{ color: '#5947D0' }}>energetic</Text>{' '}
+                  when the temperature is below{' '}
+                  <Text style={{ color: '#5947D0' }}>20°</Text> and it{' '}
+                  <Text style={{ color: '#5947D0' }}>rains</Text> around{' '}
+                  <Text style={{ color: '#5947D0' }}>2hrs</Text>
                 </Text>
-              </View>
-            )}
-          </View>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <DataInsights
+              dailyInsights={insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={insights?.dailySuggestion}
+              dailySuggestionType={insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+            />
+          )}
 
           <View style={styles.WeatherCardMain}>
             {swiperIndex == 2 && (

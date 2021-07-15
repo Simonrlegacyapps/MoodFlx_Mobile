@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
+import moment from 'moment';
+import Toast from 'react-native-toast-message';
 
 import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import {RubikBold, RubikMedium} from '../../Constants/fonts/Fonts';
@@ -23,13 +25,48 @@ export default function DataInsights({
 }) {
   const [isDailyInsights, setIsDailyInsights] = useState(true);
 
+  const onPressWeeklyTab = () => {
+    const day = moment().day();
+    const startTime = moment().set({
+      hour: 12,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    });
+    const endTime = moment().set({
+      hour: 18,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    });
+    if (
+      !isNaN(day) &&
+      (Number(day) === 6 || Number(day) === 7) &&
+      moment().isSameOrAfter(startTime) &&
+      moment().isSameOrBefore(endTime)
+    ) {
+      setIsDailyInsights(false);
+    } else {
+      /*
+       Weekly api should be called between
+       Friday @ 12pm until Saturday 6pm
+       */
+      Toast.show({
+        type: 'info',
+        text2: 'Weekly insights will be available between Friday 12 PM until Saturday 6 PM.',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+    }
+  };
+
   let insightsDetails = isDailyInsights
     ? dailyInsights
       ? dailyInsights
-      : 'No insights available'
+      : 'Not enough high quality data yet'
     : weeklyInsights
     ? weeklyInsights
-    : 'No weekly insights available';
+    : 'Not enough high quality data yet';
 
   let suggestion = isDailyInsights
     ? dailySuggestion
@@ -46,6 +83,10 @@ export default function DataInsights({
     : weeklySuggestionType
     ? weeklySuggestionType
     : '';
+
+  if (!dailyInsights) {
+    return null;
+  }
 
   return (
     <View style={styles.tabContainer}>
@@ -65,12 +106,13 @@ export default function DataInsights({
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          // disabled={weeklyInsights ? false : true}
           style={[(!isDailyInsights
-            ? styles.activeTabHeader
+              ? styles.activeTabHeader
               : styles.inactiveTabHeader),
             {marginLeft: horizontalScale(10)},
           ]}
-          onPress={() => setIsDailyInsights(false)}>
+          onPress={onPressWeeklyTab}>
           <Text
             style={
               !isDailyInsights

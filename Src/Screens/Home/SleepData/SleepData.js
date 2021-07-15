@@ -511,16 +511,8 @@ const SleepData = ({
             </View>
           ) : (
             <DataInsights
-              dailyInsights={
-                insights?.dailyInsights
-                  ? insights.dailyInsights
-                  : 'Not enough high quality sleep data yet'
-              }
-              weeklyInsights={
-                insights?.weeklyInsights
-                  ? insights.weeklyInsights
-                  : 'Not enough high quality sleep data yet'
-              }
+              dailyInsights={insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
               dailySuggestion={insights?.dailySuggestion}
               dailySuggestionType={insights?.dailySuggestionType}
               weeklySuggestion={insights?.weeklySuggestion}

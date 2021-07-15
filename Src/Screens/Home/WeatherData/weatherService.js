@@ -193,10 +193,14 @@ export async function syncWeatherData() {
     .then(function (response) {
       console.log(
         ' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅  params',
-        data,
+        // data,
       );
     })
     .catch(function (error) {
-      console.log('❌❌❌❌ Update Weather Fail ❌❌❌❌', error, data);
+      console.log(
+        '❌❌❌❌ Update Weather Fail ❌❌❌❌',
+        error,
+        // data
+      );
     });
 }
