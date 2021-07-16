@@ -204,6 +204,17 @@ const App: () => React$Node = () => {
               user_id: getDownloadLinkRes.data.user_id,
             };
           }
+          const currentRoute = RootNavigation.getCurrentRoute();
+          if (
+            currentRoute &&
+            currentRoute.name === 'Linktocompany' &&
+            userData?.email &&
+            !userData?.division_id
+          ) {
+            RootNavigation?.getNavigationRef?.()?.current?.setParams?.({
+              email: userData?.email,
+            });
+          }
           onDynamicLinkUpdate(userData, dispatch, function (data) {
             if (data !== false) {
               // data = {...data, division_id: null};

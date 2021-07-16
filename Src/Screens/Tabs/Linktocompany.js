@@ -106,7 +106,7 @@ const Linktocompany = ({ navigation }) => {
       //     console.log('getDivision error: ', error);
       //   });
     }
-  }, [UserData.UserId, UserData.UserEmail]);
+  }, [UserData.UserId, UserData.UserEmail, route?.params?.email]);
 
   useEffect(() => {
     if (!UserData.UserEmail && !UserData.UserId && labelShow) {
@@ -139,7 +139,7 @@ const Linktocompany = ({ navigation }) => {
         .then((response) => response.json())
         .then((result) => {
           console.log('getting company details', result);
-          setCompanyDetails(result.companyData);
+          setCompanyDetails({...result.companyData});
         })
         .catch((error) => console.log('error', error));
   }, [UserData.UserDivision, UserData.UserId]);
