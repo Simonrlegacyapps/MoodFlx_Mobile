@@ -381,22 +381,22 @@ const App = (props) => {
         }
         setLoading(true);
         // Date of Birth Example
-        AppleHealthKit.getDateOfBirth(null, async (err, results) => {
-          if (err) {
-            count++;
-            console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
-            console.log('error getDateOfBirth: ', err);
-            return;
-          }
-          dateOfBirth = results;
-          dispatch(GetDOB(results));
-          setDateOfBirth(results);
-          count++;
-          console.log(`count==> `, count);
-          count === 11 && onFinish?.(true);
-          //  console.log('age', results);
-        });
+        // AppleHealthKit.getDateOfBirth(null, async (err, results) => {
+        //   if (err) {
+        //     count++;
+        //     console.log(`count==> `, count);
+        //     count === 11 && onFinish?.(true);
+        //     console.log('error getDateOfBirth: ', err);
+        //     return;
+        //   }
+        //   dateOfBirth = results;
+        //   dispatch(GetDOB(results));
+        //   setDateOfBirth(results);
+        //   count++;
+        //   console.log(`count==> `, count);
+        //   count === 11 && onFinish?.(true);
+        //   //  console.log('age', results);
+        // });
 
         AppleHealthKit.getLatestWeight(
           healthKitWeight,
@@ -404,7 +404,7 @@ const App = (props) => {
             if (err) {
               count++;
               console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
+              count === 9 && onFinish?.(true);
               console.log('error getting latest weight: ', err);
               return;
             }
@@ -415,7 +415,7 @@ const App = (props) => {
             // }
             count++;
             console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
+            count === 9 && onFinish?.(true);
             console.log('User weight: ', results);
             userWeight = results?.value ?? 0;
           },
@@ -428,7 +428,7 @@ const App = (props) => {
               console.log('error getLatestHeight: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
+              count === 9 && onFinish?.(true);
               return;
             }
             // {
@@ -438,7 +438,7 @@ const App = (props) => {
             // }
             count++;
             console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
+            count === 9 && onFinish?.(true);
             console.log('User Height: ', results);
             userHeight = results?.value?.toFixed
               ? Number(results.value.toFixed(2))
@@ -453,7 +453,7 @@ const App = (props) => {
               console.log('error getDailyStepCountSamples: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
+              count === 9 && onFinish?.(true);
               return;
             }
             console.log(`results of all steps `, results);
@@ -541,7 +541,7 @@ const App = (props) => {
             dispatch(UserSteps(total));
             count++;
             console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
+            count === 9 && onFinish?.(true);
             // console.log('All steps ++++', results, total);
           },
         );
@@ -552,7 +552,7 @@ const App = (props) => {
               console.log('error getBloodPressureSamples: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
+              count === 9 && onFinish?.(true);
               return;
             }
             // setBP(results);
@@ -560,7 +560,7 @@ const App = (props) => {
             console.log('All BP', results);
             count++;
             console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
+            count === 9 && onFinish?.(true);
           },
         );
         // Need to check from here for data ================================================================>>>>>>>>>>>>>>>>>>>>
@@ -571,7 +571,7 @@ const App = (props) => {
               console.log('error getActiveEnergyBurned: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
+              count === 9 && onFinish?.(true);
               return;
             }
             mainCalories = results;
@@ -585,7 +585,7 @@ const App = (props) => {
             dispatch(UserCalories(total));
             count++;
             console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
+            count === 9 && onFinish?.(true);
             // console.log('Active energy count', results);
           },
         );
@@ -597,7 +597,7 @@ const App = (props) => {
               console.log('error getDailyDistanceWalkingRunningSamples: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
+              count === 9 && onFinish?.(true);
               return;
             }
             mainDistance = results;
@@ -612,7 +612,7 @@ const App = (props) => {
             // console.log('Distance in KMS', results, total);
             count++;
             console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
+            count === 9 && onFinish?.(true);
           },
         );
 
@@ -623,7 +623,7 @@ const App = (props) => {
               console.log('error getHeartRateSamples: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
+              count === 9 && onFinish?.(true);
               return;
             }
             HeartRate = results;
@@ -631,27 +631,27 @@ const App = (props) => {
             console.log('Heart Samples', results);
             count++;
             console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
+            count === 9 && onFinish?.(true);
           },
         );
 
-        AppleHealthKit.getSleepSamples(
-          stepsCount,
-          async (err: Object, results: Array<Object>) => {
-            if (err) {
-              console.log('error getSleepSamples: ', err);
-              count++;
-              console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
-              return;
-            }
-            setSleep(results);
-            // console.log('Sleep Analysis +++++++++======>>>>', results);
-            count++;
-            console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
-          },
-        );
+        // AppleHealthKit.getSleepSamples(
+        //   stepsCount,
+        //   async (err: Object, results: Array<Object>) => {
+        //     if (err) {
+        //       console.log('error getSleepSamples: ', err);
+        //       count++;
+        //       console.log(`count==> `, count);
+        //       count === 11 && onFinish?.(true);
+        //       return;
+        //     }
+        //     setSleep(results);
+        //     // console.log('Sleep Analysis +++++++++======>>>>', results);
+        //     count++;
+        //     console.log(`count==> `, count);
+        //     count === 11 && onFinish?.(true);
+        //   },
+        // );
 
         AppleHealthKit.getSamples(
           stepsCount,
@@ -660,7 +660,7 @@ const App = (props) => {
               console.log('error movingTime: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
+              count === 9 && onFinish?.(true);
               return;
             }
             mainMoving = results;
@@ -683,7 +683,7 @@ const App = (props) => {
             // );
             count++;
             console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
+            count === 9 && onFinish?.(true);
           },
         );
 
@@ -694,7 +694,7 @@ const App = (props) => {
               console.log('error workout: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 11 && onFinish?.(true);
+              count === 9 && onFinish?.(true);
               return;
             }
             console.log(
@@ -706,7 +706,7 @@ const App = (props) => {
             // setWorkouts(results);
             count++;
             console.log(`count==> `, count);
-            count === 11 && onFinish?.(true);
+            count === 9 && onFinish?.(true);
           },
         );
       });
@@ -1231,7 +1231,7 @@ const App = (props) => {
         steps: steps_data,
         // height: Height != null ? Height.value : 0,
         height: userHeight,
-        DOB: dateOfBirth?.value ?? 0,
+        DOB: 0,
         weight: userWeight,
         age: dateOfBirth?.age ?? 0,
         email: UserData.UserEmail ?? '',
