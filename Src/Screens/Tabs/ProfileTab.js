@@ -178,7 +178,7 @@ const ProfileTab = ({ navigation }) => {
       .then((result) => {
         console.log('notificationPermission isGiven', result);
         if (result === false) {
-          AppPermissions.gotoSettingsPageiOS();
+          AppPermissions.gotoSettingsForNotificationPermission();
         } else {
           dispatch(NotificationPerm(true));
         }

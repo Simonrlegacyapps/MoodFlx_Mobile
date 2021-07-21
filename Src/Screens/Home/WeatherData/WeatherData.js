@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  AppState,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -142,6 +143,8 @@ const WeatherData = ({
     weatherInsightsReducer,
     weatherInsightsInitialState,
   );
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const allDayWeatherData = useRef(null);
 
   const a = moment().subtract(0, 'days').startOf('day').toString();
@@ -157,10 +160,10 @@ const WeatherData = ({
   let Weather = UserData.DayTemperature;
 
   // console.log(`Weather`, UserData.DayTemperature);
-  const getUserLocation = () => {
+  const getUserLocation = async () => {
     new Promise((resolve, reject) => {
       GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
+        enableHighAccuracy: false,
         timeout: 15000,
       })
         .then((location) => {
@@ -187,14 +190,42 @@ const WeatherData = ({
           // if (UserData.lat == null || UserData.lon == null) {
           // }
         })
-        .catch((error) => {
+        .catch(async (error) => {
           const {code, message} = error;
-          resolve(false);
+          let flag;
+          try {
+            flag = await AppPermissions.requestLocationPermission(dispatch);
+          } catch (e) {
+            console.log('Request Location Permission error: ', e);
+            flag = false
+          }
+          resolve(flag);
           console.log('error', code, message);
         });
     });
   };
 
+  const _handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === 'active'
+    ) {
+      console.log('App has come to the foreground!');
+      AppPermissions.checkAppPermissions(dispatch);
+    }
+
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+    console.log('AppState', appState.current);
+  };
+
+  useEffect(() => {
+    AppState.addEventListener('change', _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener('change', _handleAppStateChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (UserData.WeatherPermission) {

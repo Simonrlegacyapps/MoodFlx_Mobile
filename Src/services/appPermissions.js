@@ -29,7 +29,7 @@ const CAMERA_PERMISSION = {
 
 const LOCATION_PERMISSION = {
   ios: PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
-  android: PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+  android: PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
 };
 
 const REQUEST_PERMISSION_TYPE = {
@@ -117,7 +117,7 @@ class MoodFloPermission {
   gotoSettingsPageiOS = async () => {
     if (Platform.OS === 'ios') {
       Alert.alert(
-        'MOODFLO',
+        '',
         'You denied the permission. Please accept the permission from settings to give permission.',
         [
           {
@@ -129,8 +129,64 @@ class MoodFloPermission {
       );
     } else {
       Alert.alert(
-        'MOODFLO',
+        '',
         'You denied the permission. Please accept the permission from settings to give permission.',
+        [
+          {
+            text: 'OK',
+            onPress: () => Linking.openSettings(),
+          },
+        ],
+        { cancelable: false },
+      );
+    }
+  };
+
+  gotoSettingsForNotificationPermission = async () => {
+    if (Platform.OS === 'ios') {
+      Alert.alert(
+        '',
+        'Tap OK bellow and allow notifications. Remember, Flo will only send you notifications to remind you to input your mood and earn Flo Coins.',
+        [
+          {
+            text: 'OK',
+            onPress: () => Linking.openURL('app-settings:'),
+          },
+        ],
+        { cancelable: false },
+      );
+    } else {
+      Alert.alert(
+        '',
+        'Tap OK bellow and allow notifications. Remember, Flo will only send you notifications to remind you to input your mood and earn Flo Coins.',
+        [
+          {
+            text: 'OK',
+            onPress: () => Linking.openSettings(),
+          },
+        ],
+        { cancelable: false },
+      );
+    }
+  };
+
+  gotoSettingsForLocationPermission = async () => {
+    if (Platform.OS === 'ios') {
+      Alert.alert(
+        '',
+        'Tap OK bellow and allow location access in settings. Remember, Flo only uses your rough location to try get more accurate weather data.',
+        [
+          {
+            text: 'OK',
+            onPress: () => Linking.openURL('app-settings:'),
+          },
+        ],
+        { cancelable: false },
+      );
+    } else {
+      Alert.alert(
+        '',
+        'Tap OK bellow and allow location access in settings. Remember, Flo only uses your rough location to try get more accurate weather data.',
         [
           {
             text: 'OK',
@@ -208,7 +264,7 @@ class MoodFloPermission {
     try {
       if (isLocationPermissionGiven) {
         location = await GetLocation.getCurrentPosition({
-          enableHighAccuracy: true,
+          enableHighAccuracy: false,
           timeout: 15000,
         });
       }
@@ -248,7 +304,7 @@ class MoodFloPermission {
 
   requestNotificationPermission = async (): Promise<Boolean> => {
     if (Platform.OS === 'android') {
-      return true;
+      return Promise.resolve(true);
     }
     const {status, settings} = await requestNotifications([
       'alert',
@@ -256,37 +312,41 @@ class MoodFloPermission {
       'badge',
     ]);
     console.log('got permssions for: ', settings);
-    return status === RESULTS.GRANTED;
+    return Promise.resolve(status === RESULTS.GRANTED);
   };
 
   requestLocationPermission = async (dispatch) => {
     if (!dispatch) {
       return false;
     }
+    let returnFlag = false;
+    let isGiven = false;
     try {
-      let isGiven = false;
       if (Platform.OS === 'android') {
         isGiven = await this.requestPermission(LOCATION_PERMISSION.android);
       } else {
         isGiven = await this.requestPermission(LOCATION_PERMISSION.ios);
       }
-      console.log('Location permission isGiven: ', isGiven);
-      if (isGiven) {
-        AsyncStorage.setItem('GiveWeatherPerm', 'true')
-          .then(() => {
-            dispatch(WeatherPerm(true));
-          })
-          .catch((error) => {
-            console.log('Async storage set GiveWeatherPerm Error', error);
-          });
-      } else {
-        await AsyncStorage.removeItem('GiveWeatherPerm');
-        this.gotoSettingsPageiOS();
-      }
     } catch (error) {
       console.log('error in request location permission ', error);
-      return false;
+      returnFlag = false;
     }
+    console.log('Location permission isGiven: ', isGiven);
+    if (isGiven) {
+      try {
+        await AsyncStorage.setItem('GiveWeatherPerm', 'true')
+        dispatch(WeatherPerm(true));
+        returnFlag = true;
+      } catch (error) {
+        console.log('Async storage set GiveWeatherPerm Error', error);
+        returnFlag = false;
+      }
+    } else {
+      await AsyncStorage.removeItem('GiveWeatherPerm');
+      this.gotoSettingsForLocationPermission();
+      returnFlag = false;
+    }
+    return returnFlag;
   };
 
   requestActivityPermission = async (dispatch) => {

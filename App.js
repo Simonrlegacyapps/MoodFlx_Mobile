@@ -614,7 +614,7 @@ const App: () => React$Node = () => {
     UserData.WeatherPermission &&
       (UserData.lat == null || UserData.lon == null) &&
       GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
+        enableHighAccuracy: false,
         timeout: 15000,
       })
         .then((location) => {

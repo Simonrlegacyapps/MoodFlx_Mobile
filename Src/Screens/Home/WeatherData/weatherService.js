@@ -68,7 +68,7 @@ export async function syncWeatherData() {
   } else {
     try {
       location = await GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
+        enableHighAccuracy: false,
         timeout: 15000,
       });
     } catch (error) {
