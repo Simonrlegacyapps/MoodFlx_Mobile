@@ -262,7 +262,7 @@ const ScreenData = ({
               SCREEN TIME
             </Text>
             <Text style={styles.swiperText}>
-              You become more <Text style={{ color: '#5947D0' }}>tired</Text> and{' '}
+              You became more <Text style={{ color: '#5947D0' }}>tired</Text> and{' '}
               <Text style={{ color: '#5947D0' }}>anxious</Text> as your screen
               time <Text style={{ color: '#5947D0' }}>increased</Text> above{' '}
               <Text style={{ color: '#5947D0' }}>3hrs</Text> per day
