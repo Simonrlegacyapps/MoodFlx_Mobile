@@ -69,7 +69,7 @@ export const weatherActions = {
 };
 
 export const defaultLocation = {
-  latitude: '37.811262',
+  latitude: '-37.8112451',
   longitude: '144.9543962',
   city: 'Melbourne',
   state: 'Victoria',
