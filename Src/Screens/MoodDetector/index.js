@@ -973,14 +973,11 @@ export default function MoodDetector({ navigation }) {
         mood_id: Id.id,
         device_id: deviceId,
         mood_type,
-        city: isIndia && city_info ? defaultLocation.city : city_info,
-        state: isIndia && state_info ? defaultLocation.state : state_info,
-        country:
-          isIndia && country_info ? defaultLocation.country : country_info,
-        lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
-        long:
-          isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
-
+        city: isIndia || !UserData.lat ? defaultLocation.city : city_info,
+        state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
+        country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
+        lat: isIndia || !UserData.lat ? defaultLocation.latitude : UserData.lat,
+        long: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
         email: UserData.UserEmail,
         user_id: UserData.UserId,
         device_token: fcm,
