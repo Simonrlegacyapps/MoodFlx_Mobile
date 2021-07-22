@@ -14,6 +14,7 @@ import { Picker } from '@react-native-picker/picker';
 import Constants from '../../Constants';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  CompanyName,
   Division,
   getDivisions,
   GetUserId,
@@ -140,6 +141,7 @@ const Linktocompany = ({ navigation }) => {
         .then((result) => {
           console.log('getting company details', result);
           setCompanyDetails({...result.companyData});
+          dispatch(CompanyName(result.companyData));
         })
         .catch((error) => console.log('error', error));
   }, [UserData.UserDivision, UserData.UserId]);
