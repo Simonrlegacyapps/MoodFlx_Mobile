@@ -9,6 +9,8 @@ import {
   Image,
   Dimensions,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import PropTypes from 'prop-types';
@@ -177,7 +179,9 @@ const SaveMoodConfirmModal = ({
           <View style={{ flex: 1, backgroundColor: '#000000' }} />
         </TouchableWithoutFeedback>
       }>
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <TouchableOpacity
           onPress={dismissModalHandler}
           style={[styles.dismissView, { backgroundColor: color }]} />
@@ -228,7 +232,7 @@ const SaveMoodConfirmModal = ({
         <View style={styles.purpleBackground} />
 
 
-      </View>
+      </KeyboardAvoidingView>
       <AddNameModal
         dataType={'weather'}
         modalVisible={ShowAddName}
