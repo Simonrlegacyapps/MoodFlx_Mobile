@@ -263,6 +263,17 @@ const BasicExample = ({
         duration={Duration}
       />
     )
+  } else if (dataOfWeatherGraph) {
+    return (
+      <DataGraph 
+        data={dataOfWeatherGraph}
+        yAxisLabel=''
+        yAxisSuffix=" &#186;C"
+        graphType={graphType}
+        // setDuration={setDuration}
+        duration={durationTypes.daily}
+      />
+    )
   }
   return (
     <View

@@ -35,18 +35,22 @@ export function DataGraph({
     let l = null;
     if (Array.isArray(data) && data.length === 7) {
       l = data.map(e => {
-        return e?.day;
-      })
+        return e?.day || e?.x;
+      });
+    } else if (graphType === dataTypes.weather) {
+      l = data.map(e => {
+        return e?.x;
+      });
     } else if (Array.isArray(data?.INBED) && data.INBED.length === 7) {
       l = data.INBED.map(e => {
         return e?.day;
-      })
+      });
     }
     if (l == null) {
       l = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
     }
     return l;
-  }, [data]);
+  }, [data, graphType]);
 
   const _dataSet = useMemo(() => {
     let d = [];
@@ -56,6 +60,12 @@ export function DataGraph({
         return e?.y;
       })
     });
+    } else if (graphType === dataTypes.weather) {
+      d.push({
+        data: data.map(e => {
+          return e?.y;
+        })
+      });
     } else if (Array.isArray(data?.INBED) && data.INBED.length === 7 && Array.isArray(data?.ASLEEP) && data.ASLEEP.length === 7) {
       d.push({
         data: data.INBED.map(e => {
@@ -92,7 +102,7 @@ console.log('datagraph duration: ', duration)
         alignItems: 'center',
         alignSelf: 'center',
       }}>
-      {graphType !== dataTypes.sleep && (
+      {graphType !== dataTypes.sleep && graphType !== dataTypes.weather && (
       <View
         style={{
           flexDirection: 'row',
@@ -100,7 +110,8 @@ console.log('datagraph duration: ', duration)
           marginTop: 20,
           justifyContent: 'flex-start',
         }}>
-        {graphType !== dataTypes.sleep && (
+          {(graphType !== dataTypes.sleep ||
+            graphType !== dataTypes.weather) && (
           <TouchableOpacity
             onPress={() => {
               setDuration(durationTypes.daily);
@@ -108,7 +119,7 @@ console.log('datagraph duration: ', duration)
             style={{
               padding: 8,
               paddingHorizontal: 12,
-              backgroundColor: Duration === durationTypes.daily ? '#5E4ADC' : '#7965F6',
+              backgroundColor: duration === durationTypes.daily ? '#5E4ADC' : '#7965F6',
               borderRadius: 14,
               marginHorizontal: 6,
             }}>
@@ -164,6 +175,7 @@ console.log('datagraph duration: ', duration)
         yAxisLabel={yAxisLabel}
         yAxisSuffix={yAxisSuffix}
         yAxisInterval={1} // optional, defaults to 1
+        formatYLabel={e => !isNaN(e) ? String(Math.floor(Number(e))) : e}
         chartConfig={{
           backgroundColor: "#7965F6",
           backgroundGradientFrom: "#7965F6",

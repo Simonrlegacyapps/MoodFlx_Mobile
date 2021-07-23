@@ -23,7 +23,7 @@ const d3 = {
 const {width} = Dimensions.get('window');
 // const height = size / 3.7;
 // const width = size - 114;
-const verticalPadding = 5;
+const verticalPadding = 10;
 const cursorRadius = 10;
 const labelWidth = 100;
 

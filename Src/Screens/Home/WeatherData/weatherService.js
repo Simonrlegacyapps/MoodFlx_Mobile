@@ -106,19 +106,15 @@ export async function syncWeatherData() {
   }
 
   let startTime;
-  if (isIndia || !WeatherP) {
-    startTime = moment()
-      .utcOffset(defaultLocation.timeZoneOffset)
-      .startOf('day')
-      .toString();
-  } else {
-    startTime = moment().subtract(0, 'days').startOf('day').toString();
-  }
+  let startTimeSecond;
+  startTime = moment.utc().subtract(1, 'day').startOf('day').toString();
+  startTimeSecond = moment.utc().startOf('day').toString();
   console.log('WeatherDayData function loc_lat: ', lat);
   console.log('WeatherDayData function loc_long: ', lng);
   console.log('WeatherDayData function args: ', startTime);
   let hours = 0;
   let weatherRes;
+  let weatherResTwo;
   try {
     weatherRes = await axios.get(
       `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lng}&dt=${
@@ -126,12 +122,29 @@ export async function syncWeatherData() {
       }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
     );
   } catch (error) {
-    console.log('error getting all day weather: ', error);
+    console.log('error getting yesterday all day weather: ', error);
   }
-  if (weatherRes) {
-    weatherData = weatherRes?.data;
+  try {
+    weatherResTwo = await axios.get(
+      `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lng}&dt=${
+        Date.parse(startTimeSecond) / 1000
+      }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+    );
+  } catch (error) {
+    console.log('error getting current all day weather: ', error);
+  }
+  if (weatherRes?.data?.hourly && weatherResTwo?.data?.hourly) {
+    let hourlyData = [];
+    if (isIndia || !WeatherP) {
+      hourlyData = getDefaultTodaysHourlyData(weatherRes?.data?.hourly, weatherResTwo?.data?.hourly)
+    } else {
+      hourlyData = getLocalTodaysHourlyData(weatherRes?.data?.hourly, weatherResTwo?.data?.hourly)
+    }
+    weatherData = Object.assign({}, weatherResTwo.data, {
+      hourly: Array.isArray(hourlyData) ? [...hourlyData] : [],
+    });
     if (weatherRes?.data) {
-      console.log('allDayWeatherData api call success');
+      console.log('allDayWeatherData api call success', JSON.stringify(weatherData));
     }
     if (weatherData?.hourly) {
       for (let i in weatherData.hourly) {
@@ -203,4 +216,68 @@ export async function syncWeatherData() {
         // data
       );
     });
+}
+
+export function getDefaultTodaysHourlyData(previousData, currentData) {
+  console.log(
+    'previousData.lenght: ',
+    previousData?.length,
+    ' ----currentData.length----',
+    currentData?.length,
+  );
+  if (!(Array.isArray(previousData) && Array.isArray(currentData))) {
+    return [];
+  }
+  let w = [...previousData, ...currentData];
+  if (w.length <= 0) {
+    return [];
+  }
+  w = w.filter((e) => {
+    const start = moment()
+      .utcOffset(defaultLocation.timeZoneOffset)
+      .startOf('day')
+      .utc();
+    const end = moment()
+      .utcOffset(defaultLocation.timeZoneOffset)
+      .endOf('day')
+      .utc();
+    // console.log('filter flag e.dt: ', e.dt, '---', moment.utc(e.dt * 1000).isBetween(start, end, undefined, '[]'));
+    return (
+      !isNaN(e.dt) && moment.utc(e.dt * 1000).isBetween(start, end, undefined, '[]')
+    );
+  });
+  w?.sort?.((a, b) => {
+    if (a?.dt && b?.dt) {
+      return a.dt - b.dt;
+    }
+    return -1;
+  });
+  // console.log('w length ===== ', w.length);
+  // console.log('w map to string =====', w.map(e => moment.utc(e.dt * 1000).toString()));
+  return w;
+}
+
+export function getLocalTodaysHourlyData(previousData, currentData) {
+  if (!(Array.isArray(previousData) && Array.isArray(currentData))) {
+    return [];
+  }
+  let w = [...previousData, currentData];
+  if (w.length <= 0) {
+    return [];
+  }
+  w.filter(e => {
+    const start = moment().startOf('day').utc();
+    const end = moment().endOf('day').utc();
+    if (e?.dt) {
+      return moment.utc(e.dt).isBetween(start, end, undefined, '[]');
+    }
+    return false;
+  });
+  w.sort((a, b) => {
+    if (a?.dt && b?.dt) {
+      return a.dt - b.dt;
+    }
+    return -1;
+  });
+  return w;
 }

@@ -42,6 +42,7 @@ import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateEx
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
 import {
+  dataTypes,
   defaultLocation,
   isCountryIndia,
   weatherActions,
@@ -49,7 +50,7 @@ import {
 } from '../../../Constants/constants';
 import {AppPermissions} from '../../../services/appPermissions';
 import isFunction from 'lodash.isfunction';
-import {findWeather} from './weatherService';
+import {findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getTodaysHourlyData} from './weatherService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 
@@ -139,15 +140,17 @@ const WeatherData = ({
   const [AnonymousClick, setAnonymousClick] = useState(false);
   const [WeatherDurationModal, setWeatherDurationModal] = useState(false);
   const [WeatherDuration, setWeatherDuration] = useState('Week');
+  const [minMaxGraphHeight, setMinMaxGraphHeight] = useState(horizontalScale(200));
   const [insights, setInsights] = useReducer(
     weatherInsightsReducer,
     weatherInsightsInitialState,
   );
   const appState = useRef(AppState.currentState);
+  const isMinMaxHeightSet = useRef(false);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const allDayWeatherData = useRef(null);
 
-  const a = moment().subtract(0, 'days').startOf('day').toString();
+  const a = moment().utc().subtract(1, 'day').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
   const c = moment().subtract(2, 'days').startOf('day').toString();
   const d = moment().subtract(3, 'days').startOf('day').toString();
@@ -239,9 +242,12 @@ const WeatherData = ({
   let valueHours = 0;
   const WeatherDayData = (loc_lat, loc_long, onFinish) => {
     let startTime;
-    if (isCountryIndia()) {
-      startTime = moment()
-        .utcOffset(defaultLocation.timeZoneOffset)
+    const isIndia = isCountryIndia();
+    if (isIndia) {
+      startTime = moment
+        .utc()
+        // .utcOffset(defaultLocation.timeZoneOffset)
+        .subtract(1, 'day')
         .startOf('day')
         .toString();
     } else {
@@ -251,6 +257,8 @@ const WeatherData = ({
     console.log('WeatherDayData function loc_long: ', loc_long);
     console.log('WeatherDayData function args: ', startTime);
     let value = 0;
+    allDayWeatherData.current = null;
+    let previousDayData;
     axios
       .get(
         `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${loc_lat}&lon=${loc_long}&dt=${Date.parse(startTime) / 1000
@@ -258,22 +266,95 @@ const WeatherData = ({
       )
       .then(async (response) => {
         // console.log(`weather day data api success response`, response);
-        // console.log(`weather day data api success response`, JSON.stringify(response));
-        response?.data?.hourly && setAllDayWeather(response.data.hourly);
+        console.log(
+          'weather day data api success response',
+          JSON.stringify(response?.data?.hourly),
+        );
+        console.log(
+          'weather day data lenght',
+          JSON.stringify(response?.data?.hourly?.length),
+        );
+        previousDayData = response?.data;
+        // let todaysHourlyData;
+        // if (response?.data?.hourly) {
+        //   if (isIndia) {
+        //     todaysHourlyData = getDefaultTodaysHourlyData(
+        //       [],
+        //       response.data.hourly,
+        //     );
+        //   } else {
+        //     todaysHourlyData = getLocalTodaysHourlyData(
+        //       [],
+        //       response.data.hourly,
+        //     );
+        //   }
+        // }
+        // // console.log(`TODAYS_HOURLY_DATA: `, JSON.stringify(todaysHourlyData));
+        // if (response?.data && Array.isArray(todaysHourlyData)) {
+        //   allDayWeatherData.current = Object.assign({}, response.data, { hourly: [...todaysHourlyData] });
+        // }
+        startTime = null;
+        startTime = moment.utc().startOf('day').toString();
+        return axios.get(
+          `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${loc_lat}&lon=${loc_long}&dt=${
+            Date.parse(startTime) / 1000
+          }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+        );
+      })
+      .then(async (response) => {
+        let todaysHourlyData;
+        console.log(
+          'weather day data api success response',
+          JSON.stringify(response?.data?.hourly),
+        );
+        console.log(
+          'weather day data lenght',
+          JSON.stringify(response?.data?.hourly?.length),
+        );
+        console.log(
+          'allDayWeatherData.current?.hourly',
+          !!allDayWeatherData.current?.hourly,
+        );
+        if (
+          Array.isArray(previousDayData?.hourly) &&
+          Array.isArray(response?.data?.hourly)
+        ) {
+          if (isIndia) {
+            todaysHourlyData = getDefaultTodaysHourlyData(
+              previousDayData.hourly,
+              response.data.hourly,
+            );
+          } else {
+            todaysHourlyData = getLocalTodaysHourlyData(
+              previousDayData.hourly,
+              response.data.hourly,
+            );
+          }
+        }
+        // console.log(`weather day data api success response`, response);
+        // console.log(`weather day data api success response`, JSON.stringify(response?.data?.hourly));
+        console.log(`TODAYS_HOURLY_DATA: `, JSON.stringify(todaysHourlyData));
         if (response?.data) {
-          allDayWeatherData.current = Object.assign({}, response.data);
-          console.log('allDayWeatherData: ', allDayWeatherData.current);
+          if (Array.isArray(todaysHourlyData)) {
+            setAllDayWeather(todaysHourlyData)
+            allDayWeatherData.current = Object.assign({}, response.data, {
+              hourly: [...todaysHourlyData],
+            });
+          }
+          // console.log('allDayWeatherData: ', allDayWeatherData.current);
           syncWeatherData(loc_lat, loc_long);
           if (isFunction(onFinish)) {
             onFinish(true);
           }
         }
+        // console.log(`weather day data api success response`, response);
         if (weatherData) {
-          if (response?.data?.hourly) {
-            for (let i in response.data.hourly) {
+          if (allDayWeatherData.current?.hourly) {
+            for (let i in allDayWeatherData.current.hourly) {
               if (
                 (weatherData?.weather?.[0]?.description ?? -1) ===
-                response?.data?.hourly?.[i]?.weather?.[0]?.description
+                allDayWeatherData.current?.hourly?.[i]?.weather?.[0]
+                  ?.description
               ) {
                 value = value + 1;
                 sethours(value);
@@ -826,36 +907,107 @@ const WeatherData = ({
 
   const dataOfWeatherGraph = [
     {
-      x: 1,
+      x: '12am',
       y: AllDayWeather?.[0]?.temp ?? 0,
     },
+    // {
+    //   x: '1',
+    //   y: AllDayWeather?.[1]?.temp ?? 0,
+    // },
+    // {
+    //   x: '2',
+    //   y: AllDayWeather?.[2]?.temp ?? 0,
+    // },
+    // {
+    //   x: '3',
+    //   y: AllDayWeather?.[3]?.temp ?? 0,
+    // },
     {
-      x: 2,
-      y: AllDayWeather?.[3]?.temp ?? 0,
+      x: '4',
+      y: AllDayWeather?.[4]?.temp ?? 0,
     },
+    // {
+    //   x: '5',
+    //   y: AllDayWeather?.[5]?.temp ?? 0,
+    // },
+    // {
+    //   x: '6',
+    //   y: AllDayWeather?.[6]?.temp ?? 0,
+    // },
+    // {
+    //   x: '7',
+    //   y: AllDayWeather?.[7]?.temp ?? 0,
+    // },
     {
-      x: 3,
-      y: AllDayWeather?.[7]?.temp ?? 0,
+      x: '8',
+      y: AllDayWeather?.[8]?.temp ?? 0,
     },
+    // {
+    //   x: '9',
+    //   y: AllDayWeather?.[9]?.temp ?? 0,
+    // },
+    // {
+    //   x: '10',
+    //   y: AllDayWeather?.[10]?.temp ?? 0,
+    // },
+    // {
+    //   x: '11',
+    //   y: AllDayWeather?.[11]?.temp ?? 0,
+    // },
     {
-      x: 4,
-      y: AllDayWeather?.[11]?.temp ?? 0,
+      x: '12pm',
+      y: AllDayWeather?.[12]?.temp ?? 0,
     },
+    // {
+    //   x: '1',
+    //   y: AllDayWeather?.[13]?.temp ?? 0,
+    // },
+    // {
+    //   x: '2',
+    //   y: AllDayWeather?.[14]?.temp ?? 0,
+    // },
+    // {
+    //   x: '3',
+    //   y: AllDayWeather?.[15]?.temp ?? 0,
+    // },
     {
-      x: 5,
-      y: AllDayWeather?.[15]?.temp ?? 0,
+      x: '4',
+      y: AllDayWeather?.[16]?.temp ?? 0,
     },
+    // {
+    //   x: '5',
+    //   y: AllDayWeather?.[17]?.temp ?? 0,
+    // },
+    // {
+    //   x: '6',
+    //   y: AllDayWeather?.[18]?.temp ?? 0,
+    // },
+    // {
+    //   x: '7',
+    //   y: AllDayWeather?.[19]?.temp ?? 0,
+    // },
     {
-      x: 6,
-      y: AllDayWeather?.[19]?.temp ?? 0,
+      x: '8',
+      y: AllDayWeather?.[20]?.temp ?? 0,
     },
+    // {
+    //   x: '9',
+    //   y: AllDayWeather?.[21]?.temp ?? 0,
+    // },
+    // {
+    //   x: '10',
+    //   y: AllDayWeather?.[22]?.temp ?? 0,
+    // },
     {
-      x: 7,
+      x: '11',
       y: AllDayWeather?.[23]?.temp ?? 0,
     },
   ];
   // console.log(`AllDayWeather`, AllDayWeather);
-
+  const onLayoutMinMaxGraphView = (e) => {
+    !isMinMaxHeightSet.current && setMinMaxGraphHeight((h) => !isNaN(e?.nativeEvent?.layout?.height) ? Math.floor(e.nativeEvent.layout.height) : h);
+    isMinMaxHeightSet.current = true;
+  };
   const _weatherType = ManualWeatherType
     ? ManualWeatherType
     : weatherData
@@ -1144,10 +1296,12 @@ const WeatherData = ({
 
           {/* <ProgressBarCustom /> */}
           <HomeHeader
-            click={() => setWeatherDurationModal(true)}
-            value={WeatherDuration}
+            // click={() => setWeatherDurationModal(true)}
+            // value={WeatherDuration}
           />
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
+            {console.log('WeatherData max: ', max)}
+            {console.log('WeatherData Lowmin: ', Lowmin)}
             {swiperIndex == 2 && (
               <BarGraph
                 max={max}
@@ -1168,12 +1322,14 @@ const WeatherData = ({
                 // justifyContent: 'center',
                 marginTop: 30,
               }}>
+                {console.log('data High: ', data)}
+                {console.log('data low: ', dataLow)}
               {swiperIndex == 2 && (
-                <View>
-                  <View>
+                <View onLayout={onLayoutMinMaxGraphView}>
+                  <View style={{position: 'absolute'}}>
                     <GraphBezierCustom
                       // abs
-                      heightProp={heightProp}
+                      heightProp={minMaxGraphHeight}
                       stroke="#F4227E"
                       widthProp={widthProp}
                       data={data}
@@ -1181,14 +1337,14 @@ const WeatherData = ({
                       H={9}
                     />
                   </View>
-                  <View style={{ marginTop: 20 }}>
+                  <View style={{ marginTop: 0 }}>
                     <GraphBezierCustom
-                      heightProp={heightProp}
+                      heightProp={minMaxGraphHeight}
                       stroke="#70DEEC"
                       widthProp={widthProp}
                       data={dataLow}
                       max={Lowmax}
-                      H={4}
+                      H={9}
                     />
                   </View>
                 </View>
@@ -1208,8 +1364,10 @@ const WeatherData = ({
           </View>
           {swiperIndex == 2 && (
             <GraphicChart
+              isDailyDisabled={false}
               dataOfWeatherGraph={dataOfWeatherGraph}
-              fitness={false}
+              graphType={dataTypes.weather}
+              // fitness={false}
             />
           )}
           {!UserData.WeatherPermission && (
@@ -1290,13 +1448,13 @@ const WeatherData = ({
         verifyDone={() => AnonymousPopUpcancelled()}
       />
 
-      <WeatherGraphDurationModal
+      {/* <WeatherGraphDurationModal
         data={WeatherDurations}
         modalVisible={WeatherDurationModal}
         onChangeText={setWeatherDuration}
         value={WeatherDuration}
         dismissModalHandler={() => setWeatherDurationModal(false)}
-      />
+      /> */}
     </View>
   );
 };
