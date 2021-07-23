@@ -106,6 +106,7 @@ function lightInsightsReducer(state, action) {
 const LightData = ({
   MoodCount,
   swiperIndex,
+  index,
 }) => {
   const [light, setLight] = useState(-1);
   const [Graph, setGraph] = useState(null);
@@ -326,12 +327,12 @@ const LightData = ({
 
   // Light data using react-native-sensor-manager
   useEffect(() => {
-    if (light === -1 || swiperIndex === 3) {
+    if (light === -1 || swiperIndex === index) {
       isStopLightTimeout = false;
       if (Platform.OS === 'android') {
         SensorManager.startLightSensor(100);
         function lightSensorCallback(d) {
-          if (light === -1 || swiperIndex === 3) {
+          if (light === -1 || swiperIndex === index) {
             if (d?.light && typeof d?.light === 'number') {
               // currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
               currentLightData = Number.parseInt(d.light, 10);
@@ -361,7 +362,7 @@ const LightData = ({
           isStopLightTimeout = true;
         };
       }
-    } else if (light !== -1 && swiperIndex !== 3) {
+    } else if (light !== -1 && swiperIndex !== index) {
       isStopLightTimeout = true;
     }
   }, [getLightIOS, light, swiperIndex]);
@@ -502,7 +503,7 @@ const LightData = ({
             </View>
           </View>
           <View style={{ marginBottom: 100, alignItems: 'center' }}>
-            {swiperIndex == 3 && (
+            {swiperIndex == index && (
               <LightGraph
                 data={lightGraphData}
                 graphWidth={SIZE}

@@ -73,6 +73,7 @@ import {
   googleFitScopes,
   activityHealthKitOptions,
 } from '../../services/appPermissions';
+import { dataTypes, getScreensPriority } from '../../Constants/constants';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
@@ -1321,6 +1322,106 @@ const App = (props) => {
     }, 500);
   };
 
+  const getScreen = (type, idx) => {
+    if (type === dataTypes.activity) {
+      return (
+        <FitnessData
+          kay={type}
+          index={idx}
+          swiperIndex={swiperIndex}
+          TodayStep={TodayStep}
+          TodayCalories={TodayCalories}
+          TodayDistance={TodayDistance}
+          MoveTime={MoveTime}
+          Perm={Perm}
+          checkStorage={checkStorage}
+          zero={Ones}
+          ones={Twos}
+          twos={Threes}
+          threes={Fours}
+          fours={Fives}
+          fives={Sixes}
+          MoodCount={MoodCount}
+          Loading={Loading}
+          healthUpdateApiCount={healthUpdateApiCount}
+        />
+      );
+    } else if (type === dataTypes.screenTime) {
+      return (
+        <ScreenData
+          kay={type}
+          index={idx}
+          swiperIndex={swiperIndex}
+          Weather={Weather}
+          PermScreenTime={PermScreenTime}
+          CheckForScreenData={CheckForScreenData}
+          MoodCount={MoodCount}
+        />
+      );
+    } else if (type === dataTypes.weather) {
+      return (
+        <WeatherData
+          kay={type}
+          index={idx}
+          swiperIndex={swiperIndex}
+          MoodCount={MoodCount}
+        />
+      );
+    } else if (type === dataTypes.light) {
+      return (
+        <LightData
+          kay={type}
+          index={idx}
+          swiperIndex={swiperIndex}
+          MoodCount={MoodCount}
+        />
+      );
+    } else if (type === dataTypes.sleep) {
+      return (
+        <SleepData
+          kay={type}
+          index={idx}
+          swiperIndex={swiperIndex}
+          isMoodUpdate={isMoodUpdate}
+          CheckForSleepData={CheckForSleepData}
+          MoodCount={MoodCount}
+        />
+      );
+    }
+  };
+
+  const dataScreens = (data) => {
+    // 'activity, screentime, weather, light, sleep'
+    let screens = getScreensPriority(data);
+    screens.sort((a, b) => {
+      let i = 1;
+      if (a.permission) {
+        i = -1;
+      }
+      return i;
+    });
+    screens.sort((a, b) => {
+      let i = 0;
+      if (a.permission && b.permission) {
+        if (a.priority < b.priority) {
+          i = -1;
+        } else {
+          i = 1;
+        }
+      } else if (!a.permission || !b.permission) {
+        if (a.permission) {
+          i = -1;
+        } else {
+          i = 1;
+        }
+      }
+      return i;
+    });
+    return screens.map((e, idx) => {
+      return getScreen(e?.name, idx);
+    });
+  };
+
   return (
     <View style={{ flex: 1 }}>
       {Platform.OS === 'ios' ? (
@@ -1337,7 +1438,8 @@ const App = (props) => {
         showsButtons={true}
         onIndexChanged={(index) => setSwiperIndex(index)}
         loop={false}>
-        <FitnessData
+          {dataScreens(UserData)}
+        {/* <FitnessData
           swiperIndex={swiperIndex}
           TodayStep={TodayStep}
           TodayCalories={TodayCalories}
@@ -1373,7 +1475,7 @@ const App = (props) => {
           PermScreenTime={PermScreenTime}
           CheckForScreenData={CheckForScreenData}
           MoodCount={MoodCount}
-        />
+        /> */}
       </Swiper>
       {Loading && !isInstallGoogleFitModalVisible && (
         <View

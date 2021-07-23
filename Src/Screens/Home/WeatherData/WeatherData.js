@@ -120,6 +120,7 @@ const WeatherData = ({
   tryWeather,
   MoodCount,
   swiperIndex,
+  index,
 }) => {
   const [temp, settemp] = useState([]);
   const [One, setOne] = useState(null);
@@ -1130,7 +1131,7 @@ const WeatherData = ({
           )}
 
           <View style={styles.WeatherCardMain}>
-            {swiperIndex == 2 && (
+            {swiperIndex == index && (
               <View style={styles.WeatherCard}>
                 <Text
                   style={[
@@ -1302,7 +1303,7 @@ const WeatherData = ({
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
             {console.log('WeatherData max: ', max)}
             {console.log('WeatherData Lowmin: ', Lowmin)}
-            {swiperIndex == 2 && (
+            {swiperIndex == index && (
               <BarGraph
                 max={max}
                 min={Lowmin}
@@ -1324,7 +1325,7 @@ const WeatherData = ({
               }}>
                 {console.log('data High: ', data)}
                 {console.log('data low: ', dataLow)}
-              {swiperIndex == 2 && (
+              {swiperIndex == index && (
                 <View onLayout={onLayoutMinMaxGraphView}>
                   <View style={{position: 'absolute'}}>
                     <GraphBezierCustom
@@ -1362,7 +1363,7 @@ const WeatherData = ({
               <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
             </View>
           </View>
-          {swiperIndex == 2 && (
+          {swiperIndex == index && (
             <GraphicChart
               isDailyDisabled={false}
               dataOfWeatherGraph={dataOfWeatherGraph}

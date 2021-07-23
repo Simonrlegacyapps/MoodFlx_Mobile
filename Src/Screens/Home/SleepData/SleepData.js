@@ -103,6 +103,7 @@ const SleepData = ({
   CheckForSleepData,
   MoodCount,
   swiperIndex,
+  index,
   isMoodUpdate,
 }) => {
   const [openActionSheet, setopenActionSheet] = useState(false);

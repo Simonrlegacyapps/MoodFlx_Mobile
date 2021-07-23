@@ -97,6 +97,7 @@ const FitnessData = ({
   MoodCount,
   Loading,
   swiperIndex,
+  index,
   healthUpdateApiCount,
 }) => {
   // useEffect(() => {
@@ -390,7 +391,7 @@ const FitnessData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              swiperIndex == 0
+              swiperIndex == index
                 ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
                   3) *
                 100

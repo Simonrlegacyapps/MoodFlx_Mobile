@@ -25,6 +25,7 @@ export const dataTypes = {
   weather: 'weather',
   light: 'light',
   activity: 'activity',
+  screenTime: 'screenTime',
 };
 
 export const durationTypes = {
@@ -89,4 +90,34 @@ export const getLinkModalText = (existingOrg, newOrg) => {
   return existingOrg && newOrg
     ? `You are currently linked to ${existingOrg}. You will be unlinked if you want to join ${newOrg}.`
     : null;
+};
+
+export const getScreensPriority = (data) => {
+  return [
+    {
+      name: dataTypes.activity,
+      permission: data?.HealthPermission,
+      priority: 1,
+    },
+    {
+      name: dataTypes.screenTime,
+      permission: false,
+      priority: 2,
+    },
+    {
+      name: dataTypes.weather,
+      permission: data?.WeatherPermission,
+      priority: 3,
+    },
+    {
+      name: dataTypes.light,
+      permission: true,
+      priority: 4,
+    },
+    {
+      name: dataTypes.sleep,
+      permission: data?.SleepPermission,
+      priority: 5,
+    },
+  ];
 };
