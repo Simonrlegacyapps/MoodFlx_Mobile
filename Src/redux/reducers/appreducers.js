@@ -32,6 +32,7 @@ import {
   SET_WORKOUT_TOTAL,
   USER_DETAIL,
   USER_ID,
+  WEEKLY_INSIGHTS_TIME_LEFT,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -66,6 +67,7 @@ const intializedState = {
   Anonymous: true,
   NameCompany: '',
   notification: null,
+  weeklyInsightsTimeLeft: -1,
 };
 
 export const First = (state = intializedState, action) => {
@@ -200,6 +202,10 @@ export const First = (state = intializedState, action) => {
       return Object.assign({}, state, {
         lat: action.payload?.lat,
         lon: action.payload?.lon,
+      });
+    case WEEKLY_INSIGHTS_TIME_LEFT:
+      return Object.assign({}, state, {
+        weeklyInsightsTimeLeft: action.payload,
       });
     default:
       return state;

@@ -518,6 +518,7 @@ const SleepData = ({
               dailySuggestionType={insights?.dailySuggestionType}
               weeklySuggestion={insights?.weeklySuggestion}
               weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
             />
           )}
           {/* {UserData.SleepPermission && (

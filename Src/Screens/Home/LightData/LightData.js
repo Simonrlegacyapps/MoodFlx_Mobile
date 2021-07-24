@@ -433,6 +433,7 @@ const LightData = ({
             </Text>
           </View>
         </View>
+        {console.log('UserData?.weeklyInsightsTimeLeft: =====', UserData?.weeklyInsightsTimeLeft)}
         <View style={styles.subViewTwo}>
           <DataInsights
             dailyInsights={insights?.dailyInsights}
@@ -441,6 +442,7 @@ const LightData = ({
             dailySuggestionType={insights?.dailySuggestionType}
             weeklySuggestion={insights?.weeklySuggestion}
             weeklySuggestionType={insights?.weeklySuggestionType}
+            timeLeft={UserData?.weeklyInsightsTimeLeft}
           />
           {/* <View
             style={{

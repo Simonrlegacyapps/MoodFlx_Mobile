@@ -9,11 +9,11 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import Toast from 'react-native-toast-message';
-
 import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import {RubikBold, RubikMedium} from '../../Constants/fonts/Fonts';
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 export default function DataInsights({
   dailyInsights,
@@ -22,6 +22,7 @@ export default function DataInsights({
   dailySuggestionType,
   weeklySuggestion,
   weeklySuggestionType,
+  timeLeft,
 }) {
   const [isDailyInsights, setIsDailyInsights] = useState(true);
 
@@ -88,6 +89,8 @@ export default function DataInsights({
     return null;
   }
 
+  console.log('timeLEFT =====', timeLeft);
+
   return (
     <View style={styles.tabContainer}>
       <View style={styles.tabHeader}>
@@ -122,6 +125,20 @@ export default function DataInsights({
             THIS WEEK
           </Text>
         </TouchableOpacity>
+        {timeLeft !== -1 && !isNaN(timeLeft) && (
+          <AnimatedCircularProgress
+            duration={900}
+            arcSweepAngle={360}
+            size={horizontalScale(25)}
+            width={3}
+            fill={(timeLeft / 5) * 100}
+            rotation={0}
+            tintColor="#7265E3"
+            lineCap={'round'}
+            backgroundColor="#CFF9ED">
+            {(fill) => <Text>{timeLeft}</Text>}
+          </AnimatedCircularProgress>
+        )}
       </View>
       <View style={styles.tabDetailsView}>
         <Text style={styles.tabDetailsText}>{insightsDetails}</Text>

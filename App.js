@@ -36,6 +36,7 @@ import {
   Long,
   Moods,
   SetNotification,
+  SetWeeklyInsightsTimeLeft,
   SleepPerm,
   UserDetail,
   UserDivision,
@@ -453,6 +454,32 @@ const App: () => React$Node = () => {
     ) {
       console.log("App has come to the foreground!");
       NotifService.cancelMoodFloSheduledNotifications();
+    }
+    if (nextAppState === 'active') {
+      const day = moment().day();
+      const startTime = moment().set({
+        hour: 12,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+      });
+      const endTime = moment().set({
+        hour: 18,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+      });
+      if (
+        !isNaN(day) &&
+        (Number(day) === 6 || Number(day) === 7) &&
+        moment().isSameOrAfter(startTime) &&
+        moment().isSameOrBefore(endTime)
+      ) {
+        dispatch(SetWeeklyInsightsTimeLeft(0));
+      } else {
+        const d = 6 - Number(moment().day());
+        dispatch(SetWeeklyInsightsTimeLeft(d));
+      }
     }
 
     appState.current = nextAppState;

@@ -32,6 +32,7 @@ import {
   SET_NOTIFICATION,
   GET_NOTIFICATION_PERM,
   SET_LOCATION,
+  WEEKLY_INSIGHTS_TIME_LEFT,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -231,6 +232,13 @@ export const SetNotification = (data) => {
 export const SetLocation = (data) => {
   return {
     type: SET_LOCATION,
+    payload: data,
+  };
+};
+
+export const SetWeeklyInsightsTimeLeft = (data) => {
+  return {
+    type: WEEKLY_INSIGHTS_TIME_LEFT,
     payload: data,
   };
 };
