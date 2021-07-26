@@ -490,24 +490,7 @@ const LightData = ({
           </View>
           <View style={{ marginBottom: 100, alignItems: 'center' }}>
             {swiperIndex == index && (
-              <LightGraph
-                data={lightGraphData}
-                graphWidth={SIZE}
-              // yAxisLabel='Lux'
-              // duration='Lux'
-              />
-              // <BarGraph
-              //   BarsMarginLeft={dynamicSize(44)}
-              //   width={SIZE * 0.5}
-              //   barsWidth={dynamicSize(260)}
-              //   // width={dynamicSize(240)}
-              //   // barsWidth={dynamicSize(260)}
-              //   sideLabels={lines}
-              //   color={'#EEA402'}
-              //   ShowPollen={false}
-              //   RightBar={true}
-              //   lightScreen={true}
-              // />
+              <LightGraph data={lightGraphData} graphWidth={SIZE} />
             )}
           </View>
 
