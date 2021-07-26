@@ -34,6 +34,7 @@ import {
   USER_ID,
   WEEKLY_INSIGHTS_TIME_LEFT,
   SHOW_WEEKLY_INSIGHTS_MODAL,
+  SET_SWIPER_INDEX,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -70,6 +71,7 @@ const intializedState = {
   notification: null,
   weeklyInsightsTimeLeft: -1,
   showWeeklyInsightsModal: false,
+  swiperIndex: 0,
 };
 
 export const First = (state = intializedState, action) => {
@@ -213,6 +215,10 @@ export const First = (state = intializedState, action) => {
     case SHOW_WEEKLY_INSIGHTS_MODAL:
       return Object.assign({}, state, {
         showWeeklyInsightsModal: action.payload,
+      });
+    case SET_SWIPER_INDEX:
+      return Object.assign({}, state, {
+        swiperIndex: action.payload,
       });
     default:
       return state;

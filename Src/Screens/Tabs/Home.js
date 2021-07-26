@@ -74,6 +74,7 @@ import {
   activityHealthKitOptions,
 } from '../../services/appPermissions';
 import { dataTypes, getScreensPriority } from '../../Constants/constants';
+import { setSwiperIndexHome } from '../../services/commonService';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
@@ -157,7 +158,6 @@ const App = (props) => {
     UserData.HealthPermission ? true : false,
   );
   const prevHealthPermission = useRef(UserData.HealthPermission);
-  const [swiperIndex, setSwiperIndex] = useState(0);
   // const [callOneTime, setcallOneTime] = useState('one');
   const [TryWeather, setTryWeather] = useState(null);
   const [ScreenDataPermModal, setScreenDataPermModal] = useState(false);
@@ -173,6 +173,7 @@ const App = (props) => {
   const a = moment().subtract(1, 'days').endOf('day').toString();
   const b = moment().subtract(0, 'days').startOf('day').toString();
   // console.log(`b`, Date.parse(b));
+  const swiperIndex = UserData.swiperIndex;
 
   const stepsCount = {
     startDate: new Date(a).toISOString(), // required
@@ -1436,7 +1437,8 @@ const App = (props) => {
         activeDotStyle={{ height: 0, width: 0 }}
         style={{ backgroundColor: 'white' }}
         showsButtons={true}
-        onIndexChanged={(index) => setSwiperIndex(index)}
+        onIndexChanged={(index) => setSwiperIndexHome(index, dispatch)}
+        index={swiperIndex}
         loop={false}>
           {dataScreens(UserData)}
         {/* <FitnessData

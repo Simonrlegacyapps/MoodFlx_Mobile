@@ -34,6 +34,7 @@ import {
   SET_LOCATION,
   WEEKLY_INSIGHTS_TIME_LEFT,
   SHOW_WEEKLY_INSIGHTS_MODAL,
+  SET_SWIPER_INDEX,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -247,6 +248,13 @@ export const SetWeeklyInsightsTimeLeft = (data) => {
 export const SetShowWeeklyInsightsModal = (data) => {
   return {
     type: SHOW_WEEKLY_INSIGHTS_MODAL,
+    payload: data,
+  };
+};
+
+export const SetSwiperIndex = (data) => {
+  return {
+    type: SET_SWIPER_INDEX,
     payload: data,
   };
 };

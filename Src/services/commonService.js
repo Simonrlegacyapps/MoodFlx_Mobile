@@ -2,6 +2,7 @@ import {
   GetUserId,
   HealthPerm,
   IsAnonymous,
+  SetSwiperIndex,
   UserDetail,
   UserDivision,
   UserEmail,
@@ -84,4 +85,8 @@ export const getBulbColorFromLux = (v) => {
   } else {
     return '#dcbc36';
   }
+};
+
+export const setSwiperIndexHome = (i, dispatch) => {
+  dispatch?.(SetSwiperIndex(i));
 };

@@ -83,6 +83,7 @@ import {
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 import Insights from '../../../assets/svg/insights';
+import { setSwiperIndexHome } from '../../services/commonService';
 
 let prevXY = { dx: 0, dy: 0 };
 let moveCount = 0;
@@ -550,6 +551,7 @@ export default function MoodDetector({ navigation }) {
     const id = setTimeout(() => {
       setIsSaveMoodConfirmModalVisible(false);
       const closeId = setTimeout(() => {
+        setSwiperIndexHome(0, dispatch);
         navigation.replace('HomeScreen', {
           lat: lat,
           long: lng,
@@ -1015,6 +1017,7 @@ export default function MoodDetector({ navigation }) {
           .then((result) => {
             console.log('quesstion updated', result);
             setLoading(false);
+            setSwiperIndexHome(0, dispatch);
             navigation.navigate('HomeScreen', { screen: 'MicScreen' });
           })
           .catch((error) => {
@@ -1038,9 +1041,11 @@ export default function MoodDetector({ navigation }) {
               //   deviceID: deviceId,
               // });
               if (route?.params?.question != undefined) {
+                setSwiperIndexHome(0, dispatch);
                 navigation.navigate('HomeScreen', { screen: 'MicScreen' });
               } else {
                 showMoodSaveConfirmModal(() => {
+                  setSwiperIndexHome(0, dispatch);
                   navigation.replace('HomeScreen', {
                     lat: lat,
                     long: lng,
@@ -1110,6 +1115,7 @@ export default function MoodDetector({ navigation }) {
 
   const dismissNotificationQuestionModal = useCallback(() => {
     setIsNotificationQuestionModalVisible(false);
+    setSwiperIndexHome(0, dispatch);
     navigation.navigate('HomeScreen', { screen: 'MicScreen' });
   }, []);
 
