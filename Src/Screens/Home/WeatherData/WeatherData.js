@@ -44,6 +44,7 @@ import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDu
 import {
   dataTypes,
   defaultLocation,
+  getWeeklyInsightsAvailable,
   isCountryIndia,
   weatherActions,
   weatherTypes,
@@ -421,25 +422,7 @@ const WeatherData = ({
         Weekly api should be called between
         Friday @ 12pm until Saturday 6pm
         */
-        const day = moment().day();
-        const startTime = moment().set({
-          hour: 12,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        const endTime = moment().set({
-          hour: 18,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        if (
-          !isNaN(day) &&
-          (Number(day) === 6 || Number(day) === 7) &&
-          moment().isSameOrAfter(startTime) &&
-          moment().isSameOrBefore(endTime)
-        ) {
+        if (getWeeklyInsightsAvailable() === true) {
           return PostRequestApi('getWeatherInsights', {
             ...params,
             status: 'weekly',
@@ -1128,6 +1111,7 @@ const WeatherData = ({
               weeklySuggestion={insights?.weeklySuggestion}
               weeklySuggestionType={insights?.weeklySuggestionType}
               timeLeft={UserData?.weeklyInsightsTimeLeft}
+              dispatch={dispatch}
             />
           )}
 

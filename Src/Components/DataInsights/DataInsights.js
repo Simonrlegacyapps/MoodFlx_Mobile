@@ -8,12 +8,13 @@ import {
   Platform,
 } from 'react-native';
 import moment from 'moment';
-import Toast from 'react-native-toast-message';
 import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import {RubikBold, RubikMedium} from '../../Constants/fonts/Fonts';
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { SetShowWeeklyInsightsModal } from '../../redux/actions/actions';
+import { getWeeklyInsightsAvailable } from '../../Constants/constants';
 
 export default function DataInsights({
   dailyInsights,
@@ -23,41 +24,19 @@ export default function DataInsights({
   weeklySuggestion,
   weeklySuggestionType,
   timeLeft,
+  dispatch,
 }) {
   const [isDailyInsights, setIsDailyInsights] = useState(true);
 
   const onPressWeeklyTab = () => {
-    const day = moment().day();
-    const startTime = moment().set({
-      hour: 12,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-    });
-    const endTime = moment().set({
-      hour: 18,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-    });
-    if (
-      !isNaN(day) &&
-      (Number(day) === 6 || Number(day) === 7) &&
-      moment().isSameOrAfter(startTime) &&
-      moment().isSameOrBefore(endTime)
-    ) {
+    if (getWeeklyInsightsAvailable() === true) {
       setIsDailyInsights(false);
     } else {
       /*
        Weekly api should be called between
        Friday @ 12pm until Saturday 6pm
        */
-      Toast.show({
-        type: 'info',
-        text2: 'Weekly insights will be available between Friday 12 PM until Saturday 6 PM.',
-        visibilityTime: 4000,
-        autoHide: true,
-      });
+      dispatch?.(SetShowWeeklyInsightsModal(true));
     }
   };
 

@@ -36,6 +36,7 @@ import PostRequestApi, {
 } from '../../apirequest/PostRequestApi';
 import DataInsights from '../../Components/DataInsights/DataInsights';
 import moment from 'moment';
+import { getWeeklyInsightsAvailable } from '../../Constants/constants';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -183,25 +184,7 @@ const FitnessData = ({
           Weekly api should be called between
           Friday @ 12pm until Saturday 6pm
           */
-          const day = moment().day();
-          const startTime = moment().set({
-            hour: 12,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
-          });
-          const endTime = moment().set({
-            hour: 18,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
-          });
-          if (
-            !isNaN(day) &&
-            (Number(day) === 6 || Number(day) === 7) &&
-            moment().isSameOrAfter(startTime) &&
-            moment().isSameOrBefore(endTime)
-          ) {
+          if (getWeeklyInsightsAvailable() === true) {
             return PostRequestApi('getActivityInsights', {
               ...params,
               status: 'weekly',
@@ -450,6 +433,7 @@ const FitnessData = ({
               weeklySuggestion={insights?.weeklySuggestion}
               weeklySuggestionType={insights?.weeklySuggestionType}
               timeLeft={UserData?.weeklyInsightsTimeLeft}
+              dispatch={dispatch}
             />
           )}
           {/* {UserData.HealthPermission && (

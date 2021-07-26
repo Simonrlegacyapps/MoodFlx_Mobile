@@ -73,23 +73,27 @@ const StarProgress = ({ sleepMinutes }) => {
   const calculateToolTipPosition = useCallback((_step) => {
     let stepss = _step !== undefined ? _step : step;
     if (progressSize.current && (_step >= 0 || step >= 0)) {
-      console.log('calculateToolTipPosition stepss: ', stepss);
-      console.log('calculateToolTipPosition _step: ', _step);
+      // console.log('calculateToolTipPosition stepss: ', stepss);
+      // console.log('calculateToolTipPosition _step: ', _step);
       const { left, top, width, height } = progressSize.current;
       const space = (width - 40 - (starSize * 5)) / 4;
       const position = 0 + 20 + ((stepss > 0 ? stepss : 1) * starSize) + ((stepss > 0 ? (stepss - 1) : 0) * space) - (starSize / 2) - (toolTipSize / 2) + 1;
-      // console.log('calculateToolTipPosition position: ', position);
+      console.log('calculateToolTipPosition position: ', position);
       setToolTipPosition(position);
     }
   }, [step])
 
   const onProgressLayout = useCallback((e) => {
-    progressRef?.current?.measureInWindow((x, y, width, height) => {
-      progressSize.current = { left: x, top: y, width, height };
-      // console.log('StarProgress onProgressLayout: ', progressSize.current);
-      calculateToolTipPosition();
-    })
-  }, [calculateToolTipPosition])
+    const { x, y, width: w, height } = e.nativeEvent.layout;
+    progressSize.current = { left: x, top: y, width: w, height };
+    console.log('StarProgress onProgressLayout: ', progressSize.current);
+    calculateToolTipPosition();
+    // progressRef?.current?.measureInWindow((x, y, w, height) => {
+    //   progressSize.current = { left: x, top: y, width: w, height };
+    //   console.log('StarProgress onProgressLayout: ', progressSize.current);
+    //   calculateToolTipPosition();
+    // })
+  }, [calculateToolTipPosition]);
 
   const onTextLayout = useCallback((e) => {
     const { lines } = e.nativeEvent;

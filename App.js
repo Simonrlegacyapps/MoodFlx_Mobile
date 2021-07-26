@@ -36,6 +36,7 @@ import {
   Long,
   Moods,
   SetNotification,
+  SetShowWeeklyInsightsModal,
   SetWeeklyInsightsTimeLeft,
   SleepPerm,
   UserDetail,
@@ -67,9 +68,11 @@ import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
 import {
   defaultLocation,
   getLinkModalText,
+  getWeeklyInsightsDaysLeft,
   isCountryIndia,
 } from './Src/Constants/constants';
 import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
+import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgressModal/WeeklyInsightsProgressModal';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -454,32 +457,7 @@ const App: () => React$Node = () => {
     ) {
       console.log("App has come to the foreground!");
       NotifService.cancelMoodFloSheduledNotifications();
-    }
-    if (nextAppState === 'active') {
-      const day = moment().day();
-      const startTime = moment().set({
-        hour: 12,
-        minute: 0,
-        second: 0,
-        millisecond: 0,
-      });
-      const endTime = moment().set({
-        hour: 18,
-        minute: 0,
-        second: 0,
-        millisecond: 0,
-      });
-      if (
-        !isNaN(day) &&
-        (Number(day) === 6 || Number(day) === 7) &&
-        moment().isSameOrAfter(startTime) &&
-        moment().isSameOrBefore(endTime)
-      ) {
-        dispatch(SetWeeklyInsightsTimeLeft(0));
-      } else {
-        const d = 6 - Number(moment().day());
-        dispatch(SetWeeklyInsightsTimeLeft(d));
-      }
+      dispatch(SetWeeklyInsightsTimeLeft(getWeeklyInsightsDaysLeft()));
     }
 
     appState.current = nextAppState;
@@ -487,10 +465,10 @@ const App: () => React$Node = () => {
     // console.log("AppState", appState.current);
   };
 
-
   useEffect(() => {
     AppState.addEventListener("change", _handleAppStateChange);
     NotifService.cancelMoodFloSheduledNotifications();
+    dispatch(SetWeeklyInsightsTimeLeft(getWeeklyInsightsDaysLeft()));
     return () => {
       AppState.removeEventListener("change", _handleAppStateChange);
     };
@@ -743,6 +721,10 @@ const App: () => React$Node = () => {
     }
   }, [email, goToSelectDivision]);
 
+  const dismissWeeklyInsightsModal = () => {
+    dispatch(SetShowWeeklyInsightsModal(false));
+  };
+
   return (
     <>
       {/* {console.log('ShowWelcome--', ShowWelcome)} */}
@@ -784,6 +766,11 @@ const App: () => React$Node = () => {
         buttonOneText="Unlink"
         onClickButtonTwo={onLinkCancel}
         buttonTwoText="Cancel"
+      />
+      <WeeklyInsightsProgress
+        modalVisible={UserData.showWeeklyInsightsModal}
+        verifyDone={dismissWeeklyInsightsModal}
+        dismissModalHandler={dismissWeeklyInsightsModal}
       />
     </>
   );

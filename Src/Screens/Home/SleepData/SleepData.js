@@ -41,7 +41,7 @@ import {
   fetchSleepDataForLastThirtyDays,
   getSleepDataForUpdateApi
 } from './sleepDataService';
-import { dataTypes } from '../../../Constants/constants';
+import { dataTypes, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 
@@ -174,18 +174,41 @@ const SleepData = ({
 
   useEffect(() => {
     //sleep data for current day
-    if (Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
+    if (
+      Array.isArray(lastThirtyDaySleepData) &&
+      lastThirtyDaySleepData.length > 0
+    ) {
       let totalMinutes = 0;
       lastThirtyDaySleepData.forEach((e, idx) => {
         const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
         const endDate = e?.end_date ? moment(new Date(e.end_date).getTime()) : null;
         let diff = 0;
-        if (startDate && endDate && startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') && e.type === 'INBED') {
+        if (startDate && endDate && startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') && e.type === 'ASLEEP') {
           diff = endDate.diff(startDate, 'minutes');
           totalMinutes += diff;
           console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
         }
-      })
+      });
+      totalMinutes === 0 &&
+        lastThirtyDaySleepData.forEach((e, idx) => {
+          const startDate = e?.start_date
+            ? moment(new Date(e.start_date).getTime())
+            : null;
+          const endDate = e?.end_date
+            ? moment(new Date(e.end_date).getTime())
+            : null;
+        let diff = 0;
+          if (
+            startDate &&
+            endDate &&
+            startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') &&
+            e.type === 'INBED'
+          ) {
+          diff = endDate.diff(startDate, 'minutes');
+          totalMinutes += diff;
+          console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
+        }
+      });
       setSleepMinutesToday(totalMinutes);
     }
   }, [lastThirtyDaySleepData]);
@@ -252,25 +275,7 @@ const SleepData = ({
         Weekly api should be called between
         Friday @ 12pm until Saturday 6pm
         */
-        const day = moment().day();
-        const startTime = moment().set({
-          hour: 12,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        const endTime = moment().set({
-          hour: 18,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        if (
-          !isNaN(day) &&
-          (Number(day) === 6 || Number(day) === 7) &&
-          moment().isSameOrAfter(startTime) &&
-          moment().isSameOrBefore(endTime)
-        ) {
+        if (getWeeklyInsightsAvailable() === true) {
           return PostRequestApi('getSleepInsights', {
             ...params,
             status: 'weekly',
@@ -519,6 +524,7 @@ const SleepData = ({
               weeklySuggestion={insights?.weeklySuggestion}
               weeklySuggestionType={insights?.weeklySuggestionType}
               timeLeft={UserData?.weeklyInsightsTimeLeft}
+              dispatch={dispatch}
             />
           )}
           {/* {UserData.SleepPermission && (

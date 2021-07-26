@@ -51,6 +51,7 @@ import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
 import { getBulbColorFromLux } from '../../../services/commonService';
+import { getWeeklyInsightsAvailable } from '../../../Constants/constants';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -240,25 +241,7 @@ const LightData = ({
         Weekly api should be called between
         Friday @ 12pm until Saturday 6pm
         */
-        const day = moment().day();
-        const startTime = moment().set({
-          hour: 12,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        const endTime = moment().set({
-          hour: 18,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        if (
-          !isNaN(day) &&
-          (Number(day) === 6 || Number(day) === 7) &&
-          moment().isSameOrAfter(startTime) &&
-          moment().isSameOrBefore(endTime)
-        ) {
+        if (getWeeklyInsightsAvailable() === true) {
           return PostRequestApi('getLightInsights', { ...params, "status": "weekly" });
         } else {
           return new Promise((resolve, reject) => resolve(null));
@@ -443,6 +426,7 @@ const LightData = ({
             weeklySuggestion={insights?.weeklySuggestion}
             weeklySuggestionType={insights?.weeklySuggestionType}
             timeLeft={UserData?.weeklyInsightsTimeLeft}
+            dispatch={dispatch}
           />
           {/* <View
             style={{
