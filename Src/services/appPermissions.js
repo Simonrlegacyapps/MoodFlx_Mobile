@@ -118,7 +118,7 @@ class MoodFloPermission {
     if (Platform.OS === 'ios') {
       Alert.alert(
         '',
-        'You denied the permission. Please accept the permission from settings to give permission.',
+        'You denied the permission. Please accept the permission from settings to give permission',
         [
           {
             text: 'OK',
@@ -130,7 +130,7 @@ class MoodFloPermission {
     } else {
       Alert.alert(
         '',
-        'You denied the permission. Please accept the permission from settings to give permission.',
+        'You denied the permission. Please accept the permission from settings to give permission',
         [
           {
             text: 'OK',
@@ -146,7 +146,7 @@ class MoodFloPermission {
     if (Platform.OS === 'ios') {
       Alert.alert(
         '',
-        'Tap OK bellow and allow notifications. Remember, Flo will only send you notifications to remind you to input your mood and earn Flo Coins.',
+        'Tap OK bellow and allow notifications. Remember, Flo will only send you notifications to remind you to input your mood and earn Flo Coins',
         [
           {
             text: 'OK',
@@ -158,7 +158,7 @@ class MoodFloPermission {
     } else {
       Alert.alert(
         '',
-        'Tap OK bellow and allow notifications. Remember, Flo will only send you notifications to remind you to input your mood and earn Flo Coins.',
+        'Tap OK bellow and allow notifications. Remember, Flo will only send you notifications to remind you to input your mood and earn Flo Coins',
         [
           {
             text: 'OK',
@@ -174,7 +174,7 @@ class MoodFloPermission {
     if (Platform.OS === 'ios') {
       Alert.alert(
         '',
-        'Tap OK bellow and allow location access in settings. Remember, Flo only uses your rough location to try get more accurate weather data.',
+        'Tap OK bellow and allow location access in settings. Remember, Flo only uses your rough location to try get more accurate weather data',
         [
           {
             text: 'OK',
@@ -186,7 +186,7 @@ class MoodFloPermission {
     } else {
       Alert.alert(
         '',
-        'Tap OK bellow and allow location access in settings. Remember, Flo only uses your rough location to try get more accurate weather data.',
+        'Tap OK bellow and allow location access in settings. Remember, Flo only uses your rough location to try get more accurate weather data',
         [
           {
             text: 'OK',
