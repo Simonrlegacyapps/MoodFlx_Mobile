@@ -416,7 +416,6 @@ const LightData = ({
             </Text>
           </View>
         </View>
-        {console.log('UserData?.weeklyInsightsTimeLeft: =====', UserData?.weeklyInsightsTimeLeft)}
         <View style={styles.subViewTwo}>
           <DataInsights
             dailyInsights={insights?.dailyInsights}

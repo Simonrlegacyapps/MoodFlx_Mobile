@@ -1013,7 +1013,6 @@ const WeatherData = ({
 
   return (
     <View style={styles.container}>
-      {/* {console.log(`data`, data)} */}
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -1286,8 +1285,6 @@ const WeatherData = ({
             // value={WeatherDuration}
           />
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
-            {console.log('WeatherData max: ', max)}
-            {console.log('WeatherData Lowmin: ', Lowmin)}
             {swiperIndex == index && (
               <BarGraph
                 max={max}
@@ -1308,8 +1305,6 @@ const WeatherData = ({
                 // justifyContent: 'center',
                 marginTop: 30,
               }}>
-                {console.log('data High: ', data)}
-                {console.log('data low: ', dataLow)}
               {swiperIndex == index && (
                 <View onLayout={onLayoutMinMaxGraphView}>
                   <View style={{position: 'absolute'}}>

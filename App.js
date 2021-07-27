@@ -727,8 +727,6 @@ const App: () => React$Node = () => {
 
   return (
     <>
-      {/* {console.log('ShowWelcome--', ShowWelcome)} */}
-      {/* <Provider store={store}> */}
       {ShowWelcome === false ? (
         <NavigationContainer
           ref={RootNavigation.navigationRef}
@@ -757,7 +755,6 @@ const App: () => React$Node = () => {
             ref={(ref) => Toast.setRef(ref)} />
         </>
       )}
-      {/* </Provider> */}
       <CustomModal
         modalVisible={!!linkModalText && isLinkModalVisible}
         dismissModalHandler={onLinkCancel}

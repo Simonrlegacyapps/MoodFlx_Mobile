@@ -68,8 +68,6 @@ export default function DataInsights({
     return null;
   }
 
-  console.log('timeLEFT =====', timeLeft);
-
   return (
     <View style={styles.tabContainer}>
       <View style={styles.tabHeader}>

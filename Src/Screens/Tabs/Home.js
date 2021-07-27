@@ -771,8 +771,8 @@ const App = (props) => {
       let optActivities = {
         startDate: s, // required
         endDate: new Date().toISOString(), // required
-        bucketUnit: 'DAY', // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
-        bucketInterval: 1, // optional - default 1.
+        bucketUnit: 'MINUTE', // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+        bucketInterval: 15, // optional - default 1.
       };
 
       const optCalories = {
