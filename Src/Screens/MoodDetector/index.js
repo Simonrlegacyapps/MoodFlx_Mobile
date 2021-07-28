@@ -1193,15 +1193,15 @@ export default function MoodDetector({ navigation }) {
   }, [isScreenFocused, NotifData, UserData.notification, dispatch]);
 
   const setLPXY = () => {
-    // pan.current.setValue({
-    //   x:
-    //     pan.current.x._value -
-    //     (wheelSize === regularWheelSize ? 0 : getFontSize(16)),
-    //   y:
-    //     pan.current.y._value -
-    //     (wheelSize === regularWheelSize ? 0 : getFontSize(6)),
-    // });
-    // forceUpdate();
+    pan.current.setValue({
+      x:
+        pan.current.x._value -
+        (wheelSize === regularWheelSize ? 0 : getFontSize(16)),
+      y:
+        pan.current.y._value -
+        (wheelSize === regularWheelSize ? 0 : getFontSize(6)),
+    });
+    forceUpdate();
   };
 
   const renderBlocks = (tbColor) => {
