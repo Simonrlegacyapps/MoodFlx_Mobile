@@ -1204,7 +1204,7 @@ export default function MoodDetector({ navigation }) {
     // forceUpdate();
   };
 
-  const renderBlocks = () => {
+  const renderBlocks = (tbColor) => {
     const fontSize = getFontSize(12);
     const lineHeight = getLineHeight(fontSize);
     return (
@@ -1224,7 +1224,7 @@ export default function MoodDetector({ navigation }) {
         {Platform.OS === 'ios' ? (
           <StatusBar barStyle="dark-content" />
         ) : (
-          <StatusBar barStyle="light-content" backgroundColor={'black'} />
+          <StatusBar barStyle="dark-content" backgroundColor={tbColor} />
         )}
         <View
           pointerEvents="none"
@@ -1444,7 +1444,7 @@ export default function MoodDetector({ navigation }) {
             </Text>
           </View>
         )}
-      {renderBlocks()}
+      {renderBlocks(topBottomColor)}
       {renderBottomBar(topBottomColor)}
       <Scroller
         scrollerStyle={{
