@@ -1148,6 +1148,10 @@ export default function MoodDetector({ navigation }) {
 
       return () => {
         // screen is out of focus
+        if (Platform.OS === 'android') {
+          StatusBar.setBackgroundColor('#FFFFFF');
+          StatusBar.setBarStyle('dark-content');
+        }
         isMoodDetectorScreenFocused = false;
         setIsScreenFocused(false);
         dispatch(SetNotification(null));
@@ -1220,7 +1224,7 @@ export default function MoodDetector({ navigation }) {
         {Platform.OS === 'ios' ? (
           <StatusBar barStyle="dark-content" />
         ) : (
-          <StatusBar barStyle="dark-content" backgroundColor={'white'} />
+          <StatusBar barStyle="light-content" backgroundColor={'black'} />
         )}
         <View
           pointerEvents="none"
