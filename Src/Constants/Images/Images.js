@@ -39,4 +39,5 @@ export default {
   ScreenPopUpImg: require('../../../assets/newImage/ScreenPopUpImg/ScreenPopUpImg.png'),
   TeamPulse: require('../../../assets/newImage/TeamPulse/teampulse.png'),
   ErrorIcon: require('../../../assets/generalicons/error.png'),
+  InfoIcon: require('../../../assets/generalicons/info.png'),
 };

@@ -178,7 +178,7 @@ const ProfileTab = ({ navigation }) => {
       .then((result) => {
         console.log('notificationPermission isGiven', result);
         if (result === false) {
-          AppPermissions.gotoSettingsPageiOS();
+          AppPermissions.gotoSettingsForNotificationPermission();
         } else {
           dispatch(NotificationPerm(true));
         }
@@ -216,25 +216,32 @@ const ProfileTab = ({ navigation }) => {
   const imagePostFunction = (imageData) => {
     setImageLoading(true);
     const deviceId = DeviceInfo.getUniqueId();
-    const imageResponse = {
-      ...imageData,
-    };
+    const imageResponse = imageData
+      ? {
+          ...imageData,
+        }
+      : null;
     console.log('imageResponse', imageResponse);
     let formData = new FormData();
-    formData.append('user_id', UserData.UserId);
-    formData.append('email', UserData.UserEmail);
+    formData.append('user_id', UserData.UserId ?? '');
+    formData.append('email', UserData.UserEmail ?? '');
     formData.append('device_id', deviceId);
-    formData.append('image', {
-      name:
-        Platform.OS === 'android'
-          ? imageResponse.uri
-          : imageResponse.uri.replace('file://', ''),
-      type: imageResponse.type,
-      uri:
-        Platform.OS === 'android'
-          ? imageResponse.uri
-          : imageResponse.uri.replace('file://', ''),
-    });
+    formData.append(
+      'image',
+      imageResponse
+        ? {
+            name:
+              Platform.OS === 'android'
+                ? imageResponse.uri
+                : imageResponse.uri.replace('file://', ''),
+            type: imageResponse.type,
+            uri:
+              Platform.OS === 'android'
+                ? imageResponse.uri
+                : imageResponse.uri.replace('file://', ''),
+          }
+        : '',
+    );
     console.warn('this data', JSON.stringify(formData));
     fetch('https://admin.moodflo.com/api/updateStaffProfileImage', {
       method: 'POST',
@@ -264,6 +271,9 @@ const ProfileTab = ({ navigation }) => {
       openCameraFunction();
     } else if (select_type === 2) {
       openLibraryFunction();
+    } else if (select_type === 3) {
+      imagePostFunction(null);
+      setOpenActionSheet(false);
     }
   };
 

@@ -51,6 +51,7 @@ import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
 import { getBulbColorFromLux } from '../../../services/commonService';
+import { getWeeklyInsightsAvailable } from '../../../Constants/constants';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -106,6 +107,7 @@ function lightInsightsReducer(state, action) {
 const LightData = ({
   MoodCount,
   swiperIndex,
+  index,
 }) => {
   const [light, setLight] = useState(-1);
   const [Graph, setGraph] = useState(null);
@@ -239,25 +241,7 @@ const LightData = ({
         Weekly api should be called between
         Friday @ 12pm until Saturday 6pm
         */
-        const day = moment().day();
-        const startTime = moment().set({
-          hour: 12,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        const endTime = moment().set({
-          hour: 18,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        if (
-          !isNaN(day) &&
-          (Number(day) === 6 || Number(day) === 7) &&
-          moment().isSameOrAfter(startTime) &&
-          moment().isSameOrBefore(endTime)
-        ) {
+        if (getWeeklyInsightsAvailable() === true) {
           return PostRequestApi('getLightInsights', { ...params, "status": "weekly" });
         } else {
           return new Promise((resolve, reject) => resolve(null));
@@ -326,12 +310,12 @@ const LightData = ({
 
   // Light data using react-native-sensor-manager
   useEffect(() => {
-    if (light === -1 || swiperIndex === 3) {
+    if (light === -1 || swiperIndex === index) {
       isStopLightTimeout = false;
       if (Platform.OS === 'android') {
         SensorManager.startLightSensor(100);
         function lightSensorCallback(d) {
-          if (light === -1 || swiperIndex === 3) {
+          if (light === -1 || swiperIndex === index) {
             if (d?.light && typeof d?.light === 'number') {
               // currentLightData = !isNaN(data.light) ? Number.parseInt(data.light, 10) : data.light
               currentLightData = Number.parseInt(d.light, 10);
@@ -361,7 +345,7 @@ const LightData = ({
           isStopLightTimeout = true;
         };
       }
-    } else if (light !== -1 && swiperIndex !== 3) {
+    } else if (light !== -1 && swiperIndex !== index) {
       isStopLightTimeout = true;
     }
   }, [getLightIOS, light, swiperIndex]);
@@ -440,6 +424,8 @@ const LightData = ({
             dailySuggestionType={insights?.dailySuggestionType}
             weeklySuggestion={insights?.weeklySuggestion}
             weeklySuggestionType={insights?.weeklySuggestionType}
+            timeLeft={UserData?.weeklyInsightsTimeLeft}
+            dispatch={dispatch}
           />
           {/* <View
             style={{
@@ -502,25 +488,8 @@ const LightData = ({
             </View>
           </View>
           <View style={{ marginBottom: 100, alignItems: 'center' }}>
-            {swiperIndex == 3 && (
-              <LightGraph
-                data={lightGraphData}
-                graphWidth={SIZE}
-              // yAxisLabel='Lux'
-              // duration='Lux'
-              />
-              // <BarGraph
-              //   BarsMarginLeft={dynamicSize(44)}
-              //   width={SIZE * 0.5}
-              //   barsWidth={dynamicSize(260)}
-              //   // width={dynamicSize(240)}
-              //   // barsWidth={dynamicSize(260)}
-              //   sideLabels={lines}
-              //   color={'#EEA402'}
-              //   ShowPollen={false}
-              //   RightBar={true}
-              //   lightScreen={true}
-              // />
+            {swiperIndex == index && (
+              <LightGraph data={lightGraphData} graphWidth={SIZE} />
             )}
           </View>
 

@@ -41,7 +41,7 @@ import {
   fetchSleepDataForLastThirtyDays,
   getSleepDataForUpdateApi
 } from './sleepDataService';
-import { dataTypes } from '../../../Constants/constants';
+import { dataTypes, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 
@@ -103,6 +103,7 @@ const SleepData = ({
   CheckForSleepData,
   MoodCount,
   swiperIndex,
+  index,
   isMoodUpdate,
 }) => {
   const [openActionSheet, setopenActionSheet] = useState(false);
@@ -173,18 +174,41 @@ const SleepData = ({
 
   useEffect(() => {
     //sleep data for current day
-    if (Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
+    if (
+      Array.isArray(lastThirtyDaySleepData) &&
+      lastThirtyDaySleepData.length > 0
+    ) {
       let totalMinutes = 0;
       lastThirtyDaySleepData.forEach((e, idx) => {
         const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
         const endDate = e?.end_date ? moment(new Date(e.end_date).getTime()) : null;
         let diff = 0;
-        if (startDate && endDate && startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') && e.type === 'INBED') {
+        if (startDate && endDate && startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') && e.type === 'ASLEEP') {
           diff = endDate.diff(startDate, 'minutes');
           totalMinutes += diff;
           console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
         }
-      })
+      });
+      totalMinutes === 0 &&
+        lastThirtyDaySleepData.forEach((e, idx) => {
+          const startDate = e?.start_date
+            ? moment(new Date(e.start_date).getTime())
+            : null;
+          const endDate = e?.end_date
+            ? moment(new Date(e.end_date).getTime())
+            : null;
+        let diff = 0;
+          if (
+            startDate &&
+            endDate &&
+            startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') &&
+            e.type === 'INBED'
+          ) {
+          diff = endDate.diff(startDate, 'minutes');
+          totalMinutes += diff;
+          console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
+        }
+      });
       setSleepMinutesToday(totalMinutes);
     }
   }, [lastThirtyDaySleepData]);
@@ -211,82 +235,85 @@ const SleepData = ({
     }
   }, [lastThirtyDaySleepData]);
 
-  const callSleepDataUpdateApi = useCallback((sData) => {
-    if (!(Array.isArray(sData) && sData.length > 0)) {
-      return;
-    }
-    setSleepDataLastThirtyDays(sData);
-    const sleepData = getSleepDataForUpdateApi();
-    if (!(Array.isArray(sleepData) && sleepData.length > 0)) {
-      return;
-    }
-    console.log('api sleep data: ', sleepData);
-    // return;
+  const callInsightsApi = () => {
     const deviceId = DeviceInfo.getUniqueId();
-    let data = {
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var params = {
       device_id: deviceId,
-      email: UserData.UserEmail ?? '',
-      user_id: UserData.UserId ?? '',
-      sleep_data: sleepData
-    };
-    var config = {
-      method: 'post',
-      url: 'https://admin.moodflo.com/api/updateSleepQuality',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
-      },
-      data: JSON.stringify(data),
+      email: UserData?.UserEmail ?? '',
+      user_id: UserData?.UserId ?? '',
     };
 
-    GetStaffUserData(
-      {
-        device_id: deviceId,
-        email: UserData.UserEmail ?? '',
-        user_id: UserData.UserId ?? '',
-      }, dispatch)
-      .then(async (result) => {
-        // console.log(
-        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
-        //   result?.userData
-        // );
-        if (result?.userData?.status !== 2) {
-          return axios(config);
+    console.log(`Sleep Insights Api Params`, params);
+    PostRequestApi('getSleepInsights', {...params, status: 'daily'})
+      .then((res) => {
+        console.log('getSleepInsights daily: ', res?.data?.insights);
+        // console.log('getSleepInsights daily res: ', res);
+        let dailyInsightsPayload = {};
+        dailyInsightsPayload.dailyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        dailyInsightsPayload.dailySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        dailyInsightsPayload.dailySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: sleepInsightsTypes.SET_INSIGHTS,
+          payload: dailyInsightsPayload,
+        });
+        /*
+        Weekly api should be called between
+        Friday @ 12pm until Saturday 6pm
+        */
+        if (getWeeklyInsightsAvailable() === true) {
+          return PostRequestApi('getSleepInsights', {
+            ...params,
+            status: 'weekly',
+          });
         } else {
-          data.user_id = '';
-          data.email = '';
-          config.data = JSON.stringify(data);
-          return axios(config);
+          return new Promise((resolve, reject) => resolve(null));
         }
       })
-      .then(async (result) => {
-        if (result) {
-          console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
-          const timeoutId = setTimeout(() => {
-            callGetSleepDataApi();
-            clearTimeout(timeoutId);
-          }, 500);
-        }
+      .then((res) => {
+        // console.log('getSleepInsights weekly res: ', res);
+        let weeklyInsightsPayload = {};
+        console.log('getSleepInsights weekly: ', res?.data?.insights);
+        weeklyInsightsPayload.weeklyInsights =
+          res?.data?.insights?.message1 &&
+            typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        weeklyInsightsPayload.weeklySuggestion =
+          res?.data?.insights?.message2 &&
+            typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        weeklyInsightsPayload.weeklySuggestionType =
+          res?.data?.insights?.message2Type &&
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: sleepInsightsTypes.SET_INSIGHTS,
+          payload: weeklyInsightsPayload,
+        });
       })
       .catch(function (error) {
-        console.log('❌❌❌❌Fail Update Sleep Data❌❌❌❌', error, data);
+        console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, params);
       });
+  };
 
-
-    // axios(config)
-    //   .then(function (response) {
-    //     console.log(' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ', data);
-    //     const timeoutId = setTimeout(() => {
-    //       callGetSleepDataApi();
-    //       clearTimeout(timeoutId);
-    //     }, 500);
-    //   })
-    //   .catch(function (error) {
-    //     console.log('❌❌❌❌Fail Sleep Data❌❌❌❌', error, data);
-    //   });
-  }, [UserData.UserEmail, UserData.UserId]);
-
-  const callGetSleepDataApi = useCallback(() => {
+  const callGetSleepDataApi = () => {
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -327,90 +354,81 @@ const SleepData = ({
         const graphData = getSleepGraphData({ weeklyData: { ASLEEP: asleepArray, INBED: inBedArray } });
         console.log('graphData: ', graphData);
         setSleepGraphData(graphData);
-        return PostRequestApi('getSleepInsights', { ...params, status: 'daily' });
-      })
-      .then((res) => {
-        console.log('getSleepInsights daily: ', res?.data?.insights);
-        // console.log('getSleepInsights daily res: ', res);
-        let dailyInsightsPayload = {};
-        dailyInsightsPayload.dailyInsights =
-          res?.data?.insights?.message1 &&
-            typeof res.data.insights.message1 === 'string'
-            ? res.data.insights.message1
-            : '';
-        dailyInsightsPayload.dailySuggestion =
-          res?.data?.insights?.message2 &&
-            typeof res.data.insights.message2 === 'string'
-            ? res.data.insights.message2
-            : '';
-        dailyInsightsPayload.dailySuggestionType =
-          res?.data?.insights?.message2Type &&
-            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
-            ? res.data.insights.message2Type
-            : '';
-        setInsights({
-          type: sleepInsightsTypes.SET_INSIGHTS,
-          payload: dailyInsightsPayload,
-        });
-        /*
-        Weekly api should be called between
-        Friday @ 12pm until Saturday 6pm
-        */
-        const day = moment().day();
-        const startTime = moment().set({
-          hour: 12,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        const endTime = moment().set({
-          hour: 18,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-        if (
-          !isNaN(day) &&
-          (Number(day) === 6 || Number(day) === 7) &&
-          moment().isSameOrAfter(startTime) &&
-          moment().isSameOrBefore(endTime)
-        ) {
-          return PostRequestApi('getSleepInsights', {
-            ...params,
-            status: 'weekly',
-          });
-        } else {
-          return new Promise((resolve, reject) => resolve(null));
-        }
-      })
-      .then((res) => {
-        // console.log('getSleepInsights weekly res: ', res);
-        let weeklyInsightsPayload = {};
-        console.log('getSleepInsights weekly: ', res?.data?.insights);
-        weeklyInsightsPayload.weeklyInsights =
-          res?.data?.insights?.message1 &&
-            typeof res.data.insights.message1 === 'string'
-            ? res.data.insights.message1
-            : '';
-        weeklyInsightsPayload.weeklySuggestion =
-          res?.data?.insights?.message2 &&
-            typeof res.data.insights.message2 === 'string'
-            ? res.data.insights.message2
-            : '';
-        weeklyInsightsPayload.weeklySuggestionType =
-          res?.data?.insights?.message2Type &&
-            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
-            ? res.data.insights.message2Type
-            : '';
-        setInsights({
-          type: sleepInsightsTypes.SET_INSIGHTS,
-          payload: weeklyInsightsPayload,
-        });
       })
       .catch(function (error) {
         console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, params);
       });
-  }, [UserData.UserEmail, UserData.UserId]);
+  };
+
+  const callSleepDataUpdateApi = (sData) => {
+    if (!(Array.isArray(sData) && sData.length > 0)) {
+      return;
+    }
+    setSleepDataLastThirtyDays(sData);
+    const sleepData = getSleepDataForUpdateApi();
+
+    if (!(Array.isArray(sleepData) && sleepData.length > 0)) {
+      callGetSleepDataApi();
+      return;
+    }
+    console.log('api sleep data: ', sleepData);
+    // return;
+    const deviceId = DeviceInfo.getUniqueId();
+    let data = {
+      device_id: deviceId,
+      email: UserData.UserEmail ?? '',
+      user_id: UserData.UserId ?? '',
+      sleep_data: sleepData,
+    };
+    var config = {
+      method: 'post',
+      url: 'https://admin.moodflo.com/api/updateSleepQuality',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
+      },
+      data: JSON.stringify(data),
+    };
+
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: UserData.UserEmail ?? '',
+        user_id: UserData.UserId ?? '',
+      },
+      dispatch,
+    )
+      .then(async (result) => {
+        // console.log(
+        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   result?.userData
+        // );
+        if (result?.userData?.status !== 2) {
+          return axios(config);
+        } else {
+          data.user_id = '';
+          data.email = '';
+          config.data = JSON.stringify(data);
+          return axios(config);
+        }
+      })
+      .then(async (result) => {
+        if (result) {
+          console.log(
+            ' ✅ ✅ ✅ ✅ Success Update Sleep Data✅ ✅ ✅ ✅ ',
+            data,
+          );
+          const timeoutId = setTimeout(() => {
+            callInsightsApi();
+            callGetSleepDataApi();
+            clearTimeout(timeoutId);
+          }, 500);
+        }
+      })
+      .catch(function (error) {
+        console.log('❌❌❌❌Fail Update Sleep Data❌❌❌❌', error, data);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -505,6 +523,8 @@ const SleepData = ({
               dailySuggestionType={insights?.dailySuggestionType}
               weeklySuggestion={insights?.weeklySuggestion}
               weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              dispatch={dispatch}
             />
           )}
           {/* {UserData.SleepPermission && (
@@ -566,7 +586,7 @@ const SleepData = ({
                   transform: [{ rotate: '-15deg' }],
                 }}>
                 Demo
-            </Text>
+              </Text>
             </View>
           )}
           {!UserData.SleepPermission && (

@@ -26,8 +26,6 @@ const Progress = props => {
     isInteraction: false
   });
 
-  console.log(`MoodCount`, MoodCount)
-
   useEffect(() => {
     if (indeterminate || typeof progress === "number") {
       startAnimation();

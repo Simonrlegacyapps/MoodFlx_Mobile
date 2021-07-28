@@ -82,12 +82,12 @@ const ProfileCoinModal = ({
                     <Text style={styles.bigText}>
                         {permission
                             ? 'Anonymously syncing your data'
-                            : 'Hang on will be very soon with you.!'}
+                            : "Hang in there you'll be able to cash in your Flo soon!"}
                     </Text>
                     <TouchableOpacity style={{ alignSelf: 'center' }} onPress={verifyDone}>
                         <View
                             style={{
-                                marginTop: 24,
+                                marginVertical: 24,
                                 height: 56,
                                 width: 250,
                                 backgroundColor: '#7265E3',
@@ -100,7 +100,7 @@ const ProfileCoinModal = ({
                             </Text>
                         </View>
                     </TouchableOpacity>
-                    <Text
+                    {/* <Text
                         style={[
                             styles.smallText,
                             {
@@ -129,7 +129,7 @@ const ProfileCoinModal = ({
                 • Privacy Policy
               </Text>
                         </TouchableOpacity>
-                    </Text>
+                    </Text> */}
                 </View>
                 {/* <TouchableOpacity
           onPress={dismissModalHandler}
@@ -222,7 +222,8 @@ const styles = StyleSheet.create({
         fontSize: width / 20,
         paddingHorizontal: 12,
         marginRight: 12,
-        marginTop: 20
+        marginTop: 20,
+        textAlign: 'center'
         // width:'80%'
     },
 });

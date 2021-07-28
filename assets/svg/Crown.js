@@ -4,8 +4,8 @@ import Svg, { Path, Rect } from 'react-native-svg'
 function Crown({ w, h }) {
     return (
         <Svg
-            width={16}
-            height={12}
+            width={17}
+            height={13}
             viewBox="0 0 16 12"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

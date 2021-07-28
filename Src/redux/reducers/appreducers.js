@@ -32,6 +32,9 @@ import {
   SET_WORKOUT_TOTAL,
   USER_DETAIL,
   USER_ID,
+  WEEKLY_INSIGHTS_TIME_LEFT,
+  SHOW_WEEKLY_INSIGHTS_MODAL,
+  SET_SWIPER_INDEX,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -66,6 +69,9 @@ const intializedState = {
   Anonymous: true,
   NameCompany: '',
   notification: null,
+  weeklyInsightsTimeLeft: -1,
+  showWeeklyInsightsModal: false,
+  swiperIndex: 0,
 };
 
 export const First = (state = intializedState, action) => {
@@ -200,6 +206,19 @@ export const First = (state = intializedState, action) => {
       return Object.assign({}, state, {
         lat: action.payload?.lat,
         lon: action.payload?.lon,
+      });
+    case WEEKLY_INSIGHTS_TIME_LEFT:
+      console.log('WEEKLY_INSIGHTS_TIME_LEFT : ========', action.payload);
+      return Object.assign({}, state, {
+        weeklyInsightsTimeLeft: action.payload,
+      });
+    case SHOW_WEEKLY_INSIGHTS_MODAL:
+      return Object.assign({}, state, {
+        showWeeklyInsightsModal: action.payload,
+      });
+    case SET_SWIPER_INDEX:
+      return Object.assign({}, state, {
+        swiperIndex: action.payload,
       });
     default:
       return state;

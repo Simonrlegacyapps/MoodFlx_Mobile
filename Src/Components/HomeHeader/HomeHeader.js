@@ -25,18 +25,22 @@ const HomeHeader = ({click, value}) => {
           <Text style={styles.normalText}>History</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={click}
-        style={[
-          styles.ColoredView,
-          {flexDirection: 'row', alignItems: 'center'},
-        ]}>
-        <Text style={styles.ColoredText}>{value}</Text>
-        <Image
-          resizeMode={'contain'}
-          style={{height: 12, width: 12, marginHorizontal: 5}}
-          source={Constants.Images.dropDownTwo}
-        />
-      </TouchableOpacity>
+      {
+        click && (
+          <TouchableOpacity onPress={click}
+            style={[
+              styles.ColoredView,
+              { flexDirection: 'row', alignItems: 'center' },
+            ]}>
+            <Text style={styles.ColoredText}>{value}</Text>
+            <Image
+              resizeMode={'contain'}
+              style={{ height: 12, width: 12, marginHorizontal: 5 }}
+              source={Constants.Images.dropDownTwo}
+            />
+          </TouchableOpacity>
+        )
+      }
     </View>
   );
 };

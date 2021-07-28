@@ -7,11 +7,14 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-
+import moment from 'moment';
 import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import {RubikBold, RubikMedium} from '../../Constants/fonts/Fonts';
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { SetShowWeeklyInsightsModal } from '../../redux/actions/actions';
+import { getWeeklyInsightsAvailable } from '../../Constants/constants';
 
 export default function DataInsights({
   dailyInsights,
@@ -20,16 +23,30 @@ export default function DataInsights({
   dailySuggestionType,
   weeklySuggestion,
   weeklySuggestionType,
+  timeLeft,
+  dispatch,
 }) {
   const [isDailyInsights, setIsDailyInsights] = useState(true);
+
+  const onPressWeeklyTab = () => {
+    if (getWeeklyInsightsAvailable() === true) {
+      setIsDailyInsights(false);
+    } else {
+      /*
+       Weekly api should be called between
+       Friday @ 12pm until Saturday 6pm
+       */
+      dispatch?.(SetShowWeeklyInsightsModal(true));
+    }
+  };
 
   let insightsDetails = isDailyInsights
     ? dailyInsights
       ? dailyInsights
-      : 'No insights available'
+      : 'Not enough high quality data yet'
     : weeklyInsights
     ? weeklyInsights
-    : 'No weekly insights available';
+    : 'Not enough high quality data yet';
 
   let suggestion = isDailyInsights
     ? dailySuggestion
@@ -46,6 +63,10 @@ export default function DataInsights({
     : weeklySuggestionType
     ? weeklySuggestionType
     : '';
+
+  if (!dailyInsights) {
+    return null;
+  }
 
   return (
     <View style={styles.tabContainer}>
@@ -65,12 +86,13 @@ export default function DataInsights({
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          // disabled={weeklyInsights ? false : true}
           style={[(!isDailyInsights
-            ? styles.activeTabHeader
+              ? styles.activeTabHeader
               : styles.inactiveTabHeader),
             {marginLeft: horizontalScale(10)},
           ]}
-          onPress={() => setIsDailyInsights(false)}>
+          onPress={onPressWeeklyTab}>
           <Text
             style={
               !isDailyInsights
@@ -80,6 +102,20 @@ export default function DataInsights({
             THIS WEEK
           </Text>
         </TouchableOpacity>
+        {timeLeft !== -1 && !isNaN(timeLeft) && (
+          <AnimatedCircularProgress
+            duration={900}
+            arcSweepAngle={360}
+            size={horizontalScale(25)}
+            width={3}
+            fill={(timeLeft / 5) * 100}
+            rotation={0}
+            tintColor="#7265E3"
+            lineCap={'round'}
+            backgroundColor="#CFF9ED">
+            {(fill) => <Text>{timeLeft}</Text>}
+          </AnimatedCircularProgress>
+        )}
       </View>
       <View style={styles.tabDetailsView}>
         <Text style={styles.tabDetailsText}>{insightsDetails}</Text>

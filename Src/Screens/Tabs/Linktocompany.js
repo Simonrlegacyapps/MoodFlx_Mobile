@@ -14,6 +14,7 @@ import { Picker } from '@react-native-picker/picker';
 import Constants from '../../Constants';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  CompanyName,
   Division,
   getDivisions,
   GetUserId,
@@ -106,7 +107,7 @@ const Linktocompany = ({ navigation }) => {
       //     console.log('getDivision error: ', error);
       //   });
     }
-  }, [UserData.UserId, UserData.UserEmail]);
+  }, [UserData.UserId, UserData.UserEmail, route?.params?.email]);
 
   useEffect(() => {
     if (!UserData.UserEmail && !UserData.UserId && labelShow) {
@@ -139,7 +140,8 @@ const Linktocompany = ({ navigation }) => {
         .then((response) => response.json())
         .then((result) => {
           console.log('getting company details', result);
-          setCompanyDetails(result.companyData);
+          setCompanyDetails({...result.companyData});
+          dispatch(CompanyName(result.companyData));
         })
         .catch((error) => console.log('error', error));
   }, [UserData.UserDivision, UserData.UserId]);

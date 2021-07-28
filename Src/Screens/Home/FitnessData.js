@@ -36,6 +36,7 @@ import PostRequestApi, {
 } from '../../apirequest/PostRequestApi';
 import DataInsights from '../../Components/DataInsights/DataInsights';
 import moment from 'moment';
+import { getWeeklyInsightsAvailable } from '../../Constants/constants';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -97,6 +98,7 @@ const FitnessData = ({
   MoodCount,
   Loading,
   swiperIndex,
+  index,
   healthUpdateApiCount,
 }) => {
   // useEffect(() => {
@@ -157,7 +159,7 @@ const FitnessData = ({
       };
       PostRequestApi('getActivityInsights', { ...params, status: 'daily' })
         .then((res) => {
-          console.log('getLightInsights daily res: ', res);
+          console.log('getActivityInsights daily res: ', res);
           let dailyInsightsPayload = {};
           dailyInsightsPayload.dailyInsights =
             res?.data?.insights?.message1 &&
@@ -182,25 +184,7 @@ const FitnessData = ({
           Weekly api should be called between
           Friday @ 12pm until Saturday 6pm
           */
-          const day = moment().day();
-          const startTime = moment().set({
-            hour: 12,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
-          });
-          const endTime = moment().set({
-            hour: 18,
-            minute: 0,
-            second: 0,
-            millisecond: 0,
-          });
-          if (
-            !isNaN(day) &&
-            (Number(day) === 6 || Number(day) === 7) &&
-            moment().isSameOrAfter(startTime) &&
-            moment().isSameOrBefore(endTime)
-          ) {
+          if (getWeeklyInsightsAvailable() === true) {
             return PostRequestApi('getActivityInsights', {
               ...params,
               status: 'weekly',
@@ -390,7 +374,7 @@ const FitnessData = ({
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
-              swiperIndex == 0
+              swiperIndex == index
                 ? ((JSON.parse(MoodCount) < 3 ? JSON.parse(MoodCount) : 3) /
                   3) *
                 100
@@ -448,6 +432,8 @@ const FitnessData = ({
               dailySuggestionType={insights?.dailySuggestionType}
               weeklySuggestion={insights?.weeklySuggestion}
               weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              dispatch={dispatch}
             />
           )}
           {/* {UserData.HealthPermission && (

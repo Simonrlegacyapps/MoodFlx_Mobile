@@ -132,6 +132,7 @@ export function LightGraph({
         yAxisLabel={yAxisLabel}
         yAxisSuffix={yAxisSuffix}
         yAxisInterval={1} // optional, defaults to 1
+        fromZero
         chartConfig={{
             backgroundColor: "#FFFFFF",
             backgroundGradientFrom: "#FFFFFF",

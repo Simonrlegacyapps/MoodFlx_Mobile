@@ -36,6 +36,8 @@ import {
   Long,
   Moods,
   SetNotification,
+  SetShowWeeklyInsightsModal,
+  SetWeeklyInsightsTimeLeft,
   SleepPerm,
   UserDetail,
   UserDivision,
@@ -66,8 +68,11 @@ import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
 import {
   defaultLocation,
   getLinkModalText,
+  getWeeklyInsightsDaysLeft,
   isCountryIndia,
 } from './Src/Constants/constants';
+import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
+import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgressModal/WeeklyInsightsProgressModal';
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
@@ -120,6 +125,16 @@ const toastConfig = {
       // style={{ borderLeftColor: 'pink' }}
       // contentContainerStyle={{ paddingHorizontal: 15 }}
       text2Style={styles.toastText}
+      text2={text2}
+    />
+  ),
+  info: ({ text2, ...rest }) => (
+    <BaseToast
+      {...rest}
+      leadingIcon={Constants.Images.InfoIcon}
+      // style={{ borderLeftColor: 'pink' }}
+      // contentContainerStyle={{ paddingHorizontal: 15 }}
+      text2Style={styles.toastInfoText}
       text2={text2}
     />
   ),
@@ -192,6 +207,17 @@ const App: () => React$Node = () => {
               ...getDownloadLinkRes.data.staffData,
               user_id: getDownloadLinkRes.data.user_id,
             };
+          }
+          const currentRoute = RootNavigation.getCurrentRoute();
+          if (
+            currentRoute &&
+            currentRoute.name === 'Linktocompany' &&
+            userData?.email &&
+            !userData?.division_id
+          ) {
+            RootNavigation?.getNavigationRef?.()?.current?.setParams?.({
+              email: userData?.email,
+            });
           }
           onDynamicLinkUpdate(userData, dispatch, function (data) {
             if (data !== false) {
@@ -431,6 +457,7 @@ const App: () => React$Node = () => {
     ) {
       console.log("App has come to the foreground!");
       NotifService.cancelMoodFloSheduledNotifications();
+      dispatch(SetWeeklyInsightsTimeLeft(getWeeklyInsightsDaysLeft()));
     }
 
     appState.current = nextAppState;
@@ -438,10 +465,10 @@ const App: () => React$Node = () => {
     // console.log("AppState", appState.current);
   };
 
-
   useEffect(() => {
     AppState.addEventListener("change", _handleAppStateChange);
     NotifService.cancelMoodFloSheduledNotifications();
+    dispatch(SetWeeklyInsightsTimeLeft(getWeeklyInsightsDaysLeft()));
     return () => {
       AppState.removeEventListener("change", _handleAppStateChange);
     };
@@ -589,49 +616,45 @@ const App: () => React$Node = () => {
   };
   useEffect(() => {
     // console.log(`LightSensor`, LightSensor);
-    {
-      UserData.WeatherPermission &&
-        (UserData.lat == null || UserData.lon == null) &&
-        GetLocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 15000,
+    UserData.WeatherPermission &&
+      (UserData.lat == null || UserData.lon == null) &&
+      GetLocation.getCurrentPosition({
+        enableHighAccuracy: false,
+        timeout: 15000,
+      })
+        .then((location) => {
+          //   console.log('Success', location);
+          // setlat(location.latitude);
+          const isIndia = isCountryIndia();
+          if (isIndia) {
+            location = {
+              latitude: defaultLocation.latitude,
+              longitude: defaultLocation.longitude
+            };
+          }
+          console.log(
+            '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
+            JSON.stringify(location),
+          );
+          dispatch(Lat(location.latitude));
+          // setlng(location.longitude);
+          dispatch(Long(location.longitude));
         })
-          .then((location) => {
-            //   console.log('Success', location);
-            // setlat(location.latitude);
-            const isIndia = isCountryIndia();
-            if(isIndia){
-              location = {
-                latitude: defaultLocation.latitude,
-                longitude: defaultLocation.longitude
-              };
-            }
-            console.log(
-              '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
-              JSON.stringify(location),
-            );
-            dispatch(Lat(location.latitude));
-            // setlng(location.longitude);
-            dispatch(Long(location.longitude));
-          })
-          .catch((error) => {
-            const {code, message} = error;
-            console.log('error getting lat lon from geolocation api', code, message);
-          });
-    }
-    {
-      UserData.AllMoods == null &&
-        fetch('https://admin.moodflo.com/api/getMood')
-          .then((data) => data.json())
-          .then(async (res) => {
-            // await setGetMoods(res.data);
-            await dispatch(Moods(res.data));
-          })
-          .catch((error) => {
-            // const {code, message} = error;
-            console.log('error', error);
-          });
-    }
+        .catch((error) => {
+          const { code, message } = error;
+          console.log('error getting lat lon from geolocation api', code, message);
+        });
+    UserData.AllMoods == null &&
+      fetch('https://admin.moodflo.com/api/getMood')
+        .then((data) => data.json())
+        .then(async (res) => {
+          // await setGetMoods(res.data);
+          await dispatch(Moods(res.data));
+        })
+        .catch((error) => {
+          // const {code, message} = error;
+          console.log('error', error);
+        });
     checkStorage();
     getProfileUserData();
   }, [UserData.WeatherPermission]);
@@ -641,7 +664,7 @@ const App: () => React$Node = () => {
     dynamicLinks().getInitialLink().then(handleDynamicLink);
     // handleDynamicLink();
     // return () => unsubscribe();
-    return null;
+    // return null;
   }, []);
 
   useEffect(() => {
@@ -649,6 +672,15 @@ const App: () => React$Node = () => {
     // When the component is unmounted, remove the listener
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (
+      (UserData.UserId && UserData.UserEmail) ||
+      (!UserData.UserId && !UserData.UserEmail)
+    ) {
+      syncWeatherData();
+    }
+  }, [UserData.UserId, UserData.UserEmail]);
 
   const renderItems = ({item, index}, parallaxProps) => {
     // console.log('item', item.img);
@@ -689,10 +721,12 @@ const App: () => React$Node = () => {
     }
   }, [email, goToSelectDivision]);
 
+  const dismissWeeklyInsightsModal = () => {
+    dispatch(SetShowWeeklyInsightsModal(false));
+  };
+
   return (
     <>
-      {/* {console.log('ShowWelcome--', ShowWelcome)} */}
-      {/* <Provider store={store}> */}
       {ShowWelcome === false ? (
         <NavigationContainer
           ref={RootNavigation.navigationRef}
@@ -721,7 +755,6 @@ const App: () => React$Node = () => {
             ref={(ref) => Toast.setRef(ref)} />
         </>
       )}
-      {/* </Provider> */}
       <CustomModal
         modalVisible={!!linkModalText && isLinkModalVisible}
         dismissModalHandler={onLinkCancel}
@@ -730,6 +763,11 @@ const App: () => React$Node = () => {
         buttonOneText="Unlink"
         onClickButtonTwo={onLinkCancel}
         buttonTwoText="Cancel"
+      />
+      <WeeklyInsightsProgress
+        modalVisible={UserData.showWeeklyInsightsModal}
+        verifyDone={dismissWeeklyInsightsModal}
+        dismissModalHandler={dismissWeeklyInsightsModal}
       />
     </>
   );
@@ -809,6 +847,12 @@ const styles = ScaledSheet.create({
     fontSize: getFontSize(15),
     color: '#B56873',
     fontWeight: 'bold',
+  },
+  toastInfoText: {
+    fontSize: getFontSize(13),
+    // color: '#9C9EB9',
+    color: 'rgb(66,66,66)',
+    // fontWeight: 'bold',
   },
 });
 

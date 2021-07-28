@@ -32,6 +32,9 @@ import {
   SET_NOTIFICATION,
   GET_NOTIFICATION_PERM,
   SET_LOCATION,
+  WEEKLY_INSIGHTS_TIME_LEFT,
+  SHOW_WEEKLY_INSIGHTS_MODAL,
+  SET_SWIPER_INDEX,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -231,6 +234,27 @@ export const SetNotification = (data) => {
 export const SetLocation = (data) => {
   return {
     type: SET_LOCATION,
+    payload: data,
+  };
+};
+
+export const SetWeeklyInsightsTimeLeft = (data) => {
+  return {
+    type: WEEKLY_INSIGHTS_TIME_LEFT,
+    payload: data,
+  };
+};
+
+export const SetShowWeeklyInsightsModal = (data) => {
+  return {
+    type: SHOW_WEEKLY_INSIGHTS_MODAL,
+    payload: data,
+  };
+};
+
+export const SetSwiperIndex = (data) => {
+  return {
+    type: SET_SWIPER_INDEX,
     payload: data,
   };
 };

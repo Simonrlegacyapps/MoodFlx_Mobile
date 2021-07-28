@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef, useReducer} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  AppState,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -36,28 +37,74 @@ import {
   isTablet,
 } from '../../../Constants/sizeChoose';
 import EditManualWeatherModal from '../../../Components/Modals/EditManualWeather/EditManualWeatherModal';
-import {
-  DayTemp,
-  Lat,
-  Long,
-  SetLocation,
-  WeatherPerm,
-} from '../../../redux/actions/actions';
+import {DayTemp, SetLocation} from '../../../redux/actions/actions';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
-import { defaultLocation, isCountryIndia, weatherActions, weatherApiDataTypes, weatherTypes } from '../../../Constants/constants';
-import { AppPermissions } from '../../../services/appPermissions';
+import {
+  dataTypes,
+  defaultLocation,
+  getWeeklyInsightsAvailable,
+  isCountryIndia,
+  weatherActions,
+  weatherTypes,
+} from '../../../Constants/constants';
+import {AppPermissions} from '../../../services/appPermissions';
 import isFunction from 'lodash.isfunction';
+import {findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getTodaysHourlyData} from './weatherService';
+import PostRequestApi from '../../../apirequest/PostRequestApi';
+import DataInsights from '../../../Components/DataInsights/DataInsights';
 
 let weatherData = null;
 
-const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
+const {width: SIZE} = Dimensions.get('window');
 
-const IndicatorHelper = ({ color, text }) => {
+const weatherInsightsInitialState = {
+  dailyInsights: '',
+  weeklyInsights: '',
+  dailySuggestion: '',
+  dailySuggestionType: '',
+  weeklySuggestion: '',
+  weeklySuggestionType: '',
+};
+
+const weatherInsightsTypes = {
+  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
+  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
+  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
+  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
+  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
+  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
+  SET_INSIGHTS: 'SET_INSIGHTS',
+};
+
+function weatherInsightsReducer(state, action) {
+  switch (action.type) {
+    case weatherInsightsTypes.SET_DALIY_INSIGHTS:
+      return {...state, dailyInsights: action.payload};
+    case weatherInsightsTypes.SET_WEEKLY_INSIGHTS:
+      return {...state, weeklyInsights: action.payload};
+    case weatherInsightsTypes.SET_DAILY_SUGGESTION:
+      return {...state, dailySuggestion: action.payload};
+    case weatherInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
+      return {...state, dailySuggestionType: action.payload};
+    case weatherInsightsTypes.SET_WEEKLY_SUGGESTION:
+      return {...state, weeklySuggestion: action.payload};
+    case weatherInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
+      return {...state, weeklySuggestionType: action.payload};
+    case weatherInsightsTypes.SET_INSIGHTS:
+      return action?.payload && typeof action?.payload === 'object'
+        ? {...state, ...action.payload}
+        : state;
+    default:
+      return state;
+  }
+}
+
+const IndicatorHelper = ({color, text}) => {
   return (
     <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
+      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
       <Text style={styles.indicatorText}>{text}</Text>
     </View>
   );
@@ -74,6 +121,7 @@ const WeatherData = ({
   tryWeather,
   MoodCount,
   swiperIndex,
+  index,
 }) => {
   const [temp, settemp] = useState([]);
   const [One, setOne] = useState(null);
@@ -94,9 +142,17 @@ const WeatherData = ({
   const [AnonymousClick, setAnonymousClick] = useState(false);
   const [WeatherDurationModal, setWeatherDurationModal] = useState(false);
   const [WeatherDuration, setWeatherDuration] = useState('Week');
+  const [minMaxGraphHeight, setMinMaxGraphHeight] = useState(horizontalScale(200));
+  const [insights, setInsights] = useReducer(
+    weatherInsightsReducer,
+    weatherInsightsInitialState,
+  );
+  const appState = useRef(AppState.currentState);
+  const isMinMaxHeightSet = useRef(false);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const allDayWeatherData = useRef(null);
 
-  const a = moment().subtract(0, 'days').startOf('day').toString();
+  const a = moment().utc().subtract(1, 'day').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
   const c = moment().subtract(2, 'days').startOf('day').toString();
   const d = moment().subtract(3, 'days').startOf('day').toString();
@@ -109,10 +165,10 @@ const WeatherData = ({
   let Weather = UserData.DayTemperature;
 
   // console.log(`Weather`, UserData.DayTemperature);
-  const getUserLocation = () => {
+  const getUserLocation = async () => {
     new Promise((resolve, reject) => {
       GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
+        enableHighAccuracy: false,
         timeout: 15000,
       })
         .then((location) => {
@@ -134,18 +190,47 @@ const WeatherData = ({
             location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude, function (isSuccess) {
               resolve(isSuccess);
             });
-          });
+              },
+            );
           // if (UserData.lat == null || UserData.lon == null) {
           // }
         })
-        .catch((error) => {
-          const { code, message } = error;
-          resolve(false);
+        .catch(async (error) => {
+          const {code, message} = error;
+          let flag;
+          try {
+            flag = await AppPermissions.requestLocationPermission(dispatch);
+          } catch (e) {
+            console.log('Request Location Permission error: ', e);
+            flag = false
+          }
+          resolve(flag);
           console.log('error', code, message);
         });
     });
   };
 
+  const _handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === 'active'
+    ) {
+      console.log('App has come to the foreground!');
+      AppPermissions.checkAppPermissions(dispatch);
+    }
+
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+    console.log('AppState', appState.current);
+  };
+
+  useEffect(() => {
+    AppState.addEventListener('change', _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener('change', _handleAppStateChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (UserData.WeatherPermission) {
@@ -159,9 +244,12 @@ const WeatherData = ({
   let valueHours = 0;
   const WeatherDayData = (loc_lat, loc_long, onFinish) => {
     let startTime;
-    if (isCountryIndia()) {
-      startTime = moment()
-        .utcOffset(defaultLocation.timeZoneOffset)
+    const isIndia = isCountryIndia();
+    if (isIndia) {
+      startTime = moment
+        .utc()
+        // .utcOffset(defaultLocation.timeZoneOffset)
+        .subtract(1, 'day')
         .startOf('day')
         .toString();
     } else {
@@ -171,6 +259,8 @@ const WeatherData = ({
     console.log('WeatherDayData function loc_long: ', loc_long);
     console.log('WeatherDayData function args: ', startTime);
     let value = 0;
+    allDayWeatherData.current = null;
+    let previousDayData;
     axios
       .get(
         `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${loc_lat}&lon=${loc_long}&dt=${Date.parse(startTime) / 1000
@@ -178,22 +268,95 @@ const WeatherData = ({
       )
       .then(async (response) => {
         // console.log(`weather day data api success response`, response);
-        // console.log(`weather day data api success response`, JSON.stringify(response));
-        response?.data?.hourly && setAllDayWeather(response.data.hourly);
+        console.log(
+          'weather day data api success response',
+          JSON.stringify(response?.data?.hourly),
+        );
+        console.log(
+          'weather day data lenght',
+          JSON.stringify(response?.data?.hourly?.length),
+        );
+        previousDayData = response?.data;
+        // let todaysHourlyData;
+        // if (response?.data?.hourly) {
+        //   if (isIndia) {
+        //     todaysHourlyData = getDefaultTodaysHourlyData(
+        //       [],
+        //       response.data.hourly,
+        //     );
+        //   } else {
+        //     todaysHourlyData = getLocalTodaysHourlyData(
+        //       [],
+        //       response.data.hourly,
+        //     );
+        //   }
+        // }
+        // // console.log(`TODAYS_HOURLY_DATA: `, JSON.stringify(todaysHourlyData));
+        // if (response?.data && Array.isArray(todaysHourlyData)) {
+        //   allDayWeatherData.current = Object.assign({}, response.data, { hourly: [...todaysHourlyData] });
+        // }
+        startTime = null;
+        startTime = moment.utc().startOf('day').toString();
+        return axios.get(
+          `https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${loc_lat}&lon=${loc_long}&dt=${
+            Date.parse(startTime) / 1000
+          }&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+        );
+      })
+      .then(async (response) => {
+        let todaysHourlyData;
+        console.log(
+          'weather day data api success response',
+          JSON.stringify(response?.data?.hourly),
+        );
+        console.log(
+          'weather day data lenght',
+          JSON.stringify(response?.data?.hourly?.length),
+        );
+        console.log(
+          'allDayWeatherData.current?.hourly',
+          !!allDayWeatherData.current?.hourly,
+        );
+        if (
+          Array.isArray(previousDayData?.hourly) &&
+          Array.isArray(response?.data?.hourly)
+        ) {
+          if (isIndia) {
+            todaysHourlyData = getDefaultTodaysHourlyData(
+              previousDayData.hourly,
+              response.data.hourly,
+            );
+          } else {
+            todaysHourlyData = getLocalTodaysHourlyData(
+              previousDayData.hourly,
+              response.data.hourly,
+            );
+          }
+        }
+        // console.log(`weather day data api success response`, response);
+        // console.log(`weather day data api success response`, JSON.stringify(response?.data?.hourly));
+        console.log(`TODAYS_HOURLY_DATA: `, JSON.stringify(todaysHourlyData));
         if (response?.data) {
-          allDayWeatherData.current = Object.assign({}, response.data);
-          console.log('allDayWeatherData: ', allDayWeatherData.current);
+          if (Array.isArray(todaysHourlyData)) {
+            setAllDayWeather(todaysHourlyData)
+            allDayWeatherData.current = Object.assign({}, response.data, {
+              hourly: [...todaysHourlyData],
+            });
+          }
+          // console.log('allDayWeatherData: ', allDayWeatherData.current);
           syncWeatherData(loc_lat, loc_long);
           if (isFunction(onFinish)) {
             onFinish(true);
           }
         }
+        // console.log(`weather day data api success response`, response);
         if (weatherData) {
-          if (response?.data?.hourly) {
-            for (let i in response.data.hourly) {
+          if (allDayWeatherData.current?.hourly) {
+            for (let i in allDayWeatherData.current.hourly) {
               if (
                 (weatherData?.weather?.[0]?.description ?? -1) ===
-                response?.data?.hourly?.[i]?.weather?.[0]?.description
+                allDayWeatherData.current?.hourly?.[i]?.weather?.[0]
+                  ?.description
               ) {
                 value = value + 1;
                 sethours(value);
@@ -213,11 +376,95 @@ const WeatherData = ({
       });
   };
 
-  const findWeather = (value) => {
-    const v = value?.toLowerCase?.() ?? value;
-    return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
-  };
+  // const findWeather = (value) => {
+  //   const v = value?.toLowerCase?.() ?? value;
+  //   return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
+  // };
   // console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
+
+  const callInsightsApi = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var params = {
+      device_id: deviceId,
+      email: UserData?.UserEmail ?? '',
+      user_id: UserData?.UserId ?? '',
+    };
+
+    console.log(`Weather Insights Api Params`, params);
+    PostRequestApi('getWeatherInsights', {...params, status: 'daily'})
+      .then((res) => {
+        console.log('getWeatherInsights daily: ', res?.data?.insights);
+        // console.log('getSleepInsights daily res: ', res);
+        let dailyInsightsPayload = {};
+        dailyInsightsPayload.dailyInsights =
+          !!res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        dailyInsightsPayload.dailySuggestion =
+          !!res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        dailyInsightsPayload.dailySuggestionType =
+          !!res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: weatherInsightsTypes.SET_INSIGHTS,
+          payload: dailyInsightsPayload,
+        });
+        /*
+        Weekly api should be called between
+        Friday @ 12pm until Saturday 6pm
+        */
+        if (getWeeklyInsightsAvailable() === true) {
+          return PostRequestApi('getWeatherInsights', {
+            ...params,
+            status: 'weekly',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        // console.log('getSleepInsights weekly res: ', res);
+        let weeklyInsightsPayload = {};
+        console.log('getWeatherInsights weekly: ', res?.data?.insights);
+        weeklyInsightsPayload.weeklyInsights =
+          !!res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        weeklyInsightsPayload.weeklySuggestion =
+          !!res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        weeklyInsightsPayload.weeklySuggestionType =
+          !!res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: weatherInsightsTypes.SET_INSIGHTS,
+          payload: weeklyInsightsPayload,
+        });
+      })
+      .catch(function (error) {
+        console.log(
+          '❌❌❌❌Fail Get Weather Insights ❌❌❌❌',
+          error,
+          params,
+        );
+      });
+  };
+
+
   const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let WeatherP = await JSON.parse(Wp);
@@ -289,11 +536,14 @@ const WeatherData = ({
 
     axios(config)
       .then(function (response) {
-        console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ', data);
+        // console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ', data);
+        console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ');
+        callInsightsApi();
         getWeather();
       })
       .catch(function (error) {
-        console.log('❌❌❌❌ Update Weather Fail ❌❌❌❌', error, data);
+        // console.log('❌❌❌❌ Update Weather Fail ❌❌❌❌', error, data);
+        console.log('❌❌❌❌ Update Weather Fail ❌❌❌❌', error);
       });
   };
 
@@ -641,36 +891,107 @@ const WeatherData = ({
 
   const dataOfWeatherGraph = [
     {
-      x: 1,
+      x: '12am',
       y: AllDayWeather?.[0]?.temp ?? 0,
     },
+    // {
+    //   x: '1',
+    //   y: AllDayWeather?.[1]?.temp ?? 0,
+    // },
+    // {
+    //   x: '2',
+    //   y: AllDayWeather?.[2]?.temp ?? 0,
+    // },
+    // {
+    //   x: '3',
+    //   y: AllDayWeather?.[3]?.temp ?? 0,
+    // },
     {
-      x: 2,
-      y: AllDayWeather?.[3]?.temp ?? 0,
+      x: '4',
+      y: AllDayWeather?.[4]?.temp ?? 0,
     },
+    // {
+    //   x: '5',
+    //   y: AllDayWeather?.[5]?.temp ?? 0,
+    // },
+    // {
+    //   x: '6',
+    //   y: AllDayWeather?.[6]?.temp ?? 0,
+    // },
+    // {
+    //   x: '7',
+    //   y: AllDayWeather?.[7]?.temp ?? 0,
+    // },
     {
-      x: 3,
-      y: AllDayWeather?.[7]?.temp ?? 0,
+      x: '8',
+      y: AllDayWeather?.[8]?.temp ?? 0,
     },
+    // {
+    //   x: '9',
+    //   y: AllDayWeather?.[9]?.temp ?? 0,
+    // },
+    // {
+    //   x: '10',
+    //   y: AllDayWeather?.[10]?.temp ?? 0,
+    // },
+    // {
+    //   x: '11',
+    //   y: AllDayWeather?.[11]?.temp ?? 0,
+    // },
     {
-      x: 4,
-      y: AllDayWeather?.[11]?.temp ?? 0,
+      x: '12pm',
+      y: AllDayWeather?.[12]?.temp ?? 0,
     },
+    // {
+    //   x: '1',
+    //   y: AllDayWeather?.[13]?.temp ?? 0,
+    // },
+    // {
+    //   x: '2',
+    //   y: AllDayWeather?.[14]?.temp ?? 0,
+    // },
+    // {
+    //   x: '3',
+    //   y: AllDayWeather?.[15]?.temp ?? 0,
+    // },
     {
-      x: 5,
-      y: AllDayWeather?.[15]?.temp ?? 0,
+      x: '4',
+      y: AllDayWeather?.[16]?.temp ?? 0,
     },
+    // {
+    //   x: '5',
+    //   y: AllDayWeather?.[17]?.temp ?? 0,
+    // },
+    // {
+    //   x: '6',
+    //   y: AllDayWeather?.[18]?.temp ?? 0,
+    // },
+    // {
+    //   x: '7',
+    //   y: AllDayWeather?.[19]?.temp ?? 0,
+    // },
     {
-      x: 6,
-      y: AllDayWeather?.[19]?.temp ?? 0,
+      x: '8',
+      y: AllDayWeather?.[20]?.temp ?? 0,
     },
+    // {
+    //   x: '9',
+    //   y: AllDayWeather?.[21]?.temp ?? 0,
+    // },
+    // {
+    //   x: '10',
+    //   y: AllDayWeather?.[22]?.temp ?? 0,
+    // },
     {
-      x: 7,
+      x: '11',
       y: AllDayWeather?.[23]?.temp ?? 0,
     },
   ];
   // console.log(`AllDayWeather`, AllDayWeather);
-
+  const onLayoutMinMaxGraphView = (e) => {
+    !isMinMaxHeightSet.current && setMinMaxGraphHeight((h) => !isNaN(e?.nativeEvent?.layout?.height) ? Math.floor(e.nativeEvent.layout.height) : h);
+    isMinMaxHeightSet.current = true;
+  };
   const _weatherType = ManualWeatherType
     ? ManualWeatherType
     : weatherData
@@ -692,7 +1013,6 @@ const WeatherData = ({
 
   return (
     <View style={styles.container}>
-      {/* {console.log(`data`, data)} */}
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -753,58 +1073,49 @@ const WeatherData = ({
           </View>
         </View>
         <View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-              WEATHER
-            </Text>
-            <TouchableOpacity
-              activeOpacity={1}
+          {!UserData.WeatherPermission ? (
+            <View
               style={{
-                // fontSize: SIZE / 14,
-                // fontWeight: '500',
+                flex: 1,
+                justifyContent: 'center',
                 alignItems: 'center',
-                width: '100%',
-              }}
-              onPress={() => setWeatherPopUp(true)}>
-              <Text style={styles.swiperText}>
-                You are more <Text style={{ color: '#5947D0' }}>energetic</Text>{' '}
-                when the temperature is below{' '}
-                <Text style={{ color: '#5947D0' }}>20°</Text> and it{' '}
-                <Text style={{ color: '#5947D0' }}>rains</Text> around{' '}
-                <Text style={{ color: '#5947D0' }}>2hrs</Text>
+              }}>
+              <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
+                WEATHER
               </Text>
-            </TouchableOpacity>
-
-            {UserData.WeatherPermission && (
-              <View
+              <TouchableOpacity
+                activeOpacity={1}
                 style={{
-                  position: 'absolute',
-                  zIndex: -234234,
-                  justifyContent: 'center',
-                  top: SIZE / 2.2,
-                }}>
-                <Text
-                  style={{
-                    marginTop: -160,
-                    fontWeight: '700',
-                    fontFamily: RubikExtraBold,
-                    fontSize: SIZE / 5.5,
-                    color: '#E0DDED',
-                    transform: [{ rotate: '-15deg' }],
-                  }}>
-                  Demo
+                  // fontSize: SIZE / 14,
+                  // fontWeight: '500',
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+                onPress={() => setWeatherPopUp(true)}>
+                <Text style={styles.swiperText}>
+                  You are more <Text style={{ color: '#5947D0' }}>energetic</Text>{' '}
+                  when the temperature is below{' '}
+                  <Text style={{ color: '#5947D0' }}>20°</Text> and it{' '}
+                  <Text style={{ color: '#5947D0' }}>rains</Text> around{' '}
+                  <Text style={{ color: '#5947D0' }}>2hrs</Text>
                 </Text>
-              </View>
-            )}
-          </View>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <DataInsights
+              dailyInsights={insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={insights?.dailySuggestion}
+              dailySuggestionType={insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              dispatch={dispatch}
+            />
+          )}
 
           <View style={styles.WeatherCardMain}>
-            {swiperIndex == 2 && (
+            {swiperIndex == index && (
               <View style={styles.WeatherCard}>
                 <Text
                   style={[
@@ -970,11 +1281,11 @@ const WeatherData = ({
 
           {/* <ProgressBarCustom /> */}
           <HomeHeader
-            click={() => setWeatherDurationModal(true)}
-            value={WeatherDuration}
+            // click={() => setWeatherDurationModal(true)}
+            // value={WeatherDuration}
           />
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
-            {swiperIndex == 2 && (
+            {swiperIndex == index && (
               <BarGraph
                 max={max}
                 min={Lowmin}
@@ -994,12 +1305,12 @@ const WeatherData = ({
                 // justifyContent: 'center',
                 marginTop: 30,
               }}>
-              {swiperIndex == 2 && (
-                <View>
-                  <View>
+              {swiperIndex == index && (
+                <View onLayout={onLayoutMinMaxGraphView}>
+                  <View style={{position: 'absolute'}}>
                     <GraphBezierCustom
                       // abs
-                      heightProp={heightProp}
+                      heightProp={minMaxGraphHeight}
                       stroke="#F4227E"
                       widthProp={widthProp}
                       data={data}
@@ -1007,14 +1318,14 @@ const WeatherData = ({
                       H={9}
                     />
                   </View>
-                  <View style={{ marginTop: 20 }}>
+                  <View style={{ marginTop: 0 }}>
                     <GraphBezierCustom
-                      heightProp={heightProp}
+                      heightProp={minMaxGraphHeight}
                       stroke="#70DEEC"
                       widthProp={widthProp}
                       data={dataLow}
                       max={Lowmax}
-                      H={4}
+                      H={9}
                     />
                   </View>
                 </View>
@@ -1032,10 +1343,12 @@ const WeatherData = ({
               <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
             </View>
           </View>
-          {swiperIndex == 2 && (
+          {swiperIndex == index && (
             <GraphicChart
+              isDailyDisabled={false}
               dataOfWeatherGraph={dataOfWeatherGraph}
-              fitness={false}
+              graphType={dataTypes.weather}
+              // fitness={false}
             />
           )}
           {!UserData.WeatherPermission && (
@@ -1116,13 +1429,13 @@ const WeatherData = ({
         verifyDone={() => AnonymousPopUpcancelled()}
       />
 
-      <WeatherGraphDurationModal
+      {/* <WeatherGraphDurationModal
         data={WeatherDurations}
         modalVisible={WeatherDurationModal}
         onChangeText={setWeatherDuration}
         value={WeatherDuration}
         dismissModalHandler={() => setWeatherDurationModal(false)}
-      />
+      /> */}
     </View>
   );
 };

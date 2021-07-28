@@ -83,6 +83,7 @@ import {
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 import Insights from '../../../assets/svg/insights';
+import { setSwiperIndexHome } from '../../services/commonService';
 
 let prevXY = { dx: 0, dy: 0 };
 let moveCount = 0;
@@ -550,6 +551,7 @@ export default function MoodDetector({ navigation }) {
     const id = setTimeout(() => {
       setIsSaveMoodConfirmModalVisible(false);
       const closeId = setTimeout(() => {
+        setSwiperIndexHome(0, dispatch);
         navigation.replace('HomeScreen', {
           lat: lat,
           long: lng,
@@ -766,7 +768,7 @@ export default function MoodDetector({ navigation }) {
       UserData.WeatherPermission &&
         (UserData.lat == null || UserData.lon == null) &&
         GetLocation.getCurrentPosition({
-          enableHighAccuracy: true,
+          enableHighAccuracy: false,
           timeout: 15000,
         })
           .then((location) => {
@@ -973,14 +975,11 @@ export default function MoodDetector({ navigation }) {
         mood_id: Id.id,
         device_id: deviceId,
         mood_type,
-        city: isIndia && city_info ? defaultLocation.city : city_info,
-        state: isIndia && state_info ? defaultLocation.state : state_info,
-        country:
-          isIndia && country_info ? defaultLocation.country : country_info,
-        lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
-        long:
-          isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
-
+        city: isIndia || !UserData.lat ? defaultLocation.city : city_info,
+        state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
+        country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
+        lat: isIndia || !UserData.lat ? defaultLocation.latitude : UserData.lat,
+        long: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
         email: UserData.UserEmail,
         user_id: UserData.UserId,
         device_token: fcm,
@@ -1018,6 +1017,7 @@ export default function MoodDetector({ navigation }) {
           .then((result) => {
             console.log('quesstion updated', result);
             setLoading(false);
+            setSwiperIndexHome(0, dispatch);
             navigation.navigate('HomeScreen', { screen: 'MicScreen' });
           })
           .catch((error) => {
@@ -1041,9 +1041,11 @@ export default function MoodDetector({ navigation }) {
               //   deviceID: deviceId,
               // });
               if (route?.params?.question != undefined) {
+                setSwiperIndexHome(0, dispatch);
                 navigation.navigate('HomeScreen', { screen: 'MicScreen' });
               } else {
                 showMoodSaveConfirmModal(() => {
+                  setSwiperIndexHome(0, dispatch);
                   navigation.replace('HomeScreen', {
                     lat: lat,
                     long: lng,
@@ -1113,6 +1115,7 @@ export default function MoodDetector({ navigation }) {
 
   const dismissNotificationQuestionModal = useCallback(() => {
     setIsNotificationQuestionModalVisible(false);
+    setSwiperIndexHome(0, dispatch);
     navigation.navigate('HomeScreen', { screen: 'MicScreen' });
   }, []);
 
@@ -1186,15 +1189,15 @@ export default function MoodDetector({ navigation }) {
   }, [isScreenFocused, NotifData, UserData.notification, dispatch]);
 
   const setLPXY = () => {
-    pan.current.setValue({
-      x:
-        pan.current.x._value -
-        (wheelSize === regularWheelSize ? 0 : getFontSize(16)),
-      y:
-        pan.current.y._value -
-        (wheelSize === regularWheelSize ? 0 : getFontSize(6)),
-    });
-    forceUpdate();
+    // pan.current.setValue({
+    //   x:
+    //     pan.current.x._value -
+    //     (wheelSize === regularWheelSize ? 0 : getFontSize(16)),
+    //   y:
+    //     pan.current.y._value -
+    //     (wheelSize === regularWheelSize ? 0 : getFontSize(6)),
+    // });
+    // forceUpdate();
   };
 
   const renderBlocks = () => {
@@ -1485,7 +1488,7 @@ export default function MoodDetector({ navigation }) {
 
       <SaveMoodConfirmModal
         modalVisible={isSaveMoodConfirmModalVisible}
-        dismissModalHandler={dismissSaveMoodConfirmModal}
+        dismissModalHandler={SaveMood}
         emotionText={emotionText}
         onClickButtonOne={() => SaveMood()}
       />
