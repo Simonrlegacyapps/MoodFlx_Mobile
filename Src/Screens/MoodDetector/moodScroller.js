@@ -84,6 +84,13 @@ export default function MoodScroller({
     return null;
   }
 
+  let marginLeft = 0;
+  if (wheelSize === largeWheelSize) {
+    marginLeft = -getFontSize(10);
+  } else if (wheelSize === mediumWheelSize) {
+    marginLeft = -getFontSize(12);
+  }
+
   return (
     <>
       <Animated.View
@@ -109,7 +116,10 @@ export default function MoodScroller({
             style={[
               styles.toolTipView,
               // {transform: [{ scale: 1 }]}
-              {marginBottom: marginTop},
+              {
+                marginBottom: marginTop,
+                marginLeft: marginLeft,
+              },
             ]}>
             <View style={styles.toolTipTextView}>
               <Text style={styles.toolTipText}>{emotionText}</Text>
@@ -146,7 +156,9 @@ export default function MoodScroller({
             </Svg>
           </View>
         )}
-        <View style={styles.circleView}>
+        <View style={[styles.circleView, 
+          {alignSelf: wheelSize === regularWheelSize ? 'center' : 'stretch'},
+          ]}>
           <Animated.View
             style={[
               styles.circle1,
@@ -251,6 +263,8 @@ const styles = StyleSheet.create({
   toolTipView: {
     zIndex: 30,
     alignItems: 'center',
+    alignSelf: 'stretch',
+    width: '100%',
     // marginBottom: -10,
   },
   toolTipTextView: {
