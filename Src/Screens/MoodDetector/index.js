@@ -1564,8 +1564,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    marginTop: horizontalScale(25),
-    marginBottom: horizontalScale(37),
+    marginTop: horizontalScale(5),
+    marginBottom: horizontalScale(17),
   },
   holdTextView: {
     position: 'absolute',

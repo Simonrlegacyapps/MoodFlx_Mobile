@@ -90,3 +90,14 @@ export const getBulbColorFromLux = (v) => {
 export const setSwiperIndexHome = (i, dispatch) => {
   dispatch?.(SetSwiperIndex(i));
 };
+
+export const getFloCoins = (coins) => {
+  let c = !isNaN(coins) ? String(coins) : -1;
+  if (typeof c === 'string') {
+    if (c.length > 4) {
+      return c.length > 4 ? coins?.format?.() ?? c : c;
+    }
+  } else {
+    return coins ?? 0;
+  }
+};
