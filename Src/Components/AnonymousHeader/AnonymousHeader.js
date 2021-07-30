@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, Platform } from 'react-native';
 import Constants from '../../Constants';
 // import ToggleSwitch from 'toggle-switch-react-native';
 import AnonymousIcon from '../../../assets/commonicons/AnonymousIcon';
@@ -267,18 +267,15 @@ const styles = StyleSheet.create({
     marginLeft: horizontalScale(14),
     marginRight: horizontalScale(10)
   },
-  floCoinsTextContainer: {
-
-  },
   floCoinsTextOne: {
-    fontSize: getFontSize(16),
+    fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
     fontWeight: '500',
     // marginBottom: 5,
     fontFamily: RubikMedium,
   },
   floCoinsTextTwo: {
     marginTop: horizontalScale(3),
-    fontSize: getFontSize(15),
+    fontSize: Platform.OS === 'ios' ? getFontSize(12) : getFontSize(14),
     fontWeight: '400',
     color: 'grey',
     fontFamily: RubikLight,
@@ -305,19 +302,19 @@ const styles = StyleSheet.create({
   },
   fullNameText: {
     color: 'white',
-    fontSize: getFontSize(25),
+    fontSize: Platform.OS === 'ios' ? getFontSize(23) : getFontSize(25),
     fontFamily: RubikRegular,
     alignSelf: 'center',
     justifyContent: 'center',
   },
   fullNameTextTwo: {
-    fontSize: getFontSize(16),
+    fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
     fontWeight: '500',
     marginBottom: 5,
     fontFamily: RubikMedium,
   },
   detailsText: {
-    fontSize: getFontSize(13),
+    fontSize: Platform.OS === 'ios' ? getFontSize(11) : getFontSize(13),
     fontWeight: '400',
     color: 'grey',
     fontFamily: RubikLight,

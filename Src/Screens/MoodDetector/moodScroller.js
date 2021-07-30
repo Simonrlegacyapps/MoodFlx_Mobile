@@ -86,10 +86,12 @@ export default function MoodScroller({
 
   let marginLeft = 0;
   if (wheelSize === largeWheelSize) {
-    marginLeft = -getFontSize(10);
+    marginLeft = -getFontSize(15);
   } else if (wheelSize === mediumWheelSize) {
-    marginLeft = -getFontSize(12);
+    marginLeft = -getFontSize(17);
   }
+
+  const t = toolTipData?.text?.toLowerCase?.() ?? '';
 
   return (
     <>
@@ -128,8 +130,8 @@ export default function MoodScroller({
                   width={getFontSize(20)}
                   height={getFontSize(20)}
                   // viewBox="0 0 24 24"
-                  fill="none"
-                  // stroke={iconColor}
+                  fill={t === 'content' ? '#000000' : undefined}
+                  stroke="#000000"
                   source={{
                     uri: `https://super.moodflo.com/${
                       toolTipData?.img
@@ -210,7 +212,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: height / 2,
     left: width / 2,
-    alignItems: 'center',
+    // alignItems: 'center',
     zIndex: 10,
     // backgroundColor: '#000000'
   },

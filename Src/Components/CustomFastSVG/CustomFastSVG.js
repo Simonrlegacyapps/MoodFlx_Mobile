@@ -138,9 +138,17 @@ class CustomFastSVG extends Component {
     if (!this.state.svgXmlData) {
       return null;
     }
+    let xmlData =
+      this.props.fill && typeof this.state.svgXmlData === 'string'
+        ? this.state.svgXmlData.replace(new RegExp('fill="[\\d\\D]*?\"', "g"), `fill="${this.props.fill}"`)
+        : this.state.svgXmlData;
+    xmlData =
+      this.props.stroke && typeof xmlData === 'string'
+        ? xmlData.replace(new RegExp('stroke="[\\d\\D]*?\"', "g"), `stroke="${this.props.stroke}"`)
+        : xmlData;
     return (
       <View style={this.props.style}>
-        <SvgXml xml={this.state.svgXmlData} override={this.props} />
+        <SvgXml xml={xmlData} override={this.props} />
       </View>
     );
   }
