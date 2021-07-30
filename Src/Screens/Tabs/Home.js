@@ -331,6 +331,14 @@ const App = (props) => {
           } catch (error) {
             console.log('Async set item Health Permission error', error);
           }
+          if (Platform.OS === 'android') {
+            try {
+              await AsyncStorage.setItem('GiveSleepPerm', 'true');
+              dispatch(SleepPerm(true));
+            } catch (error) {
+              console.log('Async set item Health Permission error', error);
+            }
+          }
         }
         setLoading(false);
         const timeoutId = setTimeout(async () => {
