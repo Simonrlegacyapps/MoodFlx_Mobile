@@ -106,14 +106,15 @@ export default function DataInsights({
           <AnimatedCircularProgress
             duration={900}
             arcSweepAngle={360}
-            size={horizontalScale(25)}
-            width={3}
+            size={horizontalScale(28)}
+            padding={1}
+            width={2.5}
             fill={(timeLeft / 5) * 100}
             rotation={0}
             tintColor="#7265E3"
             lineCap={'round'}
             backgroundColor="#CFF9ED">
-            {(fill) => <Text>{timeLeft}</Text>}
+            {(fill) => <Text style={styles.progressText}>{timeLeft}</Text>}
           </AnimatedCircularProgress>
         )}
       </View>
@@ -219,5 +220,10 @@ const styles = StyleSheet.create({
   },
   suggestionTextBlue: {
     color: 'rgb(25,165,177)',
+  },
+  progressText: {
+    fontSize: getFontSize(18),
+    fontFamily: RubikMedium,
+    color: '#7265E3',
   },
 });
