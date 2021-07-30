@@ -384,7 +384,7 @@ const LightData = ({
               />
             </View>
             <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
-              <Text style={styles.lightText}>Sync your</Text>
+              <Text style={styles.lightText}>Syncing your</Text>
               <Text style={styles.normalText}>Light data</Text>
             </View>
           </TouchableOpacity>
