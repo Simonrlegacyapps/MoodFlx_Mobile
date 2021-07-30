@@ -59,7 +59,7 @@ const activityHealthKitOptions = {
     read: [
       // PERMS.DateOfBirth,
       PERMS.Weight,
-      PERMS.Height,
+      // PERMS.Height,
       // PERMS.BodyMassIndex,
       // PERMS.LeanBodyMass,
       // PERMS.BodyFatPercentage,
