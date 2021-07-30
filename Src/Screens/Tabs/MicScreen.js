@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import HappyIcon from '../../../assets/emotionsicons/HappyIcon';
@@ -122,6 +124,14 @@ const MicScreen = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       getQuestions();
+      return () => {
+        // screen is out of focus
+        if (Platform.OS === 'android') {
+          StatusBar.setBackgroundColor('#FFFFFF');
+          StatusBar.setBarStyle('dark-content');
+        }
+        // console.log('screen is out of focus: ', isActive);
+      };
     }, []),
   );
 
@@ -181,6 +191,9 @@ const MicScreen = ({ navigation }) => {
         flex: 1,
         backgroundColor: 'white',
       }}>
+        {Platform.OS === 'android' && (
+          <StatusBar barStyle="light-content" backgroundColor={'#89A1F7'} />
+        )}
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

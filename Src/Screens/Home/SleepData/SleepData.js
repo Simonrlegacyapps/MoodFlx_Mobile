@@ -593,7 +593,7 @@ const SleepData = ({
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {
-                await AsyncStorage.setItem('GiveSleepPerm', 'true');
+                // await AsyncStorage.setItem('GiveSleepPerm', 'true');
                 setopenActionSheet(true);
               }}
               style={{

@@ -4,6 +4,7 @@ import {
   Dimensions,
   Image,
   Modal,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -323,6 +324,7 @@ const Linktocompany = ({ navigation }) => {
   // console.log(`UserData.NameCompany`, UserData.NameCompany);
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       {/* {console.log('REDUX DATA ==============>', getDivision[0].id)} */}
       <View>
         <Modal

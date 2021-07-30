@@ -58,7 +58,7 @@ const SaveMoodConfirmModal = ({
     }
   }
 
-  console.log(`ShowAddName`, AnonymousStatus)
+  // console.log(`ShowAddName`, AnonymousStatus)
 
   const cancelled = async () => {
     await AsyncStorage.setItem('Anonymous', JSON.stringify(true));
