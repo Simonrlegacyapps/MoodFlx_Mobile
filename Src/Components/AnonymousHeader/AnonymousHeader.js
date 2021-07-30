@@ -196,7 +196,7 @@ const AnonymousHeader = ({ backGround }) => {
             style={styles.detailsText}>
             {UserData.Anonymous
               ? 'Your data is private'
-              : 'Saving this mood as you'}
+              : 'Saving as you'}
           </Text>
         </View>
         <View style={{ marginHorizontal: 16 }}>
