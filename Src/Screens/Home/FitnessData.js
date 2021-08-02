@@ -37,6 +37,10 @@ import PostRequestApi, {
 import DataInsights from '../../Components/DataInsights/DataInsights';
 import moment from 'moment';
 import { getWeeklyInsightsAvailable } from '../../Constants/constants';
+import LinearGradient from 'react-native-linear-gradient';
+import Crown from '../../../assets/svg/Crown';
+import { getFloCoins } from '../../services/commonService';
+import CrownBox from '../../Components/crownBox/crownBox';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -365,10 +369,11 @@ const FitnessData = ({
               <Text style={styles.normalText}>Fitness data</Text>
             </View>
           </TouchableOpacity>
+          <CrownBox floCoins={UserData.floCoins}/>
           <TouchableOpacity
             onPress={() => setAnonymousClick(true)}
             style={styles.ColoredView}>
-            <Text style={styles.ColoredText}>Anonymous</Text>
+            <Text style={styles.ColoredText}>Anon</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.ProgressBarView}>
@@ -825,6 +830,7 @@ const styles = StyleSheet.create({
     color: '#4C5980',
     fontFamily: RubikRegular,
   },
+
 });
 
 export default FitnessData;

@@ -54,6 +54,7 @@ import isFunction from 'lodash.isfunction';
 import {findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getTodaysHourlyData} from './weatherService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
+import CrownBox from '../../../Components/crownBox/crownBox'
 
 let weatherData = null;
 
@@ -1042,10 +1043,11 @@ const WeatherData = ({
               <Text style={styles.normalText}>Weather data</Text>
             </View>
           </TouchableOpacity>
+          <CrownBox floCoins={UserData.floCoins}/>
           <TouchableOpacity
             onPress={() => setAnonymousClick(true)}
             style={styles.ColoredView}>
-            <Text style={styles.ColoredText}>Anonymous</Text>
+            <Text style={styles.ColoredText}>Anon</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.ProgressBarView}>
