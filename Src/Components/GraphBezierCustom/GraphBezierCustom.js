@@ -23,7 +23,7 @@ const d3 = {
 const {width} = Dimensions.get('window');
 // const height = size / 3.7;
 // const width = size - 114;
-const verticalPadding = 10;
+const verticalPadding = 16;
 const cursorRadius = 10;
 const labelWidth = 100;
 
@@ -103,6 +103,7 @@ const GraphBezierCustom = ({
     container: {
       // marginTop: 60,
       height: heightProp + dynamicSize(6),
+      paddingBottom:8
       // width,
     },
     cursor: {
