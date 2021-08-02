@@ -52,6 +52,7 @@ import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
 import { getBulbColorFromLux } from '../../../services/commonService';
 import { getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import CrownBox from '../../../Components/crownBox/crownBox';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -388,8 +389,11 @@ const LightData = ({
               <Text style={styles.normalText}>Light data</Text>
             </View>
           </TouchableOpacity>
+          <View>
+            <CrownBox floCoins={UserData.floCoins}/>
+            </View>
           <View style={styles.ColoredView}>
-            <Text style={styles.ColoredText}>Anonymous</Text>
+            <Text style={styles.ColoredText}>Anon</Text>
           </View>
         </View>
         <View style={styles.ProgressBarView}>
@@ -618,6 +622,7 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 10,
     paddingHorizontal: 20,
+    marginLeft:-10,
     backgroundColor: '#DED6FE',
     borderRadius: 13,
     alignItems: 'center',

@@ -201,10 +201,10 @@ const SaveMoodConfirmModal = ({
           </Text>
           <TouchableOpacity onPress={() => Anonymous()} activeOpacity={0.7}>
             {UserData?.UserDetails?.full_name ? <Text style={styles.AnonymousButton}>
-              Saved as {UserData.Anonymous ? "Anonymous" : `${UserData?.UserDetails?.full_name}`}
+              as {UserData.Anonymous ? "Anonymous" : `${UserData?.UserDetails?.full_name}`}
             </Text> :
               <Text style={styles.AnonymousButton}>
-                Saved as Anonymous
+                as Anonymous
             </Text>}
           </TouchableOpacity>
           <View style={styles.inputBox}>

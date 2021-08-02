@@ -11,5 +11,7 @@ export default {
   MagoliaColor: '#E4DFFF',
   blueTextColor: '#7265E3',
   greyColorCode: '#9C9EB9',
-  blackColorCode: '#2D3142'
+  blackColorCode: '#2D3142',
+  greyTextColor : '#484F5F',
+  lightGrey : '#83848E'
 };
