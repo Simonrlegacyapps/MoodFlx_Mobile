@@ -11,6 +11,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import PropTypes from 'prop-types';
@@ -185,7 +186,7 @@ const SaveMoodConfirmModal = ({
         <TouchableOpacity
           onPress={dismissModalHandler}
           style={[styles.dismissView, { backgroundColor: color }]} />
-        <View style={styles.upperContainer}>
+        <View onStartShouldSetResponder={Keyboard.dismiss} style={[styles.upperContainer]}>
           <Text
             style={styles.textOne}>
             Thank you!
@@ -200,14 +201,14 @@ const SaveMoodConfirmModal = ({
           </Text>
           <TouchableOpacity onPress={() => Anonymous()} activeOpacity={0.7}>
             {UserData?.UserDetails?.full_name ? <Text style={styles.AnonymousButton}>
-              Saved as {UserData.Anonymous ? "Anonymous" : `${UserData?.UserDetails?.full_name}`}
+              as {UserData.Anonymous ? "Anonymous" : `${UserData?.UserDetails?.full_name}`}
             </Text> :
               <Text style={styles.AnonymousButton}>
-                Saved as Anonymous
+                as Anonymous
             </Text>}
           </TouchableOpacity>
           <View style={styles.inputBox}>
-            <TextInput style={{ letterSpacing: 1, }} placeholder={`Quick note about why you're ${emotionText} today?`} multiline={true} />
+            <TextInput returnKeyType={"done"} onSubmitEditing={()=>Keyboard.dismiss()} style={{ letterSpacing: 1, }} placeholder={`Quick note about why you're ${emotionText} today?`} multiline={true} />
           </View>
           <TouchableOpacity style={[styles.buttonOne, {
             marginTop: horizontalScale(28),

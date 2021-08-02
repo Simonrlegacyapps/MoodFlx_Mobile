@@ -44,6 +44,7 @@ import {
 import { dataTypes, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
+import CrownBox from '../../../Components/crownBox/crownBox';
 
 const sleepInsightsInitialState = {
   dailyInsights: '',
@@ -456,8 +457,11 @@ const SleepData = ({
               <Text style={styles.normalText}>Sleep data</Text>
             </View>
           </TouchableOpacity>
+          <View>
+            <CrownBox floCoins={UserData.floCoins}/>
+            </View>
           <View style={styles.ColoredView}>
-            <Text style={styles.ColoredText}>Anonymous</Text>
+            <Text style={styles.ColoredText}>Anon</Text>
           </View>
         </View>
         <View style={styles.ProgressBarView}>
@@ -689,6 +693,7 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 10,
     paddingHorizontal: 20,
+    marginLeft:-10,
     backgroundColor: '#DED6FE',
     borderRadius: 13,
     alignItems: 'center',

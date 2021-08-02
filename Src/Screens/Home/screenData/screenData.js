@@ -28,6 +28,8 @@ import PopUp from '../../../Components/PopUp/PopUp';
 import Toast from 'react-native-toast-message';
 import UsageStats from 'react-native-usage-stats';
 import moment from 'moment';
+import CrownBox from '../../../Components/crownBox/crownBox';
+import { useSelector } from 'react-redux';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -54,6 +56,8 @@ const ScreenData = ({
   const [ScreenDuration, setScreenDuration] = useState('Week');
   const [Graph, setGraph] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
+
+  const UserData = useSelector((state) => state.First);
 
   const data = [
     {
@@ -224,8 +228,9 @@ const ScreenData = ({
               <Text style={styles.normalText}>Screen data</Text>
             </View>
           </TouchableOpacity>
+          <CrownBox floCoins={UserData.floCoins}/>
           <View style={styles.ColoredView}>
-            <Text style={styles.ColoredText}>Anonymous</Text>
+            <Text style={styles.ColoredText}>Anon</Text>
           </View>
         </View>
         <View style={styles.ProgressBarView}>
@@ -473,6 +478,7 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 10,
     paddingHorizontal: 20,
+    marginLeft:-10,
     backgroundColor: '#DED6FE',
     borderRadius: 13,
     alignItems: 'center',

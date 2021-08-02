@@ -52,6 +52,7 @@ import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
 import { getBulbColorFromLux } from '../../../services/commonService';
 import { getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import CrownBox from '../../../Components/crownBox/crownBox';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -134,7 +135,7 @@ const LightData = ({
       const eData = moment(e);
       let data = null;
       let day = '';
-      day = eData.format('dd');
+      day = eData.format('dd')?.charAt?.(0);
       // INBED
       dataArray.forEach((d) => {
         const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
@@ -209,8 +210,8 @@ const LightData = ({
           const lightArray = Object.values(response?.data?.lightData);
           if (Array.isArray(lightArray) && lightArray.length > 0) {
             const lightGraphData = getLightGraphData(lightArray);
-            console.log('lightGraphData: ', lightGraphData)
-            setLightGraphData(lightGraphData)
+            console.log('lightGraphData: ', lightGraphData);
+            setLightGraphData(lightGraphData);
           }
         }
         return PostRequestApi('getLightInsights', { ...params, "status": "daily" });
@@ -388,8 +389,11 @@ const LightData = ({
               <Text style={styles.normalText}>Light data</Text>
             </View>
           </TouchableOpacity>
+          <View>
+            <CrownBox floCoins={UserData.floCoins}/>
+            </View>
           <View style={styles.ColoredView}>
-            <Text style={styles.ColoredText}>Anonymous</Text>
+            <Text style={styles.ColoredText}>Anon</Text>
           </View>
         </View>
         <View style={styles.ProgressBarView}>
@@ -618,6 +622,7 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 10,
     paddingHorizontal: 20,
+    marginLeft:-10,
     backgroundColor: '#DED6FE',
     borderRadius: 13,
     alignItems: 'center',

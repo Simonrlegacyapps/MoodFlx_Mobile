@@ -131,8 +131,8 @@ export default function MoodDetector({ navigation }) {
   ] = useState(false);
   const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
-  let [toolTipData, setToolTipData] = useState({ ...initialEmotionTextData });
-  const [emotionText, setEmotionText] = useState(initialEmotionTextData.text);
+  let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
+  const [emotionText, setEmotionText] = useState(initialEmotionTextData.name);
   const [color, setColor] = useState(toolTipData.color);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isHapticsEnabled, setisHapticsEnabled] = useState(false);
@@ -377,6 +377,7 @@ export default function MoodDetector({ navigation }) {
       prevEmotionData.current,
       userData.current,
     );
+    // console.log('emotionData========<><><>: ', emotionData);
     const hapticsDataObj = getHapticStats(
       top,
       left,
@@ -386,11 +387,9 @@ export default function MoodDetector({ navigation }) {
     hapticsData.current = hapticsDataObj;
 
     // console.log('emotionData => ', emotionData);
-    if (prevEmotionData?.current?.text === emotionData.text) {
-      const color = pSBC(count.current / 100, toolTipData.color);
-      setToolTipData(Object.assign(toolTipData, { ...emotionData }));
-      setEmotionText(emotionData?.text ?? '');
-      // setColor(color);
+    if (prevEmotionData?.current?.name === emotionData.name) {
+      setToolTipData(Object.assign(toolTipData, {...emotionData}));
+      setEmotionText(emotionData?.name ?? '');
       if (count.current === 40) {
         addValue.current = -1;
       }
@@ -400,9 +399,8 @@ export default function MoodDetector({ navigation }) {
       count.current = count.current + addValue.current;
     } else {
       updateOffset();
-      setToolTipData(Object.assign(toolTipData, { ...emotionData }));
-      setEmotionText(emotionData?.text ?? '');
-      const color = pSBC(count.current / 100, emotionData.color);
+      setToolTipData(Object.assign(toolTipData, {...emotionData}));
+      setEmotionText(emotionData?.name ?? '');
       // setColor(color);
       // count.current = 1;
     }
@@ -604,7 +602,7 @@ export default function MoodDetector({ navigation }) {
     //   return;
     // }
 
-    if (emotionText === initialEmotionTextData.text && isInitialUpdate) {
+    if (emotionText === initialEmotionTextData.name && isInitialUpdate) {
       pan.current.setOffset({ x: 0, y: 0 });
       pan.current.setValue({
         x: initialX,
@@ -619,7 +617,12 @@ export default function MoodDetector({ navigation }) {
       return;
     }
     blocksContainerRef.current.measureInWindow((x, y, width, height) => {
-      setEmotionsTextData(y, x, height, width);
+      if (
+        Array.isArray(userData?.current?.AllMoods) &&
+        userData.current.AllMoods.length > 0
+      ) {
+        setEmotionsTextData(y, x, height, width, userData.current.AllMoods);
+      }
       const size = { left: x, top: y, width, height };
       if (screenContainerSize.current) {
         size.top = y - screenContainerSize.current.top;
@@ -798,10 +801,22 @@ export default function MoodDetector({ navigation }) {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(UserData?.AllMoods) && UserData.AllMoods.length > 0) {
+    if (
+      Array.isArray(UserData?.AllMoods) &&
+      UserData.AllMoods.length > 0 &&
+      blocksSize.current?.height
+    ) {
+      console.log('AllMoods: ', UserData.AllMoods);
+      setEmotionsTextData(
+        blocksSize.current?.top,
+        blocksSize.current?.left,
+        blocksSize.current?.height,
+        blocksSize.current?.width,
+        UserData.AllMoods,
+      );
       userData.current = UserData;
     }
-  }, [UserData]);
+  }, [UserData?.AllMoods]);
 
   const playHaptics = useCallback(() => {
     console.log('playHaptics shouldPlayHaptics.current', shouldPlayHaptics.current);
