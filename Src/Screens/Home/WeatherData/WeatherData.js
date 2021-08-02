@@ -516,6 +516,9 @@ const WeatherData = ({
       weather_data: allDayWeatherData.current,
       temp_min: weatherData?.main?.temp_min,
       temp_max: weatherData?.main?.temp_max,
+      temp: ManualTemp
+        ? ManualTemp
+        : Math.round(Weather?.main?.temp ? Weather.main.temp : '0'),
       city: isIndia && city_info ? defaultLocation.city : city_info,
       state: isIndia && state_info ? defaultLocation.state : state_info,
       country: isIndia && country_info ? defaultLocation.country : country_info,

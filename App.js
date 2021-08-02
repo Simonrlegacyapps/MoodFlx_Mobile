@@ -73,6 +73,9 @@ import {
 } from './Src/Constants/constants';
 import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
 import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgressModal/WeeklyInsightsProgressModal';
+Number.prototype.format = function () {
+  return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+};
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');

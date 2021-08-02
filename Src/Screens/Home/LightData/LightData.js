@@ -384,7 +384,7 @@ const LightData = ({
               />
             </View>
             <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
-              <Text style={styles.lightText}>Sync your</Text>
+              <Text style={styles.lightText}>Syncing your</Text>
               <Text style={styles.normalText}>Light data</Text>
             </View>
           </TouchableOpacity>
@@ -649,12 +649,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#8A8BAB',
     fontFamily: RubikLight,
-    lineHeight: 12,
-    marginVertical: 5,
+    // lineHeight: 12,
+    // marginVertical: 5,
   },
   normalText: {
     fontSize: 16,
-    lineHeight: 16,
+    marginTop: 4,
+    // lineHeight: 16,
     fontFamily: RubikRegular,
   },
   ColoredText: {

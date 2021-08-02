@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
   AppState,
+  StatusBar,
 } from 'react-native';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
 import AddButton from '../../Components/buttons/AddButton';
@@ -420,6 +421,7 @@ const ProfileTab = ({ navigation }) => {
 
   return (
     <>
+      <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

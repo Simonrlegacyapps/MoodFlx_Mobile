@@ -428,10 +428,19 @@ const getLandscapePaddingVertical = () => {
     iPhoneXPadding.landscape.paddingTop
     : 0;
 };
+
 const getPortraitPaddingVertical = () => {
   return isIphoneXFlag
     ? iPhoneXPadding.portrait.paddingBottom + iPhoneXPadding.portrait.paddingTop
     : 0;
+};
+
+const getLandscapePaddingTop = () => {
+  return isIphoneXFlag ? iPhoneXPadding.landscape.paddingTop : 0;
+};
+
+const getPortraitPaddingTop = () => {
+  return isIphoneXFlag ? iPhoneXPadding.portrait.paddingTop : 0;
 };
 
 export const getScrollerOffset = (
@@ -450,6 +459,9 @@ export const getScrollerOffset = (
   const paddingVertical = isLandscape
     ? getLandscapePaddingVertical()
     : getPortraitPaddingVertical();
+  const paddingTop = isLandscape
+    ? getLandscapePaddingTop()
+    : getPortraitPaddingTop();
   // const paddingTop = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingTop : iPhoneXPadding.portrait.paddingTop) : 0;
   // const paddingTop = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingTop : screenContainerSize.top) : 0;
   // const paddingBottom = isIphoneXFlag ? (isLandscape ? iPhoneXPadding.landscape.paddingBottom : iPhoneXPadding.portrait.paddingBottom) : 0;

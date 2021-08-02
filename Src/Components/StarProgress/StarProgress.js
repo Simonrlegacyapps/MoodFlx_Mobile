@@ -4,15 +4,19 @@ import {
   Text,
   Image,
   Animated,
-  ImageBackground,
   Dimensions,
   StyleSheet
 } from 'react-native';
+import {Oval} from '../../../assets/svg/oval';
 import Constants from '../../Constants';
-import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
-import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
-import { convertMinutesToTime } from '../../Screens/Home/SleepData/sleepDataService';
-const { width } = Dimensions.get('window');
+import {RubikRegular} from '../../Constants/fonts/Fonts';
+import {
+  dynamicSize,
+  getFontSize,
+  horizontalScale,
+} from '../../Constants/sizeChoose';
+import {convertMinutesToTime} from '../../Screens/Home/SleepData/sleepDataService';
+const {width} = Dimensions.get('window');
 const wid = horizontalScale(300);
 
 const StarProgress = ({ sleepMinutes }) => {
@@ -126,43 +130,32 @@ const StarProgress = ({ sleepMinutes }) => {
       <Animated.View
         style={{
           left: initialPosition,
-          transform: [{ translateX: animatedValue }],
+          transform: [{translateX: animatedValue}],
+          marginBottom: horizontalScale(10),
+          height: toolTipSize,
+          width: toolTipSize,
+          alignItems: 'center',
+          // justifyContent: 'center'
         }}>
-        <ImageBackground
-          resizeMode={'contain'}
-          source={Constants.Images.Pointer}
+        <Oval height={toolTipSize} width={toolTipSize} />
+        <View
           style={{
-            resizeMode: 'contain',
-            height: toolTipSize,
-            width: toolTipSize,
-            marginBottom: 15,
-            paddingHorizontal: 3,
-            justifyContent: 'center',
             alignItems: 'center',
-            overflow: 'hidden'
-          }}
-          imageStyle={styles.innerContainer}>
-          <View
+            justifyContent: 'center',
+            position: 'absolute',
+            top: (Math.ceil((toolTipSize/2) - (currentFont/2) - 5)),
+          }}>
+          <Text
+            onTextLayout={onTextLayout}
             style={{
-              alignItems: 'center',
-              // marginTop: 15,
-              marginBottom: 5,
+              color: '#fff',
               justifyContent: 'center',
-              // flex: 1,
+              fontSize: currentFont,
+              fontFamily: RubikRegular,
             }}>
-            <Text
-              onTextLayout={onTextLayout}
-              style={{
-                color: '#fff',
-                // flex: 1,
-                justifyContent: 'center',
-                fontSize: currentFont,
-                fontFamily: RubikRegular,
-              }}>
-              {toolTipText}
-            </Text>
-          </View>
-        </ImageBackground>
+            {toolTipText}
+          </Text>
+        </View>
       </Animated.View>
       <View
         ref={progressRef}

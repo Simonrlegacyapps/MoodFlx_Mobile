@@ -195,7 +195,7 @@ export const getWeeklyInsightsDaysLeft = () => {
   if (getWeeklyInsightsAvailable() === true) {
     return 0;
   } else {
-    if (day < 5) {
+    if (day <= 5) {
       startTime = moment()
         .add(5 - day, 'day')
         .set({

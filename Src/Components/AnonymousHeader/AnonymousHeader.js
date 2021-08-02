@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, StyleSheet, Platform } from 'react-native';
 import Constants from '../../Constants';
-import ToggleSwitch from 'toggle-switch-react-native';
+// import ToggleSwitch from 'toggle-switch-react-native';
 import AnonymousIcon from '../../../assets/commonicons/AnonymousIcon';
 import {
   RubikLight,
@@ -14,8 +14,11 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { PHOTO_URL } from '../../Constants/constants';
 import AddNameModal from '../Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
-import { dynamicSize } from '../../Constants/sizeChoose';
+import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import { GetStaffUserData } from '../../apirequest/PostRequestApi';
+import { FloCoinIcon } from '../../../assets/svg/floCoinIcon';
+import { getFloCoins } from '../../services/commonService';
+import CustomSwitch from '../CustomSwitch/CustomSwitch';
 
 const AnonymousHeader = ({ backGround }) => {
   const UserData = useSelector((state) => state.First);
@@ -145,53 +148,25 @@ const AnonymousHeader = ({ backGround }) => {
     dispatch(IsAnonymous(true));
   };
 
-  return backGround ? (
-    <View
-      style={{
-        zIndex: -99999,
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 20,
-        shadowColor: 'black',
-        shadowOffset: { height: 2 },
-        shadowOpacity: 0.3,
-      }}>
-      <AddNameModal
-        dataType={'weather'}
-        modalVisible={ShowAddName}
-        dismissModalHandler={() => cancelled()}
-        verifyDone={() => VerifyDone()}
-        value={name}
-        onChangeText={setname}
-      />
-      <View
-        style={{
-          height: 80,
-          width: '90%',
-          borderRadius: 20,
-          backgroundColor: 'white',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'row',
-        }}>
+  return (
+    <View style={styles.container}>
+      <View style={styles.subContainer}>
+        <View style={styles.floIconView}>
+          <FloCoinIcon />
+        </View>
+        <View>
+          <Text style={styles.floCoinsTextOne}>{getFloCoins(UserData.floCoins)}</Text>
+          <Text style={styles.floCoinsTextTwo}>Flo Coins</Text>
+        </View>
+        <View style={styles.verifcalBarView} />
         <View
           style={{
-            marginHorizontal: 16,
+            marginRight: horizontalScale(14),
           }}>
-          <View
-            style={{
-              height: 40,
-              width: 40,
-              backgroundColor: '#4C5980',
-              borderRadius: 25,
-              justifyContent: 'center',
-              alignItems: 'center',
-              overflow: 'hidden',
-            }}>
+          <View style={styles.imageContainer}>
             {UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
               <Image
-                style={{ height: '100%', width: '100%', resizeMode: 'cover' }}
+                style={styles.profileImage}
                 source={{
                   uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
                 }}
@@ -200,28 +175,17 @@ const AnonymousHeader = ({ backGround }) => {
               !UserData.Anonymous &&
               UserData?.UserDetails?.full_name ? (
               <Text
-                style={{
-                  color: 'white',
-                  fontSize: dynamicSize(25),
-                  fontFamily: RubikRegular,
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                }}>
+                style={styles.fullNameText}>
                 {UserData?.UserDetails?.full_name.substring(0, 1)}
               </Text>
             ) : (
-              <AnonymousIcon />
+              <AnonymousIcon height={horizontalScale(20)} width={horizontalScale(18)}/>
             )}
           </View>
         </View>
         <View style={{ flex: 1 }}>
           <Text
-            style={{
-              fontSize: 16,
-              fontWeight: '500',
-              marginBottom: 5,
-              fontFamily: RubikMedium,
-            }}>
+            style={styles.fullNameTextTwo}>
             {UserData.Anonymous
               ? 'Anonymous'
               : UserData?.UserDetails?.full_name
@@ -229,122 +193,38 @@ const AnonymousHeader = ({ backGround }) => {
                 : 'Anonymous'}
           </Text>
           <Text
-            style={{
-              fontSize: 13,
-              fontWeight: '400',
-              color: 'grey',
-              fontFamily: RubikLight,
-            }}>
+            style={styles.detailsText}>
             {UserData.Anonymous
               ? 'Your data is private'
-              : 'Saving this mood as you'}
+              : 'Saving as you'}
           </Text>
         </View>
         <View style={{ marginHorizontal: 16 }}>
-          <ToggleSwitch
-            disabled={true}
+          <CustomSwitch
+            disabled={backGround ? true : false}
             isOn={UserData.Anonymous}
             onColor="#7FE3F0"
             labelStyle={{ color: 'black', fontWeight: '900' }}
-            size="large"
+            size="mediumOne"
             onToggle={async (isOn) => {
-              Go();
-              // await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
-              // dispatch(IsAnonymous(isOn));
-              // console.log(`Full name`, UserData?.UserDetails?.full_name);
-              // console.log(`UserData.Anonymous === false`, UserData.Anonymous);
-              // if (isOn === false && !UserData?.UserDetails?.full_name) {
-              //   setShowAddName(true);
-              // }
+              console.log('background ====', backGround, isOn);
+              if (backGround) {
+                Go();
+              } else {
+                await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
+                dispatch(IsAnonymous(isOn));
+                console.log(
+                  `UserData.Anonymous === false`,
+                  isOn,
+                  UserData?.UserDetails?.full_name,
+                );
+                if (isOn === false && !UserData?.UserDetails?.full_name) {
+                  setShowAddName(true);
+                }
+              }
             }}
           />
         </View>
-      </View>
-    </View>
-  ) : (
-    <View
-      style={{
-        zIndex: -999999,
-        height: 80,
-        width: '90%',
-        borderRadius: 20,
-        backgroundColor: 'white',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-      }}>
-      <View
-        style={{
-          marginHorizontal: 16,
-        }}>
-        <View
-          style={{
-            height: 40,
-            width: 40,
-            backgroundColor: '#4C5980',
-            borderRadius: 25,
-            justifyContent: 'center',
-            alignItems: 'center',
-            overflow: 'hidden',
-          }}>
-          {UserData?.UserDetails?.profile_image && !UserData.Anonymous ? (
-            <Image
-              style={{ height: '100%', width: '100%', resizeMode: 'cover' }}
-              source={{
-                uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
-              }}
-            />
-          ) : !UserData?.UserDetails?.profile_image &&
-            !UserData.Anonymous &&
-            UserData?.UserDetails?.full_name ? (
-            <Text
-              style={{
-                color: 'white',
-                fontSize: dynamicSize(25),
-                fontFamily: RubikRegular,
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}>
-              {UserData?.UserDetails?.full_name.substring(0, 1)}
-            </Text>
-          ) : (
-            <AnonymousIcon />
-          )}
-        </View>
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 16, fontWeight: '500', marginBottom: 5 }}>
-          {UserData.Anonymous
-            ? 'Anonymous'
-            : UserData?.UserDetails?.full_name
-              ? UserData?.UserDetails?.full_name
-              : 'Anonymous'}
-        </Text>
-        <Text style={{ fontSize: 13, fontWeight: '400', color: 'grey' }}>
-          {UserData.Anonymous
-            ? 'Your data is private'
-            : 'Saving this mood as you'}
-        </Text>
-      </View>
-      <View style={{ marginHorizontal: 16 }}>
-        <ToggleSwitch
-          isOn={UserData.Anonymous}
-          onColor="#7FE3F0"
-          labelStyle={{ color: 'black', fontWeight: '900' }}
-          size="large"
-          onToggle={async (isOn) => {
-            await AsyncStorage.setItem('Anonymous', JSON.stringify(isOn));
-            dispatch(IsAnonymous(isOn));
-            console.log(
-              `UserData.Anonymous === false`,
-              isOn,
-              UserData?.UserDetails?.full_name,
-            );
-            if (isOn === false && !UserData?.UserDetails?.full_name) {
-              setShowAddName(true);
-            }
-          }}
-        />
       </View>
       <AddNameModal
         dataType={'weather'}
@@ -357,6 +237,89 @@ const AnonymousHeader = ({ backGround }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    zIndex: -99999,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 20,
+  },
+  subContainer: {
+    height: horizontalScale(65),
+    width: '93%',
+    borderRadius: 20,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+  },
+  floIconView: {
+    marginLeft: horizontalScale(14),
+    marginRight: horizontalScale(10)
+  },
+  floCoinsTextOne: {
+    fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
+    fontWeight: '500',
+    // marginBottom: 5,
+    fontFamily: RubikMedium,
+  },
+  floCoinsTextTwo: {
+    marginTop: horizontalScale(3),
+    fontSize: Platform.OS === 'ios' ? getFontSize(12) : getFontSize(14),
+    fontWeight: '400',
+    color: 'grey',
+    fontFamily: RubikLight,
+  },
+  verifcalBarView: {
+    height: '80%',
+    width: 1,
+    backgroundColor: '#E5E5E5',
+    marginHorizontal: horizontalScale(14),
+  },
+  imageContainer: {
+    height: horizontalScale(30),
+    width: horizontalScale(30),
+    backgroundColor: '#4C5980',
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  profileImage: {
+    height: '100%',
+    width: '100%',
+    resizeMode: 'cover',
+  },
+  fullNameText: {
+    color: 'white',
+    fontSize: Platform.OS === 'ios' ? getFontSize(23) : getFontSize(25),
+    fontFamily: RubikRegular,
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  fullNameTextTwo: {
+    fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
+    fontWeight: '500',
+    marginBottom: 5,
+    fontFamily: RubikMedium,
+  },
+  detailsText: {
+    fontSize: Platform.OS === 'ios' ? getFontSize(11) : getFontSize(13),
+    fontWeight: '400',
+    color: 'grey',
+    fontFamily: RubikLight,
+  },
+});
 
 export default AnonymousHeader;
 

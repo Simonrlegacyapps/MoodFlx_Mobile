@@ -1148,6 +1148,10 @@ export default function MoodDetector({ navigation }) {
 
       return () => {
         // screen is out of focus
+        if (Platform.OS === 'android') {
+          StatusBar.setBackgroundColor('#FFFFFF');
+          StatusBar.setBarStyle('dark-content');
+        }
         isMoodDetectorScreenFocused = false;
         setIsScreenFocused(false);
         dispatch(SetNotification(null));
@@ -1200,7 +1204,7 @@ export default function MoodDetector({ navigation }) {
     // forceUpdate();
   };
 
-  const renderBlocks = () => {
+  const renderBlocks = (tbColor) => {
     const fontSize = getFontSize(12);
     const lineHeight = getLineHeight(fontSize);
     return (
@@ -1220,7 +1224,7 @@ export default function MoodDetector({ navigation }) {
         {Platform.OS === 'ios' ? (
           <StatusBar barStyle="dark-content" />
         ) : (
-          <StatusBar barStyle="dark-content" backgroundColor={'white'} />
+          <StatusBar barStyle="dark-content" backgroundColor={tbColor} />
         )}
         <View
           pointerEvents="none"
@@ -1440,7 +1444,7 @@ export default function MoodDetector({ navigation }) {
             </Text>
           </View>
         )}
-      {renderBlocks()}
+      {renderBlocks(topBottomColor)}
       {renderBottomBar(topBottomColor)}
       <Scroller
         scrollerStyle={{
@@ -1560,8 +1564,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    marginTop: horizontalScale(25),
-    marginBottom: horizontalScale(37),
+    marginTop: horizontalScale(5),
+    marginBottom: horizontalScale(17),
   },
   holdTextView: {
     position: 'absolute',

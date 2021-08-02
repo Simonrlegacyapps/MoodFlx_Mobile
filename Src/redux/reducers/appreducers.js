@@ -35,6 +35,7 @@ import {
   WEEKLY_INSIGHTS_TIME_LEFT,
   SHOW_WEEKLY_INSIGHTS_MODAL,
   SET_SWIPER_INDEX,
+  SET_FLO_COINS,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -72,6 +73,7 @@ const intializedState = {
   weeklyInsightsTimeLeft: -1,
   showWeeklyInsightsModal: false,
   swiperIndex: 0,
+  floCoins: 12600,
 };
 
 export const First = (state = intializedState, action) => {
@@ -219,6 +221,10 @@ export const First = (state = intializedState, action) => {
     case SET_SWIPER_INDEX:
       return Object.assign({}, state, {
         swiperIndex: action.payload,
+      });
+    case SET_FLO_COINS:
+      return Object.assign({}, state, {
+        floCoins: action.payload,
       });
     default:
       return state;

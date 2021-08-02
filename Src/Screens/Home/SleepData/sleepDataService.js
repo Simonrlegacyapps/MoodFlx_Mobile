@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import GoogleFit, { Scopes } from 'react-native-google-fit';
 import AsyncStorage from '@react-native-community/async-storage';
+import {AppPermissions} from '../../../services/appPermissions';
 
 export const sleepDataPermissionsIOS = {
   permissions: {
@@ -40,6 +41,10 @@ export function fetchSleepDataForLastThirtyDays({ askPermission, onUpdate, dispa
 }
 
 export async function getSleepDataAfterPermissionAndroid({ askPermission, onUpdate, dispatch }) {
+  if (askPermission) {
+    AppPermissions.requestActivityPermission(dispatch);
+    return;
+  }
   const getSleepData = (callback) => {
     const sleepOptions = {
       // startDate: (moment().startOf('day').subtract(1, 'days').toDate()).toISOString(), // required

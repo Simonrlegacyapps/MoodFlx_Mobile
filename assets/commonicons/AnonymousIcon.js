@@ -1,11 +1,11 @@
 import * as React from "react"
 import Svg, { Circle, Path } from "react-native-svg"
 
-const AnonymousIcon = () => {
+const AnonymousIcon = (props) => {
     return (
         <Svg
-            width={22}
-            height={19}
+            width={props?.width ?? 22}
+            height={props?.height ?? 19}
             viewBox="0 0 22 19"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
