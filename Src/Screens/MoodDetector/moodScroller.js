@@ -78,7 +78,7 @@ export default function MoodScroller({
   }, [wheelSize]);
 
   if (
-    emotionText === initialEmotionTextData.text &&
+    emotionText === initialEmotionTextData.name &&
     scrollerStyle?.left === 0
   ) {
     return null;
@@ -91,7 +91,7 @@ export default function MoodScroller({
     marginLeft = -getFontSize(17);
   }
 
-  const t = toolTipData?.text?.toLowerCase?.() ?? '';
+  const t = toolTipData?.name?.toLowerCase?.() ?? '';
 
   return (
     <>
@@ -134,8 +134,8 @@ export default function MoodScroller({
                   stroke="#000000"
                   source={{
                     uri: `https://super.moodflo.com/${
-                      toolTipData?.img
-                        ? toolTipData.img
+                      toolTipData?.icon
+                        ? toolTipData.icon
                         : 'mood_icons/161616176321272238406054abe3bb450.svg'
                     }`,
                   }}

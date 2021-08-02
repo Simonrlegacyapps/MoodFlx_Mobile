@@ -73,7 +73,7 @@ export const initialEmotionTextData = {
   //i am using
   top: null,
   left: null,
-  text: 'Slide finger',
+  name: 'Slide finger',
   color: '#bfcfdc',
   img: '',
 };
@@ -83,7 +83,7 @@ let emotionsTextData = {
     //0
     top: [verticalScale(169), verticalScale(301)],
     left: [horizontalScale(0), horizontalScale(93.75)],
-    text: 'Upset',
+    name: 'Upset',
     color: '#1B5083',
     img: '',
   },
@@ -91,7 +91,7 @@ let emotionsTextData = {
     //1
     top: [verticalScale(301), verticalScale(433)],
     left: [horizontalScale(0), horizontalScale(93.75)],
-    text: 'Anxious',
+    name: 'Anxious',
     color: '#00407A',
     img: '',
   },
@@ -99,7 +99,7 @@ let emotionsTextData = {
     //2
     top: [verticalScale(433), verticalScale(565)],
     left: [horizontalScale(0), horizontalScale(93.75)],
-    text: 'Sad',
+    name: 'Sad',
     color: '#B87F04',
     img: '',
   },
@@ -107,7 +107,7 @@ let emotionsTextData = {
     //3
     top: [verticalScale(565), verticalScale(697)],
     left: [horizontalScale(0), horizontalScale(93.75)],
-    text: 'Tired',
+    name: 'Tired',
     color: '#DA9602',
     img: '',
   },
@@ -115,7 +115,7 @@ let emotionsTextData = {
     //4
     top: [verticalScale(169), verticalScale(301)],
     left: [horizontalScale(93.75), horizontalScale(187.5)],
-    text: 'Cranky',
+    name: 'Cranky',
     color: '#A0181F',
     img: '',
   },
@@ -123,7 +123,7 @@ let emotionsTextData = {
     //5
     top: [verticalScale(302), verticalScale(433)],
     left: [horizontalScale(93.75), horizontalScale(187.5)],
-    text: 'Wired',
+    name: 'Wired',
     color: '#8F151C',
     img: '',
   },
@@ -131,7 +131,7 @@ let emotionsTextData = {
     //6
     top: [verticalScale(434), verticalScale(565)],
     left: [horizontalScale(93.75), horizontalScale(187.5)],
-    text: 'Flat',
+    name: 'Flat',
     color: '#2A7CA7',
     img: '',
   },
@@ -139,7 +139,7 @@ let emotionsTextData = {
     //7
     top: [verticalScale(566), verticalScale(697)],
     left: [horizontalScale(93.75), horizontalScale(187.5)],
-    text: 'Spent',
+    name: 'Spent',
     color: '#50A4D3',
     img: '',
   },
@@ -147,7 +147,7 @@ let emotionsTextData = {
     //8
     top: [verticalScale(169), verticalScale(301)],
     left: [horizontalScale(187.5), horizontalScale(281.25)],
-    text: 'Pumped',
+    name: 'Pumped',
     color: '#699400',
     img: '',
   },
@@ -155,7 +155,7 @@ let emotionsTextData = {
     //9
     top: [verticalScale(301), verticalScale(433)],
     left: [horizontalScale(187.5), horizontalScale(281.25)],
-    text: 'Stoked',
+    name: 'Stoked',
     color: '#118F00',
     img: '',
   },
@@ -163,7 +163,7 @@ let emotionsTextData = {
     //10
     top: [verticalScale(433), verticalScale(565)],
     left: [horizontalScale(187.5), horizontalScale(281.25)],
-    text: 'Cool',
+    name: 'Cool',
     color: '#BBA502',
     img: '',
   },
@@ -171,7 +171,7 @@ let emotionsTextData = {
     //11
     top: [verticalScale(565), verticalScale(697)],
     left: [horizontalScale(187.5), horizontalScale(281.25)],
-    text: 'Chilled',
+    name: 'Chilled',
     color: '#E0C400',
     img: '',
   },
@@ -179,7 +179,7 @@ let emotionsTextData = {
     //12
     top: [verticalScale(169), verticalScale(301)],
     left: [horizontalScale(281.25), horizontalScale(375)],
-    text: 'Excited',
+    name: 'Excited',
     color: '#72A602',
     img: '',
   },
@@ -187,7 +187,7 @@ let emotionsTextData = {
     //13
     top: [verticalScale(302), verticalScale(433)],
     left: [horizontalScale(281.25), horizontalScale(375)],
-    text: 'Happy',
+    name: 'Happy',
     color: '#3EA135',
     img: '',
   },
@@ -195,7 +195,7 @@ let emotionsTextData = {
     //14
     top: [verticalScale(434), verticalScale(565)],
     left: [horizontalScale(281.25), horizontalScale(375)],
-    text: 'Content',
+    name: 'Content',
     color: '#4FD99C',
     img: '',
   },
@@ -203,21 +203,36 @@ let emotionsTextData = {
     //15
     top: [verticalScale(566), verticalScale(697)],
     left: [horizontalScale(281.25), horizontalScale(375)],
-    text: 'Relaxed',
+    name: 'Relaxed',
     color: '#87E8C3',
     img: '',
   },
 };
 
-export const setEmotionsTextData = (top, left, height, width) => {
+export const setEmotionsTextData = (top, left, height, width, allMoods) => {
   // console.log('setEmotionTextData called');
   // console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
   if (
     top === undefined ||
     left === undefined ||
     height === undefined ||
-    width === undefined
+    width === undefined ||
+    !Array.isArray(allMoods) ||
+    allMoods.length < 16
   ) {
+    // console.log(
+    //   'setEmotionsTextData ===> false',
+    //   ' top ---: ',
+    //   top,
+    //   ' left====: ',
+    //   left,
+    //   ' height=====: ',
+    //   height,
+    //   ' width====: ',
+    //   width,
+    //   'allMoods ===>',
+    //   'allMoods',
+    // );
     return;
   }
   const blockWidth = width / 4;
@@ -259,6 +274,19 @@ export const setEmotionsTextData = (top, left, height, width) => {
       return [w4, w5];
     }
   }
+  let data = {};
+  let flag = true;
+  allMoods.forEach((e, idx) => {
+    if (typeof e?.name !== 'string') {
+      flag = false;
+    } else {
+      data[e.name] = e;
+    }
+  });
+  if (flag === true) {
+    emotionsTextData = null;
+    emotionsTextData = {...data};
+  }
   Object.keys(emotionsTextData).forEach((e, idx) => {
     let [y1, y2] = getTopForIndex(idx);
     let [x1, x2] = getLeftForIndex(idx);
@@ -275,136 +303,148 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
   let left = Math.round(x);
   // console.log('top: ', top, 'left: ', left,)
   if (
-    top > emotionsTextData.upset.top[0] &&
-    top < emotionsTextData.upset.top[1] &&
-    left > emotionsTextData.upset.left[0] &&
-    left < emotionsTextData.upset.left[1]
+    typeof userData?.AllMoods?.[0]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[0].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[0].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[0].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[0].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.upset, img: userData?.AllMoods?.[0]?.icon };
+    return {...emotionsTextData[userData.AllMoods[0].name]};
   }
   if (
-    top > emotionsTextData.anxious.top[0] &&
-    top < emotionsTextData.anxious.top[1] &&
-    left > emotionsTextData.anxious.left[0] &&
-    left < emotionsTextData.anxious.left[1]
+    typeof userData?.AllMoods?.[1]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[1].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[1].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[1].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[1].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.anxious, img: userData?.AllMoods?.[1]?.icon };
+    return {...emotionsTextData[userData.AllMoods[1].name]};
   }
   if (
-    top > emotionsTextData.sad.top[0] &&
-    top < emotionsTextData.sad.top[1] &&
-    left > emotionsTextData.sad.left[0] &&
-    left < emotionsTextData.sad.left[1]
+    typeof userData?.AllMoods?.[2]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[2].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[2].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[2].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[2].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.sad, img: userData?.AllMoods?.[2]?.icon };
+    return {...emotionsTextData[userData.AllMoods[2].name]};
   }
   if (
-    top > emotionsTextData.tired.top[0] &&
-    top < emotionsTextData.tired.top[1] &&
-    left > emotionsTextData.tired.left[0] &&
-    left < emotionsTextData.tired.left[1]
+    typeof userData?.AllMoods?.[3]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[3].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[3].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[3].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[3].name]?.left?.[1]
   ) {
-    // console.log('anxious left: ', left, ' anxious: ', emotionsTextData.anxious, ' gestureState: ', gestureState)
-    return { ...emotionsTextData.tired, img: userData?.AllMoods?.[3]?.icon };
+    return {...emotionsTextData[userData.AllMoods[3].name]};
   }
   if (
-    top > emotionsTextData.cranky.top[0] &&
-    top < emotionsTextData.cranky.top[1] &&
-    left > emotionsTextData.cranky.left[0] &&
-    left < emotionsTextData.cranky.left[1]
+    typeof userData?.AllMoods?.[4]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[4].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[4].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[4].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[4].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.cranky, img: userData?.AllMoods?.[4]?.icon };
+    return {...emotionsTextData[userData.AllMoods[4].name]};
   }
   if (
-    top > emotionsTextData.wired.top[0] &&
-    top < emotionsTextData.wired.top[1] &&
-    left > emotionsTextData.wired.left[0] &&
-    left < emotionsTextData.wired.left[1]
+    typeof userData?.AllMoods?.[5]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[5].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[5].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[5].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[5].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.wired, img: userData?.AllMoods?.[5]?.icon };
+    return {...emotionsTextData[userData.AllMoods[5].name]};
   }
   if (
-    top > emotionsTextData.flat.top[0] &&
-    top < emotionsTextData.flat.top[1] &&
-    left > emotionsTextData.flat.left[0] &&
-    left < emotionsTextData.flat.left[1]
+    typeof userData?.AllMoods?.[6]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[6].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[6].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[6].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[6].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.flat, img: userData?.AllMoods?.[6]?.icon };
+    return {...emotionsTextData[userData.AllMoods[6].name]};
   }
   if (
-    top > emotionsTextData.spent.top[0] &&
-    top < emotionsTextData.spent.top[1] &&
-    left > emotionsTextData.spent.left[0] &&
-    left < emotionsTextData.spent.left[1]
+    typeof userData?.AllMoods?.[7]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[7].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[7].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[7].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[7].name]?.left?.[1]
   ) {
-    // console.log('tired left: ', left, ' tired: ', emotionsTextData.tired, ' gestureState: ', gestureState)
-    return { ...emotionsTextData.spent, img: userData?.AllMoods?.[7]?.icon };
+    return {...emotionsTextData[userData.AllMoods[7].name]};
   }
   if (
-    top > emotionsTextData.pumped.top[0] &&
-    top < emotionsTextData.pumped.top[1] &&
-    left > emotionsTextData.pumped.left[0] &&
-    left < emotionsTextData.pumped.left[1]
+    typeof userData?.AllMoods?.[8]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[8].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[8].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[8].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[8].name]?.left?.[1]
   ) {
-    // console.log('pumped left: ', left, ' pumped: ', emotionsTextData.pumped, ' gestureState: ', gestureState)
-    return { ...emotionsTextData.pumped, img: userData?.AllMoods?.[8]?.icon };
+    return {...emotionsTextData[userData.AllMoods[8].name]};
   }
   if (
-    top > emotionsTextData.stoked.top[0] &&
-    top < emotionsTextData.stoked.top[1] &&
-    left > emotionsTextData.stoked.left[0] &&
-    left < emotionsTextData.stoked.left[1]
+    typeof userData?.AllMoods?.[9]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[9].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[9].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[9].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[9].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.stoked, img: userData?.AllMoods?.[9]?.icon };
+    return {...emotionsTextData[userData.AllMoods[9].name]};
   }
   if (
-    top > emotionsTextData.cool.top[0] &&
-    top < emotionsTextData.cool.top[1] &&
-    left > emotionsTextData.cool.left[0] &&
-    left < emotionsTextData.cool.left[1]
+    typeof userData?.AllMoods?.[10]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[10].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[10].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[10].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[10].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.cool, img: userData?.AllMoods?.[10]?.icon };
+    return {...emotionsTextData[userData.AllMoods[10].name]};
   }
   if (
-    top > emotionsTextData.chilled.top[0] &&
-    top < emotionsTextData.chilled.top[1] &&
-    left > emotionsTextData.chilled.left[0] &&
-    left < emotionsTextData.chilled.left[1]
+    typeof userData?.AllMoods?.[11]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[11].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[11].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[11].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[11].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.chilled, img: userData?.AllMoods?.[11]?.icon };
+    return {...emotionsTextData[userData.AllMoods[11].name]};
   }
   if (
-    top > emotionsTextData.excited.top[0] &&
-    top < emotionsTextData.excited.top[1] &&
-    left > emotionsTextData.excited.left[0] &&
-    left < emotionsTextData.excited.left[1]
+    typeof userData?.AllMoods?.[12]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[12].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[12].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[12].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[12].name]?.left?.[1]
   ) {
-    // console.log('excited left: ', left, ' excited: ', emotionsTextData.excited, ' gestureState: ', gestureState)
-    return { ...emotionsTextData.excited, img: userData?.AllMoods?.[12]?.icon };
+    return {...emotionsTextData[userData.AllMoods[12].name]};
   }
   if (
-    top > emotionsTextData.happy.top[0] &&
-    top < emotionsTextData.happy.top[1] &&
-    left > emotionsTextData.happy.left[0] &&
-    left < emotionsTextData.happy.left[1]
+    typeof userData?.AllMoods?.[13]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[13].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[13].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[13].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[13].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.happy, img: userData?.AllMoods?.[13]?.icon };
+    return {...emotionsTextData[userData.AllMoods[13].name]};
   }
   if (
-    top > emotionsTextData.content.top[0] &&
-    top < emotionsTextData.content.top[1] &&
-    left > emotionsTextData.content.left[0] &&
-    left < emotionsTextData.content.left[1]
+    typeof userData?.AllMoods?.[14]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[14].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[14].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[14].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[14].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.content, img: userData?.AllMoods?.[14]?.icon };
+    return {...emotionsTextData[userData.AllMoods[14].name]};
   }
   if (
-    top > emotionsTextData.relaxed.top[0] &&
-    top < emotionsTextData.relaxed.top[1] &&
-    left > emotionsTextData.relaxed.left[0] &&
-    left < emotionsTextData.relaxed.left[1]
+    typeof userData?.AllMoods?.[15]?.name === 'string' &&
+    top > emotionsTextData[userData.AllMoods[15].name]?.top?.[0] &&
+    top < emotionsTextData[userData.AllMoods[15].name]?.top?.[1] &&
+    left > emotionsTextData[userData.AllMoods[15].name]?.left?.[0] &&
+    left < emotionsTextData[userData.AllMoods[15].name]?.left?.[1]
   ) {
-    return { ...emotionsTextData.relaxed, img: userData?.AllMoods?.[15]?.icon };
+    return {...emotionsTextData[userData.AllMoods[15].name]};
   }
   //rattled
   return emotionData;
