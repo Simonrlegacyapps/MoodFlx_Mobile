@@ -140,7 +140,7 @@ class CustomFastSVG extends Component {
     }
     return (
       <View style={this.props.style}>
-        <SvgXml xml={this.state.svgXmlData} override={this.props} />
+        <SvgXml stroke="#000" fill="#000" strokeWidth={0.6} xml={this.state.svgXmlData} override={this.props} />
       </View>
     );
   }

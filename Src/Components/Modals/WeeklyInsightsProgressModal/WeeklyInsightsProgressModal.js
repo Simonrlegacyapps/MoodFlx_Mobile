@@ -83,6 +83,7 @@ export default WeeklyInsightsProgress;
 const styles = StyleSheet.create({
   container: {
     // height: 400,
+    
     flex: 1,
     height: '100%',
     width: '100%',
@@ -111,6 +112,8 @@ const styles = StyleSheet.create({
   upperContainer: {
     backgroundColor: 'white',
     borderRadius: 20,
+    paddingVertical:10,
+    paddingHorizontal:5,
     // marginHorizontal: 10,
     // paddingHorizontal: 20,
     width: '75%',

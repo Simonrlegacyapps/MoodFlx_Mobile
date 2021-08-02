@@ -106,7 +106,8 @@ export default function MoodScroller({
                   width={getFontSize(20)}
                   height={getFontSize(20)}
                   // viewBox="0 0 24 24"
-                  fill='none'
+                  fill='#000000'
+                  // stroke={"#000"}
                   // stroke={iconColor}
                   source={{uri: `https://super.moodflo.com/${toolTipData?.img
                     ? toolTipData.img
