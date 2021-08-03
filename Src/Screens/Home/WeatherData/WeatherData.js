@@ -478,6 +478,27 @@ const WeatherData = ({
       console.log('Cannot call update weather api without weather data');
       return;
     }
+    let manual_hours = null;
+    let manual_weather_type = null;
+    let manul_pollen = null;
+    let manual_temp = null;
+    setManulHours(v => {
+      manual_hours = v;
+      return v;
+    });
+    setManualWeatherType(v => {
+      manual_weather_type = v;
+      return v;
+    });
+    setManulPollen(v => {
+      manul_pollen = v;
+      return v;
+    });
+    setManualTemp(v => {
+      manual_temp = v;
+      return v;
+    });
+
     let geocode = null;
     Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
     var state_info = '';
@@ -509,17 +530,17 @@ const WeatherData = ({
       user_id: UserData.UserId,
       email: UserData.UserEmail,
       device_id: deviceId,
-      hours: ManulHours ? ManulHours : hours,
-      weather_type: ManualWeatherType
-        ? ManualWeatherType
+      hours: manual_hours ? manual_hours : hours,
+      weather_type: manual_weather_type
+        ? manual_weather_type
         : findWeather(weatherData?.weather?.[0]?.main),
       pollen: null,
-      pollen_type: ManulPollen ? ManulPollen : 'Low',
+      pollen_type: manul_pollen ? manul_pollen : 'Low',
       weather_data: allDayWeatherData.current,
       temp_min: weatherData?.main?.temp_min,
       temp_max: weatherData?.main?.temp_max,
-      temp: ManualTemp
-        ? ManualTemp
+      temp: manual_temp
+        ? manual_temp
         : Math.round(Weather?.main?.temp ? Weather.main.temp : '0'),
       city: isIndia && city_info ? defaultLocation.city : city_info,
       state: isIndia && state_info ? defaultLocation.state : state_info,
