@@ -138,7 +138,7 @@ const LightData = ({
       const eData = moment(e);
       let data = null;
       let day = '';
-      day = eData.format('dd');
+      day = eData.format('dd')?.charAt?.(0);
       // INBED
       dataArray.forEach((d) => {
         const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
@@ -213,8 +213,8 @@ const LightData = ({
           const lightArray = Object.values(response?.data?.lightData);
           if (Array.isArray(lightArray) && lightArray.length > 0) {
             const lightGraphData = getLightGraphData(lightArray);
-            console.log('lightGraphData: ', lightGraphData)
-            setLightGraphData(lightGraphData)
+            console.log('lightGraphData: ', lightGraphData);
+            setLightGraphData(lightGraphData);
           }
         }
         return PostRequestApi('getLightInsights', { ...params, "status": "daily" });

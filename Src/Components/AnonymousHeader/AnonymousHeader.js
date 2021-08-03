@@ -247,9 +247,10 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   subContainer: {
-    height: horizontalScale(65),
+    // height: horizontalScale(65),
     width: '93%',
     borderRadius: 20,
+    paddingVertical: horizontalScale(15),
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
