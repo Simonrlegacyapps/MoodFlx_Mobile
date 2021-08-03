@@ -114,7 +114,7 @@ export default function DataInsights({
             tintColor="#7265E3"
             lineCap={'round'}
             backgroundColor="#CFF9ED">
-            {(fill) => <Text style={styles.progressText}>{timeLeft}</Text>}
+            {(fill) => <Text allowFontScaling={false} style={styles.progressText}>{timeLeft}</Text>}
           </AnimatedCircularProgress>
         )}
       </View>

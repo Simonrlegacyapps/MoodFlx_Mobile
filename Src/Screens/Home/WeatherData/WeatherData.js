@@ -1369,6 +1369,7 @@ const WeatherData = ({
                 zIndex: -234234,
               }}>
               <Text
+                allowFontScaling={false}
                 style={{
                   marginTop: dynamicSize(-300),
                   fontWeight: '700',

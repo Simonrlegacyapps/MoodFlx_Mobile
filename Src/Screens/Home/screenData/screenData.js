@@ -373,6 +373,7 @@ const ScreenData = ({
                 zIndex: -234234,
               }}>
               <Text
+                allowFontScaling={false}
                 style={{
                   marginTop: -260,
                   fontWeight: '700',
