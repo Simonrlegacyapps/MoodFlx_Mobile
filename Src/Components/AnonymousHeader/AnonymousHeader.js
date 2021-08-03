@@ -184,7 +184,7 @@ const AnonymousHeader = ({ backGround }) => {
           </View>
         </View>
         <View style={{ flex: 1 }}>
-          <Text
+          <Text allowFontScaling={false} 
             style={styles.fullNameTextTwo}>
             {UserData.Anonymous
               ? 'Anonymous'
@@ -192,7 +192,7 @@ const AnonymousHeader = ({ backGround }) => {
                 ? UserData?.UserDetails?.full_name
                 : 'Anonymous'}
           </Text>
-          <Text
+          <Text allowFontScaling={false} 
             style={styles.detailsText}>
             {UserData.Anonymous
               ? 'Your data is private'

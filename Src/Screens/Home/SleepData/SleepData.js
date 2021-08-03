@@ -45,6 +45,8 @@ import { dataTypes, getWeeklyInsightsAvailable } from '../../../Constants/consta
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox';
+import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
+import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 
 const sleepInsightsInitialState = {
   dailyInsights: '',
@@ -116,6 +118,7 @@ const SleepData = ({
   const [weeklyAsleepData, setWeeklyAsleepData] = useState(null);
   const [monthlySleepData, setMonthlySleepData] = useState(null);
   const [sleepGraphData, setSleepGraphData] = useState(null);
+  const [AnonymousClick, setAnonymousClick] = useState(false);
   const [insights, setInsights] = useReducer(
     sleepInsightsReducer,
     sleepInsightsInitialState,
@@ -431,6 +434,10 @@ const SleepData = ({
       });
   };
 
+  const AnonymousPopUpcancelled = () => {
+    setAnonymousClick(false);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -438,7 +445,7 @@ const SleepData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        <View style={styles.HeaderView}>
+        {/* <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
               setopenActionSheet(true);
@@ -463,7 +470,8 @@ const SleepData = ({
           <View style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anon</Text>
           </View>
-        </View>
+        </View> */}
+        <HomeSyncHeader label ={"Sleep"} setOpenActionSheet={setopenActionSheet} setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
@@ -627,6 +635,12 @@ const SleepData = ({
         modalVisible={SleepPopUp}
         dismissModalHandler={() => setSleepPopUp(false)}
         verifyDone={() => setSleepPopUp(false)}
+      />
+
+<AnonymousPopUp
+        modalVisible={AnonymousClick}
+        dismissModalHandler={() => AnonymousPopUpcancelled()}
+        verifyDone={() => AnonymousPopUpcancelled()}
       />
     </View>
   );

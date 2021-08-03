@@ -41,6 +41,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
 import { getFloCoins } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
+import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -339,7 +340,7 @@ const FitnessData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        <View style={styles.HeaderView}>
+        {/* <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
               // await AsyncStorage.setItem('GiveHealthPerm', 'true');
@@ -375,7 +376,8 @@ const FitnessData = ({
             style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anon</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
+        <HomeSyncHeader label={"Fitness"} setOpenActionSheet={setOpenActionSheet} setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={

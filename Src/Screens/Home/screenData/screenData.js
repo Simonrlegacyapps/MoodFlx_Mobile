@@ -30,6 +30,8 @@ import UsageStats from 'react-native-usage-stats';
 import moment from 'moment';
 import CrownBox from '../../../Components/crownBox/crownBox';
 import { useSelector } from 'react-redux';
+import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
+import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -56,6 +58,7 @@ const ScreenData = ({
   const [ScreenDuration, setScreenDuration] = useState('Week');
   const [Graph, setGraph] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
+  const [AnonymousClick, setAnonymousClick] = useState(false);
 
   const UserData = useSelector((state) => state.First);
 
@@ -201,6 +204,10 @@ const ScreenData = ({
   };
 
   const ScreenDurations = [{ label: 'Day' }, { label: 'Week' }, { label: 'Month' }];
+
+  const AnonymousPopUpcancelled = () => {
+    setAnonymousClick(false);
+  };
   return (
     <View style={styles.container}>
       <ScrollView
@@ -208,7 +215,7 @@ const ScreenData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        <View style={styles.HeaderView}>
+        {/* <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
               CheckForScreenData();
@@ -232,7 +239,8 @@ const ScreenData = ({
           <View style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anon</Text>
           </View>
-        </View>
+        </View> */}
+        <HomeSyncHeader label ={"Screen"} setOpenActionSheet={setopenActionSheet} setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
@@ -404,6 +412,12 @@ const ScreenData = ({
         modalVisible={openActionSheet}
         dismissModalHandler={() => setopenActionSheet(false)}
         verifyDone={() => VerifyDone()}
+      />
+
+<AnonymousPopUp
+        modalVisible={AnonymousClick}
+        dismissModalHandler={() => AnonymousPopUpcancelled()}
+        verifyDone={() => AnonymousPopUpcancelled()}
       />
 
       {/* <WeatherGraphDurationModal

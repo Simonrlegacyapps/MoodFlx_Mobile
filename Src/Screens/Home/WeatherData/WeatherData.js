@@ -55,6 +55,7 @@ import {findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getTo
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox'
+import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 
 let weatherData = null;
 
@@ -1022,7 +1023,7 @@ const WeatherData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        <View style={styles.HeaderView}>
+        {/* <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
               setOpenActionSheet(true);
@@ -1049,7 +1050,8 @@ const WeatherData = ({
             style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anon</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
+        <HomeSyncHeader label ={"Weather"} setOpenActionSheet={setOpenActionSheet} setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
