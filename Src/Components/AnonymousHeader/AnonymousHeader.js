@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     // height: horizontalScale(65),
     width: '93%',
     borderRadius: 20,
-    paddingVertical: horizontalScale(12),
+    paddingVertical: horizontalScale(15),
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
