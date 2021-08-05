@@ -184,7 +184,7 @@ const AnonymousHeader = ({ backGround }) => {
           </View>
         </View>
         <View style={{ flex: 1 }}>
-          <Text
+          <Text allowFontScaling={false} 
             style={styles.fullNameTextTwo}>
             {UserData.Anonymous
               ? 'Anonymous'
@@ -192,14 +192,14 @@ const AnonymousHeader = ({ backGround }) => {
                 ? UserData?.UserDetails?.full_name
                 : 'Anonymous'}
           </Text>
-          <Text
+          <Text allowFontScaling={false} 
             style={styles.detailsText}>
             {UserData.Anonymous
               ? 'Your data is private'
               : 'Saving as you'}
           </Text>
         </View>
-        <View style={{ marginHorizontal: 16 }}>
+        <View style={{ marginRight:10 }}>
           <CustomSwitch
             disabled={backGround ? true : false}
             isOn={UserData.Anonymous}
@@ -247,9 +247,10 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   subContainer: {
-    height: horizontalScale(65),
+    // height: horizontalScale(65),
     width: '93%',
     borderRadius: 20,
+    paddingVertical: horizontalScale(15),
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
@@ -318,6 +319,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: 'grey',
     fontFamily: RubikLight,
+    // backgroundColor:'blue'
   },
 });
 

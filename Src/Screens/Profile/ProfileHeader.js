@@ -20,6 +20,7 @@ const ProfileHeader = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => { navigation.navigate("ProfileTab") }} activeOpacity={0.8} style={{flex:1, flexDirection:'row'}}>
             <View style={{ marginLeft: 5, }}>
                 {!UserData?.UserDetails?.profile_image ? <ProfilePlaceholder
                     width={dynamicSize(40)}
@@ -36,6 +37,7 @@ const ProfileHeader = ({ navigation }) => {
                 <Text style={styles.since}>Since March 3rd</Text>
                 <Text style={styles.name}>{UserData?.UserDetails?.full_name ? UserData?.UserDetails?.full_name : "Anonymous"}</Text>
             </View>
+            </TouchableOpacity>
             {/* <TouchableOpacity onPress={() => { navigation.navigate("ProfileTab") }} style={styles.edit}>
                 <EditProfile />
             </TouchableOpacity> */}

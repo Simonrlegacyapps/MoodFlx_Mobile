@@ -53,6 +53,8 @@ import BulbIcon from '../../../../assets/commonicons/BulbIcon';
 import { getBulbColorFromLux } from '../../../services/commonService';
 import { getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import CrownBox from '../../../Components/crownBox/crownBox';
+import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
+import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -119,6 +121,7 @@ const LightData = ({
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [lightGraphData, setLightGraphData] = useState(null);
   const isUpdateLightApiCalled = useRef(false);
+  const [AnonymousClick, setAnonymousClick] = useState(false);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -363,6 +366,10 @@ const LightData = ({
 
   const lux = light === -1 ? 0 : light;
 
+  const AnonymousPopUpcancelled = () => {
+    setAnonymousClick(false);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -370,7 +377,7 @@ const LightData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        <View style={styles.HeaderView}>
+        {/* <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
               setopenActionSheet(true);
@@ -395,7 +402,13 @@ const LightData = ({
           <View style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anon</Text>
           </View>
-        </View>
+        </View> */}
+        <HomeSyncHeader
+          label={'Light'}
+          isPermissionGiven={true}
+          setOpenActionSheet={setopenActionSheet}
+          setAnonymousClick={setAnonymousClick}
+        />
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
@@ -429,6 +442,7 @@ const LightData = ({
             weeklySuggestion={insights?.weeklySuggestion}
             weeklySuggestionType={insights?.weeklySuggestionType}
             timeLeft={UserData?.weeklyInsightsTimeLeft}
+            isPermissionGiven={true}
             dispatch={dispatch}
           />
           {/* <View
@@ -548,6 +562,12 @@ const LightData = ({
         modalVisible={openActionSheet}
         dismissModalHandler={() => setopenActionSheet(false)}
         verifyDone={() => VerifyDone()}
+      />
+
+      <AnonymousPopUp
+        modalVisible={AnonymousClick}
+        dismissModalHandler={() => AnonymousPopUpcancelled()}
+        verifyDone={() => AnonymousPopUpcancelled()}
       />
 
       {/* <WeatherGraphDurationModal

@@ -39,12 +39,14 @@ import {
   setSleepDataLastThirtyDays,
   sleepDataPermissionsIOS,
   fetchSleepDataForLastThirtyDays,
-  getSleepDataForUpdateApi
+  getSleepDataForUpdateApi,
 } from './sleepDataService';
 import { dataTypes, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox';
+import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
+import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 
 const sleepInsightsInitialState = {
   dailyInsights: '',
@@ -116,6 +118,7 @@ const SleepData = ({
   const [weeklyAsleepData, setWeeklyAsleepData] = useState(null);
   const [monthlySleepData, setMonthlySleepData] = useState(null);
   const [sleepGraphData, setSleepGraphData] = useState(null);
+  const [AnonymousClick, setAnonymousClick] = useState(false);
   const [insights, setInsights] = useReducer(
     sleepInsightsReducer,
     sleepInsightsInitialState,
@@ -431,6 +434,10 @@ const SleepData = ({
       });
   };
 
+  const AnonymousPopUpcancelled = () => {
+    setAnonymousClick(false);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -438,7 +445,7 @@ const SleepData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        <View style={styles.HeaderView}>
+        {/* <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
               setopenActionSheet(true);
@@ -463,7 +470,15 @@ const SleepData = ({
           <View style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anon</Text>
           </View>
-        </View>
+        </View> */}
+        <HomeSyncHeader
+          label={'Sleep'}
+          isPermissionGiven={
+            UserData.SleepPermission && UserData.sleepDataSyncStatus
+          }
+          setOpenActionSheet={setopenActionSheet}
+          setAnonymousClick={setAnonymousClick}
+        />
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
@@ -489,7 +504,18 @@ const SleepData = ({
           </View>
         </View>
         <View style={styles.subViewTwo}>
-          {!UserData.SleepPermission ? (
+        <DataInsights
+              dailyInsights={!UserData.SleepPermission? "Today you were more likely to be excited and happy when you got more than 7hrs sleep":insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={!UserData.SleepPermission? "Nice! Just the right amount of sleep":insights?.dailySuggestion}
+              dailySuggestionType={!UserData.SleepPermission? "Sleep":insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={UserData.SleepPermission}
+              dispatch={dispatch}
+            />
+          {/* {!UserData.SleepPermission ? (
             <View
               style={{
                 flex: 1,
@@ -530,7 +556,7 @@ const SleepData = ({
               timeLeft={UserData?.weeklyInsightsTimeLeft}
               dispatch={dispatch}
             />
-          )}
+          )} */}
           {/* {UserData.SleepPermission && (
               <View
                 style={{
@@ -570,7 +596,7 @@ const SleepData = ({
             sleepGraphData={sleepGraphData}
             graphType={dataTypes.sleep}
           />
-          {!UserData.SleepPermission && (
+          {/* {!UserData.SleepPermission && (
             <View
               style={{
                 position: 'absolute',
@@ -581,6 +607,7 @@ const SleepData = ({
                 zIndex: -234234,
               }}>
               <Text
+                allowFontScaling={false}
                 style={{
                   marginTop: dynamicSize(-320),
                   fontWeight: '700',
@@ -592,7 +619,7 @@ const SleepData = ({
                 Demo
               </Text>
             </View>
-          )}
+          )} */}
           {!UserData.SleepPermission && (
             <TouchableOpacity
               activeOpacity={0}
@@ -627,6 +654,12 @@ const SleepData = ({
         modalVisible={SleepPopUp}
         dismissModalHandler={() => setSleepPopUp(false)}
         verifyDone={() => setSleepPopUp(false)}
+      />
+
+<AnonymousPopUp
+        modalVisible={AnonymousClick}
+        dismissModalHandler={() => AnonymousPopUpcancelled()}
+        verifyDone={() => AnonymousPopUpcancelled()}
       />
     </View>
   );

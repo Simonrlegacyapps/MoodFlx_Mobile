@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
-import {RubikBold, RubikMedium} from '../../Constants/fonts/Fonts';
+import {RubikBold, RubikExtraBold, RubikMedium} from '../../Constants/fonts/Fonts';
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
@@ -24,6 +24,7 @@ export default function DataInsights({
   weeklySuggestion,
   weeklySuggestionType,
   timeLeft,
+  isPermissionGiven,
   dispatch,
 }) {
   const [isDailyInsights, setIsDailyInsights] = useState(true);
@@ -114,12 +115,12 @@ export default function DataInsights({
             tintColor="#7265E3"
             lineCap={'round'}
             backgroundColor="#CFF9ED">
-            {(fill) => <Text style={styles.progressText}>{timeLeft}</Text>}
+            {(fill) => <Text allowFontScaling={false} style={styles.progressText}>{timeLeft}</Text>}
           </AnimatedCircularProgress>
         )}
       </View>
       <View style={styles.tabDetailsView}>
-        <Text style={styles.tabDetailsText}>{insightsDetails}</Text>
+        <Text style={styles.tabDetailsText}>{isPermissionGiven ? '' : <Text style={{fontFamily: RubikExtraBold}}>Demo:{' '}</Text>}{insightsDetails}</Text>
       </View>
       {suggestion ? (
         <View style={styles.suggestionView}>

@@ -29,7 +29,10 @@ import Toast from 'react-native-toast-message';
 import UsageStats from 'react-native-usage-stats';
 import moment from 'moment';
 import CrownBox from '../../../Components/crownBox/crownBox';
-import { useSelector } from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
+import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
+import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
+import DataInsights from '../../../Components/DataInsights/DataInsights';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -56,9 +59,10 @@ const ScreenData = ({
   const [ScreenDuration, setScreenDuration] = useState('Week');
   const [Graph, setGraph] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
+  const [AnonymousClick, setAnonymousClick] = useState(false);
 
   const UserData = useSelector((state) => state.First);
-
+  const dispatch = useDispatch();
   const data = [
     {
       x: 1,
@@ -201,6 +205,10 @@ const ScreenData = ({
   };
 
   const ScreenDurations = [{ label: 'Day' }, { label: 'Week' }, { label: 'Month' }];
+
+  const AnonymousPopUpcancelled = () => {
+    setAnonymousClick(false);
+  };
   return (
     <View style={styles.container}>
       <ScrollView
@@ -208,7 +216,7 @@ const ScreenData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        <View style={styles.HeaderView}>
+        {/* <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
               CheckForScreenData();
@@ -232,7 +240,13 @@ const ScreenData = ({
           <View style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anon</Text>
           </View>
-        </View>
+        </View> */}
+        <HomeSyncHeader
+          label={'Screen'}
+          isPermissionGiven={false}
+          setOpenActionSheet={setopenActionSheet}
+          setAnonymousClick={setAnonymousClick}
+        />
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
@@ -258,7 +272,18 @@ const ScreenData = ({
           </View>
         </View>
         <View>
-          <View
+        <DataInsights
+              dailyInsights={"You became more tired and anxious as your screen time went over 5hrs per day"}
+              weeklyInsights={''}
+              dailySuggestion={"Try getting less than 4hrs for a few days"}
+              dailySuggestionType={'warning'}
+              weeklySuggestion={''}
+              weeklySuggestionType={''}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={false}
+              dispatch={dispatch}
+            />
+          {/* <View
             style={{
               flex: 1,
               justifyContent: 'center',
@@ -276,7 +301,7 @@ const ScreenData = ({
             <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
               Try get less than 3hrs a day
             </Text>
-          </View>
+          </View> */}
 
           {/* <ProgressBarCustom /> */}
           <HomeHeader
@@ -354,7 +379,7 @@ const ScreenData = ({
             />
           </View>
           <GraphicChart />
-          {!PermScreenTime && (
+          {/* {!PermScreenTime && (
             <View
               style={{
                 position: 'absolute',
@@ -365,6 +390,7 @@ const ScreenData = ({
                 zIndex: -234234,
               }}>
               <Text
+                allowFontScaling={false}
                 style={{
                   marginTop: -260,
                   fontWeight: '700',
@@ -376,7 +402,7 @@ const ScreenData = ({
                 Demo
               </Text>
             </View>
-          )}
+          )} */}
           {true && (
             <TouchableOpacity
               activeOpacity={0}
@@ -404,6 +430,12 @@ const ScreenData = ({
         modalVisible={openActionSheet}
         dismissModalHandler={() => setopenActionSheet(false)}
         verifyDone={() => VerifyDone()}
+      />
+
+<AnonymousPopUp
+        modalVisible={AnonymousClick}
+        dismissModalHandler={() => AnonymousPopUpcancelled()}
+        verifyDone={() => AnonymousPopUpcancelled()}
       />
 
       {/* <WeatherGraphDurationModal

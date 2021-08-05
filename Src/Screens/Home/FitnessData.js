@@ -41,6 +41,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
 import { getFloCoins } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
+import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -339,7 +340,7 @@ const FitnessData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        <View style={styles.HeaderView}>
+        {/* <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
               // await AsyncStorage.setItem('GiveHealthPerm', 'true');
@@ -375,7 +376,13 @@ const FitnessData = ({
             style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anon</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
+        <HomeSyncHeader
+          label={"Fitness"}
+          isPermissionGiven={UserData.HealthPermission}
+          syncText={UserData.fitnessSyncText}
+          setOpenActionSheet={setOpenActionSheet}
+          setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
@@ -405,7 +412,18 @@ const FitnessData = ({
         </View>
 
         <View style={styles.subViewTwo}>
-          {!UserData.HealthPermission ? (
+        <DataInsights
+              dailyInsights={!UserData.HealthPermission? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={!UserData.HealthPermission? "Try take a 20 min walk during lunch - 1,800 steps " :insights?.dailySuggestion}
+              dailySuggestionType={!UserData.HealthPermission? "warning" :insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={UserData.HealthPermission}
+              dispatch={dispatch}
+            />
+          {/* {!UserData.HealthPermission ? (
             <View
               style={{
                 flex: 1,
@@ -440,7 +458,7 @@ const FitnessData = ({
               timeLeft={UserData?.weeklyInsightsTimeLeft}
               dispatch={dispatch}
             />
-          )}
+          )} */}
           {/* {UserData.HealthPermission && (
               <View
                 style={{
@@ -617,7 +635,7 @@ const FitnessData = ({
             fours={fours}
             fives={fives}
           />
-          {!UserData.HealthPermission && (
+          {/* {!UserData.HealthPermission && (
             <View
               style={{
                 // backgroundColor: 'blue',
@@ -631,6 +649,7 @@ const FitnessData = ({
                 zIndex: -234234,
               }}>
               <Text
+                allowFontScaling={false}
                 style={{
                   marginTop: dynamicSize(-320),
                   fontWeight: '700',
@@ -642,7 +661,7 @@ const FitnessData = ({
                 Demo
               </Text>
             </View>
-          )}
+          )} */}
           {!UserData.HealthPermission && (
             <TouchableOpacity
               activeOpacity={0}

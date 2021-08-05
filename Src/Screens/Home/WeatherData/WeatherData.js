@@ -55,6 +55,7 @@ import {findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getTo
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox'
+import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 
 let weatherData = null;
 
@@ -477,6 +478,27 @@ const WeatherData = ({
       console.log('Cannot call update weather api without weather data');
       return;
     }
+    let manual_hours = null;
+    let manual_weather_type = null;
+    let manul_pollen = null;
+    let manual_temp = null;
+    setManulHours(v => {
+      manual_hours = v;
+      return v;
+    });
+    setManualWeatherType(v => {
+      manual_weather_type = v;
+      return v;
+    });
+    setManulPollen(v => {
+      manul_pollen = v;
+      return v;
+    });
+    setManualTemp(v => {
+      manual_temp = v;
+      return v;
+    });
+
     let geocode = null;
     Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
     var state_info = '';
@@ -508,17 +530,17 @@ const WeatherData = ({
       user_id: UserData.UserId,
       email: UserData.UserEmail,
       device_id: deviceId,
-      hours: ManulHours ? ManulHours : hours,
-      weather_type: ManualWeatherType
-        ? ManualWeatherType
+      hours: manual_hours ? manual_hours : hours,
+      weather_type: manual_weather_type
+        ? manual_weather_type
         : findWeather(weatherData?.weather?.[0]?.main),
       pollen: null,
-      pollen_type: ManulPollen ? ManulPollen : 'Low',
+      pollen_type: manul_pollen ? manul_pollen : 'Low',
       weather_data: allDayWeatherData.current,
       temp_min: weatherData?.main?.temp_min,
       temp_max: weatherData?.main?.temp_max,
-      temp: ManualTemp
-        ? ManualTemp
+      temp: manual_temp
+        ? manual_temp
         : Math.round(Weather?.main?.temp ? Weather.main.temp : '0'),
       city: isIndia && city_info ? defaultLocation.city : city_info,
       state: isIndia && state_info ? defaultLocation.state : state_info,
@@ -1022,7 +1044,7 @@ const WeatherData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        <View style={styles.HeaderView}>
+        {/* <View style={styles.HeaderView}>
           <TouchableOpacity
             onPress={async () => {
               setOpenActionSheet(true);
@@ -1049,7 +1071,13 @@ const WeatherData = ({
             style={styles.ColoredView}>
             <Text style={styles.ColoredText}>Anon</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
+        <HomeSyncHeader
+          label={'Weather'}
+          isPermissionGiven={UserData.WeatherPermission}
+          setOpenActionSheet={setOpenActionSheet}
+          setAnonymousClick={setAnonymousClick}
+        />
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
@@ -1078,7 +1106,18 @@ const WeatherData = ({
           </View>
         </View>
         <View>
-          {!UserData.WeatherPermission ? (
+        <DataInsights
+              dailyInsights={!UserData.WeatherPermission? "Today you were more energetic when it was below 20°C and it rained for 2hrs" :insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={insights?.dailySuggestion}
+              dailySuggestionType={insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={UserData.WeatherPermission}
+              dispatch={dispatch}
+            />
+          {/* {!UserData.WeatherPermission ? (
             <View
               style={{
                 flex: 1,
@@ -1117,7 +1156,7 @@ const WeatherData = ({
               timeLeft={UserData?.weeklyInsightsTimeLeft}
               dispatch={dispatch}
             />
-          )}
+          )} */}
 
           <View style={styles.WeatherCardMain}>
             {swiperIndex == index && (
@@ -1367,6 +1406,7 @@ const WeatherData = ({
                 zIndex: -234234,
               }}>
               <Text
+                allowFontScaling={false}
                 style={{
                   marginTop: dynamicSize(-300),
                   fontWeight: '700',

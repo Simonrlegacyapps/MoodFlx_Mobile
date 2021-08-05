@@ -11,6 +11,7 @@ import {
   Button,
   StatusBar,
   Platform,
+  Image,
 } from 'react-native';
 import Scroller from './moodScroller';
 import {
@@ -71,7 +72,7 @@ import NotificationQuestion from '../../Components/Modals/NotificationQuestion/N
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from '../../services/notifService';
-import { RubikMedium } from '../../Constants/fonts/Fonts';
+import { RubikLight, RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 import { useFocusEffect } from '@react-navigation/native';
 import messaging, { firebase } from '@react-native-firebase/messaging';
 import {
@@ -1415,6 +1416,10 @@ export default function MoodDetector({ navigation }) {
           }}>
           <View />
           <Text style={{ textAlign: 'center', fontSize: 18 }}>Save</Text>
+          {emotionText != 'Slide finger' &&<View style={styles.pupView}>
+            <Image resizeMode={"contain"} source={require("../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup}/>
+            <Text style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
+            </View>}
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -1595,4 +1600,11 @@ const styles = StyleSheet.create({
     margin: horizontalScale(17),
     fontFamily: RubikMedium,
   },
+  pupView:{  position:'absolute', alignSelf:'center', height:90, bottom:10, alignItems:'center', justifyContent:'center'},
+  Pup:{
+    height:90,
+    width:90, resizeMode:'contain',
+    // position:'absolute',
+    // bottom:10
+  }
 });
