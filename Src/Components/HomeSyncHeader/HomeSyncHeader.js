@@ -6,6 +6,7 @@ import { RubikLight, RubikRegular } from '../../Constants/fonts/Fonts';
 import { dynamicSize, getFontSize } from '../../Constants/sizeChoose';
 import CrownBox from '../crownBox/crownBox';
 import DeviceInfo from 'react-native-device-info';
+import LottieView from 'lottie-react-native';
 
 
 const {height} = Dimensions.get("screen")
@@ -54,6 +55,7 @@ const HomeSyncHeader = ({
             style={styles.ColoredView}>
             <Text allowFontScaling={false} style={styles.ColoredText}>Anon</Text>
           </TouchableOpacity>
+          { UserData.UserMoodCount >= 3 && <LottieView source={require("../../../assets/json/64686-confetti.json")} autoPlay={true} loop={false} style={{height:300, width:300, top:0, position:'absolute', right:0}}/>}
         </View>
     )
 }
