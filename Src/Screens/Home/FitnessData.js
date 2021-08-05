@@ -408,7 +408,17 @@ const FitnessData = ({
         </View>
 
         <View style={styles.subViewTwo}>
-          {!UserData.HealthPermission ? (
+        <DataInsights
+              dailyInsights={!UserData.HealthPermission? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={!UserData.HealthPermission? "Try take a 20 min walk during lunch - 1,800 steps " :insights?.dailySuggestion}
+              dailySuggestionType={!UserData.HealthPermission? "warning" :insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              dispatch={dispatch}
+            />
+          {/* {!UserData.HealthPermission ? (
             <View
               style={{
                 flex: 1,
@@ -443,7 +453,7 @@ const FitnessData = ({
               timeLeft={UserData?.weeklyInsightsTimeLeft}
               dispatch={dispatch}
             />
-          )}
+          )} */}
           {/* {UserData.HealthPermission && (
               <View
                 style={{

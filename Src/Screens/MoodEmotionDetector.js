@@ -1621,6 +1621,9 @@ const MoodEmotionDetector = ({navigation}) => {
           // justifyContent: 'center',
           paddingVertical: 15,
         }}>
+          {/* <View style={{height:20, width:20, backgroundColor:'blue', position:''}}>
+            <Image resizeMode={"contain"} source={require("../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup}/>
+            </View> */}
         <View
           style={{
             height: 80,
@@ -1675,6 +1678,7 @@ const MoodEmotionDetector = ({navigation}) => {
             }}>
             <View />
             <Text style={{textAlign: 'center', fontSize: 18}}>Save</Text>
+            
           </TouchableOpacity>
           {/* {MoodFail && (
             <Text style={styles.ErrorText}>Please select a mood</Text>
@@ -1759,6 +1763,11 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     justifyContent: 'center',
   },
+  Pup:{
+    height:50,
+    width:50, resizeMode:'contain',
+    position:'absolute'
+  }
 });
 
 {

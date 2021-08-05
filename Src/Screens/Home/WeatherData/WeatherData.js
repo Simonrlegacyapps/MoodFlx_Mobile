@@ -1101,7 +1101,17 @@ const WeatherData = ({
           </View>
         </View>
         <View>
-          {!UserData.WeatherPermission ? (
+        <DataInsights
+              dailyInsights={!UserData.WeatherPermission? "Today you were more energetic when it was below 20°C and it rained for 2hrs" :insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={insights?.dailySuggestion}
+              dailySuggestionType={insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              dispatch={dispatch}
+            />
+          {/* {!UserData.WeatherPermission ? (
             <View
               style={{
                 flex: 1,
@@ -1140,7 +1150,7 @@ const WeatherData = ({
               timeLeft={UserData?.weeklyInsightsTimeLeft}
               dispatch={dispatch}
             />
-          )}
+          )} */}
 
           <View style={styles.WeatherCardMain}>
             {swiperIndex == index && (

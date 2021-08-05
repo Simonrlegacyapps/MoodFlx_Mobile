@@ -497,7 +497,17 @@ const SleepData = ({
           </View>
         </View>
         <View style={styles.subViewTwo}>
-          {!UserData.SleepPermission ? (
+        <DataInsights
+              dailyInsights={!UserData.SleepPermission? "Today you were more likely to be excited and happy when you got more than 7hrs sleep":insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={!UserData.SleepPermission? "Nice! Just the right amount of sleep":insights?.dailySuggestion}
+              dailySuggestionType={!UserData.SleepPermission? "Sleep":insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              dispatch={dispatch}
+            />
+          {/* {!UserData.SleepPermission ? (
             <View
               style={{
                 flex: 1,
@@ -538,7 +548,7 @@ const SleepData = ({
               timeLeft={UserData?.weeklyInsightsTimeLeft}
               dispatch={dispatch}
             />
-          )}
+          )} */}
           {/* {UserData.SleepPermission && (
               <View
                 style={{
