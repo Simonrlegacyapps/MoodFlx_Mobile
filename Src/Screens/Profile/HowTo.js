@@ -1,74 +1,133 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
+import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import BigRing from '../../../assets/svg/BigRing';
+import Rings from '../../../assets/svg/rings';
+import {RubikLight, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
+import { dynamicSize } from '../../Constants/sizeChoose';
 
-const BoldHeader = ({ label }) => {
-    return (
-        <View style={{ marginTop: 15 }}>
-            <Text style={{ fontFamily: RubikMedium }}>{label}</Text>
-        </View>
-    );
+const BoldHeader = ({label}) => {
+  return (
+    <View style={{marginVertical: 15}}>
+      <Text style={{fontFamily: RubikMedium, color:"##2D3142", fontSize:18}}>{label}</Text>
+    </View>
+  );
 };
 
-const SimpleText = ({ label, text }) => {
-    return (
-        <View style={{ flexDirection: 'row' }}>
-            <Text style={{ flex: 1, marginTop: 5, fontFamily: RubikMedium, color: "#7265E3" }}>{label}</Text>
-            <Text style={{ marginTop: 5, color: "#9C9EB9" }}>{text}</Text>
-        </View>
-    );
+const SimpleText = ({label, text, mt}) => {
+  return (
+    <View style={{flexDirection: 'row', marginTop:mt?mt:0}}>
+      <Text
+        style={{
+          flex: 1,
+          marginTop: 5,
+          fontFamily: RubikRegular,
+          color: '#2D3142',
+          fontSize:15
+        }}>
+        {label}
+      </Text>
+      <Text style={{marginTop: 5, color: '#FB8D09', marginBottom:14}}><Rings w={14} h={14}/>{text}</Text>
+    </View>
+  );
 };
 
 const HowTo = () => {
-    return (
-        <ScrollView showsVerticalScrollIndicator={false} style={{
-            height: '100%',
-            width: '100%',
-            paddingBottom: 100
+  return (
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={{
+        height: '100%',
+        width: '100%',
+        paddingBottom: 100,
+        backgroundColor: 'white',
+      }}>
+      <View style={{alignItems: 'center', marginTop:30}}>
+        <BigRing />
+      </View>
+      <View
+        style={{
+          height: '100%',
+          width: '100%',
+          backgroundColor: 'white',
+          paddingHorizontal: 10,
+          paddingLeft: 20,
         }}>
-            <View
-                style={{
-                    height: '100%',
-                    width: '100%',
-                    backgroundColor: 'white',
-                    paddingHorizontal: 10,
-                    paddingLeft: 20,
-                }}>
-                <Text
-                    style={{
-                        textAlign: 'center',
-                        fontFamily: RubikMedium,
-                        marginVertical: 10,
-                        fontSize: 16,
-                    }}>
-                    Earn Flo Coins!
-      </Text>
-
-                <BoldHeader label={'Save your mood :'} />
-                <SimpleText label={'3+ times per day'} text={'+10 Flo Coins'} />
-                <BoldHeader label={'Add a note (mood journaling):'} />
-                <SimpleText label={'2 Hours'} text={'+8 Flo Coins'} />
-                <SimpleText label={'3 Hours'} text={'+6 Flo Coins'} />
-                <SimpleText label={'4 Hours'} text={'+4 Flo Coins'} />
-                <SimpleText label={'5 Hours'} text={'+2 Flo Coins'} />
-                <SimpleText label={'6 Hours'} text={'+0 Flo Coins'} />
-                <BoldHeader label={'Ranking Levels:'} />
-                <SimpleText label={'Mood Activator'} text={'0-100 Flo Coins'} />
-                <SimpleText label={'Mood Navigator'} text={'100-1000 Flo Coins'} />
-                <SimpleText label={'Mood Fit'} text={'1,000-5,000 Flo Coins'} />
-                <SimpleText label={'Mood Unleashed'} text={'5,000-10,000 Flo Coins'} />
-                <SimpleText label={'Mood Powerhouse'} text={'10,000-20,000 Flo Coins'} />
-                <BoldHeader label={'Ranking discounts:'} />
-                <SimpleText label={'Mood Activator'} text={' 2% Discount'} />
-                <SimpleText label={'Mood Navigator'} text={' 5% Discount'} />
-                <SimpleText label={'Mood Fit'} text={'10% Discount'} />
-                <SimpleText label={'Mood Unleashed'} text={'20% Discount'} />
-                <SimpleText label={'Mood Powerhouse'} text={'25 % Discount'} />
-                <BoldHeader label={'Each rank unlocks more rewards'} />
+        <Text
+          style={{
+            textAlign: 'center',
+            fontFamily: RubikMedium,
+            marginVertical: 10,
+            fontSize: 21,
+          }}>
+          Earn Flo Coins!
+        </Text>
+        <Text
+          style={{
+            textAlign: 'center',
+            fontFamily: RubikLight,
+            marginVertical: 10,
+            fontSize: 17,
+            paddingHorizontal:10,
+            color:"#4C5980"
+          }}>
+          Advance your Mood Status, unlock more rewards and cash in your Flo Coins!
+        </Text>
+<View>
+        <BoldHeader label={'Mood inputs'} />
+        <SimpleText label={'Per Mood'} text={' 3 coins'} />
+        <View style={{height:0.6, width:'100%', backgroundColor:'#ebebeb'}}/>
+        <SimpleText label={'3+ moods/day'} text={' 1 bonus Coin'} mt={12} />
+        <Text style={{fontSize:10, fontFamily:RubikLight, color:'#9C9EB9', }}>Recommended</Text>
+        <Text style={{fontFamily:RubikRegular, fontSize:12, color:'#7265E3', marginVertical:10}}>6-HOUR INTERVALS</Text>
+        <View style={{flexDirection:'row'}}>
+            <View>
+            <Text style={styles.hours}>12:00 AM - 6:00 AM</Text>
+            <Text style={styles.hours}>6:00 AM - 12:00 PM</Text>
+            <Text style={styles.hours}>12:00 PM - 6:00 PM</Text>
+            <Text style={styles.hours}>6:00 PM - 12:00 AM</Text>
             </View>
-            <View style={{ marginBottom: 120 }} />
-        </ScrollView>
-    );
+            <View style={{ width:dynamicSize(180), paddingHorizontal:10, marginLeft:dynamicSize(25),  justifyContent:'center', borderLeftWidth:0.4, borderColor:'#F5F5F5'}}>
+                <Text style={[styles.text, {marginBottom:10}]}>2 notes per interval</Text>
+                <Text style={styles.text}>earn coins if there is a 2 hour gap between each note</Text>
+            </View>
+        </View>
+        </View>
+<View>
+        <BoldHeader label={'Mood Journaling'} />
+        <SimpleText label={'Per Mood'} text={' 3 coins'} />
+        <View style={{height:0.6, width:'100%', backgroundColor:'#ebebeb'}}/>
+        <SimpleText label={'3+ moods/day'} text={' 1 bonus Coin'} mt={12} />
+        <Text style={{fontSize:10, fontFamily:RubikLight, color:'#9C9EB9', }}>Recommended</Text>
+        <Text style={{fontFamily:RubikRegular, fontSize:12, color:'#7265E3', marginVertical:10}}>6-HOUR INTERVALS</Text>
+        <View style={{flexDirection:'row'}}>
+            <View>
+            <Text style={styles.hours}>12:00 AM - 6:00 AM</Text>
+            <Text style={styles.hours}>6:00 AM - 12:00 PM</Text>
+            <Text style={styles.hours}>12:00 PM - 6:00 PM</Text>
+            <Text style={styles.hours}>6:00 PM - 12:00 AM</Text>
+            </View>
+            <View style={{ width:dynamicSize(180), paddingHorizontal:10, paddingLeft:14, marginLeft:dynamicSize(25),  justifyContent:'center', borderLeftWidth:0.4, borderColor:'#F5F5F5'}}>
+                <Text style={[styles.text, {marginBottom:10,letterSpacing:0.7}]}>2 notes per interval</Text>
+                <Text style={[styles.text, {letterSpacing:0.7}]}>earn coins if there is a 2 hour gap between each note</Text>
+            </View>
+        </View>
+        </View>
+      </View>
+      <View style={{marginBottom: 120}} />
+    </ScrollView>
+  );
 };
+
+const styles=StyleSheet.create({
+    hours:{
+        color:"#4C5980",
+        fontSize:13,
+        margin:8
+    },
+    text:{
+        fontSize:12,
+        color:"#4C5980"
+    }
+})
 
 export default HowTo;

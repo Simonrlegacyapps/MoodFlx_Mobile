@@ -159,7 +159,7 @@ export default function MoodScroller({
           </View>
         )}
         <View style={[styles.circleView, 
-          {alignSelf: wheelSize === regularWheelSize ? 'center' : 'stretch'},
+          {alignSelf: wheelSize === regularWheelSize ? 'center' : 'center'},
           ]}>
           <Animated.View
             style={[

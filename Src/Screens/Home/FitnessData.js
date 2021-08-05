@@ -378,6 +378,7 @@ const FitnessData = ({
           </TouchableOpacity>
         </View> */}
         <HomeSyncHeader label={"Fitness"} setOpenActionSheet={setOpenActionSheet} setAnonymousClick={setAnonymousClick}/>
+        {/* <Image source={require('../../../assets/json/64686-confetti.json')} style={{height:100, width:100}} /> */}
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={

@@ -199,7 +199,7 @@ const AnonymousHeader = ({ backGround }) => {
               : 'Saving as you'}
           </Text>
         </View>
-        <View style={{ marginHorizontal: 16 }}>
+        <View style={{ marginRight:10 }}>
           <CustomSwitch
             disabled={backGround ? true : false}
             isOn={UserData.Anonymous}
@@ -319,6 +319,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: 'grey',
     fontFamily: RubikLight,
+    // backgroundColor:'blue'
   },
 });
 

@@ -32,7 +32,7 @@ const HomeSyncHeader = ({setOpenActionSheet, setAnonymousClick, label}) => {
               <Text allowFontScaling={false} style={styles.lightText}>
                 {UserData.HealthPermission ? 'Syncing your' : 'Sync your'}
               </Text>
-              <Text allowFontScaling={false} style={styles.normalText}>{label} data</Text>
+              <Text allowFontScaling={false} style={styles.normalText}>{label}</Text>
             </View>
           </TouchableOpacity>
           <CrownBox floCoins={UserData.floCoins}/>

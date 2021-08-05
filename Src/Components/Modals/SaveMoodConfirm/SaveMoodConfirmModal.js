@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, {Component, useState} from 'react';
 import {
   View,
   Text,
@@ -15,18 +15,27 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   RubikLight,
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import { metrics, getFontSize, getLineHeight, dynamicSize, horizontalScale } from '../../../Constants/sizeChoose';
-import { IsAnonymous, UserDetail } from '../../../redux/actions/actions';
+import {
+  metrics,
+  getFontSize,
+  getLineHeight,
+  dynamicSize,
+  horizontalScale,
+} from '../../../Constants/sizeChoose';
+import {IsAnonymous, UserDetail} from '../../../redux/actions/actions';
 import AddNameModal from '../AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-community/async-storage';
-import { GetStaffUserData } from '../../../apirequest/PostRequestApi';
+import {GetStaffUserData} from '../../../apirequest/PostRequestApi';
+import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
+import {PHOTO_URL} from '../../../Constants/constants';
+import Constants from '../../../Constants';
 
 type props = {
   modalVisible: Boolean,
@@ -34,30 +43,40 @@ type props = {
   selectedValue: Object,
 };
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 const SaveMoodConfirmModal = ({
   modalVisible,
   dismissModalHandler,
   emotionText,
   onClickButtonOne,
-  onClickButtonTwo
+  onClickButtonTwo,
 }: props) => {
   const [color, setcolor] = useState('black');
-  const [AnonymousStatus, setAnonymousStatus] = useState(true)
+  const [AnonymousStatus, setAnonymousStatus] = useState(true);
   const [ShowAddName, setShowAddName] = useState(false);
   const [name, setname] = useState('');
+  const [note, setnote] = useState('');
+  const [ShowPurple, setShowPurple] = useState(false);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const UserData = useSelector((state) => state.First);
 
+  let Anon = true;
+
   const Anonymous = async () => {
-    setAnonymousStatus(!AnonymousStatus)
-    await AsyncStorage.setItem('Anonymous', JSON.stringify(AnonymousStatus));
-    dispatch(IsAnonymous(AnonymousStatus));
-    if (!AnonymousStatus && UserData?.UserDetails?.full_name == null) {
+    let flag = false;
+    setAnonymousStatus((v) => {
+      flag = !v;
+      return flag;
+    });
+    // console.log(`AnonymousStatus`, AnonymousStatus)
+    await AsyncStorage.setItem('Anonymous', JSON.stringify(flag));
+    dispatch(IsAnonymous(flag));
+    // console.log(`UserData Anonymous`, UserData.Anonymous)
+    if (!flag && UserData?.UserDetails?.full_name == null) {
       setShowAddName(true);
     }
-  }
+  };
 
   // console.log(`ShowAddName`, AnonymousStatus)
 
@@ -103,19 +122,27 @@ const SaveMoodConfirmModal = ({
         device_id: deviceId,
         email: UserData.UserEmail,
         user_id: UserData.UserId,
-      }, dispatch)
+      },
+      dispatch,
+    )
       .then(async (result) => {
         // console.log(
         //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
         //   result?.userData
         // );
         if (result?.userData?.status !== 2) {
-          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+          return fetch(
+            'https://admin.moodflo.com/api/updateStaffProfile',
+            requestOptions,
+          );
         } else {
           raw.email = '';
           raw.user_id = '';
           requestOptions.body = JSON.stringify(raw);
-          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+          return fetch(
+            'https://admin.moodflo.com/api/updateStaffProfile',
+            requestOptions,
+          );
         }
       })
       .then(async (result) => {
@@ -126,13 +153,17 @@ const SaveMoodConfirmModal = ({
           // console.log('profile updated', result), getProfileUserData();
           console.log(
             '✅ ✅ ✅ ✅ Success Update Staff Profile ✅ ✅ ✅ ✅',
-            result
+            result,
           );
           getProfileUserData();
         }
       })
-      .catch((error) => console.log('❌ ❌ ❌ ❌ Error Update Staff Profile ❌ ❌ ❌ ❌', error));
-
+      .catch((error) =>
+        console.log(
+          '❌ ❌ ❌ ❌ Error Update Staff Profile ❌ ❌ ❌ ❌',
+          error,
+        ),
+      );
   };
 
   const getProfileUserData = () => {
@@ -163,7 +194,6 @@ const SaveMoodConfirmModal = ({
       .catch((error) => console.log('error', error));
   };
 
-
   return (
     <Modal
       style={styles.modalView}
@@ -177,62 +207,111 @@ const SaveMoodConfirmModal = ({
       }}
       customBackdrop={
         <TouchableWithoutFeedback onPress={dismissModalHandler}>
-          <View style={{ flex: 1, backgroundColor: '#000000' }} />
+          <View style={{flex: 1, backgroundColor: '#000000'}} />
         </TouchableWithoutFeedback>
       }>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <TouchableOpacity
           onPress={dismissModalHandler}
-          style={[styles.dismissView, { backgroundColor: color }]} />
-        <View onStartShouldSetResponder={Keyboard.dismiss} style={[styles.upperContainer]}>
-          <Text
-            style={styles.textOne}>
-            Thank you!
+          style={[styles.dismissView, {backgroundColor: color}]}
+        />
+        <View
+          onStartShouldSetResponder={Keyboard.dismiss}
+          style={[styles.upperContainer]}>
+          <Text style={styles.textOne}>Thank you!</Text>
+          <Text style={styles.textTwo}>Flo feels you</Text>
+          <Text style={styles.textThree}>
+            Your input was:{' '}
+            <Text style={styles.textThreeBold}>{emotionText}</Text>
           </Text>
-          <Text
-            style={styles.textTwo}>
-            Flo feels you
-          </Text>
-          <Text
-            style={styles.textThree}>
-            Your input was: <Text style={styles.textThreeBold}>{emotionText}</Text>
-          </Text>
-          <TouchableOpacity onPress={() => Anonymous()} activeOpacity={0.7}>
-            {UserData?.UserDetails?.full_name ? <Text style={styles.AnonymousButton}>
-              as {UserData.Anonymous ? "Anonymous" : `${UserData?.UserDetails?.full_name}`}
-            </Text> :
-              <Text style={styles.AnonymousButton}>
-                as Anonymous
-            </Text>}
+          <TouchableOpacity
+            onPress={() => {
+              Anonymous();
+            }}
+            activeOpacity={0.7}>
+            {UserData?.UserDetails?.full_name ? (
+              <View style={styles.imageContainer}>
+                <Text style={styles.AnonymousButton}>as </Text>
+                {!UserData.Anonymous ? (
+                  <View style={styles.imageView}>
+                    {UserData?.UserDetails?.profile_image &&
+                    !UserData.Anonymous ? (
+                      <Image
+                        style={styles.profileImage}
+                        source={{
+                          uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
+                        }}
+                      />
+                    ) : (
+                      !UserData?.UserDetails?.profile_image &&
+                      !UserData.Anonymous &&
+                      UserData?.UserDetails?.full_name && (
+                        <Text style={styles.fullNameText}>
+                          {UserData?.UserDetails?.full_name.substring(0, 1)}
+                        </Text>
+                      )
+                    )}
+                  </View>
+                ) : null}
+                <Text style={styles.AnonymousButton}>
+                  {UserData.Anonymous
+                    ? 'Anonymous'
+                    : ` ${UserData?.UserDetails?.full_name}`}
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.AnonymousButtonAnnon}>as Anonymous</Text>
+            )}
           </TouchableOpacity>
-          <View style={styles.inputBox}>
-            <TextInput returnKeyType={"done"} onSubmitEditing={()=>Keyboard.dismiss()} style={{ letterSpacing: 1, }} placeholder={`Quick note about why you're ${emotionText} today?`} multiline={true} />
+          <View
+            style={[
+              styles.inputBox,
+              {borderWidth: 0.6, borderColor: ShowPurple ? '#7265E3' : 'white'},
+            ]}>
+            <TextInput
+              value={note}
+              onChangeText={(i) => {
+                setnote(i), setShowPurple(false);
+              }}
+              returnKeyType={'done'}
+              onSubmitEditing={() => Keyboard.dismiss()}
+              style={{letterSpacing: 1}}
+              placeholder={`Quick note about why you're ${emotionText} today?`}
+              multiline={true}
+            />
           </View>
-          <TouchableOpacity style={[styles.buttonOne, {
-            marginTop: horizontalScale(28),
-            marginBottom: horizontalScale(10),
-            paddingVertical: 15
-          }]} onPress={onClickButtonOne}>
-            <Text
-              style={styles.buttonOneText}>
-              {"Add Note"}
-            </Text>
+          <TouchableOpacity
+            style={[
+              styles.buttonOne,
+              {
+                marginTop: horizontalScale(28),
+                marginBottom: horizontalScale(10),
+                paddingVertical: 15,
+              },
+            ]}
+            onPress={() => {
+              if (note != '') {
+                onClickButtonOne();
+              } else {
+                setShowPurple(true);
+              }
+            }}>
+            <Text style={styles.buttonOneText}>{'Add Note'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.buttonOne, {
-
-            backgroundColor: "white"
-          }]} onPress={onClickButtonOne}>
-            <Text
-              style={styles.buttonTwoText}>
-              {"Not this time"}
-            </Text>
+          <TouchableOpacity
+            style={[
+              styles.buttonOne,
+              {
+                backgroundColor: 'white',
+              },
+            ]}
+            onPress={onClickButtonOne}>
+            <Text style={styles.buttonTwoText}>{'Not this time'}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.purpleBackground} />
-
-
       </KeyboardAvoidingView>
       <AddNameModal
         dataType={'weather'}
@@ -248,7 +327,7 @@ const SaveMoodConfirmModal = ({
 
 SaveMoodConfirmModal.propTypes = {
   modalVisible: PropTypes.bool,
-  dismissModalHandler: PropTypes.func
+  dismissModalHandler: PropTypes.func,
 };
 
 export default SaveMoodConfirmModal;
@@ -285,6 +364,40 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     alignItems: 'center',
   },
+  imageContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 0.5,
+    marginVertical: 15,
+    borderWidth: 0.6,
+    borderColor: '#cbcbcb',
+    paddingHorizontal: 9,
+    borderRadius: 5,
+    overflow: 'hidden',
+    paddingVertical: 5,
+  },
+  imageView: {
+    height: horizontalScale(20),
+    width: horizontalScale(20),
+    backgroundColor: '#4C5980',
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  profileImage: {
+    height: '100%',
+    width: '100%',
+    resizeMode: 'cover',
+  },
+  fullNameText: {
+    color: 'white',
+    fontSize: Platform.OS === 'ios' ? getFontSize(13) : getFontSize(15),
+    fontFamily: RubikRegular,
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
   textOne: {
     fontFamily: RubikRegular,
     fontSize: fontSize,
@@ -298,11 +411,11 @@ const styles = StyleSheet.create({
     fontFamily: RubikLight,
     fontSize: getFontSize(13),
     marginTop: 15,
-    color: "#9C9EB9"
+    color: '#9C9EB9',
   },
   textThreeBold: {
     fontFamily: RubikMedium,
-    color: "#9C9EB9"
+    color: '#9C9EB9',
   },
   buttonOne: {
     width: '50%',
@@ -315,34 +428,52 @@ const styles = StyleSheet.create({
   buttonOneText: {
     fontFamily: RubikRegular,
     fontSize: getFontSize(15),
-    color: '#FFFFFF'
+    color: '#FFFFFF',
   },
   buttonTwoText: {
     fontFamily: RubikRegular,
     fontSize: getFontSize(15),
-    color: '#9C9EB9'
+    color: '#9C9EB9',
   },
-  purpleBackground: { position: 'absolute', backgroundColor: "#3F2E64", height: '100%', width: '100%', zIndex: -100, opacity: 0.5 },
+  purpleBackground: {
+    position: 'absolute',
+    backgroundColor: '#3F2E64',
+    height: '100%',
+    width: '100%',
+    zIndex: -100,
+    opacity: 0.5,
+  },
   AnonymousButton: {
-    color: "#CBCBCB", paddingVertical: 4, borderWidth: 0.6, borderColor: "#cbcbcb", marginVertical: 15, paddingHorizontal: 18, shadowColor: "#000",
+    color: '#CBCBCB',
+    shadowColor: '#000',
+  },
+  AnonymousButtonAnnon:{
+    color: '#CBCBCB',
+    paddingVertical: 4,
+    borderWidth: 0.6,
+    borderColor: '#cbcbcb',
+    paddingHorizontal: 9,
     borderRadius: 5,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    paddingVertical: 5,
+    marginVertical: 15,
+    // paddingHorizontal: 18,
+    shadowColor: '#000',
   },
   inputBox: {
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
     },
     shadowOpacity: 0.18,
-    shadowRadius: 1.00,
+    shadowRadius: 1.0,
     backgroundColor: 'white',
     elevation: 1,
     minHeight: getFontSize(60),
     padding: 8,
     borderRadius: 15,
     width: '80%',
-    paddingHorizontal: 15
-
-  }
+    paddingHorizontal: 15,
+  },
 });
