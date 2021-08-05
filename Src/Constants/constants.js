@@ -93,6 +93,7 @@ export const getLinkModalText = (existingOrg, newOrg) => {
 };
 
 export const getScreensPriority = (data) => {
+  // activity, screentime, LIGHT, WEATHER, sleep
   return [
     {
       name: dataTypes.activity,
@@ -105,13 +106,13 @@ export const getScreensPriority = (data) => {
       priority: 2,
     },
     {
-      name: dataTypes.weather,
-      permission: data?.WeatherPermission,
+      name: dataTypes.light,
+      permission: true,
       priority: 3,
     },
     {
-      name: dataTypes.light,
-      permission: true,
+      name: dataTypes.weather,
+      permission: data?.WeatherPermission,
       priority: 4,
     },
     {
