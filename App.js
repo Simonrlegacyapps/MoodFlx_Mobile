@@ -60,7 +60,7 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import Analytics from './Src/services/analyticsService';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
-import { onDynamicLinkUpdate, onUnlinkUpdate } from './Src/services/commonService';
+import { onDynamicLinkUpdate, onUnlinkUpdate, setFitnessDataSync } from './Src/services/commonService';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import { getFontSize } from './Src/Constants/sizeChoose';
 import Constants from './Src/Constants';
@@ -73,6 +73,7 @@ import {
 } from './Src/Constants/constants';
 import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
 import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgressModal/WeeklyInsightsProgressModal';
+import { setSleepDataSync } from './Src/Screens/Home/SleepData/sleepDataService';
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
@@ -517,12 +518,10 @@ const App: () => React$Node = () => {
     let anonymous = await AsyncStorage.getItem('Anonymous');
     let p = await AsyncStorage.getItem('Email');
     // let d = await AsyncStorage.getItem('Division');
-    let Hp = await AsyncStorage.getItem('GiveHealthPerm');
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-   
+    
     let e = await JSON.parse(p);
     // let division = await JSON.parse(d);
-    let HealthP = await JSON.parse(Hp);
     let WeatherP = await JSON.parse(Wp);
     let Id = await JSON.parse(UserId);
     let a = await JSON.parse(anonymous);
@@ -534,14 +533,27 @@ const App: () => React$Node = () => {
     // console.log(`userId`, Id);
     // console.log(`Anonymous`, a, a === null ? true : a);
 
+    //Health Permission
+    let Hp = await AsyncStorage.getItem('GiveHealthPerm');
+    let HealthP = await JSON.parse(Hp);
+    dispatch(HealthPerm(HealthP));
+    if (HealthP) {
+      setFitnessDataSync(dispatch);
+    }
+
     //Sleep Permission
     let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
-    let SleepP = await JSON.parse(SleepPer);
+    let SleepP = await JSON.parse(SleepPer); 
     dispatch(SleepPerm(SleepP));
+    //Syncing Sleep Data
+    if (Platform.OS === 'ios') {
+      setSleepDataSync(dispatch, false);
+    } else if (Platform.OS === 'android') {
+      setSleepDataSync(dispatch);
+    }
     // console.log(`Sleep Permission`, SleepP);
     dispatch(UserEmail(e));
     // dispatch(UserDivision(division));
-    dispatch(HealthPerm(HealthP));
     dispatch(WeatherPerm(WeatherP));
     dispatch(GetUserId(Id));
     dispatch(IsAnonymous(a == null ? true : a));

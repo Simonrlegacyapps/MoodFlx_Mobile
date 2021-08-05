@@ -1072,7 +1072,12 @@ const WeatherData = ({
             <Text style={styles.ColoredText}>Anon</Text>
           </TouchableOpacity>
         </View> */}
-        <HomeSyncHeader label ={"Weather"} setOpenActionSheet={setOpenActionSheet} setAnonymousClick={setAnonymousClick}/>
+        <HomeSyncHeader
+          label={'Weather'}
+          isPermissionGiven={UserData.WeatherPermission}
+          setOpenActionSheet={setOpenActionSheet}
+          setAnonymousClick={setAnonymousClick}
+        />
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={

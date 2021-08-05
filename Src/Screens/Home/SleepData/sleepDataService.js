@@ -4,7 +4,7 @@ import AppleHealthKit, {
   HealthValue,
   HealthKitPermissions,
 } from 'react-native-health';
-import { SleepPerm } from '../../../redux/actions/actions';
+import { SetSleepDataSyncStatus, SleepPerm } from '../../../redux/actions/actions';
 import {
   Platform
 } from 'react-native';
@@ -64,6 +64,7 @@ export async function getSleepDataAfterPermissionAndroid({ askPermission, onUpda
     // console.log('Google Fit isAuthorized: ', GoogleFit.isAuthorized);
     if (GoogleFit.isAuthorized) {
       dispatch?.(SleepPerm(true));
+      setSleepDataSync(dispatch);
       getSleepData(onUpdate);
     }
   } catch (error) {
@@ -88,6 +89,11 @@ export function getSleepDataAfterPermissionIOS({ askPermission, onUpdate, dispat
           if (results) {
             calculateSleepData(results, callback);
             // console.log('Sleep Analysis +++++++++======>>>>', results);
+          }
+          if (Array.isArray(results) && results.length > 0) {
+            setSleepDataSync(dispatch, true);
+          } else {
+            setSleepDataSync(dispatch, false);
           }
         },
       );
@@ -519,3 +525,27 @@ export function getSleepDataForUpdateApi() {
   // console.log('api sleep data for update api: ', formatData);
   return formatData;
 }
+
+export const setSleepDataSync = async (dispatch, isDataComing) => {
+  if (Platform.OS === 'android') {
+    let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
+    let SleepP = await JSON.parse(SleepPer);
+    dispatch?.(SetSleepDataSyncStatus(!!SleepP));
+    return;
+  }
+  let flag;
+  try {
+    flag = await AsyncStorage.getItem('IsSleepDataSync');
+    flag = await JSON.parse(flag);
+  } catch (error) {
+    console.log('error getting IsSleepDataSync from Async storage');
+  }
+  if (!flag && isDataComing === true) {
+    try {
+      await AsyncStorage.setItem('IsSleepDataSync', JSON.stringify(true));
+    } catch (error) {
+      console.log('error setting IsSleepDataSync in Async storage');
+    }
+  }
+  dispatch?.(SetSleepDataSyncStatus(isDataComing === true || !!flag));
+};

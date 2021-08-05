@@ -36,6 +36,8 @@ import {
   SHOW_WEEKLY_INSIGHTS_MODAL,
   SET_SWIPER_INDEX,
   SET_FLO_COINS,
+  SET_FITNESS_SYNC_TEXT,
+  SET_SLEEP_DATA_SYNC_STATUS,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -263,6 +265,20 @@ export const SetSwiperIndex = (data) => {
 export const SetFloCoins = (data) => {
   return {
     type: SET_FLO_COINS,
+    payload: data,
+  };
+};
+
+export const SetFitnessSyncText = (data) => {
+  return {
+    type: SET_FITNESS_SYNC_TEXT,
+    payload: data,
+  };
+};
+
+export const SetSleepDataSyncStatus = (data) => {
+  return {
+    type: SET_SLEEP_DATA_SYNC_STATUS,
     payload: data,
   };
 };

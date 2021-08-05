@@ -377,7 +377,12 @@ const FitnessData = ({
             <Text style={styles.ColoredText}>Anon</Text>
           </TouchableOpacity>
         </View> */}
-        <HomeSyncHeader label={"Fitness"} setOpenActionSheet={setOpenActionSheet} setAnonymousClick={setAnonymousClick}/>
+        <HomeSyncHeader
+          label={"Fitness"}
+          isPermissionGiven={UserData.HealthPermission}
+          syncText={UserData.fitnessSyncText}
+          setOpenActionSheet={setOpenActionSheet}
+          setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={

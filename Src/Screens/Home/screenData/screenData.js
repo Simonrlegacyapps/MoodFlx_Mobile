@@ -240,7 +240,12 @@ const ScreenData = ({
             <Text style={styles.ColoredText}>Anon</Text>
           </View>
         </View> */}
-        <HomeSyncHeader label ={"Screen"} setOpenActionSheet={setopenActionSheet} setAnonymousClick={setAnonymousClick}/>
+        <HomeSyncHeader
+          label={'Screen'}
+          isPermissionGiven={false}
+          setOpenActionSheet={setopenActionSheet}
+          setAnonymousClick={setAnonymousClick}
+        />
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={

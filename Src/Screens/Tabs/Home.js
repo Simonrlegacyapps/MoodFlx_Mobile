@@ -22,7 +22,7 @@ import AppleHealthKit, {
   HealthValue,
   HealthKitPermissions,
 } from 'react-native-health';
-
+import isEmpty from 'lodash.isempty';
 import GetLocation from 'react-native-get-location';
 import DeviceInfo from 'react-native-device-info';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
@@ -52,6 +52,7 @@ import {
   GetSteps,
   GetWorkouts,
   HealthPerm,
+  SetFitnessSyncText,
   SleepPerm,
   UserCalories,
   UserDistance,
@@ -74,7 +75,8 @@ import {
   activityHealthKitOptions,
 } from '../../services/appPermissions';
 import { dataTypes, getScreensPriority } from '../../Constants/constants';
-import { setSwiperIndexHome } from '../../services/commonService';
+import { setFitnessDataSync, setSwiperIndexHome } from '../../services/commonService';
+import { setSleepDataSync } from '../Home/SleepData/sleepDataService';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
@@ -293,7 +295,8 @@ const App = (props) => {
     dispatch(HealthPerm(HealthP));
     // console.log(`HealthP`, HealthP);
     if (HealthP != null) {
-      await OnAutoSync(function (flag) {
+      await OnAutoSync(function (flag, dataSyncArray) {
+        setFitnessDataSync(dispatch, dataSyncArray);
         console.log('onFinish called', flag);
         setLoading(false);
         const timeoutId = setTimeout(async () => {
@@ -322,7 +325,7 @@ const App = (props) => {
     // console.log(`mood count again`, e);
     console.log('good to go for API in async here at top');
     const onAutoSyncTimeoutId = setTimeout(async () => {
-      await OnAutoSync(async function (flag) {
+      await OnAutoSync(async function (flag, dataSyncArray) {
         // console.log("onFinish called", flag);
         if (flag === true) {
           try {
@@ -335,11 +338,13 @@ const App = (props) => {
             try {
               await AsyncStorage.setItem('GiveSleepPerm', 'true');
               dispatch(SleepPerm(true));
+              setSleepDataSync(dispatch);
             } catch (error) {
               console.log('Async set item Health Permission error', error);
             }
           }
         }
+        setFitnessDataSync(dispatch, dataSyncArray);
         setLoading(false);
         const timeoutId = setTimeout(async () => {
           console.log('steps', steps);
@@ -367,7 +372,8 @@ const App = (props) => {
     // );
     if (Platform.OS === 'ios') {
       const healthKitOptions = activityHealthKitOptions;
-
+      let dataSyncArray = [];
+      !UserData.HealthPermission && dispatch?.(SetFitnessSyncText('Trying to Sync'));
       // console.log(`-------------qwertyuiopasdfghjklzxcvbnm-----------------,`);
       AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
         // setLoading(true);
@@ -414,7 +420,7 @@ const App = (props) => {
             if (err) {
               count++;
               console.log(`count==> `, count);
-              count === 8 && onFinish?.(true);
+              count === 8 && onFinish?.(true, dataSyncArray);
               console.log('error getting latest weight: ', err);
               return;
             }
@@ -425,9 +431,10 @@ const App = (props) => {
             // }
             count++;
             console.log(`count==> `, count);
-            count === 8 && onFinish?.(true);
             console.log('User weight: ', results);
             userWeight = results?.value ?? 0;
+            results?.value !== undefined && dataSyncArray.push(PERMS.Weight);
+            count === 8 && onFinish?.(true, dataSyncArray);
           },
         );
 
@@ -458,11 +465,12 @@ const App = (props) => {
               console.log('error getDailyStepCountSamples: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 8 && onFinish?.(true);
+              count === 8 && onFinish?.(true, dataSyncArray);
               return;
             }
             console.log(`results of all steps `, results);
             dispatch(GetSteps(results));
+            !isEmpty(results) && dataSyncArray.push(PERMS.StepCount, PERMS.Steps);
             let total = 0;
             let zero = 0;
             let ones = 0;
@@ -546,7 +554,7 @@ const App = (props) => {
             dispatch(UserSteps(total));
             count++;
             console.log(`count==> `, count);
-            count === 8 && onFinish?.(true);
+            count === 8 && onFinish?.(true, dataSyncArray);
             // console.log('All steps ++++', results, total);
           },
         );
@@ -557,7 +565,7 @@ const App = (props) => {
               console.log('error getBloodPressureSamples: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 8 && onFinish?.(true);
+              count === 8 && onFinish?.(true, dataSyncArray);
               return;
             }
             // setBP(results);
@@ -565,7 +573,8 @@ const App = (props) => {
             console.log('All BP', results);
             count++;
             console.log(`count==> `, count);
-            count === 8 && onFinish?.(true);
+            !isEmpty(results) && dataSyncArray.push(PERMS.BloodPressureDiastolic, PERMS.BloodPressureSystolic);
+            count === 8 && onFinish?.(true, dataSyncArray);
           },
         );
         // Need to check from here for data ================================================================>>>>>>>>>>>>>>>>>>>>
@@ -576,7 +585,7 @@ const App = (props) => {
               console.log('error getActiveEnergyBurned: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 8 && onFinish?.(true);
+              count === 8 && onFinish?.(true, dataSyncArray);
               return;
             }
             mainCalories = results;
@@ -590,7 +599,8 @@ const App = (props) => {
             dispatch(UserCalories(total));
             count++;
             console.log(`count==> `, count);
-            count === 8 && onFinish?.(true);
+            !isEmpty(results) && dataSyncArray.push(PERMS.ActiveEnergyBurned);
+            count === 8 && onFinish?.(true, dataSyncArray);
             // console.log('Active energy count', results);
           },
         );
@@ -602,7 +612,7 @@ const App = (props) => {
               console.log('error getDailyDistanceWalkingRunningSamples: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 8 && onFinish?.(true);
+              count === 8 && onFinish?.(true, dataSyncArray);
               return;
             }
             mainDistance = results;
@@ -617,7 +627,8 @@ const App = (props) => {
             // console.log('Distance in KMS', results, total);
             count++;
             console.log(`count==> `, count);
-            count === 8 && onFinish?.(true);
+            !isEmpty(results) && dataSyncArray.push(PERMS.DistanceWalkingRunning);
+            count === 8 && onFinish?.(true, dataSyncArray);
           },
         );
 
@@ -628,7 +639,7 @@ const App = (props) => {
               console.log('error getHeartRateSamples: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 8 && onFinish?.(true);
+              count === 8 && onFinish?.(true, dataSyncArray);
               return;
             }
             HeartRate = results;
@@ -636,7 +647,8 @@ const App = (props) => {
             console.log('Heart Samples', results);
             count++;
             console.log(`count==> `, count);
-            count === 8 && onFinish?.(true);
+            !isEmpty(results) && dataSyncArray.push(PERMS.HeartRate);
+            count === 8 && onFinish?.(true, dataSyncArray);
           },
         );
 
@@ -665,7 +677,7 @@ const App = (props) => {
               console.log('error movingTime: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 8 && onFinish?.(true);
+              count === 8 && onFinish?.(true, dataSyncArray);
               return;
             }
             mainMoving = results;
@@ -688,7 +700,8 @@ const App = (props) => {
             // );
             count++;
             console.log(`count==> `, count);
-            count === 8 && onFinish?.(true);
+            !isEmpty && dataSyncArray.push(PERMS.DistanceCycling);
+            count === 8 && onFinish?.(true, dataSyncArray);
           },
         );
 
@@ -699,7 +712,7 @@ const App = (props) => {
               console.log('error workout: ', err);
               count++;
               console.log(`count==> `, count);
-              count === 8 && onFinish?.(true);
+              count === 8 && onFinish?.(true, dataSyncArray);
               return;
             }
             console.log(
@@ -711,7 +724,8 @@ const App = (props) => {
             // setWorkouts(results);
             count++;
             console.log(`count==> `, count);
-            count === 8 && onFinish?.(true);
+            !isEmpty && dataSyncArray.push(PERMS.Workout);
+            count === 8 && onFinish?.(true, dataSyncArray);
           },
         );
       });
@@ -745,6 +759,7 @@ const App = (props) => {
         await GoogleFit.checkIsAuthorized();
         console.log('Google Fit isAuthorized: ', GoogleFit.isAuthorized);
         if (!GoogleFit.isAuthorized) {
+          dispatch?.(SetFitnessSyncText('Trying to Sync'));
           await GoogleFit.authorize(options)
             .then((authResult) => {
               if (authResult.success) {
@@ -1186,9 +1201,9 @@ const App = (props) => {
 
   const CheckForSleepData = async () => {
     console.log(`Implement screen data`);
-    let Wp = await Sleep.getItem('GiveSleepPerm');
-    let WeatherP = await JSON.parse(Wp);
-    dispatch(SleepPerm(WeatherP));
+    let Sp = await Sleep.getItem('GiveSleepPerm');
+    let SleepP = await JSON.parse(Wp);
+    dispatch(SleepPerm(SleepP));
   };
 
   const CheckForScreenData = async () => {
