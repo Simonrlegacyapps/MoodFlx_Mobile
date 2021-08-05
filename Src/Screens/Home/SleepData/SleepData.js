@@ -589,6 +589,7 @@ const SleepData = ({
                 zIndex: -234234,
               }}>
               <Text
+                allowFontScaling={false}
                 style={{
                   marginTop: dynamicSize(-320),
                   fontWeight: '700',
