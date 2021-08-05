@@ -36,6 +36,8 @@ import {
   SHOW_WEEKLY_INSIGHTS_MODAL,
   SET_SWIPER_INDEX,
   SET_FLO_COINS,
+  SET_FITNESS_SYNC_TEXT,
+  SET_SLEEP_DATA_SYNC_STATUS,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -74,6 +76,8 @@ const intializedState = {
   showWeeklyInsightsModal: false,
   swiperIndex: 0,
   floCoins: 12600,
+  fitnessSyncText: '',
+  sleepDataSyncStatus: false,
 };
 
 export const First = (state = intializedState, action) => {
@@ -225,6 +229,14 @@ export const First = (state = intializedState, action) => {
     case SET_FLO_COINS:
       return Object.assign({}, state, {
         floCoins: action.payload,
+      });
+    case SET_FITNESS_SYNC_TEXT:
+      return Object.assign({}, state, {
+        fitnessSyncText: action.payload,
+      });
+    case SET_SLEEP_DATA_SYNC_STATUS:
+      return Object.assign({}, state, {
+        sleepDataSyncStatus: action.payload,
       });
     default:
       return state;

@@ -14,6 +14,8 @@ import {
   View,
   AppState,
   StatusBar,
+  Pressable,
+  Alert,
 } from 'react-native';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
 import AddButton from '../../Components/buttons/AddButton';
@@ -28,9 +30,9 @@ import ActionSheet from '../../Components/ImageSelection/ActionSheet';
 import { useDispatch, useSelector } from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
 import DeviceInfo from 'react-native-device-info';
-import { NotificationPerm, UserDetail } from '../../redux/actions/actions';
+import { NotificationPerm, SetSleepDataSyncStatus, UserDetail } from '../../redux/actions/actions';
 import { GetStaffUserData } from '../../apirequest/PostRequestApi';
-import { AppPermissions } from '../../services/appPermissions';
+import { AppPermissions, activityHealthKitOptions } from '../../services/appPermissions';
 import { useFocusEffect } from '@react-navigation/native';
 import { getSleepDataAfterPermissionIOS } from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
@@ -399,7 +401,7 @@ const ProfileTab = ({ navigation }) => {
     [setPronoun, ProfileApiCallHere],
   );
 
-  const requestSleepPerm = useCallback(() => {
+  const requestSleepPerm = useCallback(async () => {
     if (Platform.OS === 'android') {
       AppPermissions.requestActivityPermission(dispatch);
     } else {
@@ -409,6 +411,23 @@ const ProfileTab = ({ navigation }) => {
       });
     }
   }, [dispatch]);
+
+  const openHealthApp = useCallback(async () => {
+    // Checking if the link is supported for links with custom URL scheme.
+    if (Platform.OS !== 'ios') {
+      return;
+    }
+    const url = 'x-apple-health://';
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+      // by some browser in the mobile
+      await Linking.openURL(url);
+    } else {
+      Alert.alert('Unable to open Health App from this app. Please manully open the Health App to make changes');
+    }
+  }, []);
 
   // console.log(
   //   "name != '' && UserData?.UserDetails?.full_name",
@@ -576,7 +595,13 @@ const ProfileTab = ({ navigation }) => {
           <View style={styles.permissionTileContainer}>
             <Text style={styles.permissionText}>Health Permission</Text>
             {UserData.HealthPermission ? (
-              <Text style={styles.allowed}>Syncing</Text>
+              <Pressable style={styles.syncingButton} onPress={openHealthApp}>
+                <Text style={styles.allowed}>
+                  {Platform.OS === 'ios' && UserData.fitnessSyncText
+                    ? UserData.fitnessSyncText
+                    : 'Syncing'}
+                </Text>
+              </Pressable>
             ) : (
               <TouchableOpacity
                 onPress={() =>
@@ -592,7 +617,11 @@ const ProfileTab = ({ navigation }) => {
           <View style={styles.permissionTileContainer}>
             <Text style={styles.permissionText}>Sleep Permission</Text>
             {UserData.SleepPermission ? (
-              <Text style={styles.allowed}>Syncing</Text>
+              <Pressable style={styles.syncingButton} onPress={openHealthApp}>
+                <Text style={styles.allowed}>
+                  Syncing{UserData.sleepDataSyncStatus ? '' : ' 0/1'}
+                </Text>
+              </Pressable>
             ) : (
               <TouchableOpacity onPress={requestSleepPerm}>
                 <AddButton
@@ -744,15 +773,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   allowed: {
-    width: dynamicSize(68),
+    // width: dynamicSize(68),
     color: Constants.Colors.blackColorCode,
     fontWeight: '500',
+    alignSelf: 'center',
     fontSize: dynamicSize(14),
   },
   permissionText: {
     color: Constants.Colors.blackColorCode,
     fontWeight: '500',
     fontSize: dynamicSize(16),
+    alignSelf: 'center',
+  },
+  syncingButton: {
+    padding: dynamicSize(10),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   startSyncButton: {
     padding: dynamicSize(10),

@@ -10,8 +10,21 @@ import DeviceInfo from 'react-native-device-info';
 
 const {height} = Dimensions.get("screen")
 
-const HomeSyncHeader = ({setOpenActionSheet, setAnonymousClick, label}) => {
-    const UserData = useSelector((state) => state.First);
+const HomeSyncHeader = ({
+  setOpenActionSheet,
+  setAnonymousClick,
+  label,
+  isPermissionGiven,
+  syncText,
+}) => {
+  const UserData = useSelector((state) => state.First);
+  let headerSyncText = isPermissionGiven ? 'Syncing your' : 'Sync your';
+  if (isPermissionGiven && typeof syncText === 'string' && syncText) {
+    headerSyncText = syncText;
+  }
+  if (syncText) {
+    headerSyncText = syncText;
+  }
 
     return (
         <View style={styles.HeaderView}>
@@ -30,7 +43,7 @@ const HomeSyncHeader = ({setOpenActionSheet, setAnonymousClick, label}) => {
             </View>
             <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
               <Text allowFontScaling={false} style={styles.lightText}>
-                {UserData.HealthPermission ? 'Syncing your' : 'Sync your'}
+                {headerSyncText}
               </Text>
               <Text allowFontScaling={false} style={styles.normalText}>{label}</Text>
             </View>

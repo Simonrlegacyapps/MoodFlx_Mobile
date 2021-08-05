@@ -39,7 +39,7 @@ import {
   setSleepDataLastThirtyDays,
   sleepDataPermissionsIOS,
   fetchSleepDataForLastThirtyDays,
-  getSleepDataForUpdateApi
+  getSleepDataForUpdateApi,
 } from './sleepDataService';
 import { dataTypes, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
@@ -471,7 +471,14 @@ const SleepData = ({
             <Text style={styles.ColoredText}>Anon</Text>
           </View>
         </View> */}
-        <HomeSyncHeader label ={"Sleep"} setOpenActionSheet={setopenActionSheet} setAnonymousClick={setAnonymousClick}/>
+        <HomeSyncHeader
+          label={'Sleep'}
+          isPermissionGiven={
+            UserData.SleepPermission && UserData.sleepDataSyncStatus
+          }
+          setOpenActionSheet={setopenActionSheet}
+          setAnonymousClick={setAnonymousClick}
+        />
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={

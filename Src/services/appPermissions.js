@@ -21,6 +21,7 @@ import {
   WeatherPerm,
 } from '../redux/actions/actions';
 import {defaultLocation, isCountryIndia} from '../Constants/constants';
+import { setFitnessDataSync } from './commonService';
 
 const CAMERA_PERMISSION = {
   ios: PERMISSIONS.IOS.CAMERA,
@@ -378,6 +379,7 @@ class MoodFloPermission {
           AsyncStorage.setItem('GiveHealthPerm', 'true')
             .then(() => {
               dispatch(HealthPerm(true));
+              setFitnessDataSync(dispatch);
             })
             .catch((error) => {
               console.log('Async storage set GiveHealthPerm Error', error);
@@ -398,6 +400,7 @@ class MoodFloPermission {
                 AsyncStorage.setItem('GiveHealthPerm', 'true')
                   .then(() => {
                     dispatch(HealthPerm(true));
+                    setFitnessDataSync(dispatch);
                   })
                   .catch((error) => {
                     console.log(

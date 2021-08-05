@@ -403,7 +403,12 @@ const LightData = ({
             <Text style={styles.ColoredText}>Anon</Text>
           </View>
         </View> */}
-        <HomeSyncHeader label ={"Light"} setOpenActionSheet={setopenActionSheet} setAnonymousClick={setAnonymousClick}/>
+        <HomeSyncHeader
+          label={'Light'}
+          isPermissionGiven={true}
+          setOpenActionSheet={setopenActionSheet}
+          setAnonymousClick={setAnonymousClick}
+        />
         <View style={styles.ProgressBarView}>
           <ProgressBar
             progress={
