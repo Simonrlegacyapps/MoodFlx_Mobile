@@ -27,12 +27,19 @@ import GoldMedal from '../../../assets/svg/goldMedal';
 import Medal from '../../../assets/svg/medal';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import ProfileCoinModal from '../../Components/PopUp/profileCoinModal';
 
 const Tab = createMaterialTopTabNavigator();
 const {width} = Dimensions.get('screen');
 
 const MainProfileTab = ({navigation}) => {
   const [inProgress, setinProgress] = useState(false)
+  const [openActionSheet, setopenActionSheet] = useState(false)
+
+  const VerifyDone = () => {
+    setopenActionSheet(false)
+}
+
   const UserData = useSelector((state) => state.First);
   return (
     <View style={styles.container}>
@@ -72,9 +79,9 @@ const MainProfileTab = ({navigation}) => {
                 c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
               />
               </View>
-              {true &&<Text style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
+              {true &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
             </View>
-            <View style={styles.medal}>
+            <TouchableOpacity onPress={()=> setopenActionSheet(true)} style={styles.medal}>
               {true && <AnimatedCircularProgress
                 duration={1500}
                 style={styles.CircularProgressStyle}
@@ -98,8 +105,8 @@ const MainProfileTab = ({navigation}) => {
                 c2={false ? '#FFBD20' :true ? "#968DFD": '#B5BDC5'}
               />
               </View>
-              {false &&<Text style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
-            </View>
+              {false &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
+            </TouchableOpacity>
             <View style={styles.medal}>
               {inProgress && <AnimatedCircularProgress
                 duration={1500}
@@ -124,7 +131,7 @@ const MainProfileTab = ({navigation}) => {
                 c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
               />
               </View>
-              {false &&<Text style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
+              {false &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
             </View>
             <View style={styles.medal}>
               {inProgress && <AnimatedCircularProgress
@@ -150,7 +157,7 @@ const MainProfileTab = ({navigation}) => {
                 c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
               />
               </View>
-              {false &&<Text style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
+              {false &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
             </View>
             <View style={styles.medal}>
               {inProgress && <AnimatedCircularProgress
@@ -176,7 +183,7 @@ const MainProfileTab = ({navigation}) => {
                 c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
               />
               </View>
-              {false &&<Text style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
+              {false &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
             </View>
           </View>
         </View>
@@ -214,6 +221,18 @@ const MainProfileTab = ({navigation}) => {
         <Tab.Screen name="History" component={History} />
         <Tab.Screen name="How To" component={HowTo} />
       </Tab.Navigator>
+      <ProfileCoinModal
+      title={"Mood Navigator"}
+                permission={"100 - 1,000 Flo Coins"}
+                // image={Constants.Images.FitnessPopUp}
+                dataType={'fitness'}
+                smallText={"Level not reached yet"}
+                ButtonText={"Let's Go!"}
+                medal={true}
+                modalVisible={openActionSheet}
+                dismissModalHandler={() => setopenActionSheet(false)}
+                verifyDone={() => VerifyDone()}
+            />
     </View>
   );
 };

@@ -786,7 +786,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   syncingButton: {
-    padding: dynamicSize(10),
+    // padding: dynamicSize(10),
     justifyContent: 'center',
     alignItems: 'center',
   },

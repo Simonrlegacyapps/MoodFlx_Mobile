@@ -105,6 +105,7 @@ const FitnessData = ({
   swiperIndex,
   index,
   healthUpdateApiCount,
+  navigation
 }) => {
   // useEffect(() => {
   //   checkThis();
@@ -378,6 +379,7 @@ const FitnessData = ({
           </TouchableOpacity>
         </View> */}
         <HomeSyncHeader
+        navigation={navigation}
           label={"Fitness"}
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
