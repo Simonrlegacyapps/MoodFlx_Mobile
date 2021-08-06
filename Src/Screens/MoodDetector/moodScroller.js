@@ -84,12 +84,12 @@ export default function MoodScroller({
     return null;
   }
 
-  let marginLeft = 0;
-  if (wheelSize === largeWheelSize) {
-    marginLeft = -getFontSize(15);
-  } else if (wheelSize === mediumWheelSize) {
-    marginLeft = -getFontSize(17);
-  }
+  // let marginLeft = 0;
+  // if (wheelSize === largeWheelSize) {
+  //   marginLeft = -getFontSize(15);
+  // } else if (wheelSize === mediumWheelSize) {
+  //   marginLeft = -getFontSize(17);
+  // }
 
   const t = toolTipData?.name?.toLowerCase?.() ?? '';
 
@@ -120,7 +120,7 @@ export default function MoodScroller({
               // {transform: [{ scale: 1 }]}
               {
                 marginBottom: marginTop,
-                marginLeft: marginLeft,
+                // marginLeft: marginLeft,
               },
             ]}>
             <View style={styles.toolTipTextView}>
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   toolTipView: {
     zIndex: 30,
     alignItems: 'center',
-    alignSelf: 'stretch',
+    alignSelf: 'center',
     width: '100%',
     // marginBottom: -10,
   },
