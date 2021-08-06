@@ -47,7 +47,7 @@ const Rewards = () => {
             <FlatList data={data} renderItem={renderItem} showsVerticalScrollIndicator={false} />
             <View style={{ padding: 40 }} />
             <ProfileCoinModal
-                permission={false}
+                permission={"Hang in there you'll be able to cash in your Flo soon!"}
                 // image={Constants.Images.FitnessPopUp}
                 dataType={'fitness'}
                 modalVisible={openActionSheet}

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { useSelector } from 'react-redux';
+import MedalPopUp from '../../../assets/svg/medalPopUp';
 import Constants from '../../Constants';
 import {
     RubikLight,
@@ -27,11 +28,15 @@ type props = {
 
 const { width } = Dimensions.get('window');
 const ProfileCoinModal = ({
+    title,
     permission,
     modalVisible,
     dismissModalHandler,
+    ButtonText,
     selectedValue,
     verifyDone,
+    smallText,
+    medal,
     image,
     dataType,
     ComingUp,
@@ -78,12 +83,25 @@ const ProfileCoinModal = ({
                         source={image}
                         style={{ height: 80, width: 80, margin: 15, resizeMode: 'contain' }}
                     /> */}
+                    {medal &&<View style={{alignItems:'center', marginTop:30}}>
+                    <MedalPopUp/>
+                    </View>}
 
+                    {title &&<Text style={styles.titleText}>
+                        {title
+                            ? title
+                            : "Hang in there you'll be able to cash in your Flo soon!"}
+                    </Text>}
                     <Text style={styles.bigText}>
                         {permission
-                            ? 'Anonymously syncing your data'
+                            ? permission
                             : "Hang in there you'll be able to cash in your Flo soon!"}
                     </Text>
+                    {smallText && <Text style={styles.smallText}>
+                        {smallText
+                            ? smallText
+                            : "Hang in there you'll be able to cash in your Flo soon!"}
+                    </Text>}
                     <TouchableOpacity style={{ alignSelf: 'center' }} onPress={verifyDone}>
                         <View
                             style={{
@@ -96,7 +114,7 @@ const ProfileCoinModal = ({
                                 justifyContent: 'center',
                             }}>
                             <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
-                                {'Coming soon'}
+                                {ButtonText? ButtonText:'Coming soon'}
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -152,6 +170,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'transparent',
         borderRadius: 20,
+        
         // padding:20,
     },
     modalView: {
@@ -166,6 +185,7 @@ const styles = StyleSheet.create({
         width: '75%',
         overflow: 'hidden',
         justifyContent: 'center',
+        paddingTop:10
         // alignItems: 'center',
     },
     upperHandel: {
@@ -217,13 +237,31 @@ const styles = StyleSheet.create({
         // paddingBottom: 10,
         //   paddingVertical:10
     },
-    bigText: {
+    titleText: {
         fontFamily: RubikMedium,
-        fontSize: width / 20,
-        paddingHorizontal: 12,
-        marginRight: 12,
+        fontSize: width / 16,
+        color:"#7265E3",
+        // paddingHorizontal: 12,
+        // marginRight: 12,
         marginTop: 20,
         textAlign: 'center'
         // width:'80%'
     },
+    bigText: {
+        fontFamily: RubikMedium,
+        fontSize: width / 24,
+        // paddingHorizontal: 12,
+        // marginRight: 12,
+        marginTop:11,
+        textAlign: 'center'
+        // width:'80%'
+    },
+    smallText:{
+        fontSize:width/28,
+        paddingHorizontal:15,
+        textAlign:'center',
+        fontFamily:RubikLight,
+        color:"#9C9EB9",
+        marginTop:15
+    }
 });

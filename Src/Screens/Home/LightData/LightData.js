@@ -409,7 +409,7 @@ const LightData = ({
           setOpenActionSheet={setopenActionSheet}
           setAnonymousClick={setAnonymousClick}
         />
-        <View style={styles.ProgressBarView}>
+        <View style={[styles.ProgressBarView, {width: JSON.parse(MoodCount) > 3 ? "90%" : '88%'}]}>
           <ProgressBar
             progress={
               // swiperIndex == 1

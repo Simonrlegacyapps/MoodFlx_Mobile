@@ -45,12 +45,12 @@ const CustomModal = ({
           <View style={{flex: 1, backgroundColor: '#000000'}} />
         </TouchableWithoutFeedback>
       }>
-      <View style={styles.container}>
+      <View style={[styles.container,]}>
         <TouchableOpacity
           onPress={dismissModalHandler}
           style={[styles.dismissView, {backgroundColor: color}]}
         />
-        <View style={styles.upperContainer}>
+        <View style={[styles.upperContainer, ]}>
           <Text style={styles.textOne}>{modalText ?? ''}</Text>
           {(!!onClickButtonOne || !!onClickButtonTwo) && (
             <View style={styles.buttonsContainer}>
