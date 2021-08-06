@@ -29,9 +29,10 @@ import Toast from 'react-native-toast-message';
 import UsageStats from 'react-native-usage-stats';
 import moment from 'moment';
 import CrownBox from '../../../Components/crownBox/crownBox';
-import { useSelector } from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
+import DataInsights from '../../../Components/DataInsights/DataInsights';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -61,7 +62,7 @@ const ScreenData = ({
   const [AnonymousClick, setAnonymousClick] = useState(false);
 
   const UserData = useSelector((state) => state.First);
-
+  const dispatch = useDispatch();
   const data = [
     {
       x: 1,
@@ -271,7 +272,18 @@ const ScreenData = ({
           </View>
         </View>
         <View>
-          <View
+        <DataInsights
+              dailyInsights={"You became more tired and anxious as your screen time went over 5hrs per day"}
+              weeklyInsights={''}
+              dailySuggestion={"Try getting less than 4hrs for a few days"}
+              dailySuggestionType={'warning'}
+              weeklySuggestion={''}
+              weeklySuggestionType={''}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={false}
+              dispatch={dispatch}
+            />
+          {/* <View
             style={{
               flex: 1,
               justifyContent: 'center',
@@ -289,7 +301,7 @@ const ScreenData = ({
             <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
               Try get less than 3hrs a day
             </Text>
-          </View>
+          </View> */}
 
           {/* <ProgressBarCustom /> */}
           <HomeHeader
@@ -367,7 +379,7 @@ const ScreenData = ({
             />
           </View>
           <GraphicChart />
-          {!PermScreenTime && (
+          {/* {!PermScreenTime && (
             <View
               style={{
                 position: 'absolute',
@@ -390,7 +402,7 @@ const ScreenData = ({
                 Demo
               </Text>
             </View>
-          )}
+          )} */}
           {true && (
             <TouchableOpacity
               activeOpacity={0}

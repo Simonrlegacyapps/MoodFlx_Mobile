@@ -422,6 +422,7 @@ const FitnessData = ({
               weeklySuggestion={insights?.weeklySuggestion}
               weeklySuggestionType={insights?.weeklySuggestionType}
               timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={UserData.HealthPermission}
               dispatch={dispatch}
             />
           {/* {!UserData.HealthPermission ? (
@@ -636,7 +637,7 @@ const FitnessData = ({
             fours={fours}
             fives={fives}
           />
-          {!UserData.HealthPermission && (
+          {/* {!UserData.HealthPermission && (
             <View
               style={{
                 // backgroundColor: 'blue',
@@ -662,7 +663,7 @@ const FitnessData = ({
                 Demo
               </Text>
             </View>
-          )}
+          )} */}
           {!UserData.HealthPermission && (
             <TouchableOpacity
               activeOpacity={0}

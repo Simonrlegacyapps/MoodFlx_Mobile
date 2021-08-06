@@ -1114,6 +1114,7 @@ const WeatherData = ({
               weeklySuggestion={insights?.weeklySuggestion}
               weeklySuggestionType={insights?.weeklySuggestionType}
               timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={UserData.WeatherPermission}
               dispatch={dispatch}
             />
           {/* {!UserData.WeatherPermission ? (

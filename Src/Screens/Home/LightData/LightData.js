@@ -442,6 +442,7 @@ const LightData = ({
             weeklySuggestion={insights?.weeklySuggestion}
             weeklySuggestionType={insights?.weeklySuggestionType}
             timeLeft={UserData?.weeklyInsightsTimeLeft}
+            isPermissionGiven={true}
             dispatch={dispatch}
           />
           {/* <View

@@ -512,6 +512,7 @@ const SleepData = ({
               weeklySuggestion={insights?.weeklySuggestion}
               weeklySuggestionType={insights?.weeklySuggestionType}
               timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={UserData.SleepPermission}
               dispatch={dispatch}
             />
           {/* {!UserData.SleepPermission ? (
@@ -595,7 +596,7 @@ const SleepData = ({
             sleepGraphData={sleepGraphData}
             graphType={dataTypes.sleep}
           />
-          {!UserData.SleepPermission && (
+          {/* {!UserData.SleepPermission && (
             <View
               style={{
                 position: 'absolute',
@@ -618,7 +619,7 @@ const SleepData = ({
                 Demo
               </Text>
             </View>
-          )}
+          )} */}
           {!UserData.SleepPermission && (
             <TouchableOpacity
               activeOpacity={0}
