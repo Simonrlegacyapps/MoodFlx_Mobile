@@ -2,29 +2,19 @@ import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import {
   View,
   Text,
-  Dimensions,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import {
-  BarChart,
+  LineChart
 } from "react-native-chart-kit";
-import { dataTypes, durationTypes } from '../../Constants/constants';
 import { getFontSize, horizontalScale, metrics } from '../../Constants/sizeChoose';
-import { RubikRegular } from '../../Constants/fonts/Fonts';
+import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 
-export function LightGraph({
-  graphHeight,
+export default function LightGraph({
   yAxisLabel,
   yAxisSuffix,
-  yAxisInterval,
   data,
-  graphType,
-  setDuration,
-  duration,
-  graphWidth
 }) {
-
 
   const labels = useMemo(() => {
     console.log('DataGraph labels', data);
@@ -32,10 +22,10 @@ export function LightGraph({
     if (Array.isArray(data) && data.length === 7) {
       l = data.map(e => {
         return e?.day;
-      })
-    } 
+      });
+    }
     if (l == null) {
-      l = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+      l = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     }
     return l;
   }, [data]);
@@ -43,125 +33,106 @@ export function LightGraph({
   const _dataSet = useMemo(() => {
     let d = [];
     if (Array.isArray(data) && data.length === 7) {
-    d.push({
-      data: data.map(e => {
-        return e?.y;
-      })
-    });
-    } 
+      d.push({
+          data: data.map((e) => {
+            return !isNaN(e?.y) && e?.y > 500 ? 500 : e?.y;
+          }),
+        },
+        {
+          data: [500],
+        },
+      );
+    }
     if (d.length === 0) {
       d.push({
-        data: [100, 350, 200, 400, 500, 300, 550]
-      });
+          data: [100, 350, 200, 400, 500, 300, 450],
+        },
+        {
+          data: [500],
+        },
+      );
     }
+    // d.push({
+    //   // data: [100, 350, 200, 400, 500, 300, 550]
+    //   data: [100, 350, 200, 300, 350, 150, 250]
+    // }, {
+    //   data: [500]
+    // });
     console.log('_dataSet', d);
     return d;
   }, [data]);
 
-
   return (
-    <View
-      style={{
-        // backgroundColor: '#7965F6',
-        marginBottom: 100,
-        borderRadius: 25,
-        width: metrics.screenWidth,
-        // height: metrics.screenWidth / 1.8,
-        // justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center',
-      }}>
-      {/* {graphType !== dataTypes.sleep && ( */}
-      <View
-        style={{
-          flexDirection: 'row',
-          marginBottom: 10,
-          marginTop: 20,
-          justifyContent: 'flex-start',
-        }}>
-          <View
-            style={{
-              padding: 8,
-              paddingHorizontal: 12,
-              backgroundColor: '#5E4ADC',
-              borderRadius: 5,
-              marginHorizontal: 6,
-            }}>
-            <Text
-              style={{ color: 'white', fontSize: getFontSize(13), fontFamily: RubikRegular }}>
-              {"Low: < 200"}
-          </Text>
-          </View>
-        <View
-          style={{
-            padding: 8,
-            paddingHorizontal: 12,
-            backgroundColor: '#5E4ADC',
-            borderRadius: 5,
-            marginHorizontal: 6,
-          }}>
-          <Text
-            style={{ color: 'white', fontSize: getFontSize(13), fontFamily: RubikRegular }}>
-            {"Ideal: 200-400"}
-          </Text>
-        </View>
-        <View
-          style={{
-            padding: 8,
-            paddingHorizontal: 12,
-            backgroundColor: '#5E4ADC',
-            borderRadius: 5,
-            marginHorizontal: 6,
-          }}>
-          <Text
-            style={{ color: 'white', fontSize: getFontSize(13), fontFamily: RubikRegular }}>
-            {"High: > 400"}
-          </Text>
-        </View>
-      </View>
-      {/* )} */}
-      {/* <Text>Bezier Line Chart</Text> */}
-      <BarChart
+    <View style={styles.container}>
+      <LineChart
         data={{
           labels: labels,
           datasets: _dataSet,
         //   legend: ["Low = < 150", "Ideal = 150 - 400", "High = < 400"]
         }}
-        width={graphWidth} // from react-native
+        // width={graphWidth} // from react-native
+        width={metrics.screenWidth * 0.8} // from react-native
         height={220}
         yAxisLabel={yAxisLabel}
         yAxisSuffix={yAxisSuffix}
         yAxisInterval={1} // optional, defaults to 1
         fromZero
         chartConfig={{
-            backgroundColor: "#FFFFFF",
-            backgroundGradientFrom: "#FFFFFF",
-            backgroundGradientTo: "#FFFFFF",
-            decimalPlaces: 0, // optional, defaults to 2dp
-            color: (opacity = 0) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            fillShadowGradient: '#FDB007',
-            fillShadowGradientOpacity: 1,
-            propsForBackgroundLines:{
-                stroke: '#8A959E',
-                x1: horizontalScale(60),
-                x2: graphWidth - horizontalScale(30),
-            },
-            propsForHorizontalLabels: {
-                stroke: "#8A959E"
-            },
-          barPercentage: 0.3,
-          barRadius: 8,
+          backgroundColor: "#FFFFFF",
+          backgroundGradientFrom: "#FFFFFF",
+          backgroundGradientTo: "#FFFFFF",
+          decimalPlaces: 0, // optional, defaults to 2dp
+          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          style: {
+            borderRadius: 16,
+          },
+          propsForDots: {
+            //   r: "6",
+            r: "0",
+            //   strokeWidth: "2",
+            strokeWidth: "0",
+            stroke: "#ffa726"
+            //   stroke: "transparent"
+          },
         }}
+        formatYLabel={(v) => v == '500' ? '500+' : v}
         segments={5}
         style={{
           marginVertical: 15,
         }}
       />
+      <View style={styles.rightLabelsView}>
+        <Text style={[styles.rightLabelsText, {color: '#A5ABBF'}]}>High</Text>
+        <Text style={[styles.rightLabelsText, {color: '#4C5980'}]}>Ideal</Text>
+        <Text style={[styles.rightLabelsText, {color: '#A5ABBF'}]}>Low</Text>
+      </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-
+  container: {
+    flexDirection: 'row',
+    // backgroundColor: '#7965F6',
+    marginBottom: 100,
+    borderRadius: 25,
+    width: metrics.screenWidth,
+    alignItems: 'flex-start',
+    alignSelf: 'flex-start',
+  },
+  rightLabelsView: {
+    height: 230,
+    justifyContent: 'space-between',
+    paddingTop: 30,
+    paddingBottom: 35,
+    flex: 1,
+    alignItems: 'center',
+    paddingRight: horizontalScale(15),
+  },
+  rightLabelsText: {
+    fontSize: getFontSize(13),
+    fontFamily: RubikRegular,
+    color: '#4C5980',
+  },
 });

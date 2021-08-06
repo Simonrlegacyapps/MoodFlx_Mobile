@@ -138,14 +138,15 @@ const Progress = props => {
             }
           ]}
         >
-          <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#7265E3', '#58A0E3',]} style={styles.linearGradient}>
+          <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[MoodCount > 3 ? "#A29EF1" :'#7265E3',MoodCount > 3 ? "#8EC2F0" : '#58A0E3',]} style={styles.linearGradient}>
           </LinearGradient>
         </Animated.View>
       </Animated.View>
       <View style={[{ left: 0, }, styles.circleView, styles.circle]} >{MoodCount >= 0 && <View style={[{ backgroundColor: '#7265E3', }, styles.smallCircle]} />}</View>
       <View style={[{ right: "33.3%", }, styles.circleView, styles.circle]} >{MoodCount >= 2 && <TickProgressBar />}</View>
       <View style={[{ right: "66.6%", }, styles.circleView, styles.circle]} >{MoodCount >= 1 && <TickProgressBar />}</View>
-      <View style={[{ right: 0, }, styles.circleView, styles.circle]} >{MoodCount >= 3 && <View style={[{ backgroundColor: '#58A0E3', }, styles.smallCircle]} />}</View>
+      <View style={[{ right: MoodCount > 3 ? 10 :0, }, styles.circleView, styles.circle]} >{MoodCount >= 3 && <TickProgressBar />}</View>
+      {/* <View style={[{ right: 0, }, styles.circleView, styles.circle]} >{MoodCount >= 3 && <View style={[{ backgroundColor: '#58A0E3', }, styles.smallCircle]} />}</View> */}
     </View>
   );
 };

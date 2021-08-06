@@ -4,6 +4,7 @@ import {
   Dimensions,
   Image,
   Modal,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -343,12 +344,13 @@ const Linktocompany = ({ navigation }) => {
               justifyContent: 'center',
               minHeight: 200,
             }}>
-            <View
+              <TouchableOpacity onPress={() => setModalVisible(false)} style={{backgroundColor:'black', width:'100%', height:'100%', position:'absolute', opacity:0.4}}></TouchableOpacity>
+            <ScrollView
               style={{
                 backgroundColor: 'white',
                 shadowColor: '#000',
                 shadowOffset: {
-                  width: 0,
+                  width: 2,
                   height: 2,
                 },
                 shadowOpacity: 0.25,
@@ -356,10 +358,12 @@ const Linktocompany = ({ navigation }) => {
                 elevation: 5,
                 width: '80%',
                 minHeight: 100,
+                maxHeight:dynamicSize(400),
                 borderRadius: 15,
                 paddingTop: 14,
                 paddingBottom: 14,
               }}>
+                
               {Divisions &&
                 Divisions.length > 0 &&
                 Divisions.map((item, index) => {
@@ -395,7 +399,7 @@ const Linktocompany = ({ navigation }) => {
                     </TouchableOpacity>
                   );
                 })}
-            </View>
+            </ScrollView>
           </TouchableOpacity>
         </Modal>
       </View>

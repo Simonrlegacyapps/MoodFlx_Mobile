@@ -70,7 +70,7 @@ const SkipMoodInputModal = ({
           }]} onPress={onClickButtonOne}>
             <Text
               style={styles.buttonTwoText}>
-              {"I want to skip"}
+              {"Skip this time"}
             </Text>
           </TouchableOpacity>
         </View>

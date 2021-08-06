@@ -45,7 +45,7 @@ import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
-import { LightGraph } from '../../../Components/LightGraph/LightGraph';
+import LightGraph from '../../../Components/LightGraph/LightGraph';
 import { getLightDataIOS } from '../../../services/moodDataModuleService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
@@ -409,7 +409,7 @@ const LightData = ({
           setOpenActionSheet={setopenActionSheet}
           setAnonymousClick={setAnonymousClick}
         />
-        <View style={styles.ProgressBarView}>
+        <View style={[styles.ProgressBarView, {width: JSON.parse(MoodCount) > 3 ? "90%" : '88%'}]}>
           <ProgressBar
             progress={
               // swiperIndex == 1
