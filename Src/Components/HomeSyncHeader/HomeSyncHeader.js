@@ -74,7 +74,21 @@ const HomeSyncHeader = ({
           </Text>
         </TouchableOpacity>
       </View>
-      { UserData.UserMoodCount >= 3 && <LottieView source={require("../../../assets/json/64686-confetti.json")} autoPlay={true} loop={false} style={{height:300, width:300, top:0, position:'absolute', right:0}}/>}
+      {UserData.UserMoodCount >= 3 && (
+        <LottieView
+          source={require('../../../assets/json/64686-confetti.json')}
+          autoPlay={true}
+          loop={false}
+          style={{
+            height: 500,
+            width: 400,
+            top: 0,
+            position: 'absolute',
+            right: 0,
+            zIndex:9999
+          }}
+        />
+       )} 
     </View>
   );
 };
