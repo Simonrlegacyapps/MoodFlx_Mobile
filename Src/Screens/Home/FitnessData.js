@@ -10,6 +10,7 @@ import {
   Dimensions,
   StatusBar,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
@@ -414,6 +415,7 @@ const FitnessData = ({
         </View>
 
         <View style={styles.subViewTwo}>
+          {Loading && <ActivityIndicator color='#9889F9' size='large' />}
         <DataInsights
               dailyInsights={!UserData.HealthPermission? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
               weeklyInsights={insights?.weeklyInsights}
@@ -705,7 +707,18 @@ const FitnessData = ({
         dismissModalHandler={() => FitnessPopUpcancelled()}
         verifyDone={() => FitnessPopUpcancelled()}
       />
-
+      {Loading && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'black',
+            opacity: 0.2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}/>
+      )}
       <AnonymousPopUp
         modalVisible={AnonymousClick}
         dismissModalHandler={() => AnonymousPopUpcancelled()}

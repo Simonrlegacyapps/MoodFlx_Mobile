@@ -1341,7 +1341,7 @@ const App = (props) => {
     }, 500);
   };
 
-  const getScreen = (type, idx) => {
+  const getScreen = (type, idx, isLoading) => {
     if (type === dataTypes.activity) {
       return (
         <FitnessData
@@ -1361,7 +1361,7 @@ const App = (props) => {
           fours={Fives}
           fives={Sixes}
           MoodCount={MoodCount}
-          Loading={Loading}
+          Loading={isLoading}
           healthUpdateApiCount={healthUpdateApiCount}
         />
       );
@@ -1409,7 +1409,7 @@ const App = (props) => {
     }
   };
 
-  const dataScreens = (data) => {
+  const dataScreens = (data, isLoading) => {
     // 'activity, screentime, weather, light, sleep'
     let screens = getScreensPriority(data);
     screens.sort((a, b) => {
@@ -1437,7 +1437,7 @@ const App = (props) => {
       return i;
     });
     return screens.map((e, idx) => {
-      return getScreen(e?.name, idx);
+      return getScreen(e?.name, idx, isLoading);
     });
   };
 
@@ -1458,7 +1458,7 @@ const App = (props) => {
         onIndexChanged={(index) => setSwiperIndexHome(index, dispatch)}
         index={swiperIndex}
         loop={false}>
-          {dataScreens(UserData)}
+          {dataScreens(UserData, (Loading && !isInstallGoogleFitModalVisible))}
         {/* <FitnessData
           swiperIndex={swiperIndex}
           TodayStep={TodayStep}
@@ -1497,7 +1497,7 @@ const App = (props) => {
           MoodCount={MoodCount}
         /> */}
       </Swiper>
-      {Loading && !isInstallGoogleFitModalVisible && (
+      {/* {Loading && !isInstallGoogleFitModalVisible && (
         <View
           style={{
             position: 'absolute',
@@ -1508,9 +1508,9 @@ const App = (props) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator color="green" size="large" />
         </View>
-      )}
+      )} */}
       <InstallGoogleFitModal
         modalVisible={!Loading && isInstallGoogleFitModalVisible}
         dismissModalHandler={dismissInstallGoogleFitModal}

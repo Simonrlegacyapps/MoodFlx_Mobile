@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
   tabDetailsText: {
     fontSize: getFontSize(18),
     // fontWeight: '500',
-    fontFamily: RubikBold,
-    color: 'rgb(60,60,60)',
+    fontFamily: RubikMedium,
+    color: 'rgb(32,32,32)',
     textAlign: 'center',
   },
   blueText: {
@@ -216,8 +216,8 @@ const styles = StyleSheet.create({
   },
   suggestionText: {
     fontSize: getFontSize(18),
-    fontFamily: RubikBold,
-    color: 'rgb(60,60,60)',
+    fontFamily: RubikMedium,
+    color: 'rgb(32,32,32)',
   },
   suggestionTextBlue: {
     color: 'rgb(25,165,177)',
