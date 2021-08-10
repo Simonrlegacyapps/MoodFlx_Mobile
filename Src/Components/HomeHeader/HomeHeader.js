@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import Constants from '../../Constants';
-import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
+import {RubikLight, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
 
 const HomeHeader = ({click, value}) => {
   return (
@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
     justifyContent: 'center',
     marginTop: 5,
-    fontFamily: RubikRegular,
+    color: '#2D3142',
+    fontFamily: RubikMedium,
   },
   ColoredText: {
     fontSize: 16,
