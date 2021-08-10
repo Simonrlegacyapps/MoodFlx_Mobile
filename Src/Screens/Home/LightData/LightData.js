@@ -45,7 +45,7 @@ import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
-import { LightGraph } from '../../../Components/LightGraph/LightGraph';
+import LightGraph from '../../../Components/LightGraph/LightGraph';
 import { getLightDataIOS } from '../../../services/moodDataModuleService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';

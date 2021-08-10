@@ -103,7 +103,7 @@ export default function DataInsights({
             THIS WEEK
           </Text>
         </TouchableOpacity>
-        {timeLeft !== -1 && !isNaN(timeLeft) && (
+        {getWeeklyInsightsAvailable() !== true && timeLeft !== -1 && !isNaN(timeLeft) && (
           <AnimatedCircularProgress
             duration={900}
             arcSweepAngle={360}

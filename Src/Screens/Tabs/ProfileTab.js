@@ -619,7 +619,7 @@ const ProfileTab = ({ navigation }) => {
             {UserData.SleepPermission ? (
               <Pressable style={styles.syncingButton} onPress={openHealthApp}>
                 <Text style={styles.allowed}>
-                  Syncing{UserData.sleepDataSyncStatus ? '' : ' 0/1'}
+                  {UserData.sleepDataSyncStatus ? 'Syncing' : 'Not Syncing'}
                 </Text>
               </Pressable>
             ) : (
