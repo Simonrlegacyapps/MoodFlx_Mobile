@@ -380,7 +380,7 @@ const FitnessData = ({
         </View> */}
         <HomeSyncHeader
         navigation={navigation}
-          label={"Fitness"}
+          label={"Activity"}
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
           setOpenActionSheet={setOpenActionSheet}
