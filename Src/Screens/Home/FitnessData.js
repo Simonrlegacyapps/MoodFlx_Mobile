@@ -40,9 +40,10 @@ import moment from 'moment';
 import { getWeeklyInsightsAvailable } from '../../Constants/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
-import { getFloCoins } from '../../services/commonService';
+import { getFloCoins, openHealthApp } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
+import { activityHealthKitOptions } from '../../services/appPermissions';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -384,7 +385,12 @@ const FitnessData = ({
           label={"Activity"}
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
-          setOpenActionSheet={setOpenActionSheet}
+          setOpenActionSheet={
+            UserData.fitnessSyncText ===
+            `0/${activityHealthKitOptions?.permissions?.read?.length}`
+              ? openHealthApp
+              : setOpenActionSheet
+          }
           setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
           <ProgressBar
