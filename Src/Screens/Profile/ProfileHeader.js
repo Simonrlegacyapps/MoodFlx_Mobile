@@ -16,6 +16,7 @@ import Constants from '../../Constants';
 import EditProfile from '../../../assets/svg/editProfile';
 import {getFloCoins} from '../../services/commonService';
 import {FloCoinIcon} from '../../../assets/svg/floCoinIcon';
+import Edit from '../../../assets/svg/Edit';
 
 const ProfileHeader = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
@@ -48,7 +49,8 @@ const ProfileHeader = ({navigation}) => {
             <TouchableOpacity
               onPress={() => setOpenActionSheet(true)}
               disabled={true}>
-              <PickImageIcon w={18} h={18} />
+              {/* <PickImageIcon w={18} h={18} /> */}
+              <Edit w={32} h={32}/>
             </TouchableOpacity>
           </View>
         </View>

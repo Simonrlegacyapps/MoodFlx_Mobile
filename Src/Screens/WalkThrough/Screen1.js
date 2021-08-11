@@ -92,7 +92,7 @@ const Screen1 = ({onDone}) => {
               </View>
               <View style={styles.bottomButtons}>
                 <TouchableOpacity onPress={onDone} style={{flex: 1}}>
-                  <Text style={styles.skip}>Skip >></Text>
+                  <Text style={styles.skip}>Skip > ></Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {

@@ -7,7 +7,7 @@ const History = () => {
     return (
         <ScrollView style={{ flex: 1, backgroundColor: 'white',  }}>
             <View style={{alignItems: 'center',}}>
-            <View style={{ marginTop: 100 }}>
+            <View style={{ marginTop: 30 }}>
                 <HisotyImage />
             </View>
             <Text style={styles.BigText}>You're Getting There! </Text>

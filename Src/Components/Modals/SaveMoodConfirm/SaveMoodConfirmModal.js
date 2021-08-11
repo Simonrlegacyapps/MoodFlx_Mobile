@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   buttonTwoText: {
-    fontFamily: RubikRegular,
+    fontFamily: RubikMedium,
     fontSize: getFontSize(15),
     color: '#9C9EB9',
   },
@@ -450,8 +450,10 @@ const styles = StyleSheet.create({
   AnonymousButton: {
     color: '#CBCBCB',
     shadowColor: '#000',
+    fontFamily:RubikMedium
   },
   AnonymousButtonAnnon:{
+    fontFamily:RubikMedium,
     color: '#CBCBCB',
     paddingVertical: 4,
     borderWidth: 0.6,

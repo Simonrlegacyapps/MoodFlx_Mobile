@@ -122,7 +122,8 @@ const styles=StyleSheet.create({
     hours:{
         color:"#4C5980",
         fontSize:13,
-        margin:8
+        margin:8,
+        marginLeft:0
     },
     text:{
         fontSize:12,

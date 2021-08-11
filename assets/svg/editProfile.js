@@ -4,8 +4,8 @@ import Svg, { Path, Rect } from 'react-native-svg'
 function EditProfile({ w, h }) {
     return (
         <Svg
-            width={36}
-            height={34}
+            width={w?w:36}
+            height={h?h:34}
             viewBox="0 0 36 34"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

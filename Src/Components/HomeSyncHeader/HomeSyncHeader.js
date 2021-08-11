@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import Constants from '../../Constants';
-import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
+import {RubikLight, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
 import {dynamicSize, getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import CrownBox from '../crownBox/crownBox';
 import DeviceInfo from 'react-native-device-info';
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     fontSize: dynamicSize(16),
     marginTop: dynamicSize(4),
     // lineHeight: 16,
-    fontFamily: RubikRegular,
+    fontFamily: RubikMedium,
   },
   buttons: {
     flexDirection: 'row',

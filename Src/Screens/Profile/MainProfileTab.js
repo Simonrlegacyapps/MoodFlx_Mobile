@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useSelector} from 'react-redux';
@@ -202,6 +203,7 @@ const MainProfileTab = ({navigation}) => {
           </LinearGradient>
         </View> */}
       </View>
+      <ScrollView>
       <Tab.Navigator
         swipeEnabled={true}
         tabBarOptions={{
@@ -221,6 +223,7 @@ const MainProfileTab = ({navigation}) => {
         <Tab.Screen name="History" component={History} />
         <Tab.Screen name="How To" component={HowTo} />
       </Tab.Navigator>
+      </ScrollView>
       <ProfileCoinModal
       title={"Mood Navigator"}
                 permission={"100 - 1,000 Flo Coins"}
