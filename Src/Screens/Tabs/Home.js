@@ -308,6 +308,8 @@ const App = (props) => {
             filterDates();
             filterSteps();
             AddDataToFilter();
+          } else {
+            setHealthUpdateApiCount((e) => e + 1);
           }
           clearTimeout(timeoutId);
         }, 500);
@@ -352,6 +354,8 @@ const App = (props) => {
             filterDates();
             filterSteps();
             AddDataToFilter();
+          } else {
+            setHealthUpdateApiCount((e) => e + 1);
           }
           clearTimeout(timeoutId);
         }, 500);
@@ -1282,6 +1286,8 @@ const App = (props) => {
             error,
           );
         });
+    } else {
+      setHealthUpdateApiCount((e) => e + 1);
     }
     setTodayStep(Fsteps.length > 0 ? (Fsteps[0].steps / 10000) * 100 : 0);
     setTodayDistance(Fsteps.length > 0 ? (Fsteps[0].distance / 5000) * 100 : 0);

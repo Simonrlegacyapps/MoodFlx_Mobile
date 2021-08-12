@@ -44,6 +44,7 @@ import { getFloCoins, openHealthApp } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 import { activityHealthKitOptions } from '../../services/appPermissions';
+import getStore from '../../redux';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -153,81 +154,91 @@ const FitnessData = ({
     ProfileApiCallHere();
   };
 
+  const getInsights = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    const store = getStore?.()?.getState?.();
+    const params = {
+      device_id: deviceId,
+      email: store?.First?.UserEmail ?? '',
+      user_id: store?.First?.UserId ?? '',
+    };
+    // const params = {
+    //   device_id: deviceId,
+    //   email: UserData.UserEmail ?? '',
+    //   user_id: UserData.UserId ?? '',
+    // };
+    PostRequestApi('getActivityInsights', { ...params, status: 'daily' })
+      .then((res) => {
+        console.log('getActivityInsights daily res: ', res);
+        let dailyInsightsPayload = {};
+        dailyInsightsPayload.dailyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        dailyInsightsPayload.dailySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        dailyInsightsPayload.dailySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: fitnessInsightsTypes.SET_INSIGHTS,
+          payload: dailyInsightsPayload,
+        });
+        /*
+        Weekly api should be called between
+        Friday @ 12pm until Saturday 6pm
+        */
+        if (getWeeklyInsightsAvailable() === true) {
+          return PostRequestApi('getActivityInsights', {
+            ...params,
+            status: 'weekly',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        console.log('getActivityInsights weekly res: ', res);
+        let weeklyInsightsPayload = {};
+        // console.log('getActivityInsights weeklyInsights: ', res?.data?.insights);
+        weeklyInsightsPayload.weeklyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        weeklyInsightsPayload.weeklySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        weeklyInsightsPayload.weeklySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: fitnessInsightsTypes.SET_INSIGHTS,
+          payload: weeklyInsightsPayload,
+        });
+      })
+      .catch(function (error) {
+        console.log('❌ ❌ ❌ ❌ Error Get Activity Insights ❌ ❌ ❌ ❌', error);
+      });
+  };
+
   useEffect(() => {
     // console.log('FitnessData healthUpdateApiCount=======', healthUpdateApiCount);
     if (
       prevHealthUpdateApiCount.current !== healthUpdateApiCount &&
       healthUpdateApiCount > 0
     ) {
-      const deviceId = DeviceInfo.getUniqueId();
-      const params = {
-        device_id: deviceId,
-        email: UserData.UserEmail ?? '',
-        user_id: UserData.UserId ?? '',
-      };
-      PostRequestApi('getActivityInsights', { ...params, status: 'daily' })
-        .then((res) => {
-          console.log('getActivityInsights daily res: ', res);
-          let dailyInsightsPayload = {};
-          dailyInsightsPayload.dailyInsights =
-            res?.data?.insights?.message1 &&
-              typeof res.data.insights.message1 === 'string'
-              ? res.data.insights.message1
-              : '';
-          dailyInsightsPayload.dailySuggestion =
-            res?.data?.insights?.message2 &&
-              typeof res.data.insights.message2 === 'string'
-              ? res.data.insights.message2
-              : '';
-          dailyInsightsPayload.dailySuggestionType =
-            res?.data?.insights?.message2Type &&
-              res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
-              ? res.data.insights.message2Type
-              : '';
-          setInsights({
-            type: fitnessInsightsTypes.SET_INSIGHTS,
-            payload: dailyInsightsPayload,
-          });
-          /*
-          Weekly api should be called between
-          Friday @ 12pm until Saturday 6pm
-          */
-          if (getWeeklyInsightsAvailable() === true) {
-            return PostRequestApi('getActivityInsights', {
-              ...params,
-              status: 'weekly',
-            });
-          } else {
-            return new Promise((resolve, reject) => resolve(null));
-          }
-        })
-        .then((res) => {
-          console.log('getActivityInsights weekly res: ', res);
-          let weeklyInsightsPayload = {};
-          // console.log('getActivityInsights weeklyInsights: ', res?.data?.insights);
-          weeklyInsightsPayload.weeklyInsights =
-            res?.data?.insights?.message1 &&
-              typeof res.data.insights.message1 === 'string'
-              ? res.data.insights.message1
-              : '';
-          weeklyInsightsPayload.weeklySuggestion =
-            res?.data?.insights?.message2 &&
-              typeof res.data.insights.message2 === 'string'
-              ? res.data.insights.message2
-              : '';
-          weeklyInsightsPayload.weeklySuggestionType =
-            res?.data?.insights?.message2Type &&
-              res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
-              ? res.data.insights.message2Type
-              : '';
-          setInsights({
-            type: fitnessInsightsTypes.SET_INSIGHTS,
-            payload: weeklyInsightsPayload,
-          });
-        })
-        .catch(function (error) {
-          console.log('❌ ❌ ❌ ❌ Error Get Activity Insights ❌ ❌ ❌ ❌', error);
-        });
+      getInsights();
       prevHealthUpdateApiCount.current = healthUpdateApiCount;
     }
   }, [healthUpdateApiCount, UserData.UserEmail, UserData.UserId]);

@@ -3,18 +3,16 @@ import React from 'react';
 import {AppRegistry, Platform, LogBox} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
-import thunk from 'redux-thunk';
 import {Provider} from 'react-redux';
-import {createStore, applyMiddleware} from 'redux';
-import allReducers from './Src/redux/reducers';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 import AsyncStorage from '@react-native-community/async-storage';
 import NotifService from './Src/services/notifService';
 import { SetNotification } from './Src/redux/actions/actions';
+import getStore from './Src/redux';
 LogBox.ignoreAllLogs(true);
 
-const store = createStore(allReducers, applyMiddleware(thunk));
+const store = getStore();
 
 // Must be outside of any component LifeCycle (such as `componentDidMount`).
 PushNotification.configure({

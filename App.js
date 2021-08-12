@@ -60,7 +60,7 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import Analytics from './Src/services/analyticsService';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
-import { onDynamicLinkUpdate, onUnlinkUpdate, setFitnessDataSync } from './Src/services/commonService';
+import { onDynamicLinkUpdate, onUnlinkUpdate, setFitnessDataSync, setMoodsArray } from './Src/services/commonService';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import { getFontSize } from './Src/Constants/sizeChoose';
 import Constants from './Src/Constants';
@@ -666,6 +666,7 @@ const App: () => React$Node = () => {
         .then((data) => data.json())
         .then(async (res) => {
           // await setGetMoods(res.data);
+          setMoodsArray(res?.data);
           await dispatch(Moods(res.data));
         })
         .catch((error) => {
