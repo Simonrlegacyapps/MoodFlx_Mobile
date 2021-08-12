@@ -33,6 +33,9 @@ import {useSelector, useDispatch} from 'react-redux';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
+import ScreenTimeBarGraph from '../../../Components/ScreenTimeGraph/ScreenTimeBarGraph';
+import ScreenTimeLineGraph from '../../../Components/ScreenTimeGraph/ScreenTimeLineGraph';
+import { horizontalScale } from '../../../Constants/sizeChoose';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -56,7 +59,7 @@ const ScreenData = ({
   index,
 }) => {
   const [ScreenTimeDuration, setScreenTimeDuration] = useState(false);
-  const [ScreenDuration, setScreenDuration] = useState('Week');
+  const [ScreenDuration, setScreenDuration] = useState('Weekly');
   const [Graph, setGraph] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
@@ -310,50 +313,12 @@ const ScreenData = ({
           />
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
             {swiperIndex == index && (
-              <BarGraph color={'#7265E3'} ShowPollen={false} RightBar={false} />
+              // <BarGraph color={'#16B7C7'} ShowPollen={false} RightBar={false} />
+              <ScreenTimeBarGraph graphWidth={SIZE} />
             )}
-            <View
-              style={{
-                // flex: 1,
-                position: 'absolute',
-                left: SIZE / 6,
-                // alignSelf: 'center',
-                // alignItems: 'center',
-                // justifyContent: 'center',
-                marginTop: 30,
-              }}>
-              {swiperIndex == index && (
-                <View>
-                  <View>
-                    {/* <BezierGraphAuto data={data} color={'#F4227E'} /> */}
-
-                    {/* <GraphBezierCustom
-                      // abs
-                      heightProp={heightProp}
-                      stroke="#F4227E"
-                      widthProp={widthProp}
-                      data={data}
-                      max={max}
-                      H={9}
-                    />*/}
-                  </View>
-                  <View style={{ marginTop: 20 }}>
-                    {/* <BezierGraphAuto data={dataLow} color={'#70DEEC'} /> */}
-                    {/* <GraphBezierCustom
-                      heightProp={heightProp}
-                      stroke="#70DEEC"
-                      widthProp={widthProp}
-                      data={dataLow}
-                      max={Lowmax}
-                      H={4}
-                    /> */}
-                  </View>
-                </View>
-              )}
-            </View>
           </View>
 
-          <View style={{ marginBottom: 20 }}>
+          <View style={{ marginBottom: horizontalScale(40) }}>
             <ScreenCircleBar
               DarkColor="#0DDE79"
               lightColor="#CFF9ED"
@@ -378,7 +343,8 @@ const ScreenData = ({
               value={92}
             />
           </View>
-          <GraphicChart />
+          {/* <GraphicChart /> */}
+          <ScreenTimeLineGraph />
           {/* {!PermScreenTime && (
             <View
               style={{

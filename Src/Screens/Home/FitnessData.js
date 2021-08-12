@@ -10,6 +10,7 @@ import {
   Dimensions,
   StatusBar,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
@@ -39,9 +40,10 @@ import moment from 'moment';
 import { getWeeklyInsightsAvailable } from '../../Constants/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
-import { getFloCoins } from '../../services/commonService';
+import { getFloCoins, openHealthApp } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
+import { activityHealthKitOptions } from '../../services/appPermissions';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -380,10 +382,15 @@ const FitnessData = ({
         </View> */}
         <HomeSyncHeader
         navigation={navigation}
-          label={"Fitness"}
+          label={"Activity"}
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
-          setOpenActionSheet={setOpenActionSheet}
+          setOpenActionSheet={
+            UserData.fitnessSyncText ===
+            `0/${activityHealthKitOptions?.permissions?.read?.length}`
+              ? openHealthApp
+              : setOpenActionSheet
+          }
           setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
           <ProgressBar
@@ -414,6 +421,7 @@ const FitnessData = ({
         </View>
 
         <View style={styles.subViewTwo}>
+          {Loading && <ActivityIndicator color='#9889F9' size='large' />}
         <DataInsights
               dailyInsights={!UserData.HealthPermission? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
               weeklyInsights={insights?.weeklyInsights}
@@ -705,7 +713,18 @@ const FitnessData = ({
         dismissModalHandler={() => FitnessPopUpcancelled()}
         verifyDone={() => FitnessPopUpcancelled()}
       />
-
+      {Loading && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: 'black',
+            opacity: 0.2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}/>
+      )}
       <AnonymousPopUp
         modalVisible={AnonymousClick}
         dismissModalHandler={() => AnonymousPopUpcancelled()}

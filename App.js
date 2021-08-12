@@ -74,6 +74,8 @@ import {
 import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
 import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgressModal/WeeklyInsightsProgressModal';
 import { setSleepDataSync } from './Src/Screens/Home/SleepData/sleepDataService';
+import Screen1 from './Src/Screens/WalkThrough/Screen1';
+import BoardingNavigation from './Src/navigator/BoardingNavigation';
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
@@ -758,13 +760,14 @@ const App: () => React$Node = () => {
         </NavigationContainer>
       ) : (
         <>
-          <AppIntroSlider
+        <Screen1 onDone={_onDone}/>
+          {/* <AppIntroSlider
             renderItem={renderItems}
             data={Images}
             onDone={_onDone}
             showSkipButton={true}
             onSkip={_onDone}
-          />
+          /> */}
           <Toast
             config={toastConfig}
             ref={(ref) => Toast.setRef(ref)} />

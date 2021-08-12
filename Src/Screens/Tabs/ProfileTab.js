@@ -36,6 +36,7 @@ import { AppPermissions, activityHealthKitOptions } from '../../services/appPerm
 import { useFocusEffect } from '@react-navigation/native';
 import { getSleepDataAfterPermissionIOS } from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
+import { openHealthApp } from '../../services/commonService';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -412,22 +413,7 @@ const ProfileTab = ({ navigation }) => {
     }
   }, [dispatch]);
 
-  const openHealthApp = useCallback(async () => {
-    // Checking if the link is supported for links with custom URL scheme.
-    if (Platform.OS !== 'ios') {
-      return;
-    }
-    const url = 'x-apple-health://';
-    const supported = await Linking.canOpenURL(url);
-
-    if (supported) {
-      // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-      // by some browser in the mobile
-      await Linking.openURL(url);
-    } else {
-      Alert.alert('Unable to open Health App from this app. Please manully open the Health App to make changes');
-    }
-  }, []);
+  const onOpenHealthApp = useCallback(openHealthApp, []);
 
   // console.log(
   //   "name != '' && UserData?.UserDetails?.full_name",
@@ -595,7 +581,7 @@ const ProfileTab = ({ navigation }) => {
           <View style={styles.permissionTileContainer}>
             <Text style={styles.permissionText}>Health Permission</Text>
             {UserData.HealthPermission ? (
-              <Pressable style={styles.syncingButton} onPress={openHealthApp}>
+              <Pressable style={styles.syncingButton} onPress={onOpenHealthApp}>
                 <Text style={styles.allowed}>
                   {Platform.OS === 'ios' && UserData.fitnessSyncText
                     ? UserData.fitnessSyncText
@@ -617,7 +603,7 @@ const ProfileTab = ({ navigation }) => {
           <View style={styles.permissionTileContainer}>
             <Text style={styles.permissionText}>Sleep Permission</Text>
             {UserData.SleepPermission ? (
-              <Pressable style={styles.syncingButton} onPress={openHealthApp}>
+              <Pressable style={styles.syncingButton} onPress={onOpenHealthApp}>
                 <Text style={styles.allowed}>
                   {UserData.sleepDataSyncStatus ? 'Syncing' : 'Not Syncing'}
                 </Text>

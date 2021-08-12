@@ -345,7 +345,7 @@ const Linktocompany = ({ navigation }) => {
               minHeight: 200,
             }}>
               <TouchableOpacity onPress={() => setModalVisible(false)} style={{backgroundColor:'black', width:'100%', height:'100%', position:'absolute', opacity:0.4}}></TouchableOpacity>
-            <ScrollView
+            <View
               style={{
                 backgroundColor: 'white',
                 shadowColor: '#000',
@@ -363,6 +363,7 @@ const Linktocompany = ({ navigation }) => {
                 paddingTop: 14,
                 paddingBottom: 14,
               }}>
+                <ScrollView>
                 
               {Divisions &&
                 Divisions.length > 0 &&
@@ -399,7 +400,8 @@ const Linktocompany = ({ navigation }) => {
                     </TouchableOpacity>
                   );
                 })}
-            </ScrollView>
+                </ScrollView>
+            </View>
           </TouchableOpacity>
         </Modal>
       </View>

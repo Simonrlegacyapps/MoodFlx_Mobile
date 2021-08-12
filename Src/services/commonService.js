@@ -10,7 +10,7 @@ import {
 } from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
 import isFunction from 'lodash.isfunction';
-import { Platform } from 'react-native';
+import {Platform, Linking, Alert} from 'react-native';
 import isEmpty from 'lodash.isempty';
 import { activityHealthKitOptions } from './appPermissions';
 
@@ -147,4 +147,21 @@ export const setFitnessDataSync = async (dispatch, dataSyncArray) => {
     text = `Syncing ${activityHealthKitOptions.permissions.read.length}/${activityHealthKitOptions.permissions.read.length}`;
   }
   dispatch?.(SetFitnessSyncText(text));
+};
+
+export const openHealthApp = async () => {
+  // Checking if the link is supported for links with custom URL scheme.
+  if (Platform.OS !== 'ios') {
+    return;
+  }
+  const url = 'x-apple-health://';
+  const supported = await Linking.canOpenURL(url);
+
+  if (supported) {
+    // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+    // by some browser in the mobile
+    await Linking.openURL(url);
+  } else {
+    Alert.alert('Unable to open Health App from this app. Please manully open the Health App to make changes');
+  }
 };

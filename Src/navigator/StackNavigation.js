@@ -9,6 +9,7 @@ import VerifyEmail from '../Screens/VerifyEmail/VerifyEmail';
 import { Animated, Easing } from 'react-native';
 import ButtonCheck from '../Screens/ButtonCheck/ButtonCheck';
 import ProfileTab from '../Screens/Tabs/ProfileTab';
+import ProgressScreens from '../Screens/WalkThrough/ProgressScreens';
 
 const Stack = createStackNavigator();
 
@@ -52,6 +53,11 @@ const StackNavigation = () => {
       <Stack.Screen
         name="ProfileTab"
         component={ProfileTab}
+        options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="ProgressScreens"
+        component={ProgressScreens}
         options={{ header: () => null }}
       />
     </Stack.Navigator>
