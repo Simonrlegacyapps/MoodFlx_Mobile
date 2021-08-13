@@ -143,6 +143,7 @@ const SleepData = ({
           if (sleepData) {
             callSleepDataUpdateApi(sleepData);
           } else {
+            callInsightsApi();
             callGetSleepDataApi();
           }
         },
@@ -169,6 +170,7 @@ const SleepData = ({
         if (sleepData) {
           callSleepDataUpdateApi(sleepData);
         } else {
+          callInsightsApi();
           callGetSleepDataApi();
         }
       },
@@ -372,6 +374,7 @@ const SleepData = ({
     const sleepData = getSleepDataForUpdateApi();
 
     if (!(Array.isArray(sleepData) && sleepData.length > 0)) {
+      callInsightsApi();
       callGetSleepDataApi();
       return;
     }

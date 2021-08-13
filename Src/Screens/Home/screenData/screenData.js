@@ -312,7 +312,8 @@ const ScreenData = ({
             value={ScreenDuration}
           />
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
-            {swiperIndex == index && (
+            {/* {swiperIndex == index && ( */}
+            {true && (
               // <BarGraph color={'#16B7C7'} ShowPollen={false} RightBar={false} />
               <ScreenTimeBarGraph graphWidth={SIZE} />
             )}

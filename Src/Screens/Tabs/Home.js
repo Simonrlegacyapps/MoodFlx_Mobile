@@ -14,6 +14,7 @@ import {
   ActivityIndicator,
   InteractionManager,
   Linking,
+  FlatList,
 } from 'react-native';
 import moment from 'moment';
 import axios from 'axios';
@@ -77,6 +78,9 @@ import {
 import { dataTypes, getScreensPriority } from '../../Constants/constants';
 import { setFitnessDataSync, setSwiperIndexHome } from '../../services/commonService';
 import { setSleepDataSync } from '../Home/SleepData/sleepDataService';
+import getStore from '../../redux';
+import Constants from '../../Constants';
+import { horizontalScale } from '../../Constants/sizeChoose';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
@@ -159,6 +163,7 @@ const App = (props) => {
   const [Loading, setLoading] = useState(
     UserData.HealthPermission ? true : false,
   );
+  const pagerRef = useRef();
   const prevHealthPermission = useRef(UserData.HealthPermission);
   // const [callOneTime, setcallOneTime] = useState('one');
   const [TryWeather, setTryWeather] = useState(null);
@@ -308,6 +313,8 @@ const App = (props) => {
             filterDates();
             filterSteps();
             AddDataToFilter();
+          } else {
+            setHealthUpdateApiCount((e) => e + 1);
           }
           clearTimeout(timeoutId);
         }, 500);
@@ -352,6 +359,8 @@ const App = (props) => {
             filterDates();
             filterSteps();
             AddDataToFilter();
+          } else {
+            setHealthUpdateApiCount((e) => e + 1);
           }
           clearTimeout(timeoutId);
         }, 500);
@@ -1282,6 +1291,8 @@ const App = (props) => {
             error,
           );
         });
+    } else {
+      setHealthUpdateApiCount((e) => e + 1);
     }
     setTodayStep(Fsteps.length > 0 ? (Fsteps[0].steps / 10000) * 100 : 0);
     setTodayDistance(Fsteps.length > 0 ? (Fsteps[0].distance / 5000) * 100 : 0);
@@ -1342,12 +1353,14 @@ const App = (props) => {
   };
 
   const getScreen = (type, idx, isLoading) => {
+    const scrollNo = getStore()?.getState?.()?.First?.swiperIndex ?? swiperIndex;
+    // console.log("SCROLLNO ----", scrollNo);
     if (type === dataTypes.activity) {
       return (
         <FitnessData
           kay={type}
           index={idx}
-          swiperIndex={swiperIndex}
+          swiperIndex={scrollNo}
           TodayStep={TodayStep}
           TodayCalories={TodayCalories}
           TodayDistance={TodayDistance}
@@ -1370,7 +1383,7 @@ const App = (props) => {
         <ScreenData
           kay={type}
           index={idx}
-          swiperIndex={swiperIndex}
+          swiperIndex={scrollNo}
           Weather={Weather}
           PermScreenTime={PermScreenTime}
           CheckForScreenData={CheckForScreenData}
@@ -1382,7 +1395,7 @@ const App = (props) => {
         <WeatherData
           kay={type}
           index={idx}
-          swiperIndex={swiperIndex}
+          swiperIndex={scrollNo}
           MoodCount={MoodCount}
         />
       );
@@ -1391,7 +1404,7 @@ const App = (props) => {
         <LightData
           kay={type}
           index={idx}
-          swiperIndex={swiperIndex}
+          swiperIndex={scrollNo}
           MoodCount={MoodCount}
         />
       );
@@ -1400,7 +1413,7 @@ const App = (props) => {
         <SleepData
           kay={type}
           index={idx}
-          swiperIndex={swiperIndex}
+          swiperIndex={scrollNo}
           isMoodUpdate={isMoodUpdate}
           CheckForSleepData={CheckForSleepData}
           MoodCount={MoodCount}
@@ -1436,10 +1449,62 @@ const App = (props) => {
       }
       return i;
     });
+    return screens;
     return screens.map((e, idx) => {
       return getScreen(e?.name, idx, isLoading);
     });
   };
+
+  const renderItem = (loading) => ({item, index}) => {
+    return getScreen(item?.name, index, loading);
+  };
+
+  const onViewableItemsChanged = useCallback(({ viewableItems, changed }) => {
+    // console.log("Visible items are", viewableItems);
+    if (
+      typeof viewableItems?.[0]?.index === 'number' &&
+      viewableItems?.[0]?.isViewable === true
+    ) {
+      setSwiperIndexHome(viewableItems[0].index, dispatch);
+    }
+    // console.log("Changed in this iteration", changed);
+  }, []);
+
+  const getSwiperItemLayout = useCallback((data, index) => (
+    { length: SIZE, offset: index !== 0 ? (SIZE * index) : index, index }
+  ), []);
+
+  const scrollNext = useCallback((currentIndex) => {
+    console.log('currentIndex ----', currentIndex);
+    const nextIndex = currentIndex === dataScreens(UserData)?.length - 1 ? 0 : currentIndex + 1;
+    console.log('nextIndex ----', nextIndex);
+    pagerRef?.current?.scrollToIndex({animated: false, index: "" + nextIndex})
+  }, []);
+
+  const scrollPrevious = useCallback((currentIndex) => {
+    const nextIndex = currentIndex === 0 ? dataScreens(UserData)?.length - 1 : currentIndex - 1;
+    pagerRef?.current?.scrollToIndex({animated: false, index: "" + nextIndex});
+  }, []);
+
+  const scrollToStart = useCallback((currentIndex) => {
+    // const nextIndex = currentIndex === 0 ? dataScreens(UserData)?.length - 1 : currentIndex - 1;
+    pagerRef?.current?.scrollToOffset({offset: 0});
+  }, []);
+
+  const renderButtons = (currentIndex) => (
+    <>
+      <TouchableOpacity
+        onPress={() => scrollPrevious(currentIndex)}
+        style={styles.prevButton}>
+        <Image source={Constants.Images.Arrow} style={styles.prevImage} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => scrollNext(currentIndex)}
+        style={styles.nextButton}>
+        <Image source={Constants.Images.Arrow} style={styles.nextImage}/>
+      </TouchableOpacity>
+    </>
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -1448,7 +1513,29 @@ const App = (props) => {
       ) : (
         <StatusBar barStyle="dark-content" backgroundColor={'white'} />
       )}
-      <Swiper
+      <View style={styles.container}>
+        <FlatList
+          ref={pagerRef}
+          data={dataScreens(UserData)}
+          horizontal={true}
+          pagingEnabled={true}
+          style={styles.container}
+          getItemLayout={getSwiperItemLayout}
+          initialScrollIndex={swiperIndex}
+          renderItem={renderItem((Loading && !isInstallGoogleFitModalVisible))}
+          showsHorizontalScrollIndicator={false}
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={{
+            itemVisiblePercentThreshold: 50
+          }}
+          onEndReachedThreshold={0}
+          onEndReached={() => scrollNext(swiperIndex)}
+          initialNumToRender={5}
+        // removeClippedSubviews={false}
+        />
+        {renderButtons(swiperIndex)}
+      </View>
+      {/* <Swiper
         // focusable={true}
         // buttonWrapperStyle={{marginTop: -(HEIGHT / 4.8)}}
         dotStyle={{ height: 0, width: 0 }}
@@ -1457,46 +1544,10 @@ const App = (props) => {
         showsButtons={true}
         onIndexChanged={(index) => setSwiperIndexHome(index, dispatch)}
         index={swiperIndex}
+        bounces={true}
         loop={false}>
           {dataScreens(UserData, (Loading && !isInstallGoogleFitModalVisible))}
-        {/* <FitnessData
-          swiperIndex={swiperIndex}
-          TodayStep={TodayStep}
-          TodayCalories={TodayCalories}
-          TodayDistance={TodayDistance}
-          MoveTime={MoveTime}
-          Perm={Perm}
-          checkStorage={checkStorage}
-          zero={Ones}
-          ones={Twos}
-          twos={Threes}
-          threes={Fours}
-          fours={Fives}
-          fives={Sixes}
-          MoodCount={MoodCount}
-          Loading={Loading}
-          healthUpdateApiCount={healthUpdateApiCount}
-        />
-
-        <SleepData
-          swiperIndex={swiperIndex}
-          isMoodUpdate={isMoodUpdate}
-          CheckForSleepData={CheckForSleepData}
-          MoodCount={MoodCount}
-        />
-
-        <WeatherData swiperIndex={swiperIndex} MoodCount={MoodCount} />
-
-        <LightData swiperIndex={swiperIndex} MoodCount={MoodCount} />
-
-        <ScreenData
-          swiperIndex={swiperIndex}
-          Weather={Weather}
-          PermScreenTime={PermScreenTime}
-          CheckForScreenData={CheckForScreenData}
-          MoodCount={MoodCount}
-        /> */}
-      </Swiper>
+      </Swiper> */}
       {/* {Loading && !isInstallGoogleFitModalVisible && (
         <View
           style={{
@@ -1522,6 +1573,33 @@ const App = (props) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#FFFFFF',
+    flex: 1,
+  },
+  prevButton: {
+    position: 'absolute',
+    left: 10,
+    top: HEIGHT * 0.3,
+  },
+  nextButton: {
+    position: 'absolute',
+    right: 10,
+    top: HEIGHT * 0.3,
+  },
+  prevImage: {
+    transform:[{rotate:"180deg"}],
+    height: 22,
+    width: 20,
+    margin: horizontalScale(5),
+    resizeMode: 'contain',
+  },
+  nextImage: {
+    height: 22,
+    width: 20,
+    margin: horizontalScale(5),
+    resizeMode: 'contain',
+  },
   scrollView: {
     // backgroundColor: '#FFF',
     height: '100%',

@@ -15,6 +15,50 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { SetShowWeeklyInsightsModal } from '../../redux/actions/actions';
 import { getWeeklyInsightsAvailable } from '../../Constants/constants';
+import { getMoodsArray } from '../../services/commonService';
+
+const getInsightsArray = (text) => {
+  let insights = [];
+  let moods = getMoodsArray();
+  // console.log('moods ----', moods);
+  let l = typeof text === 'string' ? text.split(' ') : [];
+  let index = 0;
+  if (
+    Array.isArray(l) &&
+    l.length > 0 &&
+    Array.isArray(moods) &&
+    moods.length > 0
+  ) {
+    l.forEach((r, idx) => {
+      moods.forEach(e => {
+        let mArray = r.match(new RegExp(e, 'i'));
+        if (Array.isArray(mArray) && mArray.length > 0) {
+          // console.log('mArray ----', mArray);
+          if (index === 0) {
+            let x = l?.slice?.(index, idx)?.join?.(' ');
+            x !== undefined && typeof x === 'string' && insights.push({text: x.trim(), color: ''});
+            typeof r === 'string' && insights.push({text: r, color: '#7265e3'});
+          } else {
+            let x = l?.slice?.(index + 1, idx)?.join?.(' ');
+            x !== undefined && typeof x === 'string' && insights.push({text: x.trim(), color: ''});
+            typeof r === 'string' && insights.push({text: r, color: '#7265e3'});
+          }
+          index = idx;
+        }
+      });
+    });
+    if (index !== 0) {
+      let y = l?.slice?.(index + 1)?.join?.(' ');
+      typeof y === 'string' && insights.push({text: y, color: ''});
+    }
+  }
+  if (Array.isArray(insights) && insights.length > 0) {
+    return insights;
+  }
+  insights.push({text: text, color: ''});
+  // console.log('insights ----', insights);
+  return insights;
+};
 
 export default function DataInsights({
   dailyInsights,
@@ -64,6 +108,8 @@ export default function DataInsights({
     : weeklySuggestionType
     ? weeklySuggestionType
     : '';
+
+  let insightsArray = getInsightsArray(insightsDetails);
 
   if (!dailyInsights) {
     return null;
@@ -120,7 +166,19 @@ export default function DataInsights({
         )}
       </View>
       <View style={styles.tabDetailsView}>
-        <Text style={styles.tabDetailsText}>{isPermissionGiven ? '' : <Text style={{fontFamily: RubikExtraBold}}>Demo:{' '}</Text>}{insightsDetails}</Text>
+        <Text style={styles.tabDetailsText}>
+          {isPermissionGiven ? (
+            ''
+          ) : (
+            <Text style={{fontFamily: RubikExtraBold}}>Demo: </Text>
+          )}
+          {insightsArray.map((e, idx) => {
+            // console.log('insightsArray ----', e);
+            return (
+              <Text style={{color: e?.color ? e.color : 'rgb(32,32,32)'}}>{`${e?.text ?? ''} `}</Text>
+            );
+          })}
+        </Text>
       </View>
       {suggestion ? (
         <View style={styles.suggestionView}>

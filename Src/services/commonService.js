@@ -14,6 +14,26 @@ import {Platform, Linking, Alert} from 'react-native';
 import isEmpty from 'lodash.isempty';
 import { activityHealthKitOptions } from './appPermissions';
 
+let moodsArray = [];
+
+export function setMoodsArray(moods) {
+  // console.log('setMoodsArray ----', moods);
+  if (Array.isArray(moods) && moods.length > 0) {
+    moodsArray = moods
+      .map((e) => {
+        if (typeof e?.name === 'string') {
+          return e.name.toLowerCase();
+        }
+        return '';
+      })
+      .filter((e) => e !== '');
+  }
+}
+
+export function getMoodsArray() {
+  return moodsArray;
+}
+
 export async function onUnlinkUpdate(dispatch, onFinish) {
   try {
     await AsyncStorage.removeItem('UserId');
