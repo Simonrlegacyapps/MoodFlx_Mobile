@@ -1159,7 +1159,8 @@ const WeatherData = ({
           )} */}
 
           <View style={styles.WeatherCardMain}>
-            {swiperIndex == index && (
+            {/* {swiperIndex == index && ( */}
+            {true && (
               <View style={styles.WeatherCard}>
                 <Text
                   style={[
@@ -1329,7 +1330,8 @@ const WeatherData = ({
             // value={WeatherDuration}
           />
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
-            {swiperIndex == index && (
+            {/* {swiperIndex == index && ( */}
+            {true && (
               <BarGraph
                 max={max}
                 min={Lowmin}
@@ -1349,7 +1351,8 @@ const WeatherData = ({
                 // justifyContent: 'center',
                 marginTop: 30,
               }}>
-              {swiperIndex == index && (
+              {/* {swiperIndex == index && ( */}
+              {true && (
                 <View onLayout={onLayoutMinMaxGraphView}>
                   <View style={{position: 'absolute'}}>
                     <GraphBezierCustom
@@ -1387,7 +1390,8 @@ const WeatherData = ({
               <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
             </View>
           </View>
-          {swiperIndex == index && (
+          {/* {swiperIndex == index && ( */}
+          {true && (
             <GraphicChart
               isDailyDisabled={false}
               dataOfWeatherGraph={dataOfWeatherGraph}

@@ -506,7 +506,8 @@ const LightData = ({
             </View>
           </View>
           <View style={{ marginBottom: 100, alignItems: 'center' }}>
-            {swiperIndex == index && (
+            {/* {swiperIndex == index && ( */}
+            {true && (
               <LightGraph data={lightGraphData} graphWidth={SIZE} />
             )}
           </View>
