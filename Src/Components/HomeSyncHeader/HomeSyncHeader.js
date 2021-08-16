@@ -25,11 +25,10 @@ const HomeSyncHeader = ({
   label,
   isPermissionGiven,
   syncText,
-  
 }) => {
   const UserData = useSelector((state) => state.First);
   const navigation = useNavigation()
-  
+
   let headerSyncText = isPermissionGiven ? 'Syncing your' : 'Sync your';
   if (isPermissionGiven && typeof syncText === 'string' && syncText) {
     headerSyncText = syncText;

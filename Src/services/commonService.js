@@ -22,6 +22,9 @@ export function setMoodsArray(moods) {
     moodsArray = moods
       .map((e) => {
         if (typeof e?.name === 'string') {
+          if (e.name.toLowerCase() === 'happy') {
+            return 'happ';
+          }
           return e.name.toLowerCase();
         }
         return '';
@@ -155,7 +158,7 @@ export const setFitnessDataSync = async (dispatch, dataSyncArray) => {
   } else if (Array.isArray(dataSyncArray) && !isEmpty(dataSyncArray)) {
     finalArray = [...dataSyncArray];
   }
-  finalArray = [...finalArray, ...activityHealthKitOptions.permissions.read];
+  finalArray = [...Array.isArray(finalArray) ? finalArray : [], ...activityHealthKitOptions.permissions.read];
   // console.log('keep duplicates in this array ===', finalArray);
   //getting duplicates
   finalArray = finalArray.filter((v, idx) => finalArray.indexOf(v) !== idx);
@@ -167,6 +170,11 @@ export const setFitnessDataSync = async (dispatch, dataSyncArray) => {
     text = `Syncing ${activityHealthKitOptions.permissions.read.length}/${activityHealthKitOptions.permissions.read.length}`;
   }
   dispatch?.(SetFitnessSyncText(text));
+  try {
+    await AsyncStorage.setItem('fitnessSyncingData', JSON.stringify(finalArray));
+  } catch (error) {
+    console.log('error on AsyncStorage set fitnessSyncingData');
+  }
 };
 
 export const openHealthApp = async () => {

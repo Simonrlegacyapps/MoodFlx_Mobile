@@ -392,13 +392,13 @@ const FitnessData = ({
           </TouchableOpacity>
         </View> */}
         <HomeSyncHeader
-        navigation={navigation}
+          navigation={navigation}
           label={"Activity"}
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
           setOpenActionSheet={
             UserData.fitnessSyncText ===
-            `0/${activityHealthKitOptions?.permissions?.read?.length}`
+            `Syncing 0/${activityHealthKitOptions?.permissions?.read?.length}`
               ? openHealthApp
               : setOpenActionSheet
           }
