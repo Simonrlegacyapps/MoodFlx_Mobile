@@ -1231,7 +1231,7 @@ export default function MoodDetector({ navigation }) {
         style={[
           styles.childViewStyle,
           {
-            backgroundColor: 'green',
+            backgroundColor: tbColor,
             flexDirection: 'row',
             flexWrap: 'wrap',
             flex: 1,
@@ -1264,6 +1264,8 @@ export default function MoodDetector({ navigation }) {
             height: '50%',
             width: '50%',
             backgroundColor: color,
+            marginTop: -2,
+            zIndex: 5,
           }}
         />
         <View
@@ -1272,6 +1274,8 @@ export default function MoodDetector({ navigation }) {
             height: '50%',
             width: '50%',
             backgroundColor: pSBC(0.25, color),
+            marginTop: -2,
+            zIndex: 5,
           }}
         />
         {/* <View
