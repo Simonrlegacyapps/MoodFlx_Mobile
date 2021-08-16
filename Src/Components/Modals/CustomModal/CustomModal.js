@@ -26,6 +26,7 @@ const CustomModal = ({
   buttonOneText,
   onClickButtonTwo,
   buttonTwoText,
+  buttonOneStyle,
 }) => {
   const [color, setcolor] = useState('black');
 
@@ -56,7 +57,7 @@ const CustomModal = ({
             <View style={styles.buttonsContainer}>
               {!!onClickButtonOne && (
                 <TouchableOpacity
-                  style={styles.buttonOne}
+                  style={[styles.buttonOne, buttonOneStyle]}
                   onPress={onClickButtonOne}>
                   <Text style={styles.buttonOneText}>
                     {buttonOneText ?? 'Yes'}
