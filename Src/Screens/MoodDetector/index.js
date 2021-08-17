@@ -1543,12 +1543,12 @@ export default function MoodDetector({ navigation }) {
             position: 'absolute',
             height: '100%',
             width: '100%',
-            backgroundColor: 'black',
-            opacity: 0.2,
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            // opacity: 0.2,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator color='#9889F9' size="large" />
         </View>
       )}
     </View>
