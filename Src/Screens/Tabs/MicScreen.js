@@ -198,12 +198,12 @@ const MicScreen = ({ navigation }) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        contentContainerStyle={{backgroundColor: '#FFFFFF', flex: 1,}}
         style={{
           // alignItems: 'center',
           // justifyContent: 'center',
-          flex: 1,
-          backgroundColor: 'white',
-          // paddingBottom: 60,
+          backgroundColor: '#000000',
+          marginBottom: 100,
         }}>
         <View
           style={{
