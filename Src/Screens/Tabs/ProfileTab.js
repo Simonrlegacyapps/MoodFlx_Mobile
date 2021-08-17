@@ -471,7 +471,7 @@ const ProfileTab = ({ navigation }) => {
               />
             </View>
           </View>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20, top: 10 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20, top: 10, padding:5 }}>
             <BackIcon />
           </TouchableOpacity>
           <View style={styles.flatlistContainer}>

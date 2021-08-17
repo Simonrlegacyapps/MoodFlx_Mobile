@@ -226,7 +226,7 @@ const SaveMoodConfirmModal = ({
             Feeling{' '}
             <Text style={styles.textThreeBold}>{emotionText}</Text>
           </Text>
-          <TouchableOpacity
+          <TouchableOpacity disabled={true}
             onPress={() => {
               Anonymous();
             }}
@@ -301,7 +301,7 @@ const SaveMoodConfirmModal = ({
             <Text style={styles.buttonOneText}>{'Add Note'}</Text>
             {emotionText != 'Slide finger' &&<View style={styles.pupView}>
             <Image resizeMode={"contain"} source={require("../../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup}/>
-            <Text style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
+            <Text allowFontScaling={false} style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
             </View>}
           </TouchableOpacity>
           <TouchableOpacity
