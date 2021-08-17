@@ -398,7 +398,7 @@ const WeatherData = ({
     console.log(`Weather Insights Api Params`, params);
     PostRequestApi('getWeatherInsights', {...params, status: 'daily'})
       .then((res) => {
-        console.log('getWeatherInsights daily: ', res?.data?.insights);
+        console.log('getWeatherInsights daily: ', res?.data);
         // console.log('getSleepInsights daily res: ', res);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
@@ -436,7 +436,7 @@ const WeatherData = ({
       .then((res) => {
         // console.log('getSleepInsights weekly res: ', res);
         let weeklyInsightsPayload = {};
-        console.log('getWeatherInsights weekly: ', res?.data?.insights);
+        console.log('getWeatherInsights weekly: ', res?.data);
         weeklyInsightsPayload.weeklyInsights =
           !!res?.data?.insights?.message1 &&
           typeof res.data.insights.message1 === 'string'
@@ -541,7 +541,7 @@ const WeatherData = ({
       temp_max: weatherData?.main?.temp_max,
       temp: manual_temp
         ? manual_temp
-        : Math.round(Weather?.main?.temp ? Weather.main.temp : '0'),
+        : Math.round(weatherData?.main?.temp ? weatherData.main.temp : '0'),
       city: isIndia && city_info ? defaultLocation.city : city_info,
       state: isIndia && state_info ? defaultLocation.state : state_info,
       country: isIndia && country_info ? defaultLocation.country : country_info,
@@ -549,7 +549,8 @@ const WeatherData = ({
       lon: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
     });
 
-    // console.log('weather', data);
+    // const _temp_ = manual_temp ? manual_temp : Math.round(weatherData?.main?.temp ? weatherData.main.temp : '0');
+    // console.log('Weather update temp ------------', _temp_);
     var config = {
       method: 'post',
       url: 'https://admin.moodflo.com/api/updateWeather',

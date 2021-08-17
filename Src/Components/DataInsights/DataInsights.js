@@ -71,7 +71,9 @@ export default function DataInsights({
   isPermissionGiven,
   dispatch,
 }) {
-  const [isDailyInsights, setIsDailyInsights] = useState(true);
+  const [isDailyInsights, setIsDailyInsights] = useState(
+    getWeeklyInsightsAvailable() !== true && !(!!weeklyInsights),
+  );
 
   const onPressWeeklyTab = () => {
     if (getWeeklyInsightsAvailable() === true) {
