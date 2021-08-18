@@ -38,6 +38,7 @@ import {
   SET_FLO_COINS,
   SET_FITNESS_SYNC_TEXT,
   SET_SLEEP_DATA_SYNC_STATUS,
+  SET_WEATHER_INSIGHTS,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -78,6 +79,14 @@ const intializedState = {
   floCoins: 12600,
   fitnessSyncText: '',
   sleepDataSyncStatus: false,
+  weatherInsights: {
+    dailyInsights: '',
+    weeklyInsights: '',
+    dailySuggestion: '',
+    dailySuggestionType: '',
+    weeklySuggestion: '',
+    weeklySuggestionType: '',
+  },
 };
 
 export const First = (state = intializedState, action) => {
@@ -237,6 +246,14 @@ export const First = (state = intializedState, action) => {
     case SET_SLEEP_DATA_SYNC_STATUS:
       return Object.assign({}, state, {
         sleepDataSyncStatus: action.payload,
+      });
+    case SET_WEATHER_INSIGHTS:
+      let weatherInsights = state.weatherInsights ? state.weatherInsights : {};
+      weatherInsights = action.payload
+        ? {...weatherInsights, ...action.payload}
+        : action.payload;
+      return Object.assign({}, state, {
+        weatherInsights: weatherInsights,
       });
     default:
       return state;
