@@ -40,4 +40,5 @@ export default {
   TeamPulse: require('../../../assets/newImage/TeamPulse/teampulse.png'),
   ErrorIcon: require('../../../assets/generalicons/error.png'),
   InfoIcon: require('../../../assets/generalicons/info.png'),
+  SadButRelievedFaceImg: require('../../../assets/newImage/SadButRelievedFace/SadButRelievedFace.png'),
 };
