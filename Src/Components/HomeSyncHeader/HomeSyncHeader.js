@@ -65,13 +65,13 @@ const HomeSyncHeader = ({
         <TouchableOpacity onPress={()=>{navigation.navigate("MainProfileTab")}}>
         <CrownBox floCoins={UserData.floCoins} />
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => setAnonymousClick(true)}
           style={styles.ColoredView}>
           <Text allowFontScaling={false} style={styles.ColoredText}>
             Anon
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       {UserData.UserMoodCount >= 3 && (
         <LottieView

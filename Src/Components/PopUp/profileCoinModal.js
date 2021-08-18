@@ -107,7 +107,7 @@ const ProfileCoinModal = ({
                             style={{
                                 marginVertical: 24,
                                 height: 56,
-                                width: 250,
+                                width: title==="Mood Navigator"? 150: 250,
                                 backgroundColor: '#7265E3',
                                 borderRadius: 16,
                                 alignItems: 'center',
