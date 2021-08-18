@@ -169,7 +169,7 @@ const FitnessData = ({
     // };
     PostRequestApi('getActivityInsights', { ...params, status: 'daily' })
       .then((res) => {
-        console.log('getActivityInsights daily res: ', res);
+        console.log('getActivityInsights daily res: ', res?.data);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
           res?.data?.insights?.message1 &&
@@ -204,7 +204,7 @@ const FitnessData = ({
         }
       })
       .then((res) => {
-        console.log('getActivityInsights weekly res: ', res);
+        console.log('getActivityInsights weekly res: ', res?.data);
         let weeklyInsightsPayload = {};
         // console.log('getActivityInsights weeklyInsights: ', res?.data?.insights);
         weeklyInsightsPayload.weeklyInsights =

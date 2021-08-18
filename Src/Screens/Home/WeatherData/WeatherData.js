@@ -51,7 +51,7 @@ import {
 } from '../../../Constants/constants';
 import {AppPermissions} from '../../../services/appPermissions';
 import isFunction from 'lodash.isfunction';
-import {findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getTodaysHourlyData} from './weatherService';
+import {callWeatherInsightsApi, findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getTodaysHourlyData} from './weatherService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox'
@@ -61,47 +61,47 @@ let weatherData = null;
 
 const {width: SIZE} = Dimensions.get('window');
 
-const weatherInsightsInitialState = {
-  dailyInsights: '',
-  weeklyInsights: '',
-  dailySuggestion: '',
-  dailySuggestionType: '',
-  weeklySuggestion: '',
-  weeklySuggestionType: '',
-};
+// const weatherInsightsInitialState = {
+//   dailyInsights: '',
+//   weeklyInsights: '',
+//   dailySuggestion: '',
+//   dailySuggestionType: '',
+//   weeklySuggestion: '',
+//   weeklySuggestionType: '',
+// };
 
-const weatherInsightsTypes = {
-  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
-  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
-  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
-  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
-  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
-  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
-  SET_INSIGHTS: 'SET_INSIGHTS',
-};
+// const weatherInsightsTypes = {
+//   SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
+//   SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
+//   SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
+//   SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
+//   SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
+//   SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
+//   SET_INSIGHTS: 'SET_INSIGHTS',
+// };
 
-function weatherInsightsReducer(state, action) {
-  switch (action.type) {
-    case weatherInsightsTypes.SET_DALIY_INSIGHTS:
-      return {...state, dailyInsights: action.payload};
-    case weatherInsightsTypes.SET_WEEKLY_INSIGHTS:
-      return {...state, weeklyInsights: action.payload};
-    case weatherInsightsTypes.SET_DAILY_SUGGESTION:
-      return {...state, dailySuggestion: action.payload};
-    case weatherInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
-      return {...state, dailySuggestionType: action.payload};
-    case weatherInsightsTypes.SET_WEEKLY_SUGGESTION:
-      return {...state, weeklySuggestion: action.payload};
-    case weatherInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
-      return {...state, weeklySuggestionType: action.payload};
-    case weatherInsightsTypes.SET_INSIGHTS:
-      return action?.payload && typeof action?.payload === 'object'
-        ? {...state, ...action.payload}
-        : state;
-    default:
-      return state;
-  }
-}
+// function weatherInsightsReducer(state, action) {
+//   switch (action.type) {
+//     case weatherInsightsTypes.SET_DALIY_INSIGHTS:
+//       return {...state, dailyInsights: action.payload};
+//     case weatherInsightsTypes.SET_WEEKLY_INSIGHTS:
+//       return {...state, weeklyInsights: action.payload};
+//     case weatherInsightsTypes.SET_DAILY_SUGGESTION:
+//       return {...state, dailySuggestion: action.payload};
+//     case weatherInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
+//       return {...state, dailySuggestionType: action.payload};
+//     case weatherInsightsTypes.SET_WEEKLY_SUGGESTION:
+//       return {...state, weeklySuggestion: action.payload};
+//     case weatherInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
+//       return {...state, weeklySuggestionType: action.payload};
+//     case weatherInsightsTypes.SET_INSIGHTS:
+//       return action?.payload && typeof action?.payload === 'object'
+//         ? {...state, ...action.payload}
+//         : state;
+//     default:
+//       return state;
+//   }
+// }
 
 const IndicatorHelper = ({color, text}) => {
   return (
@@ -145,22 +145,23 @@ const WeatherData = ({
   const [WeatherDurationModal, setWeatherDurationModal] = useState(false);
   const [WeatherDuration, setWeatherDuration] = useState('Week');
   const [minMaxGraphHeight, setMinMaxGraphHeight] = useState(horizontalScale(200));
-  const [insights, setInsights] = useReducer(
-    weatherInsightsReducer,
-    weatherInsightsInitialState,
-  );
+  // const [insights, setInsights] = useReducer(
+  //   weatherInsightsReducer,
+  //   weatherInsightsInitialState,
+  // );
   const appState = useRef(AppState.currentState);
   const isMinMaxHeightSet = useRef(false);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const allDayWeatherData = useRef(null);
-
+  
   const a = moment().utc().subtract(1, 'day').startOf('day').toString();
   const b = moment().subtract(1, 'days').startOf('day').toString();
   const c = moment().subtract(2, 'days').startOf('day').toString();
   const d = moment().subtract(3, 'days').startOf('day').toString();
   const e = moment().subtract(4, 'days').startOf('day').toString();
-
+  
   const UserData = useSelector((state) => state.First);
+  let insights = UserData?.weatherInsights;
   const dispatch = useDispatch();
   const [openActionSheet, setOpenActionSheet] = useState(false);
 
@@ -384,87 +385,87 @@ const WeatherData = ({
   // };
   // console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
 
-  const callInsightsApi = () => {
-    const deviceId = DeviceInfo.getUniqueId();
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
+  // const callInsightsApi = () => {
+  //   const deviceId = DeviceInfo.getUniqueId();
+  //   var myHeaders = new Headers();
+  //   myHeaders.append('Content-Type', 'application/json');
 
-    var params = {
-      device_id: deviceId,
-      email: UserData?.UserEmail ?? '',
-      user_id: UserData?.UserId ?? '',
-    };
+  //   var params = {
+  //     device_id: deviceId,
+  //     email: UserData?.UserEmail ?? '',
+  //     user_id: UserData?.UserId ?? '',
+  //   };
 
-    console.log(`Weather Insights Api Params`, params);
-    PostRequestApi('getWeatherInsights', {...params, status: 'daily'})
-      .then((res) => {
-        console.log('getWeatherInsights daily: ', res?.data?.insights);
-        // console.log('getSleepInsights daily res: ', res);
-        let dailyInsightsPayload = {};
-        dailyInsightsPayload.dailyInsights =
-          !!res?.data?.insights?.message1 &&
-          typeof res.data.insights.message1 === 'string'
-            ? res.data.insights.message1
-            : '';
-        dailyInsightsPayload.dailySuggestion =
-          !!res?.data?.insights?.message2 &&
-          typeof res.data.insights.message2 === 'string'
-            ? res.data.insights.message2
-            : '';
-        dailyInsightsPayload.dailySuggestionType =
-          !!res?.data?.insights?.message2Type &&
-          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
-            ? res.data.insights.message2Type
-            : '';
-        setInsights({
-          type: weatherInsightsTypes.SET_INSIGHTS,
-          payload: dailyInsightsPayload,
-        });
-        /*
-        Weekly api should be called between
-        Friday @ 12pm until Saturday 6pm
-        */
-        if (getWeeklyInsightsAvailable() === true) {
-          return PostRequestApi('getWeatherInsights', {
-            ...params,
-            status: 'weekly',
-          });
-        } else {
-          return new Promise((resolve, reject) => resolve(null));
-        }
-      })
-      .then((res) => {
-        // console.log('getSleepInsights weekly res: ', res);
-        let weeklyInsightsPayload = {};
-        console.log('getWeatherInsights weekly: ', res?.data?.insights);
-        weeklyInsightsPayload.weeklyInsights =
-          !!res?.data?.insights?.message1 &&
-          typeof res.data.insights.message1 === 'string'
-            ? res.data.insights.message1
-            : '';
-        weeklyInsightsPayload.weeklySuggestion =
-          !!res?.data?.insights?.message2 &&
-          typeof res.data.insights.message2 === 'string'
-            ? res.data.insights.message2
-            : '';
-        weeklyInsightsPayload.weeklySuggestionType =
-          !!res?.data?.insights?.message2Type &&
-          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
-            ? res.data.insights.message2Type
-            : '';
-        setInsights({
-          type: weatherInsightsTypes.SET_INSIGHTS,
-          payload: weeklyInsightsPayload,
-        });
-      })
-      .catch(function (error) {
-        console.log(
-          '❌❌❌❌Fail Get Weather Insights ❌❌❌❌',
-          error,
-          params,
-        );
-      });
-  };
+  //   console.log(`Weather Insights Api Params`, params);
+  //   PostRequestApi('getWeatherInsights', {...params, status: 'daily'})
+  //     .then((res) => {
+  //       console.log('getWeatherInsights daily: ', res?.data);
+  //       // console.log('getSleepInsights daily res: ', res);
+  //       let dailyInsightsPayload = {};
+  //       dailyInsightsPayload.dailyInsights =
+  //         !!res?.data?.insights?.message1 &&
+  //         typeof res.data.insights.message1 === 'string'
+  //           ? res.data.insights.message1
+  //           : '';
+  //       dailyInsightsPayload.dailySuggestion =
+  //         !!res?.data?.insights?.message2 &&
+  //         typeof res.data.insights.message2 === 'string'
+  //           ? res.data.insights.message2
+  //           : '';
+  //       dailyInsightsPayload.dailySuggestionType =
+  //         !!res?.data?.insights?.message2Type &&
+  //         res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+  //           ? res.data.insights.message2Type
+  //           : '';
+  //       setInsights({
+  //         type: weatherInsightsTypes.SET_INSIGHTS,
+  //         payload: dailyInsightsPayload,
+  //       });
+  //       /*
+  //       Weekly api should be called between
+  //       Friday @ 12pm until Saturday 6pm
+  //       */
+  //       if (getWeeklyInsightsAvailable() === true) {
+  //         return PostRequestApi('getWeatherInsights', {
+  //           ...params,
+  //           status: 'weekly',
+  //         });
+  //       } else {
+  //         return new Promise((resolve, reject) => resolve(null));
+  //       }
+  //     })
+  //     .then((res) => {
+  //       // console.log('getSleepInsights weekly res: ', res);
+  //       let weeklyInsightsPayload = {};
+  //       console.log('getWeatherInsights weekly: ', res?.data);
+  //       weeklyInsightsPayload.weeklyInsights =
+  //         !!res?.data?.insights?.message1 &&
+  //         typeof res.data.insights.message1 === 'string'
+  //           ? res.data.insights.message1
+  //           : '';
+  //       weeklyInsightsPayload.weeklySuggestion =
+  //         !!res?.data?.insights?.message2 &&
+  //         typeof res.data.insights.message2 === 'string'
+  //           ? res.data.insights.message2
+  //           : '';
+  //       weeklyInsightsPayload.weeklySuggestionType =
+  //         !!res?.data?.insights?.message2Type &&
+  //         res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+  //           ? res.data.insights.message2Type
+  //           : '';
+  //       setInsights({
+  //         type: weatherInsightsTypes.SET_INSIGHTS,
+  //         payload: weeklyInsightsPayload,
+  //       });
+  //     })
+  //     .catch(function (error) {
+  //       console.log(
+  //         '❌❌❌❌Fail Get Weather Insights ❌❌❌❌',
+  //         error,
+  //         params,
+  //       );
+  //     });
+  // };
 
 
   const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
@@ -541,7 +542,7 @@ const WeatherData = ({
       temp_max: weatherData?.main?.temp_max,
       temp: manual_temp
         ? manual_temp
-        : Math.round(Weather?.main?.temp ? Weather.main.temp : '0'),
+        : Math.round(weatherData?.main?.temp ? weatherData.main.temp : '0'),
       city: isIndia && city_info ? defaultLocation.city : city_info,
       state: isIndia && state_info ? defaultLocation.state : state_info,
       country: isIndia && country_info ? defaultLocation.country : country_info,
@@ -549,7 +550,8 @@ const WeatherData = ({
       lon: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
     });
 
-    // console.log('weather', data);
+    // const _temp_ = manual_temp ? manual_temp : Math.round(weatherData?.main?.temp ? weatherData.main.temp : '0');
+    // console.log('Weather update temp ------------', _temp_);
     var config = {
       method: 'post',
       url: 'https://admin.moodflo.com/api/updateWeather',
@@ -564,7 +566,7 @@ const WeatherData = ({
       .then(function (response) {
         // console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ', data);
         console.log(' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅ ');
-        callInsightsApi();
+        callWeatherInsightsApi(false);
         getWeather();
       })
       .catch(function (error) {

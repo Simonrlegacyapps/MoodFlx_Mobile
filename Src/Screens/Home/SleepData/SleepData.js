@@ -255,7 +255,7 @@ const SleepData = ({
     console.log(`Sleep Insights Api Params`, params);
     PostRequestApi('getSleepInsights', {...params, status: 'daily'})
       .then((res) => {
-        console.log('getSleepInsights daily: ', res?.data?.insights);
+        console.log('getSleepInsights daily: ', res?.data);
         // console.log('getSleepInsights daily res: ', res);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
@@ -293,7 +293,7 @@ const SleepData = ({
       .then((res) => {
         // console.log('getSleepInsights weekly res: ', res);
         let weeklyInsightsPayload = {};
-        console.log('getSleepInsights weekly: ', res?.data?.insights);
+        console.log('getSleepInsights weekly: ', res?.data);
         weeklyInsightsPayload.weeklyInsights =
           res?.data?.insights?.message1 &&
             typeof res.data.insights.message1 === 'string'

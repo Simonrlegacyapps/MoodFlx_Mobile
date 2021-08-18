@@ -71,7 +71,9 @@ export default function DataInsights({
   isPermissionGiven,
   dispatch,
 }) {
-  const [isDailyInsights, setIsDailyInsights] = useState(true);
+  const [isDailyInsights, setIsDailyInsights] = useState(
+    getWeeklyInsightsAvailable() !== true && !(!!weeklyInsights),
+  );
 
   const onPressWeeklyTab = () => {
     if (getWeeklyInsightsAvailable() === true) {
@@ -175,7 +177,7 @@ export default function DataInsights({
           {insightsArray.map((e, idx) => {
             // console.log('insightsArray ----', e);
             return (
-              <Text style={{color: e?.color ? e.color : 'rgb(32,32,32)'}}>{`${e?.text ?? ''} `}</Text>
+              <Text key={`${idx}`} style={{color: e?.color ? e.color : 'rgb(32,32,32)'}}>{`${e?.text ?? ''} `}</Text>
             );
           })}
         </Text>
