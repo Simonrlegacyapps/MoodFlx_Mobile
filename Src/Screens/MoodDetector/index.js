@@ -279,7 +279,7 @@ export default function MoodDetector({ navigation }) {
             setWheelSize(regularWheelSize);
           }
           wheelSizeChangeDisabled.current = true;
-          onPanResponderMove(event, gestureState);
+          onPanResponderMove(event, gestureState, panX, panY);
           pan.current.setValue({ x: panX, y: panY });
           startLongPressGesture(event, gestureState);
         } else {
@@ -317,13 +317,18 @@ export default function MoodDetector({ navigation }) {
     }),
   ).current;
 
-  const onPanResponderMove = (event, gestureState) => {
-    scrollerRef.current.measureInWindow((x, y, width, height) => {
-      const left = x + scrollerWheelRadius;
-      const top = y + scrollerWheelRadius;
-      updateColorData(left, top, gestureState);
-      // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
-    });
+  const onPanResponderMove = (event, gestureState, panX, panY) => {
+    const x = panX + (regularWheelSize/2);
+    const y = panY + (regularWheelSize/2);
+    updateColorData(x, y, gestureState);
+    // scrollerRef.current.measureInWindow((x, y, width, height) => {
+    //   const left = x + (regularWheelSize/2);
+    //   const top = y + (regularWheelSize/2);
+    //   // const left = x + scrollerWheelRadius;
+    //   // const top = y + scrollerWheelRadius;
+    //   updateColorData(left, top, gestureState);
+    //   // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
+    // });
   };
 
   //color wheel caluclations
@@ -1478,6 +1483,9 @@ export default function MoodDetector({ navigation }) {
             wheelSize === regularWheelSize
             ? { left: constrainedX.current, top: constrainedY.current }
             : {}),
+        }}
+        toolTipStyle={{
+          ...pan.current.getLayout(),
         }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}

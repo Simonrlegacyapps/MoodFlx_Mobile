@@ -4,7 +4,7 @@
  * @flow
  */
 
-import React, {Component, useRef, useEffect, useCallback} from 'react';
+import React, {Component, useRef, useEffect, useCallback, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -32,6 +32,7 @@ const {height, width} = Dimensions.get('window');
 
 export default function MoodScroller({
   scrollerStyle,
+  toolTipStyle,
   scrollerPanResponder,
   toolTipData,
   isAllMoodsDataAvailable,
@@ -45,6 +46,8 @@ export default function MoodScroller({
   forceUpdate,
 }) {
   const circleOne = useRef(new Animated.Value(1));
+  const [toolTipHeight, setToolTipHeight] = useState(0);
+  const [toolTipWidth, setToolTipWidth] = useState(0);
   let scale = 1;
   let scaleOne = 1;
   let scaleTwo = 1;
@@ -62,6 +65,20 @@ export default function MoodScroller({
   scaleOne = wheelSize === mediumWheelSize ? 0.95 : 0.9;
   scaleTwo = wheelSize === mediumWheelSize ? 0.95 : 0.85;
   scaleThree = wheelSize === mediumWheelSize ? 0.95 : 0.9;
+
+  const onCallToolTipLayout = useCallback((e) => {
+  // console.log('onCallToolTipLayout -------', e);
+
+      onToolTipLayout?.(e);
+      if (typeof e?.nativeEvent?.layout?.height === 'number') {
+        setToolTipHeight(e.nativeEvent.layout.height);
+      }
+      if (typeof e?.nativeEvent?.layout?.width === 'number') {
+        setToolTipWidth(e.nativeEvent.layout.width);
+      }
+    },
+    [onToolTipLayout],
+  );
 
   useEffect(() => {
     Animated.timing(circleOne.current, {
@@ -92,18 +109,74 @@ export default function MoodScroller({
   // }
 
   const t = toolTipData?.name?.toLowerCase?.() ?? '';
-
+  let toolTipLeft = (wheelSize - toolTipWidth)/2;
+  if (wheelSize !== regularWheelSize) {
+    toolTipLeft = (regularWheelSize - toolTipWidth)/2;
+  }
   return (
     <>
+      {isAllMoodsDataAvailable && (
+        <Animated.View
+          ref={toolTipRef}
+          pointerEvents="none"
+          onLayout={onCallToolTipLayout}
+          style={[
+            styles.container,
+            styles.toolTipView,
+            toolTipStyle,
+            toolTipStyle?.top?._value ?
+              {
+                top: toolTipStyle?.top._value - (wheelSize !== regularWheelSize ? (marginTop + toolTipHeight) : (regularWheelSize / 2)) - 10,
+              } : {},
+            toolTipStyle?.left?._value ?
+              {
+                left: toolTipStyle?.left._value + toolTipLeft,
+              } : {},
+          ]}>
+          <View style={styles.toolTipTextView}>
+            <Text style={styles.toolTipText}>{emotionText}</Text>
+            {emotionText !== 'Slide finger' && (
+              <CustomFastSVG
+                width={getFontSize(20)}
+                height={getFontSize(20)}
+                // viewBox="0 0 24 24"
+                fill={t === 'content' ? '#000000' : undefined}
+                stroke="#000000"
+                source={{
+                  uri: `https://super.moodflo.com/${toolTipData?.icon
+                      ? toolTipData.icon
+                      : 'mood_icons/161616176321272238406054abe3bb450.svg'
+                    }`,
+                }}
+              // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+              />
+            )}
+          </View>
+
+          <Svg
+            style={{ marginTop: -4, marginLeft: -12 }}
+            width={38}
+            height={25}
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <Path
+              fill="#fff"
+              d="M8.5 2.4H28c-.384 0-.75.16-1.011.441l-7.066 7.624a2 2 0 01-2.892.044l-7.604-7.72a1.302 1.302 0 00-.927-.39z"
+            />
+          </Svg>
+        </Animated.View>
+      )}
       <Animated.View
         ref={scrollerContainerRef}
         onLayout={onLayoutScrollerContainer}
+        pointerEvents="none"
         style={[
           styles.container,
           scrollerStyle,
           scrollerStyle?.top?._value
             ? {
-                top: scrollerStyle.top._value - marginTop,
+                top: scrollerStyle.top._value + (wheelSize === regularWheelSize ? marginTop : 0),
                 // left: scrollerStyle.left._value - wheelSize !== regularWheelSize ? (regularWheelSize / 2) : 0
               }
             : {},
@@ -111,53 +184,6 @@ export default function MoodScroller({
         ]}
         // {...(isAllMoodsDataAvailable && wheelSize === regularWheelSize) ? scrollerPanResponder.panHandlers : {}}
         pointerEvents="none">
-        {isAllMoodsDataAvailable && (
-          <View
-            ref={toolTipRef}
-            onLayout={onToolTipLayout}
-            style={[
-              styles.toolTipView,
-              // {transform: [{ scale: 1 }]}
-              {
-                marginBottom: marginTop,
-                // marginLeft: marginLeft,
-              },
-            ]}>
-            <View style={styles.toolTipTextView}>
-              <Text style={styles.toolTipText}>{emotionText}</Text>
-              {emotionText !== 'Slide finger' && (
-                <CustomFastSVG
-                  width={getFontSize(20)}
-                  height={getFontSize(20)}
-                  // viewBox="0 0 24 24"
-                  fill={t === 'content' ? '#000000' : undefined}
-                  stroke="#000000"
-                  source={{
-                    uri: `https://super.moodflo.com/${
-                      toolTipData?.icon
-                        ? toolTipData.icon
-                        : 'mood_icons/161616176321272238406054abe3bb450.svg'
-                    }`,
-                  }}
-                  // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
-                />
-              )}
-            </View>
-
-            <Svg
-              style={{marginTop: -4, marginLeft: -12}}
-              width={38}
-              height={25}
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <Path
-                fill="#fff"
-                d="M8.5 2.4H28c-.384 0-.75.16-1.011.441l-7.066 7.624a2 2 0 01-2.892.044l-7.604-7.72a1.302 1.302 0 00-.927-.39z"
-              />
-            </Svg>
-          </View>
-        )}
         <View style={[styles.circleView, 
           {alignSelf: wheelSize === regularWheelSize ? 'center' : 'center'},
           ]}>
@@ -266,7 +292,7 @@ const styles = StyleSheet.create({
     zIndex: 30,
     alignItems: 'center',
     alignSelf: 'center',
-    width: '100%',
+    // width: '100%',
     // marginBottom: -10,
   },
   toolTipTextView: {
