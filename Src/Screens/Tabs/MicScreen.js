@@ -225,7 +225,7 @@ const MicScreen = ({ navigation }) => {
             style={{
               height: dynamicSize(300),
               width: width,
-              resizeMode: 'contain',
+              resizeMode: 'cover',
             }}
           />
         </View>

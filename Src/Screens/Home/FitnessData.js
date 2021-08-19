@@ -45,6 +45,7 @@ import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 import { activityHealthKitOptions } from '../../services/appPermissions';
 import getStore from '../../redux';
+import Skeleton from '../../Components/Skeleton/Skeleton';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -127,6 +128,7 @@ const FitnessData = ({
   );
   const [isCallSync, setIsCallSync] = useState(false);
   const prevHealthUpdateApiCount = useRef(healthUpdateApiCount);
+  const [skeleton, setskeleton] = useState(false)
 
   // console.log(`UserData`, UserData);
 
@@ -174,6 +176,7 @@ const FitnessData = ({
   };
 
   const getInsights = () => {
+    setskeleton(true)
     const deviceId = DeviceInfo.getUniqueId();
     const store = getStore?.()?.getState?.();
     const params = {
@@ -223,6 +226,7 @@ const FitnessData = ({
         }
       })
       .then((res) => {
+        setskeleton(false)
         console.log('getActivityInsights weekly res: ', res?.data);
         let weeklyInsightsPayload = {};
         // console.log('getActivityInsights weeklyInsights: ', res?.data?.insights);
@@ -247,6 +251,7 @@ const FitnessData = ({
         });
       })
       .catch(function (error) {
+        setskeleton(false)
         console.log('❌ ❌ ❌ ❌ Error Get Activity Insights ❌ ❌ ❌ ❌', error);
       });
   };
@@ -451,6 +456,7 @@ const FitnessData = ({
 
         <View style={styles.subViewTwo}>
           {Loading && <ActivityIndicator color='#9889F9' size='large' />}
+          {skeleton && <Skeleton/>}
         <DataInsights
               dailyInsights={!UserData.HealthPermission? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
               weeklyInsights={insights?.weeklyInsights}

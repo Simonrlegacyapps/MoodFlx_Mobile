@@ -37,15 +37,18 @@ const MainProfileTab = ({navigation}) => {
   const [inProgress, setinProgress] = useState(false)
   const [openActionSheet, setopenActionSheet] = useState(false)
 
+  
+
   const VerifyDone = () => {
     setopenActionSheet(false)
 }
 
   const UserData = useSelector((state) => state.First);
+  const {Scrolling}= UserData
   return (
     <View style={styles.container}>
       <ProfileHeader navigation={navigation} />
-      <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+      {!Scrolling && <View style={{flexDirection: 'row', marginHorizontal: 15}}>
         <View style={styles.nameTexts}>
           {/* <Text style={styles.since}>Points</Text> */}
           <Text style={styles.name}>
@@ -202,8 +205,8 @@ const MainProfileTab = ({navigation}) => {
             </View>
           </LinearGradient>
         </View> */}
-      </View>
-      <ScrollView>
+      </View>}
+      {/* <ScrollView> */}
       <Tab.Navigator
         swipeEnabled={true}
         tabBarOptions={{
@@ -223,7 +226,7 @@ const MainProfileTab = ({navigation}) => {
         <Tab.Screen name="History" component={History} />
         <Tab.Screen name="How To" component={HowTo} />
       </Tab.Navigator>
-      </ScrollView>
+      {/* </ScrollView> */}
       <ProfileCoinModal
       title={"Mood Navigator"}
                 permission={"100 - 1,000 Flo Coins"}

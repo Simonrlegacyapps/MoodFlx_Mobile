@@ -26,7 +26,7 @@ const BarGraph = ({
 
   const interval = (max - min) / 4;
 
-  console.log(`max > 0 ? max : 20`, max, max > 0);
+  // console.log(`max > 0 ? max : 20`, max, max > 0);
 
   const lines = sideLabels
     ? sideLabels

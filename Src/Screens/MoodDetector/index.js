@@ -110,6 +110,8 @@ const screenWidth = Math.floor(window.width);
 
 // import imagePath from '../assets/images';
 
+let moodText = ''
+
 export default function MoodDetector({ navigation }) {
   const [lng, setlng] = useState(false); //using in api calls
   const [lat, setlat] = useState(false); //using in api calls
@@ -988,6 +990,7 @@ export default function MoodDetector({ navigation }) {
       setLoading(false);
       setMoodFail(true);
     } else {
+      moodText = Id
       setLoading(true);
       // console.log(`not fail`);
       // console.log(`Id`, Id.id);
@@ -1525,6 +1528,7 @@ export default function MoodDetector({ navigation }) {
       />
 
       <SaveMoodConfirmModal
+      moodText={moodText}
         modalVisible={isSaveMoodConfirmModalVisible}
         dismissModalHandler={SaveMood}
         emotionText={emotionText}

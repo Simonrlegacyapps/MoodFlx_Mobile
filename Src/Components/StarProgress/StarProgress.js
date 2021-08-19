@@ -145,7 +145,7 @@ const StarProgress = ({ sleepMinutes }) => {
             position: 'absolute',
             top: (Math.ceil((toolTipSize/2) - (currentFont/2) - 5)),
           }}>
-          <Text
+          <Text allowFontScaling={false}
             onTextLayout={onTextLayout}
             style={{
               color: '#fff',
