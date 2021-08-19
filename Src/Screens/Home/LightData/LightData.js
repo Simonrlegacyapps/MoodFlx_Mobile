@@ -220,7 +220,7 @@ const LightData = ({
         return PostRequestApi('getLightInsights', { ...params, "status": "daily" });
       })
       .then((res) => {
-        console.log('getLightInsights daily res: ', res?.data);
+        console.log('✅ ✅ ✅ ✅  getLightInsights daily res ✅ ✅ ✅ ✅ : ', res?.data);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
           res?.data?.insights?.message1 &&
@@ -252,7 +252,7 @@ const LightData = ({
         }
       })
       .then((res) => {
-        console.log('getLightInsights weekly res: ', res?.data);
+        console.log('✅ ✅ ✅ ✅  getLightInsights weekly res ✅ ✅ ✅ ✅ : ', res?.data);
         let weeklyInsightsPayload = {};
         console.log('weeklyInsights: ', res?.data?.insights);
         weeklyInsightsPayload.weeklyInsights =
@@ -276,7 +276,7 @@ const LightData = ({
         });
       })
       .catch(function (error) {
-        console.log('❌ ❌ ❌ ❌ Error Get Light Data ❌ ❌ ❌ ❌', error);
+        console.log('❌ ❌ ❌ ❌ Error Get Light Data Insights ❌ ❌ ❌ ❌', error, 'params', params);
       });
   }
 
