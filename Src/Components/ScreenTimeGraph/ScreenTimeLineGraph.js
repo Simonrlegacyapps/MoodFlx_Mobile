@@ -19,7 +19,7 @@ export default function ScreenTimeLineGraph({yAxisLabel, yAxisSuffix, data}) {
   const [duration, setDuration] = useState(durationTypes.week);
 
   const labels = useMemo(() => {
-    console.log('DataGraph labels', data);
+    // console.log('DataGraph labels', data);
     let l = null;
     if (Array.isArray(data) && data.length === 7) {
       l = data.map((e) => {

@@ -47,6 +47,7 @@ import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
+import Skeleton from '../../../Components/Skeleton/Skeleton';
 
 const sleepInsightsInitialState = {
   dailyInsights: '',
@@ -119,6 +120,7 @@ const SleepData = ({
   const [monthlySleepData, setMonthlySleepData] = useState(null);
   const [sleepGraphData, setSleepGraphData] = useState(null);
   const [AnonymousClick, setAnonymousClick] = useState(false);
+  const [skeleton, setskeleton] = useState(false)
   const [insights, setInsights] = useReducer(
     sleepInsightsReducer,
     sleepInsightsInitialState,
@@ -242,6 +244,7 @@ const SleepData = ({
   }, [lastThirtyDaySleepData]);
 
   const callInsightsApi = () => {
+    setskeleton(true)
     const deviceId = DeviceInfo.getUniqueId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -291,6 +294,7 @@ const SleepData = ({
         }
       })
       .then((res) => {
+        setskeleton(false)
         // console.log('getSleepInsights weekly res: ', res);
         let weeklyInsightsPayload = {};
         console.log('getSleepInsights weekly: ', res?.data);
@@ -315,6 +319,7 @@ const SleepData = ({
         });
       })
       .catch(function (error) {
+        setskeleton(false)
         console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, params);
       });
   };
@@ -506,6 +511,7 @@ const SleepData = ({
             </Text>
           </View>
         </View>
+        {skeleton && <Skeleton/>}
         <View style={styles.subViewTwo}>
         <DataInsights
               dailyInsights={!UserData.SleepPermission? "Today you were more likely to be excited and happy when you got more than 7hrs sleep":insights?.dailyInsights}

@@ -7,13 +7,18 @@ import {
     Image,
     StyleSheet,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
 import ProfileCoinModal from '../../Components/PopUp/profileCoinModal';
 import Constants from '../../Constants';
 import { RubikLight } from '../../Constants/fonts/Fonts';
+import { setScrolling } from '../../redux/actions/actions';
 
 const Rewards = () => {
     const [openActionSheet, setopenActionSheet] = useState(false)
     const data = ['a', 'b', 'c', 'd', 'e'];
+
+
+    const dispatch = useDispatch()
 
     const VerifyDone = () => {
         setopenActionSheet(false)
@@ -21,7 +26,7 @@ const Rewards = () => {
 
     const renderItem = () => {
         return (
-            <TouchableOpacity onPress={() => setopenActionSheet(true)} activeOpacity={0.7} style={styles.card}>
+            <TouchableOpacity onPress={() => setopenActionSheet(true)}  activeOpacity={0.7} style={styles.card}>
                 <Image
                     source={require('../../../assets/newImage/tempImage/image1.png')}
                     style={[styles.image, { opacity: 0.6 }]}
@@ -44,7 +49,7 @@ const Rewards = () => {
                 height: '100%',
                 width: '100%',
             }}>
-            <FlatList data={data} renderItem={renderItem} showsVerticalScrollIndicator={false} />
+            <FlatList onScroll={()=>{dispatch(setScrolling(true)), console.log(`top`)}} onScrollToTop={()=>{dispatch(setScrolling(false)), console.log(`bobttom`)}} data={data} renderItem={renderItem} showsVerticalScrollIndicator={false} />
             <View style={{ padding: 40 }} />
             <ProfileCoinModal
                 permission={"Hang in there you'll be able to cash in your Flo soon!"}

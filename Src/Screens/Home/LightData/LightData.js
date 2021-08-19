@@ -55,6 +55,8 @@ import { getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import Skeleton from '../../../Components/Skeleton/Skeleton';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -114,6 +116,7 @@ const LightData = ({
 }) => {
   const [light, setLight] = useState(-1);
   const [Graph, setGraph] = useState(null);
+  const [skeleton, setskeleton] = useState(false)
   const [insights, setInsights] = useReducer(
     lightInsightsReducer,
     lightInsightsInitialState,
@@ -197,6 +200,7 @@ const LightData = ({
   }
 
   const callGetLightApi = () => {
+    setskeleton(true)
     const deviceId = DeviceInfo.getUniqueId();
     const params = {
       "device_id": deviceId,
@@ -220,7 +224,7 @@ const LightData = ({
         return PostRequestApi('getLightInsights', { ...params, "status": "daily" });
       })
       .then((res) => {
-        console.log('getLightInsights daily res: ', res?.data);
+        console.log('getLightInsights daily res: ', res);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
           res?.data?.insights?.message1 &&
@@ -252,7 +256,8 @@ const LightData = ({
         }
       })
       .then((res) => {
-        console.log('getLightInsights weekly res: ', res?.data);
+        setskeleton(false)
+        console.log('getLightInsights weekly res: ', res);
         let weeklyInsightsPayload = {};
         console.log('weeklyInsights: ', res?.data?.insights);
         weeklyInsightsPayload.weeklyInsights =
@@ -276,6 +281,7 @@ const LightData = ({
         });
       })
       .catch(function (error) {
+        setskeleton(false)
         console.log('❌ ❌ ❌ ❌ Error Get Light Data ❌ ❌ ❌ ❌', error);
       });
   }
@@ -433,6 +439,10 @@ const LightData = ({
             </Text>
           </View>
         </View>
+        {/* <View>
+          <Text>hi</Text>
+        </View> */}
+            {skeleton && <Skeleton/>}
         <View style={styles.subViewTwo}>
           <DataInsights
             dailyInsights={insights?.dailyInsights}
