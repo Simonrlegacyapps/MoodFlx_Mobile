@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,14 +8,16 @@ import {
   Platform,
 } from 'react-native';
 import moment from 'moment';
-import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
-import {RubikBold, RubikExtraBold, RubikMedium} from '../../Constants/fonts/Fonts';
-const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
+import { getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+import { RubikBold, RubikExtraBold, RubikMedium } from '../../Constants/fonts/Fonts';
+const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { SetShowWeeklyInsightsModal } from '../../redux/actions/actions';
 import { getWeeklyInsightsAvailable } from '../../Constants/constants';
 import { getMoodsArray } from '../../services/commonService';
+import NotEnoughMoodsModal from '../Modals/NotEnoughtMoodsModal/NotEnoughMoodsModal';
+import Images from '../../Constants/Images/Images';
 
 const getInsightsArray = (text) => {
   let insights = [];
@@ -36,12 +38,12 @@ const getInsightsArray = (text) => {
           // console.log('mArray ----', mArray);
           if (index === 0) {
             let x = l?.slice?.(index, idx)?.join?.(' ');
-            x !== undefined && typeof x === 'string' && insights.push({text: x.trim(), color: ''});
-            typeof r === 'string' && insights.push({text: r, color: '#7265e3'});
+            x !== undefined && typeof x === 'string' && insights.push({ text: x.trim(), color: '' });
+            typeof r === 'string' && insights.push({ text: r, color: '#7265e3' });
           } else {
             let x = l?.slice?.(index + 1, idx)?.join?.(' ');
-            x !== undefined && typeof x === 'string' && insights.push({text: x.trim(), color: ''});
-            typeof r === 'string' && insights.push({text: r, color: '#7265e3'});
+            x !== undefined && typeof x === 'string' && insights.push({ text: x.trim(), color: '' });
+            typeof r === 'string' && insights.push({ text: r, color: '#7265e3' });
           }
           index = idx;
         }
@@ -49,13 +51,13 @@ const getInsightsArray = (text) => {
     });
     if (index !== 0) {
       let y = l?.slice?.(index + 1)?.join?.(' ');
-      typeof y === 'string' && insights.push({text: y, color: ''});
+      typeof y === 'string' && insights.push({ text: y, color: '' });
     }
   }
   if (Array.isArray(insights) && insights.length > 0) {
     return insights;
   }
-  insights.push({text: text, color: ''});
+  insights.push({ text: text, color: '' });
   // console.log('insights ----', insights);
   return insights;
 };
@@ -74,10 +76,20 @@ export default function DataInsights({
   const [isDailyInsights, setIsDailyInsights] = useState(
     getWeeklyInsightsAvailable() !== true && !(!!weeklyInsights),
   );
+  const [showNotEnoughMoodsModal, setShowNotEnoughMoodsModal] = useState(false);
+
+  const openCloseShowNotEnoughMoodsModal = useCallback((flag) => {
+    const fn = () => setShowNotEnoughMoodsModal(flag);
+    return fn;
+  }, []);
 
   const onPressWeeklyTab = () => {
     if (getWeeklyInsightsAvailable() === true) {
-      setIsDailyInsights(false);
+      if (weeklyInsights) {
+        setIsDailyInsights(false);
+      } else {
+        setShowNotEnoughMoodsModal(true);
+      }
     } else {
       /*
        Weekly api should be called between
@@ -92,24 +104,24 @@ export default function DataInsights({
       ? dailyInsights
       : 'Not enough high quality data yet'
     : weeklyInsights
-    ? weeklyInsights
-    : 'Not enough high quality data yet';
+      ? weeklyInsights
+      : 'Not enough high quality data yet';
 
   let suggestion = isDailyInsights
     ? dailySuggestion
       ? dailySuggestion
       : ''
     : weeklySuggestion
-    ? weeklySuggestion
-    : '';
+      ? weeklySuggestion
+      : '';
 
   let suggestionType = isDailyInsights
     ? dailySuggestionType
       ? dailySuggestionType
       : ''
     : weeklySuggestionType
-    ? weeklySuggestionType
-    : '';
+      ? weeklySuggestionType
+      : '';
 
   let insightsArray = getInsightsArray(insightsDetails);
 
@@ -118,86 +130,97 @@ export default function DataInsights({
   }
 
   return (
-    <View style={styles.tabContainer}>
-      <View style={styles.tabHeader}>
-        <TouchableOpacity
-          style={
-            isDailyInsights ? styles.activeTabHeader : styles.inactiveTabHeader
-          }
-          onPress={() => setIsDailyInsights(true)}>
-          <Text
+    <>
+      <View style={styles.tabContainer}>
+        <View style={styles.tabHeader}>
+          <TouchableOpacity
             style={
-              isDailyInsights
-                ? styles.activeTabHeaderText
-                : styles.inactiveTabHeaderText
-            }>
-            TODAY
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          // disabled={weeklyInsights ? false : true}
-          style={[(!isDailyInsights
+              isDailyInsights ? styles.activeTabHeader : styles.inactiveTabHeader
+            }
+            onPress={() => setIsDailyInsights(true)}>
+            <Text
+              style={
+                isDailyInsights
+                  ? styles.activeTabHeaderText
+                  : styles.inactiveTabHeaderText
+              }>
+              TODAY
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            // disabled={weeklyInsights ? false : true}
+            style={[(!isDailyInsights
               ? styles.activeTabHeader
               : styles.inactiveTabHeader),
-            {marginLeft: horizontalScale(10)},
-          ]}
-          onPress={onPressWeeklyTab}>
-          <Text
-            style={
-              !isDailyInsights
-                ? styles.activeTabHeaderText
-                : styles.inactiveTabHeaderText
-            }>
-            THIS WEEK
-          </Text>
-        </TouchableOpacity>
-        {getWeeklyInsightsAvailable() !== true && timeLeft !== -1 && !isNaN(timeLeft) && (
-          <AnimatedCircularProgress
-            duration={900}
-            arcSweepAngle={360}
-            size={horizontalScale(28)}
-            padding={1}
-            width={2.5}
-            fill={(timeLeft / 5) * 100}
-            rotation={0}
-            tintColor="#7265E3"
-            lineCap={'round'}
-            backgroundColor="#CFF9ED">
-            {(fill) => <Text allowFontScaling={false} style={styles.progressText}>{timeLeft}</Text>}
-          </AnimatedCircularProgress>
-        )}
-      </View>
-      <View style={styles.tabDetailsView}>
-        <Text style={styles.tabDetailsText}>
-          {isPermissionGiven ? (
-            ''
-          ) : (
-            <Text style={{fontFamily: RubikExtraBold}}>Demo: </Text>
+            { marginLeft: horizontalScale(10) },
+            ]}
+            onPress={onPressWeeklyTab}>
+            <Text
+              style={
+                !isDailyInsights
+                  ? styles.activeTabHeaderText
+                  : styles.inactiveTabHeaderText
+              }>
+              THIS WEEK
+            </Text>
+          </TouchableOpacity>
+          {getWeeklyInsightsAvailable() !== true && timeLeft !== -1 && !isNaN(timeLeft) && (
+            <AnimatedCircularProgress
+              duration={900}
+              arcSweepAngle={360}
+              size={horizontalScale(28)}
+              padding={1}
+              width={2.5}
+              fill={(timeLeft / 5) * 100}
+              rotation={0}
+              tintColor="#7265E3"
+              lineCap={'round'}
+              backgroundColor="#CFF9ED">
+              {(fill) => <Text allowFontScaling={false} style={styles.progressText}>{timeLeft}</Text>}
+            </AnimatedCircularProgress>
           )}
-          {insightsArray.map((e, idx) => {
-            // console.log('insightsArray ----', e);
-            return (
-              <Text key={`${idx}`} style={{color: e?.color ? e.color : 'rgb(32,32,32)'}}>{`${e?.text ?? ''} `}</Text>
-            );
-          })}
-        </Text>
-      </View>
-      {suggestion ? (
-        <View style={styles.suggestionView}>
-          {suggestionType ? (
-            <Icon
-              name="alert-circle-outline"
-              size={horizontalScale(20)}
-              style={styles.warningImage}
-              color="rgb(136,136,136)"
-            />
-          ) : null}
-          <View style={styles.suggestionTextView}>
-            <Text style={styles.suggestionText}>{suggestion}</Text>
-          </View>
         </View>
-      ) : null}
-    </View>
+        <View style={styles.tabDetailsView}>
+          <Text style={styles.tabDetailsText}>
+            {isPermissionGiven ? (
+              ''
+            ) : (
+              <Text style={{ fontFamily: RubikExtraBold }}>Demo: </Text>
+            )}
+            {insightsArray.map((e, idx) => {
+              // console.log('insightsArray ----', e);
+              return (
+                <Text key={`${idx}`} style={{ color: e?.color ? e.color : 'rgb(32,32,32)' }}>{`${e?.text ?? ''} `}</Text>
+              );
+            })}
+          </Text>
+        </View>
+        {suggestion ? (
+          <View style={styles.suggestionView}>
+            {suggestionType ? (
+              <Icon
+                name="alert-circle-outline"
+                size={horizontalScale(20)}
+                style={styles.warningImage}
+                color="rgb(136,136,136)"
+              />
+            ) : null}
+            <View style={styles.suggestionTextView}>
+              <Text style={styles.suggestionText}>{suggestion}</Text>
+            </View>
+          </View>
+        ) : null}
+      </View>
+      <NotEnoughMoodsModal
+        modalVisible={showNotEnoughMoodsModal}
+        dismissModalHandler={openCloseShowNotEnoughMoodsModal(false)}
+        image={Images.SadButRelievedFaceImg}
+        textOne="Damn... not enough moods"
+        textTwo="Try input your mood at least 3 times per week to unlock this"
+        buttonOneText="Next Week!"
+        onButtonOnePress={openCloseShowNotEnoughMoodsModal(false)}
+      />
+    </>
   );
 }
 

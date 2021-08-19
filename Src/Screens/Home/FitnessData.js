@@ -125,6 +125,7 @@ const FitnessData = ({
     fitnessInsightsReducer,
     fitnessInsightsInitialState,
   );
+  const [isCallSync, setIsCallSync] = useState(false);
   const prevHealthUpdateApiCount = useRef(healthUpdateApiCount);
 
   // console.log(`UserData`, UserData);
@@ -145,6 +146,24 @@ const FitnessData = ({
   // console.log(`UserSteps`, UserSteps);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (
+      UserData?.fitnessSyncText &&
+      typeof UserData.fitnessSyncText === 'string'
+    ) {
+      let count = UserData.fitnessSyncText
+        ?.split?.('Syncing ')
+        ?.pop?.()
+        ?.split?.('/')?.[0];
+      if (!isNaN(count)) {
+        count = Number(count);
+        if (count > 5) {
+          setIsCallSync(true);
+        }
+      }
+    }
+  }, [UserData.fitnessSyncText]);
 
   const VerifyDone = () => {
     setOpenActionSheet(false);
@@ -397,10 +416,9 @@ const FitnessData = ({
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
           setOpenActionSheet={
-            UserData.fitnessSyncText ===
-            `Syncing 0/${activityHealthKitOptions?.permissions?.read?.length}`
-              ? openHealthApp
-              : setOpenActionSheet
+            isCallSync || Platform.OS === 'android'
+              ? setOpenActionSheet
+              : openHealthApp
           }
           setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
