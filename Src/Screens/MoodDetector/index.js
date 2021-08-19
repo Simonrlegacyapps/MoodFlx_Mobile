@@ -1006,6 +1006,7 @@ export default function MoodDetector({ navigation }) {
         device_token: fcm,
         device_type: Platform.OS,
         anonymous: !UserData.Anonymous ? 0 : 1,
+        reward_point: 0,
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
@@ -1022,6 +1023,7 @@ export default function MoodDetector({ navigation }) {
           mood_type,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
+          reward_point: 0,
         });
 
         console.log(`params for updating answer --------------->`, raw);
