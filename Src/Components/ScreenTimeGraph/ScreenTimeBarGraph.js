@@ -25,7 +25,7 @@ export default function ScreenTimeBarGraph({
   graphWidth,
 }) {
   const labels = useMemo(() => {
-    console.log('DataGraph labels', data);
+    // console.log('DataGraph labels', data);
     let l = null;
     if (Array.isArray(data) && data.length === 7) {
       l = data.map((e) => {

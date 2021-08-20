@@ -165,6 +165,7 @@ const App = (props) => {
   );
   const pagerRef = useRef();
   const prevHealthPermission = useRef(UserData.HealthPermission);
+  const isScrollEndStartCalled = useRef(0);
   // const [callOneTime, setcallOneTime] = useState('one');
   const [TryWeather, setTryWeather] = useState(null);
   const [ScreenDataPermModal, setScreenDataPermModal] = useState(false);
@@ -1460,7 +1461,7 @@ const App = (props) => {
   };
 
   const onViewableItemsChanged = useCallback(({ viewableItems, changed }) => {
-    // console.log("Visible items are", viewableItems);
+    // console.log("Visible items are", viewableItems?.[0]?.index);
     if (
       typeof viewableItems?.[0]?.index === 'number' &&
       viewableItems?.[0]?.isViewable === true
@@ -1475,14 +1476,16 @@ const App = (props) => {
   ), []);
 
   const scrollNext = useCallback((currentIndex) => {
-    console.log('currentIndex ----', currentIndex);
+    // console.log('currentIndex ----', currentIndex);
     const nextIndex = currentIndex === dataScreens(UserData)?.length - 1 ? 0 : currentIndex + 1;
-    console.log('nextIndex ----', nextIndex);
+    // console.log('nextIndex ----', nextIndex);
     pagerRef?.current?.scrollToIndex({animated: false, index: "" + nextIndex})
   }, []);
 
   const scrollPrevious = useCallback((currentIndex) => {
+    // console.log('currentIndex ----', currentIndex);
     const nextIndex = currentIndex === 0 ? dataScreens(UserData)?.length - 1 : currentIndex - 1;
+    // console.log('nextIndex ----', nextIndex);
     pagerRef?.current?.scrollToIndex({animated: false, index: "" + nextIndex});
   }, []);
 
@@ -1506,6 +1509,38 @@ const App = (props) => {
     </>
   );
 
+  const onScrollEndDrag = useCallback((event) => {
+    const latestSwiperIndex = getStore?.()?.getState?.()?.First?.swiperIndex;
+    const offset = event.nativeEvent.contentOffset.x;
+    const visibleLength = event.nativeEvent.layoutMeasurement.width;
+    const contentLength = event.nativeEvent.contentSize.width;
+    // console.log('handleScroll called --------------------')
+    // Check if scroll has reached either start of end of list.
+    const isScrollAtStart = offset < 10;
+    const isScrollAtEnd = contentLength - visibleLength - offset < 10;
+
+    if (latestSwiperIndex === 0 && isScrollEndStartCalled.current === 0 && isScrollAtStart) {
+      // console.log("isScrollAtStart called -------------------", isScrollEndStartCalled.current);
+      isScrollEndStartCalled.current = isScrollEndStartCalled.current + 1;
+      if (isScrollEndStartCalled.current === 1) {
+        scrollPrevious(latestSwiperIndex);
+      }
+    }
+    if (latestSwiperIndex === (dataScreens?.(UserData)?.length ?? 0) - 1 &&
+      isScrollEndStartCalled.current === 0 &&
+      isScrollAtEnd
+    ) {
+      // console.log("isScrollAtEnd called -------------------", isScrollEndStartCalled.current);
+      isScrollEndStartCalled.current = isScrollEndStartCalled.current + 1;
+      if (isScrollEndStartCalled.current === 1) {
+        scrollNext(latestSwiperIndex);
+      }
+    }
+    if (!isScrollAtStart && !isScrollAtEnd) {
+      isScrollEndStartCalled.current = 0;
+    }
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       {Platform.OS === 'ios' ? (
@@ -1513,13 +1548,13 @@ const App = (props) => {
       ) : (
         <StatusBar barStyle="dark-content" backgroundColor={'white'} />
       )}
-      <View style={styles.container}>
+      <View style={styles.flatListContainer}>
         <FlatList
           ref={pagerRef}
           data={dataScreens(UserData)}
           horizontal={true}
           pagingEnabled={true}
-          style={styles.container}
+          style={styles.flatListStyle}
           getItemLayout={getSwiperItemLayout}
           initialScrollIndex={swiperIndex}
           renderItem={renderItem((Loading && !isInstallGoogleFitModalVisible))}
@@ -1528,10 +1563,9 @@ const App = (props) => {
           viewabilityConfig={{
             itemVisiblePercentThreshold: 50
           }}
-          onEndReachedThreshold={0}
-          onEndReached={() => scrollNext(swiperIndex)}
+          onEndReached={null}
+          onScrollEndDrag={onScrollEndDrag}
           initialNumToRender={5}
-        // removeClippedSubviews={false}
         />
         {renderButtons(swiperIndex)}
       </View>
@@ -1573,7 +1607,11 @@ const App = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  flatListContainer: {
+    backgroundColor: '#FFFFFF',
+    flex: 1,
+  },
+  flatListStyle: {
     backgroundColor: '#FFFFFF',
     flex: 1,
   },

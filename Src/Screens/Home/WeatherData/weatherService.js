@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Geocoder from 'react-native-geocoding';
 import {
   defaultLocation,
+  getWeeklyInsightsAvailable,
   isCountryIndia,
   weatherApiDataTypes,
   weatherTypes,
@@ -10,6 +11,89 @@ import GetLocation from 'react-native-get-location';
 import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
 import axios from 'axios';
+import getStore from '../../../redux';
+import PostRequestApi from '../../../apirequest/PostRequestApi';
+import { SetWeatherInsights } from '../../../redux/actions/actions';
+
+export function callWeatherInsightsApi(reset) {
+  const store = getStore();
+  const deviceId = DeviceInfo.getUniqueId();
+  var myHeaders = new Headers();
+  myHeaders.append('Content-Type', 'application/json');
+
+  var params = {
+    device_id: deviceId,
+    email: store?.getState?.()?.First?.UserEmail ?? '',
+    user_id: store?.getState?.()?.First?.UserId ?? '',
+  };
+
+  console.log(`Weather Insights Api Params`, params);
+  if (reset === true) {
+    store?.dispatch?.(SetWeatherInsights(null));
+  }
+  PostRequestApi('getWeatherInsights', {...params, status: 'daily'})
+    .then((res) => {
+      console.log('✅ ✅ ✅ ✅getWeatherInsights daily success✅ ✅ ✅ ✅: ', res?.data);
+      // console.log('getSleepInsights daily res: ', res);
+      let dailyInsightsPayload = {};
+      dailyInsightsPayload.dailyInsights =
+        !!res?.data?.insights?.message1 &&
+        typeof res.data.insights.message1 === 'string'
+          ? res.data.insights.message1
+          : '';
+      dailyInsightsPayload.dailySuggestion =
+        !!res?.data?.insights?.message2 &&
+        typeof res.data.insights.message2 === 'string'
+          ? res.data.insights.message2
+          : '';
+      dailyInsightsPayload.dailySuggestionType =
+        !!res?.data?.insights?.message2Type &&
+        res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+          ? res.data.insights.message2Type
+          : '';
+      store?.dispatch?.(SetWeatherInsights(dailyInsightsPayload));
+      /*
+      Weekly api should be called between
+      Friday @ 12pm until Saturday 6pm
+      */
+      if (getWeeklyInsightsAvailable() === true) {
+        return PostRequestApi('getWeatherInsights', {
+          ...params,
+          status: 'weekly',
+        });
+      } else {
+        return new Promise((resolve, reject) => resolve(null));
+      }
+    })
+    .then((res) => {
+      // console.log('getSleepInsights weekly res: ', res);
+      let weeklyInsightsPayload = {};
+      console.log('✅ ✅ ✅ ✅getWeatherInsights weekly success✅ ✅ ✅ ✅: ', res?.data);
+      weeklyInsightsPayload.weeklyInsights =
+        !!res?.data?.insights?.message1 &&
+        typeof res.data.insights.message1 === 'string'
+          ? res.data.insights.message1
+          : '';
+      weeklyInsightsPayload.weeklySuggestion =
+        !!res?.data?.insights?.message2 &&
+        typeof res.data.insights.message2 === 'string'
+          ? res.data.insights.message2
+          : '';
+      weeklyInsightsPayload.weeklySuggestionType =
+        !!res?.data?.insights?.message2Type &&
+        res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+          ? res.data.insights.message2Type
+          : '';
+      store?.dispatch?.(SetWeatherInsights(weeklyInsightsPayload));
+    })
+    .catch(function (error) {
+      console.log(
+        '❌❌❌❌Fail Get Weather Insights ❌❌❌❌',
+        error,
+        params,
+      );
+    });
+};
 
 export function findWeather(value) {
   const v = value?.toLowerCase?.() ?? value;
@@ -29,6 +113,7 @@ export async function syncWeatherData() {
   let email = '';
   let temp_min = '';
   let temp_max = '';
+  let temp = '';
   let device_id = DeviceInfo.getUniqueId();
   const isIndia = isCountryIndia();
   let WeatherP = false;
@@ -165,11 +250,14 @@ export async function syncWeatherData() {
   } catch (error) {
     console.log('error getting current day weather: ', error);
   }
-  if (dailyWeatherRes?.main) {
-    temp_min = dailyWeatherRes.main?.temp_min;
-    temp_max = dailyWeatherRes.main?.temp_max;
+  // console.log('weatherService dailyWeatherRes: ', dailyWeatherRes?.data);
+  if (dailyWeatherRes?.data?.main) {
+    temp_min = dailyWeatherRes.data.main?.temp_min;
+    temp_max = dailyWeatherRes.data.main?.temp_max;
+    temp = dailyWeatherRes.data.main?.temp;
     console.log('weatherService temp_min: ', temp_min);
     console.log('weatherService temp_max: ', temp_max);
+    console.log('weatherService temp: ', temp);
   }
 
   const deviceId = DeviceInfo.getUniqueId();
@@ -184,6 +272,7 @@ export async function syncWeatherData() {
     weather_data: weatherData ?? null,
     temp_min,
     temp_max,
+    temp,
     city: city_info,
     state: state_info,
     country: country_info,
@@ -208,6 +297,7 @@ export async function syncWeatherData() {
         ' ✅ ✅ ✅ ✅ Update Weather Success ✅ ✅ ✅ ✅  params',
         // data,
       );
+      callWeatherInsightsApi(true);
     })
     .catch(function (error) {
       console.log(

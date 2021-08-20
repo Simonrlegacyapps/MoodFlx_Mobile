@@ -8,12 +8,15 @@ import {
   ActivityIndicator,
   Keyboard,
   Dimensions,
+  TouchableWithoutFeedback,
+  StyleSheet,
 } from 'react-native';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import Constants from '../../Constants';
 import DeviceInfo from 'react-native-device-info';
 import {dynamicSize} from '../../Constants/sizeChoose';
+import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 
 const {width: width} = Dimensions.get('window');
 
@@ -24,6 +27,7 @@ const EmailConfirmation = ({navigation}) => {
   const [ShowWarning, setShowWarning] = useState(false);
   const [APIfail, setAPIfail] = useState(false);
   const [CompanyFail, setCompanyFail] = useState(false);
+  const [showLinkingComingSoonModal, setShowLinkingComingSoonModal] = useState(false);
 
   const onLink = () => {
     Keyboard.dismiss;
@@ -73,6 +77,10 @@ const EmailConfirmation = ({navigation}) => {
     email ? onLink() : setShowWarning(true);
 
     console.log(`submitted`, email);
+  };
+
+  const openCloseLinkingComingSoonModal = (flag) => () => {
+    setShowLinkingComingSoonModal(flag);
   };
 
   return (
@@ -127,47 +135,53 @@ const EmailConfirmation = ({navigation}) => {
           }}>
           This is just to make sure we connect you with the right company
         </Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            paddingHorizontal: 8,
-            borderRadius: 10,
-            paddingLeft: 15,
-            marginTop: dynamicSize(35),
-          }}>
-          <Image
-            style={{height: 20, width: 20}}
-            source={Constants.Images.mail}
-          />
-          <TextInput
-            keyboardType={'email-address'}
-            returnKeyType={'done'}
-            autoCorrect={false}
-            autoCapitalize={'none'}
-            autoCompleteType={'off'}
-            placeholder={'example@work-mail.com'}
-            placeholderTextColor={'#8A8BAB'}
-            onSubmitEditing={() => submit()}
+        <TouchableWithoutFeedback
+          pointerEvents="auto"
+          onPress={openCloseLinkingComingSoonModal(true)}>
+          <View
             style={{
-              height: dynamicSize(50),
-              width: dynamicSize(250),
+              flexDirection: 'row',
+              alignItems: 'center',
               backgroundColor: 'white',
-              // color: 'blue',
-              // borderColor: 'transparent',
-              // fontWeight: '700',
-
-              // borderWidth: 1,
+              paddingHorizontal: 8,
               borderRadius: 10,
               paddingLeft: 15,
-            }}
-            onChangeText={(text) => {
-              onChangeText(text), validate(text);
-            }}
-            value={value}
-          />
-        </View>
+              marginTop: dynamicSize(35),
+            }}>
+            <Image
+              style={{ height: 20, width: 20 }}
+              source={Constants.Images.mail}
+            />
+            <TextInput
+              pointerEvents='none'
+              keyboardType={'email-address'}
+              returnKeyType={'done'}
+              autoCorrect={false}
+              autoCapitalize={'none'}
+              autoCompleteType={'off'}
+              editable={false}
+              placeholder={'example@work-mail.com'}
+              placeholderTextColor={'#8A8BAB'}
+              onSubmitEditing={() => submit()}
+              style={{
+                height: dynamicSize(50),
+                width: dynamicSize(250),
+                backgroundColor: 'white',
+                // color: 'blue',
+                // borderColor: 'transparent',
+                // fontWeight: '700',
+
+                // borderWidth: 1,
+                borderRadius: 10,
+                paddingLeft: 15,
+              }}
+              onChangeText={(text) => {
+                onChangeText(text), validate(text);
+              }}
+              value={value}
+            />
+          </View>
+        </TouchableWithoutFeedback>
         <Text
           numberOfLines={3}
           style={{
@@ -230,16 +244,30 @@ const EmailConfirmation = ({navigation}) => {
             position: 'absolute',
             height: '100%',
             width: '100%',
-            backgroundColor: 'black',
-            opacity: 0.2,
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            // opacity: 0.2,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator color='#9889F9' size="large" />
         </View>
       )}
+      <CustomModal
+        modalVisible={!Loading && showLinkingComingSoonModal}
+        dismissModalHandler={openCloseLinkingComingSoonModal(false)}
+        modalText="Email linking coming soon! In the meantime, click on the link sent by your managers to join the team"
+        onClickButtonOne={openCloseLinkingComingSoonModal(false)}
+        buttonOneText="On it!"
+        buttonOneStyle={styles.modalButtonOneStyle}
+      />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  modalButtonOneStyle: {
+    flex: 0.8,
+  },
+});
 
 export default EmailConfirmation;

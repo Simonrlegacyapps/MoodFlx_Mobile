@@ -457,7 +457,7 @@ const ProfileTab = ({ navigation }) => {
               </View>
               {ImageLoading && (
                 <View style={styles.imageLoader}>
-                  <ActivityIndicator size="large" />
+                  <ActivityIndicator color='#9889F9' size="large" />
                 </View>
               )}
             </View>
@@ -471,7 +471,7 @@ const ProfileTab = ({ navigation }) => {
               />
             </View>
           </View>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20, top: 10 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20, top: 10, padding:5 }}>
             <BackIcon />
           </TouchableOpacity>
           <View style={styles.flatlistContainer}>
@@ -662,7 +662,7 @@ const ProfileTab = ({ navigation }) => {
       </ScrollView>
       {Loading && !openActionSheet && (
         <View style={styles.loader}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator color='#9889F9' size="large" />
         </View>
       )}
     </>
@@ -730,8 +730,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: '100%',
     width: '100%',
-    backgroundColor: 'black',
-    opacity: 0.2,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    // opacity: 0.2,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: dynamicSize(160),
@@ -745,8 +745,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: '100%',
     width: '100%',
-    backgroundColor: 'black',
-    opacity: 0.2,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    // opacity: 0.2,
     justifyContent: 'center',
     alignItems: 'center',
   },

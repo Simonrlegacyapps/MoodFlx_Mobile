@@ -45,6 +45,7 @@ import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 import { activityHealthKitOptions } from '../../services/appPermissions';
 import getStore from '../../redux';
+import Skeleton from '../../Components/Skeleton/Skeleton';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -125,7 +126,9 @@ const FitnessData = ({
     fitnessInsightsReducer,
     fitnessInsightsInitialState,
   );
+  const [isCallSync, setIsCallSync] = useState(false);
   const prevHealthUpdateApiCount = useRef(healthUpdateApiCount);
+  const [skeleton, setskeleton] = useState(false)
 
   // console.log(`UserData`, UserData);
 
@@ -146,6 +149,24 @@ const FitnessData = ({
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (
+      UserData?.fitnessSyncText &&
+      typeof UserData.fitnessSyncText === 'string'
+    ) {
+      let count = UserData.fitnessSyncText
+        ?.split?.('Syncing ')
+        ?.pop?.()
+        ?.split?.('/')?.[0];
+      if (!isNaN(count)) {
+        count = Number(count);
+        if (count > 5) {
+          setIsCallSync(true);
+        }
+      }
+    }
+  }, [UserData.fitnessSyncText]);
+
   const VerifyDone = () => {
     setOpenActionSheet(false);
     checkStorage();
@@ -155,6 +176,7 @@ const FitnessData = ({
   };
 
   const getInsights = () => {
+    setskeleton(true)
     const deviceId = DeviceInfo.getUniqueId();
     const store = getStore?.()?.getState?.();
     const params = {
@@ -169,7 +191,7 @@ const FitnessData = ({
     // };
     PostRequestApi('getActivityInsights', { ...params, status: 'daily' })
       .then((res) => {
-        console.log('getActivityInsights daily res: ', res);
+        console.log('getActivityInsights daily res: ', res?.data);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
           res?.data?.insights?.message1 &&
@@ -204,7 +226,8 @@ const FitnessData = ({
         }
       })
       .then((res) => {
-        console.log('getActivityInsights weekly res: ', res);
+        setskeleton(false)
+        console.log('getActivityInsights weekly res: ', res?.data);
         let weeklyInsightsPayload = {};
         // console.log('getActivityInsights weeklyInsights: ', res?.data?.insights);
         weeklyInsightsPayload.weeklyInsights =
@@ -228,6 +251,7 @@ const FitnessData = ({
         });
       })
       .catch(function (error) {
+        setskeleton(false)
         console.log('❌ ❌ ❌ ❌ Error Get Activity Insights ❌ ❌ ❌ ❌', error);
       });
   };
@@ -392,15 +416,14 @@ const FitnessData = ({
           </TouchableOpacity>
         </View> */}
         <HomeSyncHeader
-        navigation={navigation}
+          navigation={navigation}
           label={"Activity"}
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
           setOpenActionSheet={
-            UserData.fitnessSyncText ===
-            `0/${activityHealthKitOptions?.permissions?.read?.length}`
-              ? openHealthApp
-              : setOpenActionSheet
+            isCallSync || Platform.OS === 'android'
+              ? setOpenActionSheet
+              : openHealthApp
           }
           setAnonymousClick={setAnonymousClick}/>
         <View style={styles.ProgressBarView}>
@@ -433,6 +456,7 @@ const FitnessData = ({
 
         <View style={styles.subViewTwo}>
           {Loading && <ActivityIndicator color='#9889F9' size='large' />}
+          {skeleton && <Skeleton/>}
         <DataInsights
               dailyInsights={!UserData.HealthPermission? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
               weeklyInsights={insights?.weeklyInsights}

@@ -37,14 +37,19 @@ const MainProfileTab = ({navigation}) => {
   const [inProgress, setinProgress] = useState(false)
   const [openActionSheet, setopenActionSheet] = useState(false)
 
+  
+
   const VerifyDone = () => {
     setopenActionSheet(false)
 }
 
   const UserData = useSelector((state) => state.First);
+  const {Scrolling}= UserData
   return (
     <View style={styles.container}>
       <ProfileHeader navigation={navigation} />
+      {/* {!Scrolling && <View style={{flexDirection: 'row', marginHorizontal: 15}}> */}
+      <ScrollView>
       <View style={{flexDirection: 'row', marginHorizontal: 15}}>
         <View style={styles.nameTexts}>
           {/* <Text style={styles.since}>Points</Text> */}
@@ -203,7 +208,8 @@ const MainProfileTab = ({navigation}) => {
           </LinearGradient>
         </View> */}
       </View>
-      <ScrollView>
+      {/* </View>} */}
+      {/* <ScrollView> */}
       <Tab.Navigator
         swipeEnabled={true}
         tabBarOptions={{

@@ -38,6 +38,8 @@ import {
   SET_FLO_COINS,
   SET_FITNESS_SYNC_TEXT,
   SET_SLEEP_DATA_SYNC_STATUS,
+  SET_WEATHER_INSIGHTS,
+  SET_SCROLLING,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -279,6 +281,20 @@ export const SetFitnessSyncText = (data) => {
 export const SetSleepDataSyncStatus = (data) => {
   return {
     type: SET_SLEEP_DATA_SYNC_STATUS,
+    payload: data,
+  };
+};
+
+export const SetWeatherInsights = (data) => {
+  return {
+    type: SET_WEATHER_INSIGHTS,
+    payload: data,
+  };
+};
+
+export const setScrolling = (data) => {
+  return {
+    type: SET_SCROLLING,
     payload: data,
   };
 };

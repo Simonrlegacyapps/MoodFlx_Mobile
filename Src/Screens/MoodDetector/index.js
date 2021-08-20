@@ -110,6 +110,8 @@ const screenWidth = Math.floor(window.width);
 
 // import imagePath from '../assets/images';
 
+let moodText = ''
+
 export default function MoodDetector({ navigation }) {
   const [lng, setlng] = useState(false); //using in api calls
   const [lat, setlat] = useState(false); //using in api calls
@@ -279,7 +281,7 @@ export default function MoodDetector({ navigation }) {
             setWheelSize(regularWheelSize);
           }
           wheelSizeChangeDisabled.current = true;
-          onPanResponderMove(event, gestureState);
+          onPanResponderMove(event, gestureState, panX, panY);
           pan.current.setValue({ x: panX, y: panY });
           startLongPressGesture(event, gestureState);
         } else {
@@ -317,13 +319,18 @@ export default function MoodDetector({ navigation }) {
     }),
   ).current;
 
-  const onPanResponderMove = (event, gestureState) => {
-    scrollerRef.current.measureInWindow((x, y, width, height) => {
-      const left = x + scrollerWheelRadius;
-      const top = y + scrollerWheelRadius;
-      updateColorData(left, top, gestureState);
-      // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
-    });
+  const onPanResponderMove = (event, gestureState, panX, panY) => {
+    const x = panX + (regularWheelSize/2);
+    const y = panY + (regularWheelSize/2);
+    updateColorData(x, y, gestureState);
+    // scrollerRef.current.measureInWindow((x, y, width, height) => {
+    //   const left = x + (regularWheelSize/2);
+    //   const top = y + (regularWheelSize/2);
+    //   // const left = x + scrollerWheelRadius;
+    //   // const top = y + scrollerWheelRadius;
+    //   updateColorData(left, top, gestureState);
+    //   // console.log("++++++ measureInWindow " + width + " " + height + " " + x + " " + y);
+    // });
   };
 
   //color wheel caluclations
@@ -983,6 +990,7 @@ export default function MoodDetector({ navigation }) {
       setLoading(false);
       setMoodFail(true);
     } else {
+      moodText = Id
       setLoading(true);
       // console.log(`not fail`);
       // console.log(`Id`, Id.id);
@@ -1001,6 +1009,7 @@ export default function MoodDetector({ navigation }) {
         device_token: fcm,
         device_type: Platform.OS,
         anonymous: !UserData.Anonymous ? 0 : 1,
+        reward_point: 0,
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
@@ -1017,6 +1026,7 @@ export default function MoodDetector({ navigation }) {
           mood_type,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
+          reward_point: 0,
         });
 
         console.log(`params for updating answer --------------->`, raw);
@@ -1231,7 +1241,7 @@ export default function MoodDetector({ navigation }) {
         style={[
           styles.childViewStyle,
           {
-            backgroundColor: 'green',
+            backgroundColor: tbColor,
             flexDirection: 'row',
             flexWrap: 'wrap',
             flex: 1,
@@ -1264,6 +1274,8 @@ export default function MoodDetector({ navigation }) {
             height: '50%',
             width: '50%',
             backgroundColor: color,
+            marginTop: -2,
+            zIndex: 5,
           }}
         />
         <View
@@ -1272,6 +1284,8 @@ export default function MoodDetector({ navigation }) {
             height: '50%',
             width: '50%',
             backgroundColor: pSBC(0.25, color),
+            marginTop: -2,
+            zIndex: 5,
           }}
         />
         {/* <View
@@ -1418,7 +1432,7 @@ export default function MoodDetector({ navigation }) {
           <Text style={{ textAlign: 'center', fontSize: 18 }}>Save</Text>
           {emotionText != 'Slide finger' &&<View style={styles.pupView}>
             <Image resizeMode={"contain"} source={require("../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup}/>
-            <Text style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
+            <Text allowFontScaling={false} style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
             </View>}
         </TouchableOpacity>
         <TouchableOpacity
@@ -1475,6 +1489,9 @@ export default function MoodDetector({ navigation }) {
             ? { left: constrainedX.current, top: constrainedY.current }
             : {}),
         }}
+        toolTipStyle={{
+          ...pan.current.getLayout(),
+        }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
         emotionText={
@@ -1511,6 +1528,7 @@ export default function MoodDetector({ navigation }) {
       />
 
       <SaveMoodConfirmModal
+      moodText={moodText}
         modalVisible={isSaveMoodConfirmModalVisible}
         dismissModalHandler={SaveMood}
         emotionText={emotionText}
@@ -1539,12 +1557,12 @@ export default function MoodDetector({ navigation }) {
             position: 'absolute',
             height: '100%',
             width: '100%',
-            backgroundColor: 'black',
-            opacity: 0.2,
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            // opacity: 0.2,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator color='#9889F9' size="large" />
         </View>
       )}
     </View>

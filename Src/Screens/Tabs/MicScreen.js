@@ -10,8 +10,8 @@ import {
   Dimensions,
   Platform,
   StatusBar,
+  ScrollView,
 } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import HappyIcon from '../../../assets/emotionsicons/HappyIcon';
 import Constants from '../../Constants';
 import {
@@ -184,7 +184,7 @@ const MicScreen = ({ navigation }) => {
 
   return (
     <View
-      check={() => onRefresh()}
+      // check={() => onRefresh()}
       style={{
         // alignItems: 'center',
         // justifyContent: 'center',
@@ -195,16 +195,22 @@ const MicScreen = ({ navigation }) => {
           <StatusBar barStyle="light-content" backgroundColor={'#89A1F7'} />
         )}
       <ScrollView
+        style={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            tintColor="#000000"
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
         }
-        style={{
-          // alignItems: 'center',
-          // justifyContent: 'center',
-          flex: 1,
-          backgroundColor: 'white',
-          // paddingBottom: 60,
-        }}>
+        // style={{
+        //   // alignItems: 'center',
+        //   // justifyContent: 'center',
+        //   flex: 1,
+        //   backgroundColor: 'white',
+        //   // paddingBottom: 60,
+        // }}
+        >
         <View
           style={{
             height: dynamicSize(300),
@@ -219,7 +225,7 @@ const MicScreen = ({ navigation }) => {
             style={{
               height: dynamicSize(300),
               width: width,
-              resizeMode: 'contain',
+              resizeMode: 'cover',
             }}
           />
         </View>
@@ -393,12 +399,12 @@ const MicScreen = ({ navigation }) => {
             position: 'absolute',
             height: '100%',
             width: '100%',
-            backgroundColor: 'black',
-            opacity: 0.2,
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            // opacity: 0.2,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator color="#9889F9" size="large" />
         </View>
       )}
     </View>
@@ -406,6 +412,12 @@ const MicScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'white',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
   normalText: {
     fontSize: 16,
     lineHeight: 16,

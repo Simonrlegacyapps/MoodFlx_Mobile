@@ -50,6 +50,7 @@ const SaveMoodConfirmModal = ({
   emotionText,
   onClickButtonOne,
   onClickButtonTwo,
+  moodText
 }: props) => {
   const [color, setcolor] = useState('black');
   const [AnonymousStatus, setAnonymousStatus] = useState(true);
@@ -62,6 +63,8 @@ const SaveMoodConfirmModal = ({
   const UserData = useSelector((state) => state.First);
 
   let Anon = true;
+
+  // console.log(`moodTexts`, moodText)
 
   const Anonymous = async () => {
     let flag = false;
@@ -221,12 +224,13 @@ const SaveMoodConfirmModal = ({
           onStartShouldSetResponder={Keyboard.dismiss}
           style={[styles.upperContainer]}>
           <Text style={styles.textOne}>Thank you!</Text>
-          <Text style={styles.textTwo}>Flo feels you</Text>
+          {/* <Text style={styles.textTwo}>Flo feels you</Text> */}
+          <Text style={styles.textTwo}>{moodText?.confirmation_text}</Text>
           <Text style={styles.textThree}>
             Feeling{' '}
             <Text style={styles.textThreeBold}>{emotionText}</Text>
           </Text>
-          <TouchableOpacity
+          <TouchableOpacity disabled={true}
             onPress={() => {
               Anonymous();
             }}
@@ -301,7 +305,7 @@ const SaveMoodConfirmModal = ({
             <Text style={styles.buttonOneText}>{'Add Note'}</Text>
             {emotionText != 'Slide finger' &&<View style={styles.pupView}>
             <Image resizeMode={"contain"} source={require("../../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup}/>
-            <Text style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
+            <Text allowFontScaling={false} style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
             </View>}
           </TouchableOpacity>
           <TouchableOpacity
@@ -408,8 +412,9 @@ const styles = StyleSheet.create({
   },
   textTwo: {
     fontFamily: RubikRegular,
-    fontSize: fontSize,
+    fontSize: getFontSize(16),
     marginTop: 7,
+    color:"#9C9EB9"
   },
   textThree: {
     fontFamily: RubikLight,

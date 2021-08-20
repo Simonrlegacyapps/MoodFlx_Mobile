@@ -31,7 +31,7 @@ export function DataGraph({
 
 
   const labels = useMemo(() => {
-    console.log('DataGraph labels', data);
+    // console.log('DataGraph labels', data);
     let l = null;
     if (Array.isArray(data) && data.length === 7) {
       l = data.map(e => {
@@ -88,7 +88,7 @@ export function DataGraph({
     return d;
   }, [data]);
 
-console.log('datagraph duration: ', duration)
+// console.log('datagraph duration: ', duration)
 
   return (
     <View

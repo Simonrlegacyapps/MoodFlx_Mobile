@@ -159,11 +159,11 @@ let emotionsTextData = {
     color: '#118F00',
     img: '',
   },
-  cool: {
+  humming: {
     //10
     top: [verticalScale(433), verticalScale(565)],
     left: [horizontalScale(187.5), horizontalScale(281.25)],
-    name: 'Cool',
+    name: 'Humming',
     color: '#BBA502',
     img: '',
   },
@@ -199,11 +199,11 @@ let emotionsTextData = {
     color: '#4FD99C',
     img: '',
   },
-  relaxed: {
+  calm: {
     //15
     top: [verticalScale(566), verticalScale(697)],
     left: [horizontalScale(281.25), horizontalScale(375)],
-    name: 'Relaxed',
+    name: 'Calm',
     color: '#87E8C3',
     img: '',
   },
@@ -511,12 +511,14 @@ export const getScrollerOffset = (
   // console.log('getScrollerOffset => screenSize: ', screenSize, ' scrollerWheelSize: ', scrollerWheelSize, ' scrollerContainerSize: ', scrollerContainerSize, ' toolTipSize: ', toolTipSize, ' blocksSize: ', blocksSize);
   // console.log('getScrollerOffset paddingTop', paddingTop)
   // console.log('getScrollerOffset paddingVertical', paddingVertical)
-  const toolTipHeight = toolTipSize.height - 10;
+  // const toolTipHeight = toolTipSize.height - 10;
+  const toolTipHeight = 0;
   const scrollerHeight = toolTipHeight + scrollerWheelSize;
-  const scrollerWidth =
-    toolTipSize.width > scrollerWheelSize
-      ? toolTipSize.width
-      : scrollerWheelSize;
+  // const scrollerWidth =
+  //   toolTipSize.width > scrollerWheelSize
+  //     ? toolTipSize.width
+  //     : scrollerWheelSize;
+  const scrollerWidth = scrollerWheelSize;
   const bubbleCenterOffsetTop = toolTipHeight + scrollerWheelSize / 2;
   // console.log('getScrollerOffset scrollerHeight', scrollerHeight)
   const yMin = blocksSize?.top - extraVerticalPadding - bubbleCenterOffsetTop;

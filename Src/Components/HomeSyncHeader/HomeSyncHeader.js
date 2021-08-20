@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -25,11 +25,11 @@ const HomeSyncHeader = ({
   label,
   isPermissionGiven,
   syncText,
-  
 }) => {
   const UserData = useSelector((state) => state.First);
-  const navigation = useNavigation()
-  
+  const navigation = useNavigation();
+  const [isAnimationFinished, setIsAnimationFinished] = useState(false);
+
   let headerSyncText = isPermissionGiven ? 'Syncing your' : 'Sync your';
   if (isPermissionGiven && typeof syncText === 'string' && syncText) {
     headerSyncText = syncText;
@@ -37,6 +37,10 @@ const HomeSyncHeader = ({
   if (syncText) {
     headerSyncText = syncText;
   }
+
+  const onAnimationFinished = useCallback(() => {
+    setIsAnimationFinished(true);
+  }, []);
 
   return (
     <View style={styles.HeaderView}>
@@ -66,15 +70,15 @@ const HomeSyncHeader = ({
         <TouchableOpacity onPress={()=>{navigation.navigate("MainProfileTab")}}>
         <CrownBox floCoins={UserData.floCoins} />
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => setAnonymousClick(true)}
           style={styles.ColoredView}>
           <Text allowFontScaling={false} style={styles.ColoredText}>
             Anon
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
-      {UserData.UserMoodCount >= 3 && (
+      {UserData.UserMoodCount >= 3 && !isAnimationFinished && (
         <LottieView
           source={require('../../../assets/json/64686-confetti.json')}
           autoPlay={true}
@@ -87,6 +91,7 @@ const HomeSyncHeader = ({
             right: 0,
             zIndex:9999
           }}
+          onAnimationFinish={onAnimationFinished}
         />
        )} 
     </View>

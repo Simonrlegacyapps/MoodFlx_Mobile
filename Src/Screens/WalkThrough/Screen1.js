@@ -24,11 +24,12 @@ import Lock from '../../../assets/svg/lock';
 import ScienceG from '../../../assets/svg/ScienceG';
 import RewardG from '../../../assets/svg/RewardG';
 import Graph from '../../../assets/svg/graph';
+import BackIcon from '../../../assets/svg/backIcon';
 
 const {height} = Dimensions.get("window")
 
 const Screen1 = ({onDone}) => {
-  const [number, setnumber] = useState(0);
+  const [number, setnumber] = useState(1);
 
 
   const data = [
@@ -39,14 +40,14 @@ const Screen1 = ({onDone}) => {
       t3: 'Feel Secure',
       t4: 'You’re completely anonymous unless you say otherwise',
     },
-    {
-      img1: <Lock />,
-      t1: '',
-      t2: 'Complete Anonymity.',
-      t3: 'Daily data is stored on your personal device',
-      t4:
-        "Your data is grouped with 19 others to make sure you're completely private",
-    },
+    // {
+    //   img1: <Lock />,
+    //   t1: '',
+    //   t2: 'Complete Anonymity.',
+    //   t3: 'Daily data is stored on your personal device',
+    //   t4:
+    //     "Your data is grouped with 19 others to make sure you're completely private",
+    // },
     {
       img1: <Lock />,
       t1: 'Flo creates a unified voice for you & your team ',
@@ -83,30 +84,33 @@ const Screen1 = ({onDone}) => {
                 <Mood />
               </View>
               <View style={{width: '100%', paddingHorizontal: dynamicSize(13)}}>
-                <Text style={styles.bigText}>
+                <Text allowFontScaling={false} style={styles.bigText}>
                   It’s time to unleash your untapped!
                 </Text>
-                <Text style={styles.smallText0}>
+                <Text allowFontScaling={false} style={styles.smallText0}>
                   Let’s take you through Flo’s features
                 </Text>
               </View>
               <View style={styles.bottomButtons}>
                 <TouchableOpacity onPress={onDone} style={{flex: 1}}>
-                  <Text style={styles.skip}>Skip > ></Text>
+                  <Text allowFontScaling={false} style={styles.skip}>Skip > ></Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
                     setnumber(number + 1);
                   }}
                   style={{backgroundColor: '#7265E3', borderRadius: 7}}>
-                  <Text style={styles.next}>Next</Text>
+                  <Text allowFontScaling={false} style={styles.next}>Next</Text>
                 </TouchableOpacity>
               </View>
             </View>
           ) : (
             <View style={styles.Container}>
               <View style={styles.topBar}>
-                <Text
+                <TouchableOpacity onPress={()=>{setnumber(number - 1)}} style={{width:'100%', marginBottom:dynamicSize(10), marginLeft:dynamicSize(40)}}>
+                <BackIcon/>
+                </TouchableOpacity>
+                <Text allowFontScaling={false}
                   style={{
                     fontSize: 16,
                     fontFamily: RubikRegular,
@@ -124,9 +128,9 @@ const Screen1 = ({onDone}) => {
                     : 'Rewards'}
                 </Text>
                 <View style={styles.rewardsTypes}>
-                  <Anonimity color={number <= 3 ? '#7265E3' : '#9C9EB9'} />
-                  <Science color={number === 4 ? '#3FD7C8' : '#9C9EB9'} />
-                  <Rewards color={number === 5 ? '#EE64DB' : '#9C9EB9'} />
+                  <Anonimity color={number <= 2 ? '#7265E3' : '#9C9EB9'} />
+                  <Science color={number === 3 ? '#3FD7C8' : '#9C9EB9'} />
+                  <Rewards color={number === 4 ? '#EE64DB' : '#9C9EB9'} />
                 </View>
                 {console.log(`number`, number)}
               </View>
@@ -138,18 +142,18 @@ const Screen1 = ({onDone}) => {
                     {data[number - 1].img1}
                   </View>
                   {data[number - 1].t1 != '' && (
-                    <Text style={styles.blackText}>{data[number - 1].t1}</Text>
+                    <Text allowFontScaling={false} style={styles.blackText}>{data[number - 1].t1}</Text>
                   )}
                   {data[number - 1].t2 != '' && (
-                    <Text style={[styles.blackText, styles.purpleText]}>
+                    <Text allowFontScaling={false} style={[styles.blackText, styles.purpleText]}>
                       {data[number - 1].t2}
                     </Text>
                   )}
                   {data[number - 1].t3 != '' && (
-                    <Text style={styles.smallText}>{data[number - 1].t3}</Text>
+                    <Text allowFontScaling={false} style={styles.smallText}>{data[number - 1].t3}</Text>
                   )}
                   {data[number - 1].t4 != '' && (
-                    <Text style={styles.smallGrey}>{data[number - 1].t4}</Text>
+                    <Text allowFontScaling={false} style={styles.smallGrey}>{data[number - 1].t4}</Text>
                   )}
                   {data[number - 1].t4 != null && (
                     <View style={{}}>{data[number - 1].img2}</View>
@@ -162,15 +166,15 @@ const Screen1 = ({onDone}) => {
               {/* // bottom buttons */}
               <View style={styles.bottomButtons}>
                 <TouchableOpacity onPress={onDone} style={{flex: 1}}>
-                  <Text style={styles.skip}>Skip >></Text>
+                  <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
-                    number <= 4 ? setnumber(number + 1) : onDone();
+                    number <= 3 ? setnumber(number + 1) : onDone();
                   }}
                   style={{backgroundColor: '#7265E3', borderRadius: 7}}>
-                  <Text style={styles.next}>
-                    {number >= 5 ? 'Done' : 'Next'}
+                  <Text allowFontScaling={false} style={styles.next}>
+                    {number >= 4 ? 'Done' : 'Next'}
                   </Text>
                 </TouchableOpacity>
               </View>
