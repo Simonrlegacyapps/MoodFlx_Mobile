@@ -74,7 +74,7 @@ export default function DataInsights({
   dispatch,
 }) {
   const [isDailyInsights, setIsDailyInsights] = useState(
-    getWeeklyInsightsAvailable() !== true && !(!!weeklyInsights),
+    getWeeklyInsightsAvailable() !== true && !(!!weeklyInsights && isPermissionGiven),
   );
   const [showNotEnoughMoodsModal, setShowNotEnoughMoodsModal] = useState(false);
 

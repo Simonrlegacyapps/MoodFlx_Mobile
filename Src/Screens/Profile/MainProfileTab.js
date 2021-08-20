@@ -48,7 +48,9 @@ const MainProfileTab = ({navigation}) => {
   return (
     <View style={styles.container}>
       <ProfileHeader navigation={navigation} />
-      {!Scrolling && <View style={{flexDirection: 'row', marginHorizontal: 15}}>
+      {/* {!Scrolling && <View style={{flexDirection: 'row', marginHorizontal: 15}}> */}
+      <ScrollView>
+      <View style={{flexDirection: 'row', marginHorizontal: 15}}>
         <View style={styles.nameTexts}>
           {/* <Text style={styles.since}>Points</Text> */}
           <Text style={styles.name}>
@@ -205,7 +207,8 @@ const MainProfileTab = ({navigation}) => {
             </View>
           </LinearGradient>
         </View> */}
-      </View>}
+      </View>
+      {/* </View>} */}
       {/* <ScrollView> */}
       <Tab.Navigator
         swipeEnabled={true}
@@ -226,7 +229,7 @@ const MainProfileTab = ({navigation}) => {
         <Tab.Screen name="History" component={History} />
         <Tab.Screen name="How To" component={HowTo} />
       </Tab.Navigator>
-      {/* </ScrollView> */}
+      </ScrollView>
       <ProfileCoinModal
       title={"Mood Navigator"}
                 permission={"100 - 1,000 Flo Coins"}
