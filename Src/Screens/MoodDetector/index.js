@@ -625,16 +625,16 @@ export default function MoodDetector({ navigation }) {
       return;
     }
     blocksContainerRef.current.measureInWindow((x, y, width, height) => {
-      if (
-        Array.isArray(userData?.current?.AllMoods) &&
-        userData.current.AllMoods.length > 0
-      ) {
-        setEmotionsTextData(y, x, height, width, userData.current.AllMoods);
-      }
       const size = { left: x, top: y, width, height };
       if (screenContainerSize.current) {
         size.top = y - screenContainerSize.current.top;
       }
+      // if (
+      //   Array.isArray(userData?.current?.AllMoods) &&
+      //   userData.current.AllMoods.length > 0
+      // ) {
+      //   setEmotionsTextData(size.top, x, height, width, userData.current.AllMoods);
+      // }
       blocksSize.current = size;
       setBlocksContainerSize(size);
       // console.log('useEffect blocksSize ', blocksSize.current)
@@ -814,7 +814,7 @@ export default function MoodDetector({ navigation }) {
       UserData.AllMoods.length > 0 &&
       blocksSize.current?.height
     ) {
-      console.log('AllMoods: ', UserData.AllMoods);
+      // console.log('AllMoods: ', UserData.AllMoods);
       setEmotionsTextData(
         blocksSize.current?.top,
         blocksSize.current?.left,
@@ -823,11 +823,12 @@ export default function MoodDetector({ navigation }) {
         UserData.AllMoods,
       );
       userData.current = UserData;
+      updatePanResponder();
     }
-  }, [UserData?.AllMoods]);
+  }, [UserData]);
 
   const playHaptics = useCallback(() => {
-    console.log('playHaptics shouldPlayHaptics.current', shouldPlayHaptics.current);
+    // console.log('playHaptics shouldPlayHaptics.current', shouldPlayHaptics.current);
     if (shouldPlayHaptics.current) {
       const data = hapticsData.current ?? {};
       let { hapticType, timeInterval, percentage, isLeft } = data;

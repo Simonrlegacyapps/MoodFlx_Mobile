@@ -229,7 +229,7 @@ export async function syncWeatherData() {
       hourly: Array.isArray(hourlyData) ? [...hourlyData] : [],
     });
     if (weatherRes?.data) {
-      console.log('allDayWeatherData api call success', JSON.stringify(weatherData));
+      // console.log('allDayWeatherData api call success', JSON.stringify(weatherData));
     }
     if (weatherData?.hourly) {
       for (let i in weatherData.hourly) {

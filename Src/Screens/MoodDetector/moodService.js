@@ -28,7 +28,7 @@ export const setScrollerWheelSize = (size) => {
 export const getScrollerWheelSize = () => scrollerWheelSize;
 
 export const setIsHapticsEnabledFlag = ({ isEnabled, directionFlag }) => {
-  console.log('setIsHapticsEnabledFlag =>', isEnabled, directionFlag);
+  // console.log('setIsHapticsEnabledFlag =>', isEnabled, directionFlag);
   if (directionFlag === hapticsTopFlags.both) {
     jawsThemeCount = 0;
     circusThemeCount = 0;
@@ -210,7 +210,7 @@ let emotionsTextData = {
 };
 
 export const setEmotionsTextData = (top, left, height, width, allMoods) => {
-  // console.log('setEmotionTextData called');
+  // console.log('setEmotionTextData called --------------------------', top);
   // console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
   if (
     top === undefined ||
