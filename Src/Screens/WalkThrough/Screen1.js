@@ -29,8 +29,7 @@ import BackIcon from '../../../assets/svg/backIcon';
 const {height} = Dimensions.get("window")
 
 const Screen1 = ({onDone}) => {
-  const [number, setnumber] = useState(1);
-
+  const [number, setnumber] = useState(0);
 
   const data = [
     {
