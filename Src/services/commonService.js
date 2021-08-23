@@ -15,6 +15,15 @@ import isEmpty from 'lodash.isempty';
 import { activityHealthKitOptions } from './appPermissions';
 
 let moodsArray = [];
+let isInitialVideoVisisble = false;
+
+export function setIsInitialVideoVisible(flag) {
+  isInitialVideoVisisble = flag;
+}
+
+export function getIsInitialVideoVisible() {
+  return isInitialVideoVisisble;
+}
 
 export function setMoodsArray(moods) {
   // console.log('setMoodsArray ----', moods);

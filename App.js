@@ -60,7 +60,7 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import Analytics from './Src/services/analyticsService';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
-import { onDynamicLinkUpdate, onUnlinkUpdate, setFitnessDataSync, setMoodsArray } from './Src/services/commonService';
+import { getIsInitialVideoVisible, onDynamicLinkUpdate, onUnlinkUpdate, setFitnessDataSync, setIsInitialVideoVisible, setMoodsArray } from './Src/services/commonService';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import { getFontSize } from './Src/Constants/sizeChoose';
 import Constants from './Src/Constants';
@@ -392,8 +392,21 @@ const App: () => React$Node = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
+    const getWelcomeScreen = async () => {
+      try {
+        let p = await AsyncStorage.getItem('ShowWelcomeScreen');
+        let welcome = await JSON.parse(p);
+        if (getIsInitialVideoVisible() === false && welcome == null) {
+          setIsInitialVideoVisible(true);
+        }
+      } catch (error) {
+        console.log('Error in get AsyncStorage ShowWelcomeScreen');
+      }
+    };
+    getWelcomeScreen();
+    const timeoutId = setTimeout(() => {
       SplashScreen.hide();
+      clearTimeout(timeoutId);
     }, 2500);
     CheckScreen();
     if (ShowWelcome == null) {
