@@ -590,7 +590,7 @@ const SleepData = ({
 
           <View style={{ marginBottom: 50 }}>
             <StarProgress
-              sleepMinutes={UserData.SleepPermission ? sleepMinutesToday : 360}
+              sleepMinutes={UserData.SleepPermission ? sleepMinutesToday : 0}
             />
             <View
               style={{

@@ -452,7 +452,7 @@ export function getSleepGraphData({ weeklyData: { INBED: WeeklyInBed = [], ASLEE
 
 export function convertMinutesToTime(minutes) {
   if (isNaN(minutes)) {
-    return 0;
+    return 'Sync';
   }
   let hours = Number.parseInt(String(minutes / 60));
   const min = minutes % 60;
@@ -462,6 +462,9 @@ export function convertMinutesToTime(minutes) {
       hours += hoursOffset;
       hours = hours.toFixed(1);
     }
+  }
+  if (minutes === 0) {
+    return 'Sync';
   }
   return `${hours}${Number(hours) > 1 ? 'hrs' : 'hr'}`;
 }
