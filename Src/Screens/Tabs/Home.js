@@ -166,6 +166,8 @@ const App = (props) => {
   const pagerRef = useRef();
   const prevHealthPermission = useRef(UserData.HealthPermission);
   const isScrollEndStartCalled = useRef(0);
+  const previousScreenName = useRef('');
+  const contextScreenArray = useRef(getScreensPriority(UserData));
   // const [callOneTime, setcallOneTime] = useState('one');
   const [TryWeather, setTryWeather] = useState(null);
   const [ScreenDataPermModal, setScreenDataPermModal] = useState(false);
@@ -1359,7 +1361,7 @@ const App = (props) => {
     if (type === dataTypes.activity) {
       return (
         <FitnessData
-          kay={type}
+          // key={type}
           index={idx}
           swiperIndex={scrollNo}
           TodayStep={TodayStep}
@@ -1382,7 +1384,7 @@ const App = (props) => {
     } else if (type === dataTypes.screenTime) {
       return (
         <ScreenData
-          kay={type}
+          // key={type}
           index={idx}
           swiperIndex={scrollNo}
           Weather={Weather}
@@ -1394,7 +1396,7 @@ const App = (props) => {
     } else if (type === dataTypes.weather) {
       return (
         <WeatherData
-          kay={type}
+          // key={type}
           index={idx}
           swiperIndex={scrollNo}
           MoodCount={MoodCount}
@@ -1403,7 +1405,7 @@ const App = (props) => {
     } else if (type === dataTypes.light) {
       return (
         <LightData
-          kay={type}
+          // key={type}
           index={idx}
           swiperIndex={scrollNo}
           MoodCount={MoodCount}
@@ -1412,7 +1414,7 @@ const App = (props) => {
     } else if (type === dataTypes.sleep) {
       return (
         <SleepData
-          kay={type}
+          // key={type}
           index={idx}
           swiperIndex={scrollNo}
           isMoodUpdate={isMoodUpdate}
@@ -1423,7 +1425,7 @@ const App = (props) => {
     }
   };
 
-  const dataScreens = (data, isLoading) => {
+  const dataScreens = (data, previousScreenName, previousScreens) => {
     // 'activity, screentime, weather, light, sleep'
     let screens = getScreensPriority(data);
     screens.sort((a, b) => {
@@ -1450,10 +1452,42 @@ const App = (props) => {
       }
       return i;
     });
+    let isSame = true;
+    screens.forEach((e, idx) => {
+      if (e.name !== (previousScreens?.[idx]?.name ?? -1)) {
+        isSame = false;
+      }
+    });
+    if (previousScreenName && !isSame) {
+      let nextIndex = -1;
+      if (
+        Platform.OS === 'android' &&
+        previousScreenName === dataTypes.activity
+      ) {
+        setSwiperIndexHome(0, dispatch);
+        const timeoutId = setTimeout(() => {
+          pagerRef?.current?.scrollToIndex?.({animated: false, index: 0});
+          clearTimeout(timeoutId);
+        }, 1000);
+      } else {
+        screens?.forEach?.((e, idx) => {
+          if (nextIndex === -1 && e?.name === previousScreenName) {
+            setSwiperIndexHome(idx, dispatch);
+            pagerRef?.current?.scrollToIndex?.({animated: false, index: idx});
+          }
+        });
+      }
+    }
     return screens;
     return screens.map((e, idx) => {
       return getScreen(e?.name, idx, isLoading);
     });
+  };
+
+  const getPreviousScreenName = (contextScreens, sIndex) => {
+    return contextScreens.filter?.((e, idx) => {
+      return idx === sIndex ? true : false;
+    })?.[0]?.name;
   };
 
   const renderItem = (loading) => ({item, index}) => {
@@ -1541,6 +1575,16 @@ const App = (props) => {
     }
   }, []);
 
+  contextScreenArray.current = dataScreens(
+    UserData,
+    previousScreenName.current,
+    contextScreenArray.current,
+  );
+  previousScreenName.current = getPreviousScreenName(
+    contextScreenArray.current,
+    swiperIndex,
+  );
+
   return (
     <View style={{ flex: 1 }}>
       {Platform.OS === 'ios' ? (
@@ -1551,11 +1595,12 @@ const App = (props) => {
       <View style={styles.flatListContainer}>
         <FlatList
           ref={pagerRef}
-          data={dataScreens(UserData)}
+          data={contextScreenArray.current}
           horizontal={true}
           pagingEnabled={true}
           style={styles.flatListStyle}
           getItemLayout={getSwiperItemLayout}
+          keyExtractor={(data, index) => data.name}
           initialScrollIndex={swiperIndex}
           renderItem={renderItem((Loading && !isInstallGoogleFitModalVisible))}
           showsHorizontalScrollIndicator={false}
