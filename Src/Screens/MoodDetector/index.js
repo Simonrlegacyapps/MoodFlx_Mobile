@@ -84,7 +84,7 @@ import {
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 import Insights from '../../../assets/svg/insights';
-import { getIsInitialVideoVisible, setIsInitialVideoVisible, setSwiperIndexHome } from '../../services/commonService';
+import { getIsInitialVideoVisible, getMoodInputRewardPoints, setIsInitialVideoVisible, setMoodInputTimeStamps, setSwiperIndexHome } from '../../services/commonService';
 
 let prevXY = { dx: 0, dy: 0 };
 let moveCount = 0;
@@ -1000,6 +1000,12 @@ export default function MoodDetector({ navigation }) {
     } else {
       moodText = Id
       setLoading(true);
+      let rewardPoint = 0;
+      try {
+        rewardPoint = await getMoodInputRewardPoints();
+      } catch (error) {
+        console.log('error in getMoodInputRewardPoints ', error);
+      }
       // console.log(`not fail`);
       // console.log(`Id`, Id.id);
       const isIndia = isCountryIndia();
@@ -1017,7 +1023,7 @@ export default function MoodDetector({ navigation }) {
         device_token: fcm,
         device_type: Platform.OS,
         anonymous: !UserData.Anonymous ? 0 : 1,
-        reward_point: 0,
+        reward_point: rewardPoint,
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
@@ -1064,9 +1070,10 @@ export default function MoodDetector({ navigation }) {
           .then((resp) => {
             if (resp.status == 200) {
               AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
+              setMoodInputTimeStamps();
               console.log(
                 'Success Message of respose mood ✅ ✅ ✅ ✅',
-                resp.data,
+                resp?.data,
               );
               setLoading(false);
               // navigation.navigate('VerifyEmail', {

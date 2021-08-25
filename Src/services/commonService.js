@@ -13,6 +13,7 @@ import isFunction from 'lodash.isfunction';
 import {Platform, Linking, Alert} from 'react-native';
 import isEmpty from 'lodash.isempty';
 import { activityHealthKitOptions } from './appPermissions';
+import moment from 'moment';
 
 let moodsArray = [];
 let isInitialVideoVisisble = false;
@@ -201,4 +202,105 @@ export const openHealthApp = async () => {
   } else {
     Alert.alert('Unable to open Health App from this app. Please manully open the Health App to make changes');
   }
+};
+
+export const setMoodInputTimeStamps = async () => {
+  let timeStamps = [];
+  try {
+    const t = await AsyncStorage.getItem('MoodInputTimeStamp');
+    if (t) {
+      timeStamps = await JSON.parse(t);
+    }
+  } catch (error) {
+    console.log('Async Storage get MoodInputTimeStamp error ', error);
+  }
+  if (Array.isArray(timeStamps)) {
+    timeStamps.sort(function (a, b) {
+      return a - b;
+    });
+    console.log('setMoodInputTimeStamps timeStamps ----', timeStamps);
+    const currentTime = new Date().getTime();
+    if (moment(timeStamps[timeStamps.length - 1]).isBefore(moment().startOf('day'))) {
+      timeStamps = [];
+    }
+    timeStamps.push(currentTime);
+    AsyncStorage.setItem('MoodInputTimeStamp', JSON.stringify(timeStamps));
+  }
+};
+
+export const getMoodInputRewardPoints = async () => {
+  let moodCount = -1;
+  let rewardPoints = 0;
+  let timeStamps = [];
+  try {
+    const t = await AsyncStorage.getItem('MoodInputTimeStamp');
+    if (t) {
+      timeStamps = await JSON.parse(t);
+    }
+  } catch (error) {
+    console.log('Async Storage get MoodInputTimeStamp error ', error);
+  }
+  try {
+    let p = await AsyncStorage.getItem('MoodCount');
+    moodCount = await JSON.parse(p);
+    if (!isNaN(moodCount)) {
+      moodCount = Number(moodCount);
+    }
+  } catch (error) {
+    console.log('Error in AsyncStorage get item MoodCount ', error);
+  }
+  const timeQuarters = [
+    {
+      startTime: moment().startOf('day').unix() * 1000,
+      endTime: moment().startOf('day').hour(6).unix() * 1000,
+    },
+    {
+      startTime: moment().startOf('day').hour(6).unix() * 1000,
+      endTime: moment().startOf('day').hour(12).unix() * 1000,
+    },
+    {
+      startTime: moment().startOf('day').hour(12).unix() * 1000,
+      endTime: moment().startOf('day').hour(18).unix() * 1000,
+    },
+    {
+      startTime: moment().startOf('day').hour(18).unix() * 1000,
+      endTime: moment().endOf('day').unix() * 1000,
+    },
+  ];
+  const currentTime = moment().unix() * 1000;
+  if (Array.isArray(timeStamps)) {
+    timeStamps.sort(function (a, b) {
+      return a - b;
+    });
+    let existingQuarter = null;
+    let l = [];
+    if (timeStamps.length === 0) {
+      rewardPoints = 3;
+    } else {
+      timeQuarters.forEach((d, index) => {
+        if (currentTime >= d.startTime && currentTime < d.endTime) {
+          existingQuarter = d;
+        }
+      });
+      if (existingQuarter) {
+        l = timeStamps.filter((e, idx) => {
+          return e >= existingQuarter.startTime && e < existingQuarter.endTime;
+        });
+        if (l.length < 3) {
+          const diff = moment().diff(
+            moment(timeStamps[timeStamps.length - 1]),
+            'minutes',
+          );
+          if (diff >= 120) {
+            rewardPoints = 3;
+            if (moodCount >= 3) {
+              rewardPoints = rewardPoints + 1;
+            }
+          }
+        }
+      }
+    }
+  }
+  // if ((moment().startOf('day').unix() * 1000) )
+  return rewardPoints;
 };
