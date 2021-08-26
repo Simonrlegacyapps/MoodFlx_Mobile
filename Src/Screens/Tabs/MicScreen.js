@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -11,6 +11,7 @@ import {
   Platform,
   StatusBar,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import HappyIcon from '../../../assets/emotionsicons/HappyIcon';
 import Constants from '../../Constants';
@@ -19,20 +20,24 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import Svg, { Path, SvgUri } from 'react-native-svg';
-import { dynamicSize, isTablet } from '../../Constants/sizeChoose';
+import Svg, {Path, SvgUri} from 'react-native-svg';
+import {dynamicSize, isTablet} from '../../Constants/sizeChoose';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AsyncStorage from '@react-native-community/async-storage';
-import { GetUserId, UserEmail } from '../../redux/actions/actions';
-import { useFocusEffect } from '@react-navigation/native';
-import { GetStaffUserData } from '../../apirequest/PostRequestApi';
-import { moodTypes } from '../../Constants/constants';
-const { height, width } = Dimensions.get('window');
-const MicScreen = ({ navigation }) => {
+import {GetUserId, UserEmail} from '../../redux/actions/actions';
+import {useFocusEffect} from '@react-navigation/native';
+import {GetStaffUserData} from '../../apirequest/PostRequestApi';
+import {moodTypes} from '../../Constants/constants';
+import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
+import Clock from '../../../assets/svg/clock';
+import FloCoin from '../../../assets/svg/floCoins';
+
+const {height, width} = Dimensions.get('window');
+const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
@@ -88,42 +93,49 @@ const MicScreen = ({ navigation }) => {
         device_id: deviceId,
         email: e,
         user_id: Id,
-      }, dispatch)
+      },
+      dispatch,
+    )
       .then(async (result) => {
         // console.log(
         //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
         //   result?.userData
         // );
         if (result?.userData?.status !== 2) {
-          return fetch('https://admin.moodflo.com/api/getQuestions', requestOptions);
+          return fetch(
+            'https://admin.moodflo.com/api/getQuestions',
+            requestOptions,
+          );
         } else {
           requestOptions.body = JSON.stringify({
             device_id: deviceId,
             email: '',
             user_id: '',
-          })
-          return fetch('https://admin.moodflo.com/api/getQuestions', requestOptions);
+          });
+          return fetch(
+            'https://admin.moodflo.com/api/getQuestions',
+            requestOptions,
+          );
         }
       })
       .then(async (result) => result.json())
       .then(async (result) => {
         if (result) {
           console.log(' ✅ ✅ ✅ ✅ Success Get Questions✅ ✅ ✅ ✅ ', result);
-          if(result?.questions) {
+          if (result?.questions) {
             await setquestions(result?.questions);
-          } 
+          }
           setLoading(false);
         }
       })
       .catch(function (error) {
         console.log('❌❌❌❌Fail Get Questions❌❌❌❌', error, data);
       });
-
   };
 
   useFocusEffect(
     useCallback(() => {
-      getQuestions();
+      // getQuestions();
       return () => {
         // screen is out of focus
         if (Platform.OS === 'android') {
@@ -140,16 +152,16 @@ const MicScreen = ({ navigation }) => {
       return '';
     }
     if (type.toLowerCase() === moodTypes.pretty.toLowerCase()) {
-      return 'Pretty ';  
+      return 'Pretty ';
     } else if (type.toLowerCase() === moodTypes.very.toLowerCase()) {
-      return 'Very ';  
+      return 'Very ';
     }
     return '';
-  }
+  };
 
-  useEffect(() => {
-    getQuestions();
-  }, [navigation]);
+  // useEffect(() => {
+  //   getQuestions();
+  // }, [navigation]);
   // const Questions = [
   //   {
   //     question: 'What do you think of the CEO’s dress sense?',
@@ -182,6 +194,343 @@ const MicScreen = ({ navigation }) => {
     setDateExpired(false);
   };
 
+  const ProgressDay = ({label, color}) => {
+    return (
+      <View style={styles.progressView}>
+        <ProgressBar
+          dots={true} // it is referring opposite
+          dot1={true} // it is referring opposite
+          dot2={true}
+          dot3={true}
+          dot4={true} // it is referring opposite
+          progress={66.6}
+          MoodCount={2}
+          height={8}
+          backgroundColor={color}
+        />
+      </View>
+    );
+  };
+
+  // console.log(`i for question`, i)
+  // // let givenDate = new Date(moment(i.end_date)).getTime();
+  // // let todayDate = new Date().getTime();
+  // let now = moment(Date.now())
+  // // let PresentTime = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds()
+  // let end = moment(i.end_date).format("HH:MM:SS")
+  // // let diff= endTime.diff(startTime, 'hours');
+  // // console.log(`presentTime`, now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds(), Date.now())
+  // console.log(`startTime`,  now )
+
+  function DayHourDifference(date1, date2) {
+    var difference = date1.getTime() - date2.getTime();
+
+    var daysDifference = Math.floor(difference / 1000 / 60 / 60 / 24);
+    difference -= daysDifference * 1000 * 60 * 60 * 24;
+
+    var hoursDifference = Math.floor(difference / 1000 / 60 / 60);
+    difference -= hoursDifference * 1000 * 60 * 60;
+
+    var minutesDifference = Math.floor(difference / 1000 / 60);
+    difference -= minutesDifference * 1000 * 60;
+
+    var secondsDifference = Math.floor(difference / 1000);
+
+    return `${daysDifference}d ${hoursDifference}hrs left`;
+  }
+  function DayDifference(date1, date2) {
+    var difference = date1.getTime() - date2.getTime();
+
+    var daysDifference = Math.floor(difference / 1000 / 60 / 60 / 24);
+    difference -= daysDifference * 1000 * 60 * 60 * 24;
+
+    var hoursDifference = Math.floor(difference / 1000 / 60 / 60);
+    difference -= hoursDifference * 1000 * 60 * 60;
+
+    var minutesDifference = Math.floor(difference / 1000 / 60);
+    difference -= minutesDifference * 1000 * 60;
+
+    var secondsDifference = Math.floor(difference / 1000);
+
+    return daysDifference;
+  }
+  function HourDifference(date1, date2) {
+    var difference = date1.getTime() - date2.getTime();
+
+    var daysDifference = Math.floor(difference / 1000 / 60 / 60 / 24);
+    difference -= daysDifference * 1000 * 60 * 60 * 24;
+
+    var hoursDifference = Math.floor(difference / 1000 / 60 / 60);
+    difference -= hoursDifference * 1000 * 60 * 60;
+
+    var minutesDifference = Math.floor(difference / 1000 / 60);
+    difference -= minutesDifference * 1000 * 60;
+
+    var secondsDifference = Math.floor(difference / 1000);
+
+    return hoursDifference;
+  }
+
+  function getRewardsCoins(day, hour){
+    if(day != 0){
+      return 'Missed out on flo coins'
+    } else{
+      if(hour <= 2){
+        return 8
+      }else if(hour >2 && hour <= 3){
+        return 6
+      }else if(hour >3 && hour <= 4){
+        return 4
+      } else if(hour >4 && hour <= 5){
+        return 2
+      } else if(hour >5 && hour <= 6){
+        return 0
+      } else {
+        return 0
+      }
+    }
+  }
+
+  const Questions = ({item, index}) => {
+    const [showMore, setshowMore] = useState(true);
+    let i = item?.item;
+    let EndDiff = DayHourDifference(new Date(moment(i.end_date)), new Date());
+    let startDiff = DayHourDifference(
+      new Date(moment(i.start_date)),
+      new Date(),
+    );
+    let DayDif=DayDifference(new Date(moment(i.start_date)), new Date())
+    let hourDif = HourDifference(new Date(moment(i.start_date)),new Date())
+    // console.log(`startDiff`, startDiff);
+    // console.log(`EndDiff`, EndDiff);
+    console.log('here' ,getRewardsCoins(DayDifference(new Date(moment(i.start_date)), new Date()), HourDifference(new Date(moment(i.start_date)),new Date())))
+    return (
+      <TouchableOpacity
+        // disabled={givenDate >= todayDate ? false : true}
+        key={i?.id ?? index}
+        onPress={() => {
+          setshowMore(!showMore);
+          // givenDate >= todayDate
+          // ? navigation.replace('MoodEmotionDetector', {
+          //   question: i.id,
+          // })
+          // : setDateExpired(true)
+        }}>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={[styles.questionText, {marginHorizontal: 6}]}>
+            {index + 1}.{' '}
+          </Text>
+          <Text style={[styles.questionText, {width: '82%'}]}>
+            {i.question}
+          </Text>
+          <Image
+            source={require('../../../assets/newImage/arrow/arrow.png')}
+            style={[
+              styles.imageArrow,
+              {
+                tintColor: '#8496AC',
+                transform: [{rotate: showMore ? '270deg' : '90deg'}],
+              },
+            ]}
+          />
+        </View>
+        {!i.name && showMore && (
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <View
+              style={{width: '100%', flexDirection: 'row', marginBottom: 5}}>
+              <Text
+                style={[
+                  styles.Text,
+                  {textAlign: 'left', flex: 1, marginLeft: '4%', fontSize: 14},
+                ]}>
+                {' '}
+                Posted:{' '}
+                {DayDifference(new Date(moment(i.start_date)), new Date()) != 0
+                  ? Math.abs(DayDifference(new Date(moment(i.start_date)), new Date())) +
+                    ' days'
+                  : HourDifference(
+                      new Date(moment(i.start_date)),
+                      new Date(),
+                    ) + " hours"}{' '}
+                ago
+              </Text>
+              <Text
+                style={[
+                  styles.Text,
+                  {textAlign: 'right', fontSize: 14, color: 'red'},
+                ]}>
+                <Clock w={14} h={14} /> {EndDiff}
+              </Text>
+            </View>
+            <View style={{width: '90%'}}>
+              <ProgressBar
+                dots={true}
+                dot1={true}
+                dot2={true}
+                dot3={true}
+                dot4={true}
+                progress={66.6}
+                MoodCount={2}
+                height={6}
+                // backgroundColor={"blue"}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '90%',
+                alignItems: 'center',
+                // justifyContent: 'center',
+              }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  // padding: 8,
+                  // borderRadius: 10,
+                  // marginVertical: 10,
+                }}>
+                <View style={{marginVertical: 10}}>
+                  <Text
+                    style={[styles.Text, {fontSize: 14, marginVertical: 0}]}>
+                    <FloCoin color={'#6D6E86'} w={15} h={15} /> {DayDif === 0 ? `Earn ${getRewardsCoins(DayDif, hourDif)} flo coins` : "Missed out on flo coins"}
+                  </Text>
+                </View>
+                {/* <HappyIcon /> */}
+              </View>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontFamily: RubikMedium,
+                  color: '#7265E3',
+                  textAlign: 'right',
+                }}>
+                Answer ->
+              </Text>
+            </View>
+          </View>
+        )}
+        {i.name && showMore && (
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <View
+              style={{width: '100%', flexDirection: 'row', marginBottom: 5}}>
+              <Text
+                style={[
+                  styles.Text,
+                  {textAlign: 'left', flex: 1, marginLeft: '4%', fontSize: 14},
+                ]}>
+                {' '}
+                Posted: {DayDifference(new Date(moment(i.start_date)), new Date()) != 0
+                  ? Math.abs(DayDifference(new Date(moment(i.start_date)), new Date())) +
+                    ' days'
+                  : HourDifference(
+                      new Date(moment(i.start_date)),
+                      new Date(),
+                    ) + " hours"}{' '}
+                ago
+              </Text>
+              <Text
+                style={[
+                  styles.Text,
+                  {textAlign: 'right', fontSize: 14, color: '#FB8D09'},
+                ]}>
+                <FloCoin w={15} h={15} /> Earned flo coins
+              </Text>
+            </View>
+            <View style={{width: '90%'}}>
+              <ProgressBar
+                dots={true}
+                dot1={true}
+                dot2={true}
+                dot3={true}
+                dot4={true}
+                progress={66.6}
+                MoodCount={2}
+                height={6}
+                // backgroundColor={"blue"}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '90%',
+                alignItems: 'center',
+                // justifyContent: 'center',
+              }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  padding: 8,
+                  borderRadius: 10,
+                  marginVertical: 10,
+                }}>
+                <SvgUri
+                  width={30}
+                  height={30}
+                  // viewBox="0 0 24 24"
+                  fill="none"
+                  uri={`https://super.moodflo.com/${i.icon}`}
+                  // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+                />
+                <View>
+                  <Text
+                    style={{
+                      flexDirection: 'row',
+                      marginHorizontal: 10,
+                      fontFamily: RubikMedium,
+                    }}>
+                    {i.mood_type ? getMoodType(i.mood_type) : ''}
+                    {i.name}
+                  </Text>
+                  {console.log(`try me`, DayDifference(new Date(moment(i.start_date)), new Date(moment(i.answerdate))))}
+                  <Text
+                    style={[
+                      styles.Text,
+                      {
+                        flexDirection: 'row',
+                        marginHorizontal: 10,
+                        fontSize: 14,
+                      },
+                    ]}>
+                    Answered in {DayDifference(new Date(moment(i.start_date)), new Date(moment(i.answerdate))) != 0
+                  ? Math.abs(DayDifference(new Date(moment(i.start_date)), new Date(moment(i.answerdate)))) +
+                    ' days'
+                  : HourDifference(
+                      new Date(moment(i.start_date)),
+                      new Date(moment(i.answerdate)),
+                    ) + " hours"}
+                  </Text>
+                </View>
+                {/* <HappyIcon /> */}
+              </View>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontFamily: RubikRegular,
+                  color: '#9C9EB9',
+                  textAlign: 'right',
+                }}>
+                {i.is_anonymous === 0 ? 'Answered by you' : 'Anonymous'}
+              </Text>
+            </View>
+          </View>
+        )}
+        {questions.length - 1 != index && <View style={styles.line} />}
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View
       // check={() => onRefresh()}
@@ -191,9 +540,9 @@ const MicScreen = ({ navigation }) => {
         flex: 1,
         backgroundColor: 'white',
       }}>
-        {Platform.OS === 'android' && (
-          <StatusBar barStyle="light-content" backgroundColor={'#89A1F7'} />
-        )}
+      {Platform.OS === 'android' && (
+        <StatusBar barStyle="light-content" backgroundColor={'#89A1F7'} />
+      )}
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -210,7 +559,7 @@ const MicScreen = ({ navigation }) => {
         //   backgroundColor: 'white',
         //   // paddingBottom: 60,
         // }}
-        >
+      >
         <View
           style={{
             height: dynamicSize(300),
@@ -229,20 +578,46 @@ const MicScreen = ({ navigation }) => {
             }}
           />
         </View>
-        <Image style={{ 
-          marginTop: -10,
-          ...isTablet ? {
-            resizeMode: 'stretch',
-            width: width,
-          } : {},
-         }} source={Constants.Images.Circles} />
-        <View style={{ marginHorizontal: 15, paddingBottom: 90 }}>
+        <Image
+          style={{
+            marginTop: -10,
+            ...(isTablet
+              ? {
+                  resizeMode: 'stretch',
+                  width: width,
+                }
+              : {}),
+          }}
+          source={Constants.Images.Circles}
+        />
+        <View style={{marginHorizontal: 15, paddingBottom: 90}}>
           <Text style={styles.normalText}>Team Pulse</Text>
           {UserData.UserEmail ? (
             questions && questions.length > 0 ? (
-              <Text style={styles.BigText}>Have your say as a collective</Text>
+              <>
+                <Text style={styles.BigText}>
+                  Have your say as a collective
+                </Text>
+                <ProgressDay />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={[styles.Text, {flex: 1, marginVertical: 10}]}>
+                    Answer on time to earn more coins{' '}
+                  </Text>
+                  <Text style={[styles.Text, {fontSize: 14}]}>
+                    <Text style={{fontFamily: RubikMedium, fontWeight: '500'}}>
+                      1
+                    </Text>
+                    /4
+                  </Text>
+                </View>
+              </>
             ) : (
-              <Text style={{ textAlign: 'center', alignSelf: 'center', flex: 1 }}>
+              <Text style={{textAlign: 'center', alignSelf: 'center', flex: 1}}>
                 <Text
                   numberOfLines={4}
                   style={{
@@ -294,78 +669,20 @@ const MicScreen = ({ navigation }) => {
               Connect with your company to answer Team Pulses anonymously
             </Text>
           )}
-          {questions &&
-            questions.length > 0 &&
-            questions.map((item, index) => {
-              let givenDate = new Date(moment(item.end_date)).getTime();
-              let todayDate = new Date().getTime();
-              // console.log(`todayDate`, item.end_date, givenDate, todayDate);
-              return (
-                <TouchableOpacity
-                  // disabled={givenDate >= todayDate ? false : true}
-                  key={item?.id ?? index}
-                  onPress={() =>
-                    givenDate >= todayDate
-                      ? navigation.replace('MoodEmotionDetector', {
-                        question: item.id,
-                      })
-                      : setDateExpired(true)
-                  }>
-                  <View style={{ flexDirection: 'row' }}>
-                    <Text style={[styles.questionText, { marginHorizontal: 6 }]}>
-                      {index + 1}.{' '}
-                    </Text>
-                    <Text style={[styles.questionText, { width: '92%' }]}>
-                      {item.question}
-                    </Text>
-                  </View>
-                  {item.name && (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      <View style={styles.ans}>
-                        <Text
-                          style={{ flexDirection: 'row', marginHorizontal: 10 }}>
-                          {item.mood_type ? getMoodType(item.mood_type) : ''}
-                          {item.name}
-                        </Text>
-                        {/* <HappyIcon /> */}
-                        <SvgUri
-                          width={20}
-                          height={20}
-                          // viewBox="0 0 24 24"
-                          fill="none"
-                          uri={`https://super.moodflo.com/${item.icon}`}
-                        // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
-                        />
-                      </View>
-                      <Text
-                        style={{
-                          fontSize: 13,
-                          fontFamily: RubikLight,
-                          color: '#9C9EB9',
-                        }}>
-                        {item.is_anonymous === 0
-                          ? 'Answered by you'
-                          : 'Anonymous feedback'}
-                      </Text>
-                    </View>
-                  )}
-                  {questions.length - 1 != index && (
-                    <View style={styles.line} />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
+
+          <FlatList
+            // key={(i)=>{i.id}}
+            data={questions}
+            renderItem={(item, index) => {
+              return <Questions item={item} index={item.index} />;
+            }}
+          />
           {!UserData.UserEmail && (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('LinkCompanyStackNavigation');
               }}
-              style={{ alignItems: 'center', justifyContent: 'center' }}>
+              style={{alignItems: 'center', justifyContent: 'center'}}>
               <View
                 style={{
                   marginTop: dynamicSize(48),
@@ -378,7 +695,7 @@ const MicScreen = ({ navigation }) => {
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{ fontWeight: '500', fontSize: 16, color: '#7265E3' }}>
+                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
                   Connect
                 </Text>
               </View>
@@ -436,6 +753,13 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     marginVertical: 6,
   },
+  Text: {
+    fontFamily: RubikLight,
+    fontSize: 16,
+    color: '#9C9EB9',
+    fontWeight: '300',
+    marginVertical: 6,
+  },
   line: {
     width: '95%',
     alignSelf: 'center',
@@ -454,6 +778,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginHorizontal: 15,
     marginVertical: 10,
+  },
+  imageArrow: {
+    height: 15,
+    width: 15,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginHorizontal: 20,
   },
 });
 

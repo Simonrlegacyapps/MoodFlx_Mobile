@@ -552,7 +552,7 @@ const ProfileTab = ({ navigation }) => {
           </View>
           {Platform.OS === 'ios' && (
             <View style={styles.permissionTileContainer}>
-              <Text style={styles.permissionText}>Notification</Text>
+              <Text style={styles.permissionText}>Notifications</Text>
               {UserData.NotificationPermission ? (
                 <Text style={styles.allowed}>Enabled</Text>
               ) : (

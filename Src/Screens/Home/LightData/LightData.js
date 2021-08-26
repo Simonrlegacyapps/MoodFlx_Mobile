@@ -425,7 +425,7 @@ const LightData = ({
             }
             MoodCount={JSON.parse(MoodCount)}
             height={10}
-            backgroundColor="#CB9866"
+            // backgroundColor="#CB9866"
           />
           <View style={{ flexDirection: 'row' }}>
             <Text style={[styles.SmallThinText, { flex: 1 }]}>
