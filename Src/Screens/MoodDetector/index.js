@@ -57,6 +57,7 @@ import {
   Lat,
   Long,
   Moods,
+  SetFloCoins,
   SetNotification,
   UserDetail,
   UserDivision,
@@ -1075,6 +1076,10 @@ export default function MoodDetector({ navigation }) {
                 'Success Message of respose mood ✅ ✅ ✅ ✅',
                 resp?.data,
               );
+              if (!isNaN(resp?.data?.reward_point)) {
+                // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
+                dispatch(SetFloCoins(Number(resp.data.reward_point)));
+              }
               setLoading(false);
               // navigation.navigate('VerifyEmail', {
               //   code: resp.data.otp,
