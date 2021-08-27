@@ -1404,18 +1404,10 @@ export default function MoodDetector({ navigation }) {
     <View
       style={{
         backgroundColor: color,
-        // alignItems: 'center',
-        // justifyContent: 'center',
         width: '100%',
-        paddingVertical: 15,
       }}>
       <View
-        style={{
-          height: 80,
-          alignItems: 'flex-end',
-          justifyContent: 'space-around',
-          flexDirection: 'row',
-        }}>
+        style={styles.bottomBarContainer}>
         <TouchableOpacity
           style={{ marginLeft: 12 }}
           onPress={
@@ -1426,10 +1418,7 @@ export default function MoodDetector({ navigation }) {
             // })
           }>
           <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+            style={styles.insightsIconView}>
             <Insights w={dynamicSize(52)} h={dynamicSize(52)} />
 
             {/* <CloseIcon width={dynamicSize(52)} height={dynamicSize(52)} /> */}
@@ -1449,10 +1438,10 @@ export default function MoodDetector({ navigation }) {
             alignItems: 'center',
           }}>
           <View />
-          <Text style={{ textAlign: 'center', fontSize: 18 }}>Save</Text>
+          <Text style={styles.saveText}>Save</Text>
           {emotionText != 'Slide finger' &&<View style={styles.pupView}>
             <Image resizeMode={"contain"} source={require("../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup}/>
-            <Text allowFontScaling={false} style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
+            <Text allowFontScaling={false} style={styles.coinText}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
             </View>}
         </TouchableOpacity>
         <TouchableOpacity
@@ -1460,10 +1449,7 @@ export default function MoodDetector({ navigation }) {
             setModalVisible(true);
           }}>
           <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+            style={styles.questionIconView}
           />
           <QuestionMarkIcon w={dynamicSize(52)} h={dynamicSize(52)} />
         </TouchableOpacity>
@@ -1490,7 +1476,7 @@ export default function MoodDetector({ navigation }) {
           <View
             style={{
               ...styles.holdTextView,
-              top: blocksSize.current.top - horizontalScale(25),
+              top: blocksSize.current.top,
             }}
             pointerEvents="none">
             <Text style={styles.holdText}>
@@ -1603,6 +1589,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
     borderStyle: 'solid',
   },
+  bottomBarContainer: {
+    alignItems: 'flex-end',
+    justifyContent: 'space-around',
+    flexDirection: 'row',
+    marginVertical: horizontalScale(20),
+  },
+  insightsIconView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  saveText: {
+    textAlign: 'center',
+    fontSize: getFontSize(18),
+  },
   ErrorText: {
     fontWeight: '300',
     letterSpacing: 0.2,
@@ -1622,8 +1622,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    marginTop: horizontalScale(5),
-    marginBottom: horizontalScale(17),
+    // marginTop: horizontalScale(5),
+    // marginBottom: horizontalScale(17),
   },
   holdTextView: {
     position: 'absolute',
@@ -1638,11 +1638,30 @@ const styles = StyleSheet.create({
     margin: horizontalScale(17),
     fontFamily: RubikMedium,
   },
-  pupView:{  position:'absolute', alignSelf:'center', height:90, bottom:10, alignItems:'center', justifyContent:'center'},
-  Pup:{
-    height:90,
-    width:90, resizeMode:'contain',
+  pupView: {
+    position: 'absolute',
+    alignSelf: 'center',
+    height: 90,
+    bottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coinText: {
+    position: 'absolute',
+    top: 26,
+    color: 'white',
+    fontSize: getFontSize(13.5),
+    fontFamily: RubikRegular,
+  },
+  Pup: {
+    height: 90,
+    width: 90,
+    resizeMode: 'contain',
     // position:'absolute',
     // bottom:10
-  }
+  },
+  questionIconView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
