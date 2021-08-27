@@ -37,6 +37,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { getSleepDataAfterPermissionIOS } from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
 import { openHealthApp } from '../../services/commonService';
+import PlayButton from '../../../assets/svg/playButton';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -634,6 +635,19 @@ const ProfileTab = ({ navigation }) => {
           </View>
           <View
             style={[styles.flatlistContainer, { marginBottom: dynamicSize(56) }]}>
+              <TouchableOpacity
+                onPress={() => {navigation.navigate("ProgressScreens")}}>
+                <View style={styles.bottomFlatlistContainer}>
+                  <View style={{ marginTop: dynamicSize(7) }}><PlayButton/></View>
+                  <Text
+                    style={[
+                      styles.anonymousTextStyle,
+                      { marginLeft: dynamicSize(16) },
+                    ]}>
+                    How MoodFlo Works
+                  </Text>
+                </View>
+              </TouchableOpacity>
             {bottomList.map((item, idx) => (
               <TouchableOpacity
                 onPress={() => {

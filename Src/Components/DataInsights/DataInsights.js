@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,9 @@ import Images from '../../Constants/Images/Images';
 import Eye from '../../../assets/svg/Eye';
 import EyeClose from '../../../assets/svg/EyeClose';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
+import { useSelector } from 'react-redux';
+import PostRequestApi from '../../apirequest/PostRequestApi'
+import DeviceInfo from 'react-native-device-info';
 
 const getInsightsArray = (text) => {
   let insights = [];
@@ -89,12 +92,20 @@ export default function DataInsights({
       !(!!weeklyInsights && isPermissionGiven),
   );
   const [showNotEnoughMoodsModal, setShowNotEnoughMoodsModal] = useState(false);
-  const [ShowTarget, setShowTarget] = useState(true)
+  const [ShowTarget, setShowTarget] = useState(false)
+  const [MoodCountData, setMoodCountData] = useState(null)
 
   const openCloseShowNotEnoughMoodsModal = useCallback((flag) => {
     const fn = () => setShowNotEnoughMoodsModal(flag);
     return fn;
   }, []);
+
+  useEffect(() => {
+    console.log(`isDailyInsights`, isDailyInsights)
+    getWeekMoodData()
+  }, [])
+
+  const UserData = useSelector((state) => state.First);
 
   const onPressWeeklyTab = () => {
     if (getWeeklyInsightsAvailable() === true) {
@@ -111,6 +122,27 @@ export default function DataInsights({
       dispatch?.(SetShowWeeklyInsightsModal(true));
     }
   };
+
+  const getWeekMoodData = ()=>{
+    const deviceId = DeviceInfo.getUniqueId();
+    let params = { 
+      "device_id": deviceId,
+      "email": UserData.UserEmail,
+      "user_id": UserData.UserId
+  }
+  console.log(`params for mood count data`, params)
+  PostRequestApi('getMoodCount', params)
+    .then((res) => {
+      if (res.status === 200) {
+        console.log(`res.data of mood count`, res.data)
+          setMoodCountData(res.data.moodCount);
+      }
+    })
+    .catch((err) => {
+      console.log(`err`, err);
+    });
+  
+  }
 
   let insightsDetails = isDailyInsights
     ? dailyInsights
@@ -142,7 +174,7 @@ export default function DataInsights({
     return null;
   }
 
-  const ProgressDay=({label, color})=>{
+  const ProgressDay=({label, color, label2})=>{
     return(
       <View
           style={styles.progressView}>
@@ -152,17 +184,28 @@ export default function DataInsights({
             dot2={true}
             dot3={true}
             dot4={true}
-            progress={66.6}
+            progress={((label2 > 3 ? 3 : label2)/3)*100}
             MoodCount={2}
             height={8}
             backgroundColor={color}
           />
           <Text style={{fontSize: 16, position: 'absolute', right: -40}}>
-            2/3
+            {label2}/3
           </Text>
         </View>
     )
   }
+
+  const getTotalMood = ()=>{
+    let total = 0
+    for(let i in MoodCountData){
+      total = total + MoodCountData[i].mood_count
+      console.log(`total`, total)
+    }
+    return total
+  }
+
+  // console.log(`MoodCountData`, MoodCountData)
 
   return (
     <>
@@ -243,7 +286,7 @@ export default function DataInsights({
             })}
           </Text>
         </View>
-        {/* {!isDailyInsights &&  on response show the tab for weekdays*/ }
+         {!isDailyInsights &&  
         <TouchableOpacity activeOpacity={0.7} onPress={()=>setShowTarget(!ShowTarget)}
           style={styles.TargetView}>
           <View
@@ -253,10 +296,10 @@ export default function DataInsights({
             </View>
             <Text
               style={{fontFamily: RubikMedium, color: 'white', fontSize: 16}}>
-              10/15 Mood Targets
+              {getTotalMood()}/15 Mood Targets
             </Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity>}
 
         {/* <View
           style={styles.progressView}>
@@ -273,15 +316,15 @@ export default function DataInsights({
           </Text>
         </View> */}
         {ShowTarget && <>
-        <ProgressDay color={'#6FD691'} label={"M"}/>
+        <ProgressDay color={'#6FD691'} label={"M"} label2={MoodCountData[1].mood_count}  progress={MoodCountData[0].mood_count}/>
         <View style={styles.borderLine} />
-        <ProgressDay color={'#B88DCC'} label={"T"}/>
+        <ProgressDay color={'#B88DCC'} label={"T"} label2={MoodCountData[2].mood_count} progress={MoodCountData[1].mood_count}/>
         <View style={styles.borderLine} />
-        <ProgressDay color={'#4C5F79'} label={"W"}/>
+        <ProgressDay color={'#4C5F79'} label={"W"} label2={MoodCountData[3].mood_count} progress={MoodCountData[2].mood_count}/>
         <View style={styles.borderLine} />
-        <ProgressDay color={'#7265E3'} label={"T"}/>
+        <ProgressDay color={'#7265E3'} label={"T"} label2={MoodCountData[4].mood_count} progress={MoodCountData[3].mood_count}/>
         <View style={styles.borderLine} />
-        <ProgressDay color={'#7FE3F0'} label={"F"}/>
+        <ProgressDay color={'#7FE3F0'} label={"F"} label2={MoodCountData[5].mood_count} progress={MoodCountData[4].mood_count}/>
         {/* <View style={styles.borderLine} /> */}
         </>}
 

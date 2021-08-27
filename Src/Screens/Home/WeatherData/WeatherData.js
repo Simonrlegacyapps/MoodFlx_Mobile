@@ -1090,7 +1090,7 @@ const WeatherData = ({
             }
             MoodCount={JSON.parse(MoodCount)}
             height={10}
-            backgroundColor="#CB9866"
+            // backgroundColor="#CB9866"
           />
           <View style={{ flexDirection: 'row' }}>
             <Text numberOfLines={1} style={[styles.SmallThinText, { flex: 1 }]}>

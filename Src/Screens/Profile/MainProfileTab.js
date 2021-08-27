@@ -158,7 +158,7 @@ const MainProfileTab = ({navigation}) => {
               <GoldMedal
                 w={30}
                 h={30}
-                u
+                p
                 c1={true ? '#FFE609' : true ? "F1ECFF" : '#E5E5E6'}
                 c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
               />
@@ -184,7 +184,7 @@ const MainProfileTab = ({navigation}) => {
               <GoldMedal
                 w={30}
                 h={30}
-                p
+                u
                 c1={true ? '#FFE609' : true ? "F1ECFF" : '#E5E5E6'}
                 c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
               />

@@ -29,7 +29,7 @@ import moment from 'moment';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {GetUserId, UserEmail} from '../../redux/actions/actions';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {GetStaffUserData} from '../../apirequest/PostRequestApi';
 import {moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
@@ -45,6 +45,7 @@ const MicScreen = ({navigation}) => {
 
   const [refreshing, setRefreshing] = React.useState(false);
   const dispatch = useDispatch();
+  const route = useRoute();
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -159,9 +160,9 @@ const MicScreen = ({navigation}) => {
     return '';
   };
 
-  // useEffect(() => {
-  //   getQuestions();
-  // }, [navigation]);
+  useEffect(() => {
+    getQuestions();
+  }, [navigation]);
   // const Questions = [
   //   {
   //     question: 'What do you think of the CEO’s dress sense?',
@@ -194,7 +195,7 @@ const MicScreen = ({navigation}) => {
     setDateExpired(false);
   };
 
-  const ProgressDay = ({label, color}) => {
+  const ProgressDay = ({label, color, progress}) => {
     return (
       <View style={styles.progressView}>
         <ProgressBar
@@ -203,7 +204,7 @@ const MicScreen = ({navigation}) => {
           dot2={true}
           dot3={true}
           dot4={true} // it is referring opposite
-          progress={66.6}
+          progress={progress}
           MoodCount={2}
           height={8}
           backgroundColor={color}
@@ -221,6 +222,16 @@ const MicScreen = ({navigation}) => {
   // // let diff= endTime.diff(startTime, 'hours');
   // // console.log(`presentTime`, now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds(), Date.now())
   // console.log(`startTime`,  now )
+
+  const getAnsweredQuestions = () => {
+    let total = 0;
+    for (let i in questions) {
+      if (questions[i].answerdate != null) {
+        total++;
+      }
+    }
+    return total;
+  };
 
   function DayHourDifference(date1, date2) {
     var difference = date1.getTime() - date2.getTime();
@@ -271,42 +282,47 @@ const MicScreen = ({navigation}) => {
     return hoursDifference;
   }
 
-  function getRewardsCoins(day, hour){
-    if(day != 0){
-      return 'Missed out on flo coins'
-    } else{
-      if(hour <= 2){
-        return 8
-      }else if(hour >2 && hour <= 3){
-        return 6
-      }else if(hour >3 && hour <= 4){
-        return 4
-      } else if(hour >4 && hour <= 5){
-        return 2
-      } else if(hour >5 && hour <= 6){
-        return 0
+  function getRewardsCoins(day, hour) {
+    if (day != 0) {
+      return 'Missed out on flo coins';
+    } else {
+      if (hour <= 2) {
+        return 8;
+      } else if (hour > 2 && hour <= 3) {
+        return 6;
+      } else if (hour > 3 && hour <= 4) {
+        return 4;
+      } else if (hour > 4 && hour <= 5) {
+        return 2;
+      } else if (hour > 5 && hour <= 6) {
+        return 0;
       } else {
-        return 0
+        return 0;
       }
     }
   }
 
   const Questions = ({item, index}) => {
-    const [showMore, setshowMore] = useState(true);
+    const [showMore, setshowMore] = useState(false);
     let i = item?.item;
+    let givenDate = new Date(moment(i.end_date)).getTime();
+    let todayDate = new Date().getTime();
     let EndDiff = DayHourDifference(new Date(moment(i.end_date)), new Date());
     let startDiff = DayHourDifference(
       new Date(moment(i.start_date)),
       new Date(),
     );
-    let DayDif=DayDifference(new Date(moment(i.start_date)), new Date())
-    let hourDif = HourDifference(new Date(moment(i.start_date)),new Date())
+    let DayDif = DayDifference(new Date(moment(i.start_date)), new Date());
+    let hourDif = HourDifference(new Date(moment(i.start_date)), new Date());
+    let totalTime = DayDifference(new Date(moment(i.end_date)),new Date(moment(i.start_date)));
+    let timeTaken = DayDifference(new Date(),new Date(moment(i.start_date))) >= 0 ? DayDifference(new Date(),new Date(moment(i.start_date))) : 0;
+    console.log(`totalTime`, totalTime, timeTaken)
     // console.log(`startDiff`, startDiff);
     // console.log(`EndDiff`, EndDiff);
-    console.log('here' ,getRewardsCoins(DayDifference(new Date(moment(i.start_date)), new Date()), HourDifference(new Date(moment(i.start_date)),new Date())))
+    // console.log('here', getRewardsCoins(DayDifference(new Date(moment(i.start_date)), new Date()), HourDifference(new Date(moment(i.start_date)), new Date())))
     return (
       <TouchableOpacity
-        // disabled={givenDate >= todayDate ? false : true}
+        disabled={true}
         key={i?.id ?? index}
         onPress={() => {
           setshowMore(!showMore);
@@ -316,24 +332,29 @@ const MicScreen = ({navigation}) => {
           // })
           // : setDateExpired(true)
         }}>
-        <View style={{flexDirection: 'row'}}>
-          <Text style={[styles.questionText, {marginHorizontal: 6}]}>
-            {index + 1}.{' '}
-          </Text>
-          <Text style={[styles.questionText, {width: '82%'}]}>
-            {i.question}
-          </Text>
-          <Image
-            source={require('../../../assets/newImage/arrow/arrow.png')}
-            style={[
-              styles.imageArrow,
-              {
-                tintColor: '#8496AC',
-                transform: [{rotate: showMore ? '270deg' : '90deg'}],
-              },
-            ]}
-          />
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            setshowMore(!showMore);
+          }}>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={[styles.questionText, {marginHorizontal: 6}]}>
+              {index + 1}.{' '}
+            </Text>
+            <Text style={[styles.questionText, {width: '82%'}]}>
+              {i.question}
+            </Text>
+            <Image
+              source={require('../../../assets/newImage/arrow/arrow.png')}
+              style={[
+                styles.imageArrow,
+                {
+                  tintColor: '#8496AC',
+                  transform: [{rotate: showMore ? '270deg' : '90deg'}],
+                },
+              ]}
+            />
+          </View>
+        </TouchableOpacity>
         {!i.name && showMore && (
           <View
             style={{
@@ -350,12 +371,11 @@ const MicScreen = ({navigation}) => {
                 {' '}
                 Posted:{' '}
                 {DayDifference(new Date(moment(i.start_date)), new Date()) != 0
-                  ? Math.abs(DayDifference(new Date(moment(i.start_date)), new Date())) +
-                    ' days'
-                  : HourDifference(
-                      new Date(moment(i.start_date)),
-                      new Date(),
-                    ) + " hours"}{' '}
+                  ? Math.abs(
+                      DayDifference(new Date(moment(i.start_date)), new Date()),
+                    ) + ' days'
+                  : HourDifference(new Date(moment(i.start_date)), new Date()) +
+                    ' hours'}{' '}
                 ago
               </Text>
               <Text
@@ -363,7 +383,10 @@ const MicScreen = ({navigation}) => {
                   styles.Text,
                   {textAlign: 'right', fontSize: 14, color: 'red'},
                 ]}>
-                <Clock w={14} h={14} /> {EndDiff}
+                <Clock w={14} h={14} />{' '}
+                {DayDifference(new Date(moment(i.end_date)), new Date()) > 0
+                  ? EndDiff
+                  : 'Expired'}
               </Text>
             </View>
             <View style={{width: '90%'}}>
@@ -373,10 +396,9 @@ const MicScreen = ({navigation}) => {
                 dot2={true}
                 dot3={true}
                 dot4={true}
-                progress={66.6}
+                progress={givenDate >= todayDate ? ((timeTaken/totalTime)*100) : 100}
                 MoodCount={2}
                 height={6}
-                // backgroundColor={"blue"}
               />
             </View>
             <View
@@ -384,34 +406,43 @@ const MicScreen = ({navigation}) => {
                 flexDirection: 'row',
                 width: '90%',
                 alignItems: 'center',
-                // justifyContent: 'center',
               }}>
               <View
                 style={{
                   flex: 1,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  // padding: 8,
-                  // borderRadius: 10,
-                  // marginVertical: 10,
                 }}>
                 <View style={{marginVertical: 10}}>
                   <Text
                     style={[styles.Text, {fontSize: 14, marginVertical: 0}]}>
-                    <FloCoin color={'#6D6E86'} w={15} h={15} /> {DayDif === 0 ? `Earn ${getRewardsCoins(DayDif, hourDif)} flo coins` : "Missed out on flo coins"}
+                    <FloCoin color={'#6D6E86'} w={15} h={15} />{' '}
+                    {DayDif === 0
+                      ? `Earn ${getRewardsCoins(DayDif, hourDif)} flo coins`
+                      : 'Missed out on flo coins'}
                   </Text>
                 </View>
-                {/* <HappyIcon /> */}
               </View>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: RubikMedium,
-                  color: '#7265E3',
-                  textAlign: 'right',
+              <TouchableOpacity
+                onPress={() => {
+                  givenDate >= todayDate
+                    ? navigation.replace('MoodEmotionDetector', {
+                        question: i.id,
+                        points: 1888888,
+                      })
+                    : setDateExpired(true);
                 }}>
-                Answer ->
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: RubikMedium,
+                    color: '#7265E3',
+                    textAlign: 'right',
+                    // backgroundColor:'blue'
+                  }}>
+                  Answer ->
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -429,13 +460,13 @@ const MicScreen = ({navigation}) => {
                   {textAlign: 'left', flex: 1, marginLeft: '4%', fontSize: 14},
                 ]}>
                 {' '}
-                Posted: {DayDifference(new Date(moment(i.start_date)), new Date()) != 0
-                  ? Math.abs(DayDifference(new Date(moment(i.start_date)), new Date())) +
-                    ' days'
-                  : HourDifference(
-                      new Date(moment(i.start_date)),
-                      new Date(),
-                    ) + " hours"}{' '}
+                Posted:{' '}
+                {DayDifference(new Date(moment(i.start_date)), new Date()) != 0
+                  ? Math.abs(
+                      DayDifference(new Date(moment(i.start_date)), new Date()),
+                    ) + ' days'
+                  : HourDifference(new Date(moment(i.start_date)), new Date()) +
+                    ' hours'}{' '}
                 ago
               </Text>
               <Text
@@ -443,7 +474,7 @@ const MicScreen = ({navigation}) => {
                   styles.Text,
                   {textAlign: 'right', fontSize: 14, color: '#FB8D09'},
                 ]}>
-                <FloCoin w={15} h={15} /> Earned flo coins
+                <FloCoin w={15} h={15} /> Earned {i.reward_point} flo coins
               </Text>
             </View>
             <View style={{width: '90%'}}>
@@ -453,7 +484,7 @@ const MicScreen = ({navigation}) => {
                 dot2={true}
                 dot3={true}
                 dot4={true}
-                progress={66.6}
+                progress={givenDate >= todayDate ? ((timeTaken/totalTime)*100) : 100}
                 MoodCount={2}
                 height={6}
                 // backgroundColor={"blue"}
@@ -493,7 +524,13 @@ const MicScreen = ({navigation}) => {
                     {i.mood_type ? getMoodType(i.mood_type) : ''}
                     {i.name}
                   </Text>
-                  {console.log(`try me`, DayDifference(new Date(moment(i.start_date)), new Date(moment(i.answerdate))))}
+                  {/* {console.log(
+                    `try me`,
+                    DayDifference(
+                      new Date(moment(i.start_date)),
+                      new Date(moment(i.answerdate)),
+                    ),
+                  )} */}
                   <Text
                     style={[
                       styles.Text,
@@ -503,26 +540,44 @@ const MicScreen = ({navigation}) => {
                         fontSize: 14,
                       },
                     ]}>
-                    Answered in {DayDifference(new Date(moment(i.start_date)), new Date(moment(i.answerdate))) != 0
-                  ? Math.abs(DayDifference(new Date(moment(i.start_date)), new Date(moment(i.answerdate)))) +
-                    ' days'
-                  : HourDifference(
+                    Answered in{' '}
+                    {DayDifference(
                       new Date(moment(i.start_date)),
                       new Date(moment(i.answerdate)),
-                    ) + " hours"}
+                    ) != 0
+                      ? Math.abs(
+                          DayDifference(
+                            new Date(moment(i.start_date)),
+                            new Date(moment(i.answerdate)),
+                          ),
+                        ) + ' days'
+                      : HourDifference(
+                          new Date(moment(i.start_date)),
+                          new Date(moment(i.answerdate)),
+                        ) + ' hours'}
                   </Text>
                 </View>
                 {/* <HappyIcon /> */}
               </View>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: RubikRegular,
-                  color: '#9C9EB9',
-                  textAlign: 'right',
+              <TouchableOpacity disabled={true}
+                onPress={() => {
+                  givenDate >= todayDate
+                    ? navigation.replace('MoodEmotionDetector', {
+                        question: i.id,
+                        points: getRewardsCoins(DayDif, hourDif),
+                      })
+                    : setDateExpired(true);
                 }}>
-                {i.is_anonymous === 0 ? 'Answered by you' : 'Anonymous'}
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: RubikRegular,
+                    color: '#9C9EB9',
+                    textAlign: 'right',
+                  }}>
+                  {i.is_anonymous === 0 ? 'Answered by you' : 'Anonymous'}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -598,7 +653,9 @@ const MicScreen = ({navigation}) => {
                 <Text style={styles.BigText}>
                   Have your say as a collective
                 </Text>
-                <ProgressDay />
+                <ProgressDay
+                  progress={(getAnsweredQuestions() / questions.length) * 100}
+                />
                 <View
                   style={{
                     flexDirection: 'row',
@@ -610,9 +667,9 @@ const MicScreen = ({navigation}) => {
                   </Text>
                   <Text style={[styles.Text, {fontSize: 14}]}>
                     <Text style={{fontFamily: RubikMedium, fontWeight: '500'}}>
-                      1
+                      {getAnsweredQuestions()}
                     </Text>
-                    /4
+                    /{questions.length}
                   </Text>
                 </View>
               </>
