@@ -497,7 +497,7 @@ const SleepData = ({
             }
             MoodCount={JSON.parse(MoodCount)}
             height={10}
-            backgroundColor="#CB9866"
+            // backgroundColor="#CB9866"
           />
           <View style={{ flexDirection: 'row' }}>
             <Text style={[styles.SmallThinText, { flex: 1 }]}>
@@ -513,17 +513,17 @@ const SleepData = ({
         </View>
         {skeleton && <Skeleton/>}
         <View style={styles.subViewTwo}>
-        <DataInsights
-              dailyInsights={!UserData.SleepPermission? "Today you were more likely to be excited and happy when you got more than 7hrs sleep":insights?.dailyInsights}
-              weeklyInsights={insights?.weeklyInsights}
-              dailySuggestion={!UserData.SleepPermission? "Nice! Just the right amount of sleep":insights?.dailySuggestion}
-              dailySuggestionType={!UserData.SleepPermission? "Sleep":insights?.dailySuggestionType}
-              weeklySuggestion={insights?.weeklySuggestion}
-              weeklySuggestionType={insights?.weeklySuggestionType}
-              timeLeft={UserData?.weeklyInsightsTimeLeft}
-              isPermissionGiven={UserData.SleepPermission}
-              dispatch={dispatch}
-            />
+          <DataInsights
+            dailyInsights={!UserData.SleepPermission ? "Today you were more likely to be excited and happy when you got more than 7hrs sleep" : insights?.dailyInsights}
+            weeklyInsights={!UserData.SleepPermission ? "This week your Saddest mood input was when you got less than 6 hrs of sleep" : insights?.weeklyInsights}
+            dailySuggestion={!UserData.SleepPermission ? "Nice! Just the right amount of sleep" : insights?.dailySuggestion}
+            dailySuggestionType={!UserData.SleepPermission ? "" : insights?.dailySuggestionType}
+            weeklySuggestion={!UserData.SleepPermission ? "7-9 hrs of sleep per night is best for your mood. Try a warm bath or reading a book before bed" : insights?.weeklySuggestion}
+            weeklySuggestionType={!UserData.SleepPermission ? "warning" : insights?.weeklySuggestionType}
+            timeLeft={UserData?.weeklyInsightsTimeLeft}
+            isPermissionGiven={UserData.SleepPermission}
+            dispatch={dispatch}
+          />
           {/* {!UserData.SleepPermission ? (
             <View
               style={{
@@ -590,7 +590,7 @@ const SleepData = ({
 
           <View style={{ marginBottom: 50 }}>
             <StarProgress
-              sleepMinutes={UserData.SleepPermission ? sleepMinutesToday : 360}
+              sleepMinutes={UserData.SleepPermission ? sleepMinutesToday : 0}
             />
             <View
               style={{

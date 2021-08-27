@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { getDivisions, UserDivision } from '../redux/actions/actions';
+import { getDivisions, SetFloCoins, UserDivision } from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
 import { onUnlinkUpdate } from '../services/commonService';
 
@@ -36,6 +36,10 @@ export async function GetStaffUserData(params, dispatch) {
         '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
         result?.userData,
       );
+      if (!isNaN(result?.userData?.reward_point)) {
+        // console.log('result.userData.reward_point ----', Number(result.userData.reward_point));
+        dispatch(SetFloCoins(Number(result.userData.reward_point)));
+      }
       if (result?.userData?.status === 2) {
         onUnlinkUpdate(dispatch);
       }

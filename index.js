@@ -8,7 +8,7 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 import AsyncStorage from '@react-native-community/async-storage';
 import NotifService from './Src/services/notifService';
-import { SetNotification } from './Src/redux/actions/actions';
+import {SetNotification} from './Src/redux/actions/actions';
 import getStore from './Src/redux';
 LogBox.ignoreAllLogs(true);
 

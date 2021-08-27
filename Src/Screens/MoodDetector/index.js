@@ -57,6 +57,7 @@ import {
   Lat,
   Long,
   Moods,
+  SetFloCoins,
   SetNotification,
   UserDetail,
   UserDivision,
@@ -84,7 +85,7 @@ import {
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 import Insights from '../../../assets/svg/insights';
-import { setSwiperIndexHome } from '../../services/commonService';
+import { getIsInitialVideoVisible, getMoodInputRewardPoints, setIsInitialVideoVisible, setMoodInputTimeStamps, setSwiperIndexHome } from '../../services/commonService';
 
 let prevXY = { dx: 0, dy: 0 };
 let moveCount = 0;
@@ -773,6 +774,13 @@ export default function MoodDetector({ navigation }) {
   // }, []);
 
   useEffect(() => {
+    if (getIsInitialVideoVisible() === true) {
+      setIsInitialVideoVisible(false);
+      const timeoutId = setTimeout(() => {
+        setModalVisible(true);
+        clearTimeout(timeoutId);
+      }, 800);
+    }
     const timeoutId = setTimeout(() => {
       checkStorage();
       getProfileUserData();
@@ -993,6 +1001,12 @@ export default function MoodDetector({ navigation }) {
     } else {
       moodText = Id
       setLoading(true);
+      let rewardPoint = 0;
+      try {
+        rewardPoint = await getMoodInputRewardPoints(false);
+      } catch (error) {
+        console.log('error in getMoodInputRewardPoints ', error);
+      }
       // console.log(`not fail`);
       // console.log(`Id`, Id.id);
       const isIndia = isCountryIndia();
@@ -1010,10 +1024,11 @@ export default function MoodDetector({ navigation }) {
         device_token: fcm,
         device_type: Platform.OS,
         anonymous: !UserData.Anonymous ? 0 : 1,
-        reward_point: 0,
+        reward_point: rewardPoint,
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
+        console.log(`route.params.points`,route.params.points)
         var myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
 
@@ -1027,7 +1042,7 @@ export default function MoodDetector({ navigation }) {
           mood_type,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
-          reward_point: 0,
+          reward_point: route?.params?.points ? route?.params?.points : 0,
         });
 
         console.log(`params for updating answer --------------->`, raw);
@@ -1057,10 +1072,15 @@ export default function MoodDetector({ navigation }) {
           .then((resp) => {
             if (resp.status == 200) {
               AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
+              setMoodInputTimeStamps(false);
               console.log(
                 'Success Message of respose mood ✅ ✅ ✅ ✅',
-                resp.data,
+                resp?.data,
               );
+              if (!isNaN(resp?.data?.reward_point)) {
+                // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
+                dispatch(SetFloCoins(Number(resp.data.reward_point)));
+              }
               setLoading(false);
               // navigation.navigate('VerifyEmail', {
               //   code: resp.data.otp,
@@ -1385,18 +1405,10 @@ export default function MoodDetector({ navigation }) {
     <View
       style={{
         backgroundColor: color,
-        // alignItems: 'center',
-        // justifyContent: 'center',
         width: '100%',
-        paddingVertical: 15,
       }}>
       <View
-        style={{
-          height: 80,
-          alignItems: 'flex-end',
-          justifyContent: 'space-around',
-          flexDirection: 'row',
-        }}>
+        style={styles.bottomBarContainer}>
         <TouchableOpacity
           style={{ marginLeft: 12 }}
           onPress={
@@ -1407,10 +1419,7 @@ export default function MoodDetector({ navigation }) {
             // })
           }>
           <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+            style={styles.insightsIconView}>
             <Insights w={dynamicSize(52)} h={dynamicSize(52)} />
 
             {/* <CloseIcon width={dynamicSize(52)} height={dynamicSize(52)} /> */}
@@ -1430,10 +1439,10 @@ export default function MoodDetector({ navigation }) {
             alignItems: 'center',
           }}>
           <View />
-          <Text style={{ textAlign: 'center', fontSize: 18 }}>Save</Text>
+          <Text style={styles.saveText}>Save</Text>
           {emotionText != 'Slide finger' &&<View style={styles.pupView}>
             <Image resizeMode={"contain"} source={require("../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup}/>
-            <Text allowFontScaling={false} style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
+            <Text allowFontScaling={false} style={styles.coinText}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
             </View>}
         </TouchableOpacity>
         <TouchableOpacity
@@ -1441,10 +1450,7 @@ export default function MoodDetector({ navigation }) {
             setModalVisible(true);
           }}>
           <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+            style={styles.questionIconView}
           />
           <QuestionMarkIcon w={dynamicSize(52)} h={dynamicSize(52)} />
         </TouchableOpacity>
@@ -1471,7 +1477,7 @@ export default function MoodDetector({ navigation }) {
           <View
             style={{
               ...styles.holdTextView,
-              top: blocksSize.current.top - horizontalScale(25),
+              top: blocksSize.current.top,
             }}
             pointerEvents="none">
             <Text style={styles.holdText}>
@@ -1584,6 +1590,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
     borderStyle: 'solid',
   },
+  bottomBarContainer: {
+    alignItems: 'flex-end',
+    justifyContent: 'space-around',
+    flexDirection: 'row',
+    marginVertical: horizontalScale(20),
+  },
+  insightsIconView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  saveText: {
+    textAlign: 'center',
+    fontSize: getFontSize(18),
+  },
   ErrorText: {
     fontWeight: '300',
     letterSpacing: 0.2,
@@ -1603,8 +1623,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    marginTop: horizontalScale(5),
-    marginBottom: horizontalScale(17),
+    // marginTop: horizontalScale(5),
+    // marginBottom: horizontalScale(17),
   },
   holdTextView: {
     position: 'absolute',
@@ -1619,11 +1639,30 @@ const styles = StyleSheet.create({
     margin: horizontalScale(17),
     fontFamily: RubikMedium,
   },
-  pupView:{  position:'absolute', alignSelf:'center', height:90, bottom:10, alignItems:'center', justifyContent:'center'},
-  Pup:{
-    height:90,
-    width:90, resizeMode:'contain',
+  pupView: {
+    position: 'absolute',
+    alignSelf: 'center',
+    height: 90,
+    bottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coinText: {
+    position: 'absolute',
+    top: 26,
+    color: 'white',
+    fontSize: getFontSize(13.5),
+    fontFamily: RubikRegular,
+  },
+  Pup: {
+    height: 90,
+    width: 90,
+    resizeMode: 'contain',
     // position:'absolute',
     // bottom:10
-  }
+  },
+  questionIconView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

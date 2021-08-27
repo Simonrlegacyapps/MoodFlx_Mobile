@@ -260,7 +260,7 @@ const ScreenData = ({
             }
             MoodCount={JSON.parse(MoodCount)}
             height={10}
-            backgroundColor="#CB9866"
+            // backgroundColor="#CB9866"
           />
           <View style={{ flexDirection: 'row' }}>
             <Text style={[styles.SmallThinText, { flex: 1 }]}>
@@ -275,17 +275,17 @@ const ScreenData = ({
           </View>
         </View>
         <View>
-        <DataInsights
-              dailyInsights={"You became more tired and anxious as your screen time went over 5hrs per day"}
-              weeklyInsights={''}
-              dailySuggestion={"Try getting less than 4hrs for a few days"}
-              dailySuggestionType={'warning'}
-              weeklySuggestion={''}
-              weeklySuggestionType={''}
-              timeLeft={UserData?.weeklyInsightsTimeLeft}
-              isPermissionGiven={false}
-              dispatch={dispatch}
-            />
+          <DataInsights
+            dailyInsights={'You became more tired and anxious as your screen time went over 5hrs per day'}
+            weeklyInsights={'This week you were more Anxious when you got more than 7 hrs of screen time'}
+            dailySuggestion={'Try getting less than 4hrs for a few days'}
+            dailySuggestionType={'warning'}
+            weeklySuggestion={'Try to get less than 5 hrs per day'}
+            weeklySuggestionType={'warning'}
+            timeLeft={UserData?.weeklyInsightsTimeLeft}
+            isPermissionGiven={false}
+            dispatch={dispatch}
+          />
           {/* <View
             style={{
               flex: 1,
