@@ -80,7 +80,7 @@ const HomeSyncHeader = ({
       </View>
       {UserData.UserMoodCount >= 3 && !isAnimationFinished && (
         <LottieView
-          source={require('../../../assets/json/64686-confetti.json')}
+          source={require('../../../assets/json/c2.json')}
           autoPlay={true}
           loop={false}
           style={{

@@ -44,6 +44,7 @@ import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
 import { onUnlinkUpdate } from '../../services/commonService';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
+import FeedBackModal from '../../Components/Modals/FeedBackModal/FeedBackModal';
 
 const Linktocompany = ({ navigation }) => {
   const { OTPVerified, setDivision, getDivision } = useSelector(
@@ -63,6 +64,7 @@ const Linktocompany = ({ navigation }) => {
   const [UnlinkConfirm, setUnlinkConfirm] = useState(false);
   const [CompanyDetails, setCompanyDetails] = useState(null);
   const [noDivisionMdalVisible, setNoDivisionMdalVisible] = useState(false);
+  const [showFeedBack, setshowFeedBack] = useState(false)
 
   const dispatch = useDispatch();
   const route = useRoute();
@@ -227,6 +229,10 @@ const Linktocompany = ({ navigation }) => {
       dispatch,
     ]),
   );
+
+  const SaveFeedBack = ()=>{
+    setshowFeedBack(false)
+  }
 
   const onLink = async (type) => {
     console.log('run');
@@ -568,8 +574,6 @@ const Linktocompany = ({ navigation }) => {
               fontWeight: '300',
               fontSize: 14,
               marginTop: dynamicSize(10),
-              // marginLeft: 62,
-              // marginRight: 62,
               textAlign: 'center',
               width: 270,
             }}>
@@ -717,6 +721,32 @@ const Linktocompany = ({ navigation }) => {
               </Text>
             </View>
           </TouchableOpacity>
+          <TouchableOpacity
+            // disabled={selectedLanguage ? false : true}
+            onPress={() => setshowFeedBack(true)}>
+            <View
+              style={{
+                marginTop: 40,
+                height: dynamicSize(46),
+                width: dynamicSize(150),
+                backgroundColor: '#7265E3',
+                borderRadius: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+              }}>
+              {/* <UnlockIcon /> */}
+              <Text
+                style={{
+                  fontWeight: '500',
+                  fontSize: 16,
+                  color: '#FFFFFF',
+                  marginLeft: dynamicSize(11),
+                }}>
+                Feedback
+              </Text>
+            </View>
+          </TouchableOpacity>
 
           {/* <Text
             style={{
@@ -747,6 +777,14 @@ const Linktocompany = ({ navigation }) => {
           <ActivityIndicator color='#9889F9' size="large" />
         </View>
       )}
+
+      <FeedBackModal
+        moodText={'okayy'}
+        modalVisible={showFeedBack}
+        dismissModalHandler={()=>{setshowFeedBack(false)}}
+        // emotionText={emotionText}
+        onClickButtonOne={() => SaveFeedBack()}
+      />
 
       <UnlinkConfirmModal
         CompanyName={CompanyDetails?.full_name}

@@ -34,40 +34,50 @@ const Screen1 = ({onDone}) => {
   const data = [
     {
       img1: <Lock />,
+      label:"Anonymity",
       t1: 'We really don’t care who you are.',
       t2: 'We really care how you feel.',
       t3: 'Feel Secure',
       t4: 'You’re completely anonymous unless you say otherwise',
+      button: "Next"
     },
-    // {
-    //   img1: <Lock />,
-    //   t1: '',
-    //   t2: 'Complete Anonymity.',
-    //   t3: 'Daily data is stored on your personal device',
-    //   t4:
-    //     "Your data is grouped with 19 others to make sure you're completely private",
-    // },
     {
       img1: <Lock />,
+      label:"Anonymity",
+      t1: '',
+      t2: 'Complete Anonymity.',
+      t3: 'Daily data is stored on your personal device',
+      t4:
+        "Your data is grouped with 19 others to make sure you're completely private",
+        button: "Next"
+    },
+    {
+      img1: <Lock />,
+      label:"Anonymity",
       t1: 'Flo creates a unified voice for you & your team ',
       t2: 'via Team Pulses.',
       t3: '',
       t4: 'This is what the boss sees',
       img2: <Graph />,
+      button: "Next"
     },
     {
       img1: <ScienceG />,
+      label:"The Science",
       t1: 'Flo can use your data. ',
       t2: 'The more data, the more smarter!',
       t3: '',
       t4: 'Let Flo undestand your environment and how it impacts your mood',
+      button: "Next"
     },
     {
       img1: <RewardG />,
+      label:"Rewards",
       t1: 'More data = more accurate insights + ',
       t2: 'more rewards.',
       t3: 'Get Rewarded!',
       t4: 'Spend your Flo coins on things that make you feel good',
+      button: "Done"
     },
   ];
 
@@ -106,8 +116,8 @@ const Screen1 = ({onDone}) => {
           ) : (
             <View style={styles.Container}>
               <View style={styles.topBar}>
-                <TouchableOpacity onPress={()=>{setnumber(number - 1)}} style={{width:'100%', marginBottom:dynamicSize(10), marginLeft:dynamicSize(40)}}>
-                <BackIcon/>
+                <TouchableOpacity onPress={()=>{setnumber(number - 1)}} style={{ position:'absolute', left:10, top:10 }}>
+                <BackIcon w={dynamicSize(22)} h={dynamicSize(22)}/>
                 </TouchableOpacity>
                 <Text allowFontScaling={false}
                   style={{
@@ -120,16 +130,17 @@ const Screen1 = ({onDone}) => {
                         ? '#3FD7C8'
                         : '#EE64DB',
                   }}>
-                  {number <= 3
+                  {/* {number <= 3
                     ? 'Anonymity'
                     : number === 4
                     ? 'The Science'
-                    : 'Rewards'}
+                    : 'Rewards'} */}
+                    {data[number - 1].label}
                 </Text>
                 <View style={styles.rewardsTypes}>
-                  <Anonimity color={number <= 2 ? '#7265E3' : '#9C9EB9'} />
-                  <Science color={number === 3 ? '#3FD7C8' : '#9C9EB9'} />
-                  <Rewards color={number === 4 ? '#EE64DB' : '#9C9EB9'} />
+                  <Anonimity color={ data[number - 1].label === "Anonymity"? '#7265E3' : '#9C9EB9'} />
+                  <Science color={data[number - 1].label === "The Science" ? '#3FD7C8' : '#9C9EB9'} />
+                  <Rewards color={data[number - 1].label === "Rewards" ? '#EE64DB' : '#9C9EB9'} />
                 </View>
                 {console.log(`number`, number)}
               </View>
@@ -169,11 +180,11 @@ const Screen1 = ({onDone}) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
-                    number <= 3 ? setnumber(number + 1) : onDone();
+                    data[number - 1].button === "Next" ? setnumber(number + 1) : onDone();
                   }}
                   style={{backgroundColor: '#7265E3', borderRadius: 7}}>
                   <Text allowFontScaling={false} style={styles.next}>
-                    {number >= 4 ? 'Done' : 'Next'}
+                    {data[number - 1].button}
                   </Text>
                 </TouchableOpacity>
               </View>

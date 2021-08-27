@@ -1028,6 +1028,7 @@ export default function MoodDetector({ navigation }) {
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
+        console.log(`route.params.points`,route.params.points)
         var myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
 
@@ -1041,7 +1042,7 @@ export default function MoodDetector({ navigation }) {
           mood_type,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
-          reward_point: 0,
+          reward_point: route?.params?.points ? route?.params?.points : 0,
         });
 
         console.log(`params for updating answer --------------->`, raw);
