@@ -78,7 +78,7 @@ const intializedState = {
   weeklyInsightsTimeLeft: -1,
   showWeeklyInsightsModal: false,
   swiperIndex: 0,
-  floCoins: 12600,
+  floCoins: 0,
   fitnessSyncText: '',
   sleepDataSyncStatus: false,
   weatherInsights: {

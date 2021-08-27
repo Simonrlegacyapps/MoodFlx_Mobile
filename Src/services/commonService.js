@@ -205,50 +205,56 @@ export const openHealthApp = async () => {
   }
 };
 
-export const setMoodInputTimeStamps = async () => {
+export const setMoodInputTimeStamps = async (isNotes) => {
+  let asyncStorageTimeStampKey = isNotes ? 'NotesInputTimeStamp' : 'MoodInputTimeStamp';
   let timeStamps = [];
   try {
-    const t = await AsyncStorage.getItem('MoodInputTimeStamp');
+    const t = await AsyncStorage.getItem(asyncStorageTimeStampKey);
     if (t) {
       timeStamps = await JSON.parse(t);
     }
   } catch (error) {
-    console.log('Async Storage get MoodInputTimeStamp error ', error);
+    console.log(`Async Storage get ${asyncStorageTimeStampKey} error `, error);
   }
   if (Array.isArray(timeStamps)) {
     timeStamps.sort(function (a, b) {
       return a - b;
     });
-    console.log('setMoodInputTimeStamps timeStamps ----', timeStamps);
+    console.log(`setMoodInputTimeStamps ${asyncStorageTimeStampKey} ----`, timeStamps);
     const currentTime = new Date().getTime();
     if (moment(timeStamps[timeStamps.length - 1]).isBefore(moment().startOf('day'))) {
       timeStamps = [];
     }
     timeStamps.push(currentTime);
-    AsyncStorage.setItem('MoodInputTimeStamp', JSON.stringify(timeStamps));
+    AsyncStorage.setItem(asyncStorageTimeStampKey, JSON.stringify(timeStamps));
   }
 };
 
-export const getMoodInputRewardPoints = async () => {
+export const getMoodInputRewardPoints = async (isNotes) => {
+  let asyncStorageTimeStampKey = isNotes ? 'NotesInputTimeStamp' : 'MoodInputTimeStamp';
   let moodCount = -1;
   let rewardPoints = 0;
   let timeStamps = [];
   try {
-    const t = await AsyncStorage.getItem('MoodInputTimeStamp');
+    const t = await AsyncStorage.getItem(asyncStorageTimeStampKey);
     if (t) {
       timeStamps = await JSON.parse(t);
     }
   } catch (error) {
-    console.log('Async Storage get MoodInputTimeStamp error ', error);
+    console.log(`Async Storage get ${asyncStorageTimeStampKey} error `, error);
   }
-  try {
-    let p = await AsyncStorage.getItem('MoodCount');
-    moodCount = await JSON.parse(p);
-    if (!isNaN(moodCount)) {
-      moodCount = Number(moodCount);
+  if (!isNotes) {
+    try {
+      let p = await AsyncStorage.getItem('MoodCount');
+      moodCount = await JSON.parse(p);
+      if (!isNaN(moodCount)) {
+        moodCount = Number(moodCount);
+      }
+    } catch (error) {
+      console.log(`Async Storage get MoodCount error `, error);
     }
-  } catch (error) {
-    console.log('Error in AsyncStorage get item MoodCount ', error);
+  } else {
+    moodCount = timeStamps?.length ?? 0;
   }
   const timeQuarters = [
     {

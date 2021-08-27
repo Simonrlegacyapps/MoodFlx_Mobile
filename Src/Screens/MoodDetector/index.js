@@ -1003,7 +1003,7 @@ export default function MoodDetector({ navigation }) {
       setLoading(true);
       let rewardPoint = 0;
       try {
-        rewardPoint = await getMoodInputRewardPoints();
+        rewardPoint = await getMoodInputRewardPoints(false);
       } catch (error) {
         console.log('error in getMoodInputRewardPoints ', error);
       }
@@ -1071,7 +1071,7 @@ export default function MoodDetector({ navigation }) {
           .then((resp) => {
             if (resp.status == 200) {
               AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
-              setMoodInputTimeStamps();
+              setMoodInputTimeStamps(false);
               console.log(
                 'Success Message of respose mood ✅ ✅ ✅ ✅',
                 resp?.data,
