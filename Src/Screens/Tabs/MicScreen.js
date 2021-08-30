@@ -136,7 +136,7 @@ const MicScreen = ({navigation}) => {
 
   useFocusEffect(
     useCallback(() => {
-      // getQuestions();
+      getQuestions();
       return () => {
         // screen is out of focus
         if (Platform.OS === 'android') {
@@ -428,7 +428,7 @@ const MicScreen = ({navigation}) => {
                   givenDate >= todayDate
                     ? navigation.replace('MoodEmotionDetector', {
                         question: i.id,
-                        points: 1888888,
+                        points: DayDif === 0 ?  getRewardsCoins(DayDif, hourDif) : 0,
                       })
                     : setDateExpired(true);
                 }}>

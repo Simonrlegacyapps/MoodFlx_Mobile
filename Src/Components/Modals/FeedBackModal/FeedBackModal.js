@@ -50,7 +50,8 @@ const FeedBackModal = ({
   emotionText,
   onClickButtonOne,
   onClickButtonTwo,
-  moodText
+  moodText,
+  text
 }: props) => {
   const [color, setcolor] = useState('black');
   const [AnonymousStatus, setAnonymousStatus] = useState(true);
@@ -277,7 +278,7 @@ const FeedBackModal = ({
             <TextInput
               value={note}
               onChangeText={(i) => {
-                setnote(i), setShowPurple(false);
+                setnote(i), setShowPurple(false), text(i)
               }}
               returnKeyType={'done'}
               onSubmitEditing={() => Keyboard.dismiss()}
