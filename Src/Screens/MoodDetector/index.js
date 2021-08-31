@@ -575,7 +575,7 @@ export default function MoodDetector({ navigation }) {
       reward_point:rewardPoint,
       section_index:5
   }
-  console.log(`params for mood text`, params)
+  console.log(`params for update notes`, params)
     const id = setTimeout(() => {
       PostRequestApi("updateNotes", params)
       .then((resp)=>{

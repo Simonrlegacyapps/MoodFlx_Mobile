@@ -14,6 +14,8 @@ import {Platform, Linking, Alert} from 'react-native';
 import isEmpty from 'lodash.isempty';
 import { activityHealthKitOptions } from './appPermissions';
 import moment from 'moment';
+import {GetStaffUserData} from '../apirequest/PostRequestApi';
+import DeviceInfo from 'react-native-device-info';
 
 let moodsArray = [];
 let isInitialVideoVisisble = false;
@@ -62,6 +64,16 @@ export async function onUnlinkUpdate(dispatch, onFinish) {
     if (isFunction(onFinish)) {
       onFinish(true);
     }
+    const deviceId = DeviceInfo.getUniqueId();
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: '',
+        user_id: '',
+      },
+      dispatch,
+      true,
+    );
     return true;
   } catch (error) {
     if (isFunction(onFinish)) {
