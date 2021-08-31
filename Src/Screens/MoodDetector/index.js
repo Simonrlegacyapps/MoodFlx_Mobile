@@ -563,7 +563,7 @@ export default function MoodDetector({ navigation }) {
       try {
         rewardPoint = await getMoodInputRewardPoints(true);
       } catch (error) {
-        console.log('error in getMoodInputRewardPoints ', error);
+        console.log('error in getNotesInputRewardPoints ', error);
       }
     const deviceId = DeviceInfo.getUniqueId();
     const params = {
