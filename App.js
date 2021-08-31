@@ -387,8 +387,7 @@ const App: () => React$Node = () => {
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
     let welcome = await JSON.parse(p);
-    await setShowWelcome(welcome);
-    console.log('welcome', welcome);
+    await setShowWelcome(welcome ? true : false);
   };
 
   useEffect(() => {

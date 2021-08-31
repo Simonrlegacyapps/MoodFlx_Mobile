@@ -309,5 +309,6 @@ export const getMoodInputRewardPoints = async (isNotes) => {
     }
   }
   // if ((moment().startOf('day').unix() * 1000) )
+  // console.log('getMoodInputRewardPoints isNotes rewardpoints ->', isNotes, rewardPoints);
   return rewardPoints;
 };
