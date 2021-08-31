@@ -240,7 +240,7 @@ const Linktocompany = ({ navigation }) => {
       "feedback":FeedbackText
   }
   console.log(`params of feedback`, params)
-    PostRequestApi("staffFeedback", params).then((res)=>{if(res.status === 200){console.log(`res.data.data`, res.data.data)}}).catch((err)=>{console.log(`err`, err)})
+    PostRequestApi("staffFeedback", params).then((res)=>{if(res.status === 200){console.log(`res.data.data`, res.data)}}).catch((err)=>{console.log(`err`, err)})
   }
 
   const SaveFeedBack = ()=>{

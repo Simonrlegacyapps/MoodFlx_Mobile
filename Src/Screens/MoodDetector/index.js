@@ -144,6 +144,8 @@ export default function MoodDetector({ navigation }) {
   const [wheelSize, setWheelSize] = useState(getScrollerWheelSize());
   const [NotifData, setNotifData] = useState(null);
   const [showLongPressText, setShowLongPressText] = useState(false);
+  const [CurrentMood, setCurrentMood] = useState(null)
+  const [textForMood, setTextForMood] = useState("")
   const dispatch = useDispatch();
   const route = useRoute();
   const forceUpdate = useForceUpdate();
@@ -554,8 +556,39 @@ export default function MoodDetector({ navigation }) {
     onLayoutScrollerContainer();
   };
 
-  const SaveMood = () => {
+  const SaveMood = async() => {
+    let rewardPoint = 0;
+      try {
+        rewardPoint = await getMoodInputRewardPoints(true);
+      } catch (error) {
+        console.log('error in getMoodInputRewardPoints ', error);
+      }
+    const deviceId = DeviceInfo.getUniqueId();
+    const params = {
+      device_id: deviceId,
+      email: UserData?.UserEmail,
+      user_id: UserData?.UserId,
+      mood_id:moodText?.id,
+      notes:textForMood,
+      reward_point:rewardPoint,
+      section_index:5
+  }
+  console.log(`params for mood text`, params)
     const id = setTimeout(() => {
+      PostRequestApi("updateNotes", params)
+      .then((resp)=>{
+        setMoodInputTimeStamps(true);
+        console.log(
+          'Success Message of notes Input ✅ ✅ ✅ ✅',
+          resp?.data,
+        );
+        if (!isNaN(resp?.data?.reward_point)) {
+          dispatch(SetFloCoins(Number(resp.data.reward_point)));
+        }
+      })
+      .catch((err)=>{
+        console.log(`err for notes addition`, err)
+      })
       setIsSaveMoodConfirmModalVisible(false);
       const closeId = setTimeout(() => {
         setSwiperIndexHome(0, dispatch);
@@ -991,6 +1024,7 @@ export default function MoodDetector({ navigation }) {
       return name === emotionText;
     });
     console.log(`Id`, Id);
+    setCurrentMood(Id)
 
     // console.log(`lat, lng`, UserData.lat, UserData.lon);
     const deviceId = DeviceInfo.getUniqueId();
@@ -1539,6 +1573,7 @@ export default function MoodDetector({ navigation }) {
         modalVisible={isSaveMoodConfirmModalVisible}
         dismissModalHandler={SaveMood}
         emotionText={emotionText}
+        setText= {setTextForMood}
         onClickButtonOne={() => SaveMood()}
       />
 

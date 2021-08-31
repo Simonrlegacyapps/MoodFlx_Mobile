@@ -50,7 +50,8 @@ const SaveMoodConfirmModal = ({
   emotionText,
   onClickButtonOne,
   onClickButtonTwo,
-  moodText
+  moodText,
+  setText
 }: props) => {
   const [color, setcolor] = useState('black');
   const [AnonymousStatus, setAnonymousStatus] = useState(true);
@@ -277,7 +278,7 @@ const SaveMoodConfirmModal = ({
             <TextInput
               value={note}
               onChangeText={(i) => {
-                setnote(i), setShowPurple(false);
+                setnote(i), setShowPurple(false), setText(i);
               }}
               returnKeyType={'done'}
               onSubmitEditing={() => Keyboard.dismiss()}
@@ -409,6 +410,8 @@ const styles = StyleSheet.create({
   textOne: {
     fontFamily: RubikRegular,
     fontSize: fontSize,
+    textAlign:'center',
+    paddingHorizontal:10
   },
   textTwo: {
     fontFamily: RubikRegular,
