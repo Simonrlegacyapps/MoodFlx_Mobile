@@ -146,6 +146,8 @@ export default function MoodDetector({ navigation }) {
   const [showLongPressText, setShowLongPressText] = useState(false);
   const [CurrentMood, setCurrentMood] = useState(null)
   const [textForMood, setTextForMood] = useState("")
+  const [moodInputRewardPoints, setMoodInputRewardPoints] = useState(0);
+  const [notesInputRewardPoints, setNotesInputRewardPoints] = useState(0);
   const dispatch = useDispatch();
   const route = useRoute();
   const forceUpdate = useForceUpdate();
@@ -807,6 +809,21 @@ export default function MoodDetector({ navigation }) {
   // }, []);
 
   useEffect(() => {
+    const callSetMoodInputNotes = async () => {
+      try {
+        const rewardPointsMoodInput = await getMoodInputRewardPoints(false);
+        setMoodInputRewardPoints(rewardPointsMoodInput);
+      } catch (error) {
+        console.log('get mood input reward point error - ', error);
+      }
+      try {
+        const rewardPointsNotesInput = await getMoodInputRewardPoints(true);
+        setNotesInputRewardPoints(rewardPointsNotesInput);
+      } catch (error) {
+        console.log('get notes input reward point error - ', error);
+      }
+    };
+    callSetMoodInputNotes();
     if (getIsInitialVideoVisible() === true) {
       setIsInitialVideoVisible(false);
       const timeoutId = setTimeout(() => {
@@ -838,7 +855,7 @@ export default function MoodDetector({ navigation }) {
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
-            const { code, message } = error;
+            const {code, message} = error;
             console.log('error', code, message);
           });
     }, 150);
@@ -1059,6 +1076,8 @@ export default function MoodDetector({ navigation }) {
         device_type: Platform.OS,
         anonymous: !UserData.Anonymous ? 0 : 1,
         reward_point: rewardPoint,
+        section_index: 4,
+        description: 'mood input',
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
@@ -1077,6 +1096,8 @@ export default function MoodDetector({ navigation }) {
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
           reward_point: route?.params?.points ? route?.params?.points : 0,
+          section_index: 3,
+          description: 'team pulse answer',
         });
 
         console.log(`params for updating answer --------------->`, raw);
@@ -1474,10 +1495,12 @@ export default function MoodDetector({ navigation }) {
           }}>
           <View />
           <Text style={styles.saveText}>Save</Text>
-          {emotionText != 'Slide finger' &&<View style={styles.pupView}>
-            <Image resizeMode={"contain"} source={require("../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup}/>
-            <Text allowFontScaling={false} style={styles.coinText}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
-            </View>}
+          {emotionText != 'Slide finger' && moodInputRewardPoints !== 0 && !isNaN(moodInputRewardPoints) && (
+            <View style={styles.pupView}>
+              <Image resizeMode={"contain"} source={require("../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup} />
+              <Text allowFontScaling={false} style={styles.coinText}>+{`${moodInputRewardPoints}`} coins</Text>
+            </View>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -1569,8 +1592,9 @@ export default function MoodDetector({ navigation }) {
       />
 
       <SaveMoodConfirmModal
-      moodText={moodText}
+        moodText={moodText}
         modalVisible={isSaveMoodConfirmModalVisible}
+        notesInputRewardPoints={notesInputRewardPoints}
         dismissModalHandler={SaveMood}
         emotionText={emotionText}
         setText= {setTextForMood}
