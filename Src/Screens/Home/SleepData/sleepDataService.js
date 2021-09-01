@@ -11,6 +11,7 @@ import {
 import GoogleFit, { Scopes } from 'react-native-google-fit';
 import AsyncStorage from '@react-native-community/async-storage';
 import {AppPermissions, googleFitScopes} from '../../../services/appPermissions';
+import getStore from '../../../redux';
 
 export const sleepDataPermissionsIOS = {
   permissions: {
@@ -67,20 +68,23 @@ export async function getSleepDataAfterPermissionAndroid({ askPermission, onUpda
       setSleepDataSync(dispatch);
       getSleepData(onUpdate);
     } else {
+      const sleepPermission = getStore?.()?.getState?.()?.First?.SleepPermission;
       const options = googleFitScopes;
-      await GoogleFit.authorize(options)
-        .then((authResult) => {
-          if (authResult.success) {
-            dispatch?.(SleepPerm(true));
-            setSleepDataSync(dispatch);
-            getSleepData(onUpdate);
-          } else {
-            console.log('GoogleFit authorize AUTH_DENIED', authResult.message);
-          }
-        })
-        .catch((error) => {
-          console.log('GoogleFit authorize AUTH_ERROR', error);
-        });
+      if (sleepPermission) {
+        await GoogleFit.authorize(options)
+          .then((authResult) => {
+            if (authResult.success) {
+              dispatch?.(SleepPerm(true));
+              setSleepDataSync(dispatch);
+              getSleepData(onUpdate);
+            } else {
+              console.log('GoogleFit authorize AUTH_DENIED', authResult.message);
+            }
+          })
+          .catch((error) => {
+            console.log('GoogleFit authorize AUTH_ERROR', error);
+          });
+      }
     }
   } catch (error) {
     console.log('Google Fit checkAuthorization error: ', error);
