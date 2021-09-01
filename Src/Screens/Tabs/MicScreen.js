@@ -396,7 +396,7 @@ const MicScreen = ({navigation}) => {
                 <Clock w={14} h={14} />{' '}
                 {DayDifference(new Date(moment(i.end_date)), new Date()) > 0
                   ? EndDiff
-                  : 'Expired'}
+                  : 'Closed'}
               </Text>
             </View>
             <View style={{width: '90%'}}>
