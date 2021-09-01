@@ -186,6 +186,7 @@ export default function MoodDetector({ navigation }) {
   const wheelSizeChangeDisabled = useRef(true);
   const hsvColor = useRef({ h: 0, s: 0, v: 100 });
   const shouldPlayHaptics = useRef(false);
+  const moodIdForNotes = useRef("");
 
   const panResponder = useRef(
     PanResponder.create({
@@ -558,39 +559,8 @@ export default function MoodDetector({ navigation }) {
     onLayoutScrollerContainer();
   };
 
-  const SaveMood = async() => {
-    let rewardPoint = 0;
-      try {
-        rewardPoint = await getMoodInputRewardPoints(true);
-      } catch (error) {
-        console.log('error in getNotesInputRewardPoints ', error);
-      }
-    const deviceId = DeviceInfo.getUniqueId();
-    const params = {
-      device_id: deviceId,
-      email: UserData?.UserEmail,
-      user_id: UserData?.UserId,
-      mood_id:moodText?.id,
-      notes:textForMood,
-      reward_point:rewardPoint,
-      section_index:5
-  }
-  console.log(`params for update notes`, params)
-    const id = setTimeout(() => {
-      PostRequestApi("updateNotes", params)
-      .then((resp)=>{
-        setMoodInputTimeStamps(true);
-        console.log(
-          'Success Message of notes Input ✅ ✅ ✅ ✅',
-          resp?.data,
-        );
-        if (!isNaN(resp?.data?.reward_point)) {
-          dispatch(SetFloCoins(Number(resp.data.reward_point)));
-        }
-      })
-      .catch((err)=>{
-        console.log(`err for notes addition`, err)
-      })
+  const SaveMood = (isCallApi) => async () => {
+    const onSaveMoodComplete = () => {
       setIsSaveMoodConfirmModalVisible(false);
       const closeId = setTimeout(() => {
         setSwiperIndexHome(0, dispatch);
@@ -603,9 +573,49 @@ export default function MoodDetector({ navigation }) {
         // onClose?.();
         clearTimeout(closeId);
       }, 300);
+    };
+    if (!(isCallApi && typeof moodIdForNotes.current === 'string' && moodIdForNotes.current)) {
+      onSaveMoodComplete();
+      return;
+    }
+    let rewardPoint = 0;
+    try {
+      rewardPoint = await getMoodInputRewardPoints(true);
+    } catch (error) {
+      console.log('error in getNotesInputRewardPoints ', error);
+    }
+    const deviceId = DeviceInfo.getUniqueId();
+    let notesText = '';
+    setTextForMood((t) => {
+      notesText = t;
+      return t;
+    });
+    const params = {
+      device_id: deviceId,
+      email: UserData?.UserEmail,
+      user_id: UserData?.UserId,
+      mood_id: moodIdForNotes.current,
+      notes: notesText,
+      reward_point: rewardPoint,
+      section_index: 5,
+    };
+    console.log(`params for update notes`, params);
+    const id = setTimeout(() => {
+      PostRequestApi("updateNotes", params)
+        .then((resp) => {
+          setMoodInputTimeStamps(true);
+          console.log('Success Message of notes Input ✅ ✅ ✅ ✅', resp?.data);
+          if (!isNaN(resp?.data?.reward_point)) {
+            dispatch(SetFloCoins(Number(resp.data.reward_point)));
+          }
+        })
+        .catch((err) => {
+          console.log('err for notes addition', err);
+        });
       clearTimeout(id);
     }, 200);
-  }
+    onSaveMoodComplete();
+  };
 
   const updatePanResponder = () => {
     if (
@@ -1126,6 +1136,7 @@ export default function MoodDetector({ navigation }) {
         PostRequestApi('moodUpdate', params)
           .then((resp) => {
             if (resp.status == 200) {
+              moodIdForNotes.current = resp?.data?.mood_id ?? "";
               AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
               setMoodInputTimeStamps(false);
               console.log(
@@ -1595,10 +1606,11 @@ export default function MoodDetector({ navigation }) {
         moodText={moodText}
         modalVisible={isSaveMoodConfirmModalVisible}
         notesInputRewardPoints={notesInputRewardPoints}
-        dismissModalHandler={SaveMood}
+        dismissModalHandler={SaveMood(false)}
         emotionText={emotionText}
-        setText= {setTextForMood}
-        onClickButtonOne={() => SaveMood()}
+        setText={setTextForMood}
+        onClickButtonOne={SaveMood(true)}
+        onClickButtonTwo={SaveMood(false)}
       />
 
       <NotificationQuestion

@@ -319,7 +319,7 @@ const SaveMoodConfirmModal = ({
                 backgroundColor: 'white',
               },
             ]}
-            onPress={onClickButtonOne}>
+            onPress={onClickButtonTwo}>
             <Text style={styles.buttonTwoText}>{'Not this time'}</Text>
           </TouchableOpacity>
         </View>
