@@ -387,7 +387,8 @@ const App: () => React$Node = () => {
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
     let welcome = await JSON.parse(p);
-    await setShowWelcome(welcome ? true : false);
+    await setShowWelcome(welcome);
+    // console.log('welcome', welcome);
   };
 
   useEffect(() => {
@@ -395,6 +396,7 @@ const App: () => React$Node = () => {
       try {
         let p = await AsyncStorage.getItem('ShowWelcomeScreen');
         let welcome = await JSON.parse(p);
+        // console.log('Async storage welcome ===', welcome);
         if (getIsInitialVideoVisible() === false && welcome == null) {
           setIsInitialVideoVisible(true);
         }
