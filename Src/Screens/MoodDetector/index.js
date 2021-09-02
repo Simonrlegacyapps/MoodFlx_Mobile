@@ -11,7 +11,7 @@ import {
   Button,
   StatusBar,
   Platform,
-  Image,
+  ImageBackground,
 } from 'react-native';
 import Scroller from './moodScroller';
 import {
@@ -86,6 +86,8 @@ import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 import Insights from '../../../assets/svg/insights';
 import { getIsInitialVideoVisible, getMoodInputRewardPoints, setIsInitialVideoVisible, setMoodInputTimeStamps, setSwiperIndexHome } from '../../services/commonService';
+import Colors from '../../Constants/Colors/Colors';
+import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 
 let prevXY = { dx: 0, dy: 0 };
 let moveCount = 0;
@@ -1506,11 +1508,23 @@ export default function MoodDetector({ navigation }) {
           }}>
           <View />
           <Text style={styles.saveText}>Save</Text>
-          {emotionText != 'Slide finger' && moodInputRewardPoints !== 0 && !isNaN(moodInputRewardPoints) && (
-            <View style={styles.pupView}>
-              <Image resizeMode={"contain"} source={require("../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup} />
-              <Text allowFontScaling={false} style={styles.coinText}>+{`${moodInputRewardPoints}`} coins</Text>
-            </View>
+          {emotionText != 'Slide finger' &&
+            moodInputRewardPoints !== 0 &&
+            !isNaN(moodInputRewardPoints) && (
+            <ImageBackground
+              style={styles.pupView}
+              imageStyle={styles.Pup}
+              source={require('../../../assets/newImage/AddCoinsPopUp/popUp.png')}>
+              <BitCoinIcon
+                style={styles.bitCoinIconView}
+                color={'#FFFFFF'}
+                w={getFontSize(12.5)}
+                h={getFontSize(12.5)}
+              />
+              <Text allowFontScaling={false} style={styles.coinText}>
+                + {`${moodInputRewardPoints}`} coins
+              </Text>
+            </ImageBackground>
           )}
         </TouchableOpacity>
         <TouchableOpacity
@@ -1605,6 +1619,7 @@ export default function MoodDetector({ navigation }) {
       <SaveMoodConfirmModal
         moodText={moodText}
         modalVisible={isSaveMoodConfirmModalVisible}
+        // modalVisible={true}
         notesInputRewardPoints={notesInputRewardPoints}
         dismissModalHandler={SaveMood(false)}
         emotionText={emotionText}
@@ -1616,7 +1631,6 @@ export default function MoodDetector({ navigation }) {
       <NotificationQuestion
         navigation={navigation}
         question={NotifData}
-        // modalVisible={isNotificationQuestionModalVisible}
         modalVisible={isNotificationQuestionModalVisible}
         dismissModalHandler={dismissNotificationQuestionModal}
         verifyDone={(value) => verifyNotificationQuestion(value)}
@@ -1711,26 +1725,41 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
   },
   pupView: {
+    flexDirection: 'row',
     position: 'absolute',
     alignSelf: 'center',
-    height: 90,
-    bottom: 10,
-    alignItems: 'center',
+    height: horizontalScale(45),
+    width: horizontalScale(100),
+    top: horizontalScale(-25),
+    alignItems: 'flex-start',
     justifyContent: 'center',
   },
   coinText: {
-    position: 'absolute',
-    top: 26,
-    color: 'white',
-    fontSize: getFontSize(13.5),
+    ...Platform.select({
+      android: {
+        top: horizontalScale(6),
+      },
+      ios: {
+        top: horizontalScale(5),
+      },
+      default: {
+        // other platforms, web for example
+        top: horizontalScale(6),
+      },
+    }),
+    color: '#FFFFFF',
+    fontSize: getFontSize(12.5),
     fontFamily: RubikRegular,
   },
+  bitCoinIconView: {
+    top: horizontalScale(7),
+    marginRight: horizontalScale(3),
+  },
   Pup: {
-    height: 90,
-    width: 90,
-    resizeMode: 'contain',
-    // position:'absolute',
-    // bottom:10
+    height: horizontalScale(45),
+    width: horizontalScale(100),
+    resizeMode: 'stretch',
+    tintColor: Colors.coinOrange,
   },
   questionIconView: {
     justifyContent: 'center',

@@ -13,5 +13,6 @@ export default {
   greyColorCode: '#9C9EB9',
   blackColorCode: '#2D3142',
   greyTextColor : '#484F5F',
-  lightGrey : '#83848E'
+  lightGrey: '#83848E',
+  coinOrange: '#FB8D09',
 };
