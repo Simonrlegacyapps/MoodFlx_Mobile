@@ -15,7 +15,7 @@ import {
   Easing
 } from 'react-native';
 import Svg, {Path, SvgUri, G} from 'react-native-svg';
-import {getFontSize, getLineHeight} from '../../Constants/sizeChoose';
+import {getFontSize, getLineHeight, isTablet} from '../../Constants/sizeChoose';
 import {
   getScrollerWheelSize,
   initialEmotionTextData,
@@ -126,7 +126,7 @@ export default function MoodScroller({
             toolTipStyle,
             toolTipStyle?.top?._value ?
               {
-                top: toolTipStyle?.top._value - (wheelSize !== regularWheelSize ? (marginTop + toolTipHeight) : (regularWheelSize / 2)) - 10,
+                top: toolTipStyle?.top._value - (wheelSize !== regularWheelSize ? (marginTop + toolTipHeight) : isTablet ? regularWheelSize : (regularWheelSize / 2)) - 10,
               } : {},
             toolTipStyle?.left?._value ?
               {
