@@ -157,4 +157,22 @@ export async function getDivisionName(
     });
 }
 
+export function getUpdateRewardPoint(params, dispatch) {
+  console.log('params getUpdateRewardPoint', params);
+  PostRequestApi('getUpdateRewardPoint', params)
+    .then((res) => {
+      console.log(
+        '✅ ✅ ✅ ✅ Success getUpdateRewardPoint ✅ ✅ ✅ ✅',
+        res?.data,
+      );
+      if (!isNaN(res?.data?.reward_point)) {
+        // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
+        dispatch(SetFloCoins(Number(res.data.reward_point)));
+      }
+    })
+    .catch((err) => {
+      console.log('❌ ❌ ❌ ❌ Error getUpdateRewardPoint ❌ ❌ ❌ ❌', err);
+    });
+}
+
 export default PostRequestApi;

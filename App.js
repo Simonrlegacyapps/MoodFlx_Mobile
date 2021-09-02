@@ -54,6 +54,7 @@ import NotifService from './Src/services/notifService';
 import PostRequestApi, {
   getDivisionName,
   GetStaffUserData,
+  getUpdateRewardPoint,
 } from './Src/apirequest/PostRequestApi';
 import * as RootNavigation from './Src/navigator/RootNavigation';
 import crashlytics from '@react-native-firebase/crashlytics';
@@ -76,6 +77,7 @@ import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgre
 import { setSleepDataSync } from './Src/Screens/Home/SleepData/sleepDataService';
 import Screen1 from './Src/Screens/WalkThrough/Screen1';
 import BoardingNavigation from './Src/navigator/BoardingNavigation';
+import getStore from './Src/redux';
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
@@ -711,6 +713,16 @@ const App: () => React$Node = () => {
       (!UserData.UserId && !UserData.UserEmail)
     ) {
       syncWeatherData();
+      const userEmail = getStore?.()?.getState?.()?.First?.UserEmail ?? "";
+      const userId = getStore?.()?.getState?.()?.First?.UserId ?? "";
+      getUpdateRewardPoint({
+        "device_id": DeviceInfo?.getUniqueId?.() ?? "",
+        "email": userEmail,
+        "user_id": userId,
+        "section_index": "",
+        "reward_point": "",
+        "description": ""
+      }, dispatch);
     }
   }, [UserData.UserId, UserData.UserEmail]);
 

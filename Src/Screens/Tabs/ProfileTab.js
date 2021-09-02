@@ -27,16 +27,26 @@ import FaqIcon from '../../../assets/profileicons/FaqIcon';
 import TermsIcon from '../../../assets/profileicons/TermsIcon';
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
 import DeviceInfo from 'react-native-device-info';
-import { NotificationPerm, SetSleepDataSyncStatus, UserDetail } from '../../redux/actions/actions';
-import PostRequestApi, { GetStaffUserData } from '../../apirequest/PostRequestApi';
-import { AppPermissions, activityHealthKitOptions } from '../../services/appPermissions';
-import { useFocusEffect } from '@react-navigation/native';
-import { getSleepDataAfterPermissionIOS } from '../Home/SleepData/sleepDataService';
+import {
+  NotificationPerm,
+  SetSleepDataSyncStatus,
+  UserDetail,
+} from '../../redux/actions/actions';
+import PostRequestApi, {
+  GetStaffUserData,
+  getUpdateRewardPoint,
+} from '../../apirequest/PostRequestApi';
+import {
+  AppPermissions,
+  activityHealthKitOptions,
+} from '../../services/appPermissions';
+import {useFocusEffect} from '@react-navigation/native';
+import {getSleepDataAfterPermissionIOS} from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
-import { openHealthApp } from '../../services/commonService';
+import {openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -428,20 +438,19 @@ const ProfileTab = ({ navigation }) => {
     }
   }
 
-  const howMoodfloWorks = ()=>{
+  const howMoodfloWorks = () => {
     const deviceId = DeviceInfo.getUniqueId();
-    let params  = { 
+    let params = {
       "device_id": deviceId,
       "email": UserData?.UserEmail ? UserData?.UserEmail : null,
       "user_id": UserData?.UserId ? UserData?.UserId : null,
-      "section_index":1,
-      "reward_point":50,
-      "description":"How moodflo works"
-  }
-  console.log(`params of how mood flo works 50 coins`, params)
-    PostRequestApi("getUpdateRewardPoint", params).then((res)=>{console.log(`res.data`, res.data)}).catch((err)=>{console.log(`err`, err)})
-    
-  }
+      "section_index": 1,
+      "reward_point": 50,
+      "description": "How moodflo works"
+    };
+    console.log(`params of how mood flo works 50 coins`, params);
+    getUpdateRewardPoint(params, dispatch);
+  };
 
   // console.log(
   //   "name != '' && UserData?.UserDetails?.full_name",
