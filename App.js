@@ -523,6 +523,20 @@ const App: () => React$Node = () => {
       await AsyncStorage.setItem('DateCheck', JSON.stringify(bDay));
       AsyncStorage.setItem('MoodCount', JSON.stringify(0));
     }
+    let negativeMoodPopupTimeStamp;
+    try {
+      let p = await AsyncStorage.getItem('NegativeMoodPopupTimeStamp');
+      negativeMoodPopupTimeStamp = await JSON.parse(p);
+    } catch (error) {
+      console.log('Async Storage get NegativeMoodPopupTimeStamp error ', error);
+    }
+    if (negativeMoodPopupTimeStamp === null) {
+      try {
+        await AsyncStorage.setItem('NegativeMoodPopupTimeStamp', JSON.stringify(new Date().getTime()));
+      } catch (error) {
+        console.log('AsyncStorage set NegativeMoodPopupTimeStamp error ', error);
+      }
+    }
 
     // await AsyncStorage.setItem('DateCheck', JSON.stringify(aDay));
     // let DateCheck = await AsyncStorage.getItem('DateCheck');

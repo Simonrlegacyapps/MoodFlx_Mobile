@@ -12,6 +12,7 @@ import {
   StatusBar,
   Platform,
   ImageBackground,
+  AppState,
 } from 'react-native';
 import Scroller from './moodScroller';
 import {
@@ -85,9 +86,11 @@ import {
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 import Insights from '../../../assets/svg/insights';
-import { getIsInitialVideoVisible, getMoodInputRewardPoints, setIsInitialVideoVisible, setMoodInputTimeStamps, setSwiperIndexHome } from '../../services/commonService';
+import { getIsInitialVideoVisible, getIsShowNegativeMoodInputPopup, getMoodInputRewardPoints, openUrl, setIsInitialVideoVisible, setMoodInputTimeStamps, setSwiperIndexHome } from '../../services/commonService';
 import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
+import NegativeMoodModal from '../../Components/Modals/NegativeMoodModal/NegativeMoodModal';
+import isEmpty from 'lodash.isempty';
 
 let prevXY = { dx: 0, dy: 0 };
 let moveCount = 0;
@@ -116,6 +119,8 @@ const screenWidth = Math.floor(window.width);
 let moodText = ''
 
 export default function MoodDetector({ navigation }) {
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [lng, setlng] = useState(false); //using in api calls
   const [lat, setlat] = useState(false); //using in api calls
   const [Loading, setLoading] = useState(false); //using in api calls
@@ -150,6 +155,8 @@ export default function MoodDetector({ navigation }) {
   const [textForMood, setTextForMood] = useState("")
   const [moodInputRewardPoints, setMoodInputRewardPoints] = useState(0);
   const [notesInputRewardPoints, setNotesInputRewardPoints] = useState(0);
+  const [isShowNegativeMoodModal, setIsShowNegativeMoodModal] = useState(false);
+  const [savedMood, setSavedMood] = useState(null);
   const dispatch = useDispatch();
   const route = useRoute();
   const forceUpdate = useForceUpdate();
@@ -559,6 +566,46 @@ export default function MoodDetector({ navigation }) {
     toolTipSize.current = null;
     onToolTipLayout();
     onLayoutScrollerContainer();
+  };
+
+  const _handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      console.log("App has come to the foreground!");
+      let negativeMoodModalVisible = false;
+      setIsShowNegativeMoodModal((e) => {
+        negativeMoodModalVisible = e;
+        return e;
+      });
+      if (negativeMoodModalVisible === true) {
+        setShowNegativeMoodModal(false)();
+      }
+    }
+
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+    // console.log("AppState", appState.current);
+  };
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
+  }, []);
+
+  const setShowNegativeMoodModal = (isOpen) => () => {
+    if (isOpen) {
+      setIsShowNegativeMoodModal(true);
+    } else {
+      setIsShowNegativeMoodModal(false);
+      const timeoutId = setTimeout(() => {
+        setIsSaveMoodConfirmModalVisible(true);
+        clearTimeout(timeoutId);
+      }, 500);
+    }
   };
 
   const SaveMood = (isCallApi) => async () => {
@@ -1062,7 +1109,10 @@ export default function MoodDetector({ navigation }) {
       setLoading(false);
       setMoodFail(true);
     } else {
-      moodText = Id
+      // moodText = Id
+      if (!Array.isArray(Id) && !isEmpty(Id)) {
+        setSavedMood({...Id});
+      }
       setLoading(true);
       let rewardPoint = 0;
       try {
@@ -1136,7 +1186,7 @@ export default function MoodDetector({ navigation }) {
       } else {
         console.log(`params for mood update`, params);
         PostRequestApi('moodUpdate', params)
-          .then((resp) => {
+          .then(async (resp) => {
             if (resp.status == 200) {
               moodIdForNotes.current = resp?.data?.mood_id ?? "";
               AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
@@ -1155,19 +1205,33 @@ export default function MoodDetector({ navigation }) {
               //   mail: value,
               //   deviceID: deviceId,
               // });
+              let showNegativeMoodModal = false;
+              try {
+                setLoading(true);
+                showNegativeMoodModal = await getIsShowNegativeMoodInputPopup(Id.id, userData?.current?.AllMoods);
+                setLoading(false);
+              } catch (error) {
+                setLoading(false);
+                console.log('error in calling getIsShowNegativeMoodInputPopup ', error);
+              }
+
               if (route?.params?.question != undefined) {
                 setSwiperIndexHome(0, dispatch);
                 navigation.navigate('HomeScreen', { screen: 'MicScreen' });
               } else {
-                showMoodSaveConfirmModal(() => {
-                  setSwiperIndexHome(0, dispatch);
-                  navigation.replace('HomeScreen', {
-                    lat: lat,
-                    long: lng,
-                    screen: 'Home',
-                    isMoodUpdate: true,
+                if (showNegativeMoodModal === true) {
+                  setShowNegativeMoodModal(true)();
+                } else {
+                  showMoodSaveConfirmModal(() => {
+                    setSwiperIndexHome(0, dispatch);
+                    navigation.replace('HomeScreen', {
+                      lat: lat,
+                      long: lng,
+                      screen: 'Home',
+                      isMoodUpdate: true,
+                    });
                   });
-                });
+                }
                 const notifService = new NotifService();
                 notifService.checkTimeAndUpdateNotif();
               }
@@ -1543,6 +1607,12 @@ export default function MoodDetector({ navigation }) {
     </View>
   );
 
+  let moodName = wheelSize === regularWheelSize || emotionText === 'Slide finger'
+      ? emotionText
+      : wheelSize === mediumWheelSize
+      ? `Pretty ${emotionText}`
+      : `Very ${emotionText}`;
+
   const topBottomColor = pSBC(0.6, color);
   // {top: blockSize.current.top - horizontalScale(25)}
   return (
@@ -1583,13 +1653,7 @@ export default function MoodDetector({ navigation }) {
         }}
         scrollerPanResponder={panResponder}
         toolTipData={toolTipData}
-        emotionText={
-          wheelSize === regularWheelSize || emotionText === 'Slide finger'
-            ? emotionText
-            : wheelSize === mediumWheelSize
-              ? `Pretty ${emotionText}`
-              : `Very ${emotionText}`
-        }
+        emotionText={moodName}
         toolTipRef={toolTipRef}
         // forceUpdate={forceUpdate}
         forceUpdate={setLPXY}
@@ -1617,15 +1681,24 @@ export default function MoodDetector({ navigation }) {
       />
 
       <SaveMoodConfirmModal
-        moodText={moodText}
-        modalVisible={isSaveMoodConfirmModalVisible}
+        moodText={savedMood}
+        modalVisible={!!savedMood && isSaveMoodConfirmModalVisible}
         // modalVisible={true}
         notesInputRewardPoints={notesInputRewardPoints}
         dismissModalHandler={SaveMood(false)}
-        emotionText={emotionText}
+        emotionText={moodName}
         setText={setTextForMood}
         onClickButtonOne={SaveMood(true)}
         onClickButtonTwo={SaveMood(false)}
+      />
+      <NegativeMoodModal
+        moodText={savedMood}
+        modalVisible={!!savedMood && isShowNegativeMoodModal}
+        // modalVisible={true}
+        dismissModalHandler={setShowNegativeMoodModal(false)}
+        emotionText={moodName}
+        onClickButtonOne={openUrl('https://findahelpline.com/')}
+        onClickButtonTwo={setShowNegativeMoodModal(false)}
       />
 
       <NotificationQuestion
