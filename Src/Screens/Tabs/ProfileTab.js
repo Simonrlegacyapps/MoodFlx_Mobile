@@ -616,7 +616,7 @@ const ProfileTab = ({ navigation }) => {
             )}
           </View>
           <View style={styles.permissionTileContainer}>
-            <Text style={styles.permissionText}>Health Permission</Text>
+            <Text style={styles.permissionText}>Activity Permission</Text>
             {UserData.HealthPermission ? (
               <Pressable style={styles.syncingButton} onPress={onOpenHealthApp}>
                 <Text style={styles.allowed}>
