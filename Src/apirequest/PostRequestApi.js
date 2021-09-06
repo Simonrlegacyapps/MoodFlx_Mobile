@@ -12,7 +12,11 @@ const PostRequestApi = async (url, params) => {
     });
 };
 
-export async function GetStaffUserData(params, dispatch) {
+export async function GetStaffUserData(
+  params,
+  dispatch,
+  isNotCheckUserBlocked = false,
+) {
   console.log(`params of get user profile`, params)
   var myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
@@ -40,7 +44,7 @@ export async function GetStaffUserData(params, dispatch) {
         // console.log('result.userData.reward_point ----', Number(result.userData.reward_point));
         dispatch(SetFloCoins(Number(result.userData.reward_point)));
       }
-      if (result?.userData?.status === 2) {
+      if (!isNotCheckUserBlocked && result?.userData?.status === 2) {
         onUnlinkUpdate(dispatch);
       }
       return result;
@@ -150,6 +154,24 @@ export async function getDivisionName(
         isFinished = true;
         onFinish(true);
       }
+    });
+}
+
+export function getUpdateRewardPoint(params, dispatch) {
+  console.log('params getUpdateRewardPoint', params);
+  PostRequestApi('getUpdateRewardPoint', params)
+    .then((res) => {
+      console.log(
+        '✅ ✅ ✅ ✅ Success getUpdateRewardPoint ✅ ✅ ✅ ✅',
+        res?.data,
+      );
+      if (!isNaN(res?.data?.reward_point)) {
+        // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
+        dispatch(SetFloCoins(Number(res.data.reward_point)));
+      }
+    })
+    .catch((err) => {
+      console.log('❌ ❌ ❌ ❌ Error getUpdateRewardPoint ❌ ❌ ❌ ❌', err);
     });
 }
 

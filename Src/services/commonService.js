@@ -14,6 +14,10 @@ import {Platform, Linking, Alert} from 'react-native';
 import isEmpty from 'lodash.isempty';
 import { activityHealthKitOptions } from './appPermissions';
 import moment from 'moment';
+import {GetStaffUserData} from '../apirequest/PostRequestApi';
+import DeviceInfo from 'react-native-device-info';
+import axios from 'axios';
+import getStore from '../redux';
 
 let moodsArray = [];
 let isInitialVideoVisisble = false;
@@ -62,6 +66,16 @@ export async function onUnlinkUpdate(dispatch, onFinish) {
     if (isFunction(onFinish)) {
       onFinish(true);
     }
+    const deviceId = DeviceInfo.getUniqueId();
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: '',
+        user_id: '',
+      },
+      dispatch,
+      true,
+    );
     return true;
   } catch (error) {
     if (isFunction(onFinish)) {
@@ -309,5 +323,97 @@ export const getMoodInputRewardPoints = async (isNotes) => {
     }
   }
   // if ((moment().startOf('day').unix() * 1000) )
+  // console.log('getMoodInputRewardPoints isNotes rewardpoints ->', isNotes, rewardPoints);
   return rewardPoints;
 };
+
+export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
+  if (!(Array.isArray(allMoods) && allMoods.length > 0)) {
+    return false;
+  }
+  const negativeMoodNames = ['Upset', 'Anxious', 'Sad', 'Tired', 'Cranky', 'Wired', 'Flat', 'Spent'];
+  const allNegativeMoods = allMoods
+    .filter((e) => negativeMoodNames.indexOf(e?.name) !== -1)
+    .map((e) => e.id);
+  if (!(moodId && allNegativeMoods.indexOf(moodId) !== -1)) {
+    return false;
+  }
+  let negativeMoodPopupTimeStamp;
+  try {
+    let p = await AsyncStorage.getItem('NegativeMoodPopupTimeStamp');
+    negativeMoodPopupTimeStamp = await JSON.parse(p);
+  } catch (error) {
+    console.log('Async Storage get MoodCount error ', error);
+  }
+  if (typeof negativeMoodPopupTimeStamp !== 'number') {
+    return false;
+  }
+  if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 13) {
+    return false;
+  }
+  const params = {
+    "device_id": DeviceInfo?.getUniqueId?.() ?? '',
+    "email": getStore?.()?.getState?.()?.First?.UserEmail ?? '',
+    "user_id": getStore?.()?.getState?.()?.First?.UserId ?? '',
+    "start_date": moment().subtract(13, 'days').format('YYYY-MM-DD'),
+  };
+  let response;
+  try {
+    response = await axios.post('https://admin.moodflo.com/api/getMoodInputData', params);
+    console.log('✅ ✅ ✅ ✅ Success getMoodInputData response.data✅ ✅ ✅ ✅', response?.data);
+  } catch (error) {
+    console.error(error);
+  }
+  if (!response?.data?.moodList) {
+    return false;
+  }
+  let moodInputIdData = [];
+  let negativeMoodInputIdData = [];
+  let keys = Object.keys(response.data.moodList);
+  if (!(Array.isArray(keys) && keys.length > 0)) {
+    return false;
+  }
+  let values = Object.values(response?.data?.moodList);
+  if (!(Array.isArray(values) && values.length > 0)) {
+    return false;
+  }
+  values.forEach((e) => {
+    if (Array.isArray(e) && e.length > 0) {
+      moodInputIdData = [...moodInputIdData, ...e];
+    }
+  });
+  //console.log('moodInputIdData ->', moodInputIdData);
+  if (moodInputIdData.length > 0) {
+    negativeMoodInputIdData = moodInputIdData.filter(e => allNegativeMoods.indexOf(e?.mood_id) !== -1);
+  }
+  let negativeMoodPercentage = 0;
+  if (negativeMoodInputIdData.length > 0) {
+    negativeMoodPercentage = (negativeMoodInputIdData.length * 100) / moodInputIdData.length;
+  }
+  if (negativeMoodPercentage > 50) {
+    try {
+      await AsyncStorage.setItem('NegativeMoodPopupTimeStamp', JSON.stringify(new Date().getTime()));
+    } catch (error) {
+      console.log('Set NegativeMoodPopupTimeStamp in AsyncStorage error ', error);
+    }
+    return true;
+  }
+  console.log('(moodInputIdData.length negativeMoodInputIdData.length---', moodInputIdData.length, negativeMoodInputIdData.length, negativeMoodPercentage);
+  return false;
+}
+
+export const openUrl = (url) => async () => {
+  // Checking if the link is supported for links with custom URL scheme.
+  if (typeof url !== 'string') {
+    return;
+  }
+  const supported = await Linking.canOpenURL(url);
+
+  if (supported) {
+    // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+    // by some browser in the mobile
+    await Linking.openURL(url);
+  } else {
+    Alert.alert(`Can't open this URL: ${url}`);
+  }
+}

@@ -54,6 +54,7 @@ import NotifService from './Src/services/notifService';
 import PostRequestApi, {
   getDivisionName,
   GetStaffUserData,
+  getUpdateRewardPoint,
 } from './Src/apirequest/PostRequestApi';
 import * as RootNavigation from './Src/navigator/RootNavigation';
 import crashlytics from '@react-native-firebase/crashlytics';
@@ -76,6 +77,7 @@ import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgre
 import { setSleepDataSync } from './Src/Screens/Home/SleepData/sleepDataService';
 import Screen1 from './Src/Screens/WalkThrough/Screen1';
 import BoardingNavigation from './Src/navigator/BoardingNavigation';
+import getStore from './Src/redux';
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
@@ -388,7 +390,7 @@ const App: () => React$Node = () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
     let welcome = await JSON.parse(p);
     await setShowWelcome(welcome);
-    console.log('welcome', welcome);
+    // console.log('welcome', welcome);
   };
 
   useEffect(() => {
@@ -396,6 +398,7 @@ const App: () => React$Node = () => {
       try {
         let p = await AsyncStorage.getItem('ShowWelcomeScreen');
         let welcome = await JSON.parse(p);
+        // console.log('Async storage welcome ===', welcome);
         if (getIsInitialVideoVisible() === false && welcome == null) {
           setIsInitialVideoVisible(true);
         }
@@ -519,6 +522,20 @@ const App: () => React$Node = () => {
       // console.log(`Date is confirmed sure And &&&&&&&& Mood is reset`);
       await AsyncStorage.setItem('DateCheck', JSON.stringify(bDay));
       AsyncStorage.setItem('MoodCount', JSON.stringify(0));
+    }
+    let negativeMoodPopupTimeStamp;
+    try {
+      let p = await AsyncStorage.getItem('NegativeMoodPopupTimeStamp');
+      negativeMoodPopupTimeStamp = await JSON.parse(p);
+    } catch (error) {
+      console.log('Async Storage get NegativeMoodPopupTimeStamp error ', error);
+    }
+    if (negativeMoodPopupTimeStamp === null) {
+      try {
+        await AsyncStorage.setItem('NegativeMoodPopupTimeStamp', JSON.stringify(new Date().getTime()));
+      } catch (error) {
+        console.log('AsyncStorage set NegativeMoodPopupTimeStamp error ', error);
+      }
     }
 
     // await AsyncStorage.setItem('DateCheck', JSON.stringify(aDay));
@@ -710,6 +727,16 @@ const App: () => React$Node = () => {
       (!UserData.UserId && !UserData.UserEmail)
     ) {
       syncWeatherData();
+      const userEmail = getStore?.()?.getState?.()?.First?.UserEmail ?? "";
+      const userId = getStore?.()?.getState?.()?.First?.UserId ?? "";
+      getUpdateRewardPoint({
+        "device_id": DeviceInfo?.getUniqueId?.() ?? "",
+        "email": userEmail,
+        "user_id": userId,
+        "section_index": "",
+        "reward_point": "",
+        "description": ""
+      }, dispatch);
     }
   }, [UserData.UserId, UserData.UserEmail]);
 

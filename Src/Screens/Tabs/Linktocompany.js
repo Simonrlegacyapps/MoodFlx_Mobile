@@ -65,6 +65,7 @@ const Linktocompany = ({ navigation }) => {
   const [CompanyDetails, setCompanyDetails] = useState(null);
   const [noDivisionMdalVisible, setNoDivisionMdalVisible] = useState(false);
   const [showFeedBack, setshowFeedBack] = useState(false)
+  const [FeedbackText, setFeedbackText] = useState('')
 
   const dispatch = useDispatch();
   const route = useRoute();
@@ -230,8 +231,21 @@ const Linktocompany = ({ navigation }) => {
     ]),
   );
 
+  const giveFeedback = ()=>{
+    const deviceId = DeviceInfo.getUniqueId();
+    const params = {
+      "device_id": deviceId ,
+      "email": UserData.UserEmail,
+      "user_id": UserData.UserId,
+      "feedback":FeedbackText
+  }
+  console.log(`params of feedback`, params)
+    PostRequestApi("staffFeedback", params).then((res)=>{if(res.status === 200){console.log(`res.data.data`, res.data)}}).catch((err)=>{console.log(`err`, err)})
+  }
+
   const SaveFeedBack = ()=>{
     setshowFeedBack(false)
+    giveFeedback()
   }
 
   const onLink = async (type) => {
@@ -453,6 +467,32 @@ const Linktocompany = ({ navigation }) => {
                   fontFamily: RubikMedium,
                 }}>
                 Connect Now
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            // disabled={selectedLanguage ? false : true}
+            onPress={() => {setshowFeedBack(true)}}>
+            <View
+              style={{
+                marginTop: 40,
+                height: dynamicSize(46),
+                width: dynamicSize(150),
+                backgroundColor: '#7265E3',
+                borderRadius: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+              }}>
+              {/* <UnlockIcon /> */}
+              <Text
+                style={{
+                  fontWeight: '500',
+                  fontSize: 16,
+                  color: '#FFFFFF',
+                  marginLeft: dynamicSize(11),
+                }}>
+                Feedback
               </Text>
             </View>
           </TouchableOpacity>
@@ -779,6 +819,7 @@ const Linktocompany = ({ navigation }) => {
       )}
 
       <FeedBackModal
+      text={setFeedbackText}
         moodText={'okayy'}
         modalVisible={showFeedBack}
         dismissModalHandler={()=>{setshowFeedBack(false)}}

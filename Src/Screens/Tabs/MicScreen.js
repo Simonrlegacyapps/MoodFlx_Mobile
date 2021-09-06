@@ -41,7 +41,7 @@ const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
-  const [DateExpired, setDateExpired] = useState(false);
+  // const [DateExpired, setDateExpired] = useState(false);
 
   const [refreshing, setRefreshing] = React.useState(false);
   const dispatch = useDispatch();
@@ -136,7 +136,7 @@ const MicScreen = ({navigation}) => {
 
   useFocusEffect(
     useCallback(() => {
-      // getQuestions();
+      getQuestions();
       return () => {
         // screen is out of focus
         if (Platform.OS === 'android') {
@@ -187,13 +187,13 @@ const MicScreen = ({navigation}) => {
 
   // console.log(`questions`, questions);
 
-  const cancelled = () => {
-    setDateExpired(false);
-  };
+  // const cancelled = () => {
+  //   setDateExpired(false);
+  // };
 
-  const VerifyDone = (value) => {
-    setDateExpired(false);
-  };
+  // const VerifyDone = (value) => {
+  //   setDateExpired(false);
+  // };
 
   const ProgressDay = ({label, color, progress}) => {
     return (
@@ -304,6 +304,16 @@ const MicScreen = ({navigation}) => {
 
   const Questions = ({item, index}) => {
     const [showMore, setshowMore] = useState(false);
+    const [DateExpired, setDateExpired] = useState(false);
+
+    const cancelled = () => {
+      setDateExpired(false);
+    };
+  
+    const VerifyDone = (value) => {
+      setDateExpired(false);
+    };
+
     let i = item?.item;
     let givenDate = new Date(moment(i.end_date)).getTime();
     let todayDate = new Date().getTime();
@@ -316,11 +326,11 @@ const MicScreen = ({navigation}) => {
     let hourDif = HourDifference(new Date(moment(i.start_date)), new Date());
     let totalTime = DayDifference(new Date(moment(i.end_date)),new Date(moment(i.start_date)));
     let timeTaken = DayDifference(new Date(),new Date(moment(i.start_date))) >= 0 ? DayDifference(new Date(),new Date(moment(i.start_date))) : 0;
-    console.log(`totalTime`, totalTime, timeTaken)
-    // console.log(`startDiff`, startDiff);
-    // console.log(`EndDiff`, EndDiff);
-    // console.log('here', getRewardsCoins(DayDifference(new Date(moment(i.start_date)), new Date()), HourDifference(new Date(moment(i.start_date)), new Date())))
+
+    console.log(`DateExpired`, DateExpired, showMore)
+
     return (
+      <>
       <TouchableOpacity
         disabled={true}
         key={i?.id ?? index}
@@ -386,7 +396,7 @@ const MicScreen = ({navigation}) => {
                 <Clock w={14} h={14} />{' '}
                 {DayDifference(new Date(moment(i.end_date)), new Date()) > 0
                   ? EndDiff
-                  : 'Expired'}
+                  : 'Closed'}
               </Text>
             </View>
             <View style={{width: '90%'}}>
@@ -428,7 +438,7 @@ const MicScreen = ({navigation}) => {
                   givenDate >= todayDate
                     ? navigation.replace('MoodEmotionDetector', {
                         question: i.id,
-                        points: 1888888,
+                        points: DayDif === 0 ?  getRewardsCoins(DayDif, hourDif) : 0,
                       })
                     : setDateExpired(true);
                 }}>
@@ -559,15 +569,7 @@ const MicScreen = ({navigation}) => {
                 </View>
                 {/* <HappyIcon /> */}
               </View>
-              <TouchableOpacity disabled={true}
-                onPress={() => {
-                  givenDate >= todayDate
-                    ? navigation.replace('MoodEmotionDetector', {
-                        question: i.id,
-                        points: getRewardsCoins(DayDif, hourDif),
-                      })
-                    : setDateExpired(true);
-                }}>
+              <TouchableOpacity disabled={true}>
                 <Text
                   style={{
                     fontSize: 16,
@@ -583,6 +585,12 @@ const MicScreen = ({navigation}) => {
         )}
         {questions.length - 1 != index && <View style={styles.line} />}
       </TouchableOpacity>
+      <DateExpiredModal
+        modalVisible={DateExpired}
+        dismissModalHandler={() => cancelled()}
+        verifyDone={(value) => VerifyDone(value)}
+      />
+      </>
     );
   };
 
@@ -761,11 +769,11 @@ const MicScreen = ({navigation}) => {
         </View>
       </ScrollView>
 
-      <DateExpiredModal
+      {/* <DateExpiredModal
         modalVisible={DateExpired}
         dismissModalHandler={() => cancelled()}
         verifyDone={(value) => VerifyDone(value)}
-      />
+      /> */}
 
       {Loading && (
         <View

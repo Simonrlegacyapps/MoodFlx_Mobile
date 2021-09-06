@@ -36,164 +36,135 @@ const {width} = Dimensions.get('screen');
 const MainProfileTab = ({navigation}) => {
   const [inProgress, setinProgress] = useState(false)
   const [openActionSheet, setopenActionSheet] = useState(false)
+  const [CoinLevel, setCoinLevel] = useState("")
+  const [CoinComment, setCoinComment] = useState("")
 
+  const UserData = useSelector((state) => state.First);
+  const {Scrolling, floCoins}= UserData
+
+  // let floCoins = 3000
   
 
   const VerifyDone = () => {
     setopenActionSheet(false)
 }
 
-  const UserData = useSelector((state) => state.First);
-  const {Scrolling}= UserData
+const getPromotionCoinLeft = ()=>{
+  return floCoins >= 0 && floCoins < 100
+    ? 100 - floCoins
+    : floCoins >= 100 && floCoins < 1000
+    ? 1000 - floCoins
+    : floCoins >= 1000 && floCoins < 5000
+    ? 5000 - floCoins
+    : floCoins >= 5000 && floCoins < 10000
+    ? 10000 - floCoins
+    : floCoins >= 10000 && floCoins < 20000
+    ? 20000 - floCoins
+    : 0;
+}
+const getCoinsLabel = (min, max)=>{
+  // return floCoins >= min && floCoins < max ? `> ${getFloCoins(min)}` : floCoins >= min ?`> ${getFloCoins(max)}` : `${getFloCoins(min)} - ${getFloCoins(max)}`
+  return floCoins >= min && floCoins < max ? `${getFloCoins(min)} - ${getFloCoins(max)}` : floCoins >= min ?`>${getFloCoins(max)}` : `< ${getFloCoins(min)}`
+}
+
+const getCommentLabel = (min, max)=>{
+  // return floCoins >= min && floCoins < max ? `You’ve already smashed this level` : floCoins > min ?  `You’ve already smashed this level` : `Just another ${getPromotionCoinLeft()} until you’re promoted!`
+  return floCoins >= min && floCoins < max ? `Just another ${getPromotionCoinLeft()} until you’re promoted!` : floCoins > min ?  `You’ve already smashed this level` : `You've not unlocked this level yet!`
+}
+
+let lightGold = "#FFE609"
+let Gold = "#FFBD20"
+let lightGrey = "#F1ECFF"
+let Purple = "#968DFD"
+let lightGray = "#E5E5E6"
+let Gray = "#B5BDC5"
+
+const Medals = ({min, max, type,LevelName})=>{
+  console.log(`floCoins - min === 0 ? 1 : floCoins- min / max - min`, (floCoins - min === 0 ? 1 : floCoins- min) / (max - min))
+  return(
+    <TouchableOpacity
+      onPress={() => { setopenActionSheet(true), setCoinLevel(getCoinsLabel(min, max)), setCoinComment(getCommentLabel(min,max))}} style={[styles.medal]}>
+      { floCoins >= min && floCoins < max && (
+        <AnimatedCircularProgress
+          duration={1500}
+          style={styles.CircularProgressStyle}
+          arcSweepAngle={360}
+          size={60}
+          width={6}
+          fill={(floCoins - min === 0 ? 1 : floCoins- min) / (max - min) * 100}
+          // fill={0}
+          rotation={0}
+          tintColor="#AF8EFF"
+          lineCap={'round'}
+          // // onAnimationComplete={() => console.log('onAnimationComplete')}
+          backgroundColor="#F0EBFF"
+        />
+      )}
+      <View
+        style={{
+          position: floCoins >= min && floCoins < max ? 'absolute' : 'relative',
+          paddingRight: 7,
+          marginVertical: 5,
+        }}>
+        <GoldMedal
+          w={30}
+          h={30}
+          type={type}
+          c1={
+            floCoins >= max
+              ? lightGold
+              : floCoins >= min && floCoins < max
+                ? lightGrey
+                : lightGray
+          }
+          c2={
+            floCoins >= max
+              ? Gold
+              : floCoins >= min && floCoins < max
+                ? Purple
+                : Gray
+          }
+        />
+      </View>
+      {floCoins >= max && (
+        <Text 
+          allowFontScaling={false}
+          style={{ fontSize: 11, color: '#FFBD20', marginBottom: -5, fontFamily:RubikLight, width:65, textAlign:'center' }}>
+          {LevelName}
+        </Text>
+      )}
+    </TouchableOpacity>
+  )
+}
+  
   return (
     <View style={styles.container}>
       <ProfileHeader navigation={navigation} />
       {/* {!Scrolling && <View style={{flexDirection: 'row', marginHorizontal: 15}}> */}
       <ScrollView>
-      <View style={{flexDirection: 'row', marginHorizontal: 15}}>
-        <View style={styles.nameTexts}>
-          {/* <Text style={styles.since}>Points</Text> */}
-          <Text style={styles.name}>
-            Mood status / <Rings />{' '}
-            <Text
-              style={{color: '#FB8D09', fontFamily: RubikLight, fontSize: 14}}>
-              03 until promotion
+        <View style={{ flexDirection: 'row', marginHorizontal: 15 }}>
+          <View style={styles.nameTexts}>
+            {/* <Text style={styles.since}>Points</Text> */}
+            <Text style={styles.name}>
+              Mood status / <Rings />{' '}
+              <Text
+                style={{
+                  color: '#FB8D09',
+                  fontFamily: RubikLight,
+                  fontSize: 14,
+                }}>
+                {getPromotionCoinLeft()} until promotion
+              </Text>
             </Text>
-          </Text>
-          <View style={{flexDirection: 'row', marginTop: 10, }}>
-            <View style={[styles.medal]}>
-              {inProgress && <AnimatedCircularProgress
-                duration={1500}
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={60}
-                width={6}
-                fill={70}
-                // fill={0}
-                rotation={0}
-                tintColor="#AF8EFF"
-                lineCap={'round'}
-                // // onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#F0EBFF"
-              />}
-              <View style={{position:inProgress ?'absolute': "relative",  paddingRight:7, marginVertical:5}}>
-              <GoldMedal
-                w={30}
-                h={30}
-                a
-                c1={true ? '#FFE609' : true ? "F1ECFF" : '#E5E5E6'}
-                c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
-              />
-              </View>
-              {true &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
-            </View>
-            <TouchableOpacity onPress={()=> setopenActionSheet(true)} style={styles.medal}>
-              {true && <AnimatedCircularProgress
-                duration={1500}
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={60}
-                width={6}
-                fill={70}
-                // fill={0}
-                rotation={0}
-                tintColor="#AF8EFF"
-                lineCap={'round'}
-                // // onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#F0EBFF"
-              />}
-              <View style={{position:true ?'absolute': "relative",  paddingRight:7}}>
-              <GoldMedal
-                w={30}
-                h={30}
-                n
-                c1={false ? '#FFE609' : true ? "#F1ECFF" : '#E5E5E6'}
-                c2={false ? '#FFBD20' :true ? "#968DFD": '#B5BDC5'}
-              />
-              </View>
-              {false &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
-            </TouchableOpacity>
-            <View style={styles.medal}>
-              {inProgress && <AnimatedCircularProgress
-                duration={1500}
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={60}
-                width={6}
-                fill={70}
-                // fill={0}
-                rotation={0}
-                tintColor="#AF8EFF"
-                lineCap={'round'}
-                // // onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#F0EBFF"
-              />}
-              <View style={{position:inProgress ?'absolute': "relative",  paddingRight:7}}>
-              <GoldMedal
-                w={30}
-                h={30}
-                f
-                c1={true ? '#FFE609' : true ? "F1ECFF" : '#E5E5E6'}
-                c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
-              />
-              </View>
-              {false &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
-            </View>
-            <View style={styles.medal}>
-              {inProgress && <AnimatedCircularProgress
-                duration={1500}
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={60}
-                width={6}
-                fill={70}
-                // fill={0}
-                rotation={0}
-                tintColor="#AF8EFF"
-                lineCap={'round'}
-                // // onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#F0EBFF"
-              />}
-              <View style={{position:inProgress ?'absolute': "relative",  paddingRight:7}}>
-              <GoldMedal
-                w={30}
-                h={30}
-                p
-                c1={true ? '#FFE609' : true ? "F1ECFF" : '#E5E5E6'}
-                c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
-              />
-              </View>
-              {false &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
-            </View>
-            <View style={styles.medal}>
-              {inProgress && <AnimatedCircularProgress
-                duration={1500}
-                style={styles.CircularProgressStyle}
-                arcSweepAngle={360}
-                size={60}
-                width={6}
-                fill={70}
-                // fill={0}
-                rotation={0}
-                tintColor="#AF8EFF"
-                lineCap={'round'}
-                // // onAnimationComplete={() => console.log('onAnimationComplete')}
-                backgroundColor="#F0EBFF"
-              />}
-              <View style={{position:inProgress ?'absolute': "relative",  paddingRight:7}}>
-              <GoldMedal
-                w={30}
-                h={30}
-                u
-                c1={true ? '#FFE609' : true ? "F1ECFF" : '#E5E5E6'}
-                c2={true ? '#FFBD20' :true ? "968DFD": '#B5BDC5'}
-              />
-              </View>
-              {false &&<Text allowFontScaling={false} style={{fontSize:11, color:"#FFBD20", marginBottom:-5}}>Activator</Text>}
+            <View style={{ flexDirection: 'row', marginTop: 10 }}>
+              <Medals min = {0} max={100} type ={'a'} LevelName={"Activator"}/>
+              <Medals min = {100} max={1000} type ={'n'} LevelName= {"Navigator"}/>
+              <Medals min = {1000} max={5000} type ={'f'} LevelName= {"Fit"}/>
+              <Medals min = {5000} max={10000} type ={'p'} LevelName= {"Powerhouse"}/>
+              <Medals min = {10000} max={20000} type ={'u'} LevelName= {"Unleashed"}/>
             </View>
           </View>
-        </View>
-        {/* <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          {/* <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <LinearGradient
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -207,41 +178,42 @@ const MainProfileTab = ({navigation}) => {
             </View>
           </LinearGradient>
         </View> */}
-      </View>
-      {/* </View>} */}
-      {/* <ScrollView> */}
-      <Tab.Navigator
-        swipeEnabled={true}
-        tabBarOptions={{
-          // style: { height: 30 },
-          labelStyle: {
-            // marginTop: -10,
-            fontFamily: RubikRegular,
-            color: '#7265E3',
-            letterSpacing: 1,
-          },
-          activeTintColor: '#6A6D90',
-          inactiveTintColor: '#6A6D90',
-          indicatorStyle: {borderColor: '#7265E3', borderWidth: 1.5},
-          // tabStyle: { borderWidth: 0 }
-        }}>
-        <Tab.Screen name="Rewards" component={Rewards} options={{}} />
-        <Tab.Screen name="History" component={History} />
-        <Tab.Screen name="How To" component={HowTo} />
-      </Tab.Navigator>
+        </View>
+        {/* </View>} */}
+        {/* <ScrollView> */}
+        <Tab.Navigator
+          swipeEnabled={true}
+          tabBarOptions={{
+            // style: { height: 30 },
+            labelStyle: {
+              // marginTop: -10,
+              fontFamily: RubikRegular,
+              color: '#7265E3',
+              letterSpacing: 1,
+            },
+            activeTintColor: '#6A6D90',
+            inactiveTintColor: '#6A6D90',
+            indicatorStyle: {borderColor: '#7265E3', borderWidth: 1.5},
+            // tabStyle: { borderWidth: 0 }
+          }}>
+          <Tab.Screen name="Rewards" component={Rewards} options={{}} />
+          <Tab.Screen name="History" component={History} />
+          <Tab.Screen name="How To" component={HowTo} />
+        </Tab.Navigator>
       </ScrollView>
       <ProfileCoinModal
-      title={"Mood Navigator"}
-                permission={"100 - 1,000 Flo Coins"}
-                // image={Constants.Images.FitnessPopUp}
-                dataType={'fitness'}
-                smallText={"Level not reached yet"}
-                ButtonText={"Let's Go!"}
-                medal={true}
-                modalVisible={openActionSheet}
-                dismissModalHandler={() => setopenActionSheet(false)}
-                verifyDone={() => VerifyDone()}
-            />
+        title={'Mood Navigator'}
+        permission={`${CoinLevel} Flo Coins`}
+        // image={Constants.Images.FitnessPopUp}
+        dataType={'fitness'}
+        smallText={CoinComment}
+        ButtonText={"Let's Go!"}
+        medal={true}
+        left={getPromotionCoinLeft()}
+        modalVisible={openActionSheet}
+        dismissModalHandler={() => setopenActionSheet(false)}
+        verifyDone={() => VerifyDone()}
+      />
     </View>
   );
 };
@@ -292,3 +264,305 @@ const styles = StyleSheet.create({
 });
 
 export default MainProfileTab;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* <TouchableOpacity
+                onPress={() => { setopenActionSheet(true), setCoinLevel(getCoinsLabel(0, 100)), setCoinComment(getCommentLabel(0,100))}} style={[styles.medal]}>
+                { floCoins < 100 && (
+                  <AnimatedCircularProgress
+                    duration={1500}
+                    style={styles.CircularProgressStyle}
+                    arcSweepAngle={360}
+                    size={60}
+                    width={6}
+                    fill={(floCoins / 100) * 100}
+                    // fill={0}
+                    rotation={0}
+                    tintColor="#AF8EFF"
+                    lineCap={'round'}
+                    // // onAnimationComplete={() => console.log('onAnimationComplete')}
+                    backgroundColor="#F0EBFF"
+                  />
+                )}
+                <View
+                  style={{
+                    position: floCoins < 100 ? 'absolute' : 'relative',
+                    paddingRight: 7,
+                    marginVertical: 5,
+                  }}>
+                  <GoldMedal
+                    w={30}
+                    h={30}
+                    a
+                    c1={
+                      floCoins >= 100
+                        ? lightGold
+                        : floCoins < 100
+                          ? lightGrey
+                          : lightGray
+                    }
+                    c2={floCoins >= 100 ? Gold : floCoins < 100 ? Purple : Gray}
+                  />
+                </View>
+                {floCoins >= 100 && (
+                  <Text
+                    allowFontScaling={false}
+                    style={{ fontSize: 11, color: '#FFBD20', marginBottom: -5 }}>
+                    Activator
+                  </Text>
+                )}
+              </TouchableOpacity> */}
+              
+              {/* <TouchableOpacity
+                onPress={() => { setopenActionSheet(true), setCoinLevel(getCoinsLabel(100, 1000)), setCoinComment(getCommentLabel(100,1000))}}
+                style={styles.medal}>
+                {floCoins >= 100 && floCoins < 1000 && (
+                  <AnimatedCircularProgress
+                    duration={1500}
+                    style={styles.CircularProgressStyle}
+                    arcSweepAngle={360}
+                    size={60}
+                    width={6}
+                    fill={(floCoins / 1000) * 100}
+                    // fill={0}
+                    rotation={0}
+                    tintColor="#AF8EFF"
+                    lineCap={'round'}
+                    // // onAnimationComplete={() => console.log('onAnimationComplete')}
+                    backgroundColor="#F0EBFF"
+                  />
+                )}
+                <View
+                  style={{
+                    position:
+                      floCoins >= 100 && floCoins < 1000
+                        ? 'absolute'
+                        : 'relative',
+                    paddingRight: 7,
+                  }}>
+                  <GoldMedal
+                    w={30}
+                    h={30}
+                    n
+                    c1={
+                      floCoins >= 1000
+                        ? lightGold
+                        : floCoins >= 100 && floCoins < 1000
+                          ? lightGrey
+                          : lightGray
+                    }
+                    c2={
+                      floCoins >= 1000
+                        ? Gold
+                        : floCoins >= 100 && floCoins < 1000
+                          ? Purple
+                          : Gray
+                    }
+                  />
+                </View>
+                {floCoins >= 1000 && (
+                  <Text
+                    allowFontScaling={false}
+                    style={{ fontSize: 11, color: '#FFBD20', marginBottom: -5 }}>
+                    Navigator
+                  </Text>
+                )}
+              </TouchableOpacity> */}
+              {/* <TouchableOpacity
+                onPress={() => { setopenActionSheet(true), setCoinLevel(getCoinsLabel(1000, 5000)), setCoinComment(getCommentLabel(1000, 5000))}}
+                style={styles.medal}>
+                {floCoins >= 1000 && floCoins < 5000 && (
+                  <AnimatedCircularProgress
+                    duration={1500}
+                    style={styles.CircularProgressStyle}
+                    arcSweepAngle={360}
+                    size={60}
+                    width={6}
+                    fill={(floCoins / 5000) * 100}
+                    // fill={0}
+                    rotation={0}
+                    tintColor="#AF8EFF"
+                    lineCap={'round'}
+                    // // onAnimationComplete={() => console.log('onAnimationComplete')}
+                    backgroundColor="#F0EBFF"
+                  />
+                )}
+                <View
+                  style={{
+                    position:
+                      floCoins >= 1000 && floCoins < 5000
+                        ? 'absolute'
+                        : 'relative',
+                    paddingRight: 7,
+                  }}>
+                  <GoldMedal
+                    w={30}
+                    h={30}
+                    f
+                    c1={
+                      floCoins > 5000
+                        ? '#FFE609'
+                        : floCoins >= 1000 && floCoins < 5000
+                          ? '#F1ECFF'
+                          : '#E5E5E6'
+                    }
+                    c2={
+                      floCoins > 5000
+                        ? '#FFBD20'
+                        : floCoins >= 1000 && floCoins < 5000
+                          ? '#968DFD'
+                          : '#B5BDC5'
+                    }
+                  />
+                </View>
+                {floCoins > 5000 && (
+                  <Text
+                    allowFontScaling={false}
+                    style={{ fontSize: 11, color: '#FFBD20', marginBottom: -5 }}>
+                    Fit
+                  </Text>
+                )}
+              </TouchableOpacity> */}
+              {/* <TouchableOpacity
+                onPress={() => { setopenActionSheet(true), setCoinLevel(getCoinsLabel(5000, 10000)), setCoinComment(getCommentLabel(5000, 10000))}}
+                style={styles.medal}>
+                {floCoins >= 5000 && floCoins < 10000 && (
+                  <AnimatedCircularProgress
+                    duration={1500}
+                    style={styles.CircularProgressStyle}
+                    arcSweepAngle={360}
+                    size={60}
+                    width={6}
+                    fill={(floCoins / 10000) * 100}
+                    // fill={0}
+                    rotation={0}
+                    tintColor="#AF8EFF"
+                    lineCap={'round'}
+                    // // onAnimationComplete={() => console.log('onAnimationComplete')}
+                    backgroundColor="#F0EBFF"
+                  />
+                )}
+                <View
+                  style={{
+                    position:
+                      floCoins >= 5000 && floCoins < 10000
+                        ? 'absolute'
+                        : 'relative',
+                    paddingRight: 7,
+                  }}>
+                  <GoldMedal
+                    w={30}
+                    h={30}
+                    p
+                    c1={
+                      floCoins > 10000
+                        ? '#FFE609'
+                        : floCoins >= 5000 && floCoins < 10000
+                          ? 'F1ECFF'
+                          : '#E5E5E6'
+                    }
+                    c2={
+                      floCoins > 10000
+                        ? '#FFBD20'
+                        : floCoins >= 5000 && floCoins < 10000
+                          ? '968DFD'
+                          : '#B5BDC5'
+                    }
+                  />
+                </View>
+                {floCoins > 10000 && (
+                  <Text
+                    allowFontScaling={false}
+                    style={{ fontSize: 11, color: '#FFBD20', marginBottom: -5 }}>
+                    Activator
+                  </Text>
+                )}
+              </TouchableOpacity> */}
+              {/* <TouchableOpacity
+                onPress={() => { setopenActionSheet(true), setCoinLevel(getCoinsLabel(10000, 20000)), setCoinComment(getCommentLabel(10000, 20000))}}
+                style={styles.medal}>
+                {floCoins >= 10000 && floCoins < 20000 && (
+                  <AnimatedCircularProgress
+                    duration={1500}
+                    style={styles.CircularProgressStyle}
+                    arcSweepAngle={360}
+                    size={60}
+                    width={6}
+                    fill={(floCoins / 20000) * 100}
+                    // fill={0}
+                    rotation={0}
+                    tintColor="#AF8EFF"
+                    lineCap={'round'}
+                    // // onAnimationComplete={() => console.log('onAnimationComplete')}
+                    backgroundColor="#F0EBFF"
+                  />
+                )}
+                <View
+                  style={{
+                    position:
+                      floCoins >= 10000 && floCoins < 20000
+                        ? 'absolute'
+                        : 'relative',
+                    paddingRight: 7,
+                  }}>
+                  <GoldMedal
+                    w={30}
+                    h={30}
+                    u
+                    c1={
+                      floCoins > 20000
+                        ? '#FFE609'
+                        : floCoins >= 10000 && floCoins < 20000
+                          ? 'F1ECFF'
+                          : '#E5E5E6'
+                    }
+                    c2={
+                      floCoins > 20000
+                        ? '#FFBD20'
+                        : floCoins >= 10000 && floCoins < 20000
+                          ? '968DFD'
+                          : '#B5BDC5'
+                    }
+                  />
+                </View>
+                {floCoins > 20000 && (
+                  <Text
+                    allowFontScaling={false}
+                    style={{ fontSize: 11, color: '#FFBD20', marginBottom: -5 }}>
+                    Activator
+                  </Text>
+                )}
+              </TouchableOpacity> */}

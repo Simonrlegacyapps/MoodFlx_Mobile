@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  ImageBackground,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import PropTypes from 'prop-types';
@@ -28,6 +29,7 @@ import {
   dynamicSize,
   horizontalScale,
 } from '../../../Constants/sizeChoose';
+import Colors from '../../../Constants/Colors/Colors';
 import {IsAnonymous, UserDetail} from '../../../redux/actions/actions';
 import AddNameModal from '../AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
@@ -36,6 +38,7 @@ import {GetStaffUserData} from '../../../apirequest/PostRequestApi';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
 import {PHOTO_URL} from '../../../Constants/constants';
 import Constants from '../../../Constants';
+import {BitCoinIcon} from '../../../../assets/svg/bitCoin';
 
 type props = {
   modalVisible: Boolean,
@@ -50,7 +53,9 @@ const SaveMoodConfirmModal = ({
   emotionText,
   onClickButtonOne,
   onClickButtonTwo,
-  moodText
+  moodText,
+  setText,
+  notesInputRewardPoints,
 }: props) => {
   const [color, setcolor] = useState('black');
   const [AnonymousStatus, setAnonymousStatus] = useState(true);
@@ -277,7 +282,7 @@ const SaveMoodConfirmModal = ({
             <TextInput
               value={note}
               onChangeText={(i) => {
-                setnote(i), setShowPurple(false);
+                setnote(i), setShowPurple(false), setText(i);
               }}
               returnKeyType={'done'}
               onSubmitEditing={() => Keyboard.dismiss()}
@@ -303,10 +308,24 @@ const SaveMoodConfirmModal = ({
               }
             }}>
             <Text style={styles.buttonOneText}>{'Add Note'}</Text>
-            {emotionText != 'Slide finger' &&<View style={styles.pupView}>
-            <Image resizeMode={"contain"} source={require("../../../../assets/newImage/AddCoinsPopUp/popUp.png")} style={styles.Pup}/>
-            <Text allowFontScaling={false} style={{position:'absolute', top:26, color:'white', fontSize:13, fontFamily:RubikRegular}}>+{UserData?.UserMoodCount >= 3 ? "4" : "3"} coins</Text>
-            </View>}
+            {emotionText != 'Slide finger' &&
+              notesInputRewardPoints !== 0 &&
+              !isNaN(notesInputRewardPoints) && (
+              <ImageBackground
+                style={styles.pupView}
+                imageStyle={styles.Pup}
+                source={require('../../../../assets/newImage/AddCoinsPopUp/popUp.png')}>
+                <BitCoinIcon
+                  style={styles.bitCoinIconView}
+                  color={'#FFFFFF'}
+                  w={getFontSize(11.5)}
+                  h={getFontSize(11.5)}
+                />
+                <Text allowFontScaling={false} style={styles.coinText}>
+                  + {`${notesInputRewardPoints}`} coins
+                </Text>
+              </ImageBackground>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -315,7 +334,7 @@ const SaveMoodConfirmModal = ({
                 backgroundColor: 'white',
               },
             ]}
-            onPress={onClickButtonOne}>
+            onPress={onClickButtonTwo}>
             <Text style={styles.buttonTwoText}>{'Not this time'}</Text>
           </TouchableOpacity>
         </View>
@@ -409,6 +428,8 @@ const styles = StyleSheet.create({
   textOne: {
     fontFamily: RubikRegular,
     fontSize: fontSize,
+    textAlign:'center',
+    paddingHorizontal:10
   },
   textTwo: {
     fontFamily: RubikRegular,
@@ -487,12 +508,41 @@ const styles = StyleSheet.create({
     width: '80%',
     paddingHorizontal: 15,
   },
-  pupView:{  position:'absolute', alignSelf:'center', height:90, bottom:1, alignItems:'center', justifyContent:'center'},
-  Pup:{
-    tintColor:'black',
-    height:90,
-    width:90, resizeMode:'contain',
-    // position:'absolute',
-    // bottom:10
-  }
+  pupView: {
+    flexDirection: 'row',
+    position: 'absolute',
+    alignSelf: 'center',
+    height: horizontalScale(45),
+    width: horizontalScale(100),
+    top: horizontalScale(-25),
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  Pup: {
+    height: horizontalScale(45),
+    width: horizontalScale(100),
+    resizeMode: 'stretch',
+    tintColor: Colors.coinOrange,
+  },
+  bitCoinIconView: {
+    top: horizontalScale(7),
+    marginRight: horizontalScale(3),
+  },
+  coinText: {
+    color: '#FFFFFF',
+    ...Platform.select({
+      android: {
+        top: horizontalScale(6),
+      },
+      ios: {
+        top: horizontalScale(5),
+      },
+      default: {
+        // other platforms, web for example
+        top: horizontalScale(6),
+      },
+    }),
+    fontSize: getFontSize(11.5),
+    fontFamily: RubikRegular,
+  },
 });
