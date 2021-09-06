@@ -37,6 +37,7 @@ const ProfileCoinModal = ({
     verifyDone,
     smallText,
     medal,
+    type,
     image,
     dataType,
     ComingUp,
@@ -84,7 +85,7 @@ const ProfileCoinModal = ({
                         style={{ height: 80, width: 80, margin: 15, resizeMode: 'contain' }}
                     /> */}
                     {medal &&<View style={{alignItems:'center', marginTop:30}}>
-                    <MedalPopUp/>
+                    <MedalPopUp type={type}/>
                     </View>}
 
                     {title &&<Text style={styles.titleText}>
