@@ -20,6 +20,7 @@ import {
     RubikRegular,
     RubikSemiBold,
 } from '../../Constants/fonts/Fonts';
+import {horizontalScale} from '../../Constants/sizeChoose';
 type props = {
     modalVisible: Boolean,
     dismissModalHandler: Object,
@@ -108,7 +109,8 @@ const ProfileCoinModal = ({
                             style={{
                                 marginVertical: 24,
                                 height: 56,
-                                width: title==="Mood Navigator"? 150: 250,
+                                // width: title==="Mood Navigator"? 150: 250,
+                                paddingHorizontal: horizontalScale(18),
                                 backgroundColor: '#7265E3',
                                 borderRadius: 16,
                                 alignItems: 'center',
