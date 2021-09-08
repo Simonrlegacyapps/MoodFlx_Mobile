@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',
-    borderRadius: 20,
+    borderRadius: horizontalScale(20),
   },
   modalView: {
     justifyContent: 'flex-end',
@@ -99,13 +99,13 @@ const styles = StyleSheet.create({
   },
   upperContainer: {
     backgroundColor: 'white',
-    borderRadius: 20,
-    marginHorizontal: 10,
-    paddingHorizontal: 20,
+    borderRadius: horizontalScale(20),
+    // marginHorizontal: 10,
+    paddingHorizontal: horizontalScale(20),
     width: '75%',
     overflow: 'hidden',
     justifyContent: 'center',
-    paddingTop: 10,
+    paddingTop: horizontalScale(10),
   },
   medalImageView: {
     alignItems: 'center',
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(16),
     textAlign: 'center',
     fontFamily: RubikLight,
-    color: '#9C9EB9',
+    color: '#5D5E6F',
     marginTop: horizontalScale(19),
   },
   buttonOne: {
