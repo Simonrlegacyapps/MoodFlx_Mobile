@@ -186,7 +186,7 @@ const MainProfileTab = ({navigation}) => {
           <View style={styles.nameTexts}>
             {/* <Text style={styles.since}>Points</Text> */}
             <Text style={styles.name}>
-              Mood status / <Rings />{' '}
+              Mood status | <Rings />{' '}
               <Text
                 style={{
                   color: '#FB8D09',
