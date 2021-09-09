@@ -1460,7 +1460,7 @@ export default function MoodDetector({ navigation }) {
           isMoodDetectorScreenFocused,
         );
         if (isUnmounted === false) {
-          setNotifData(UserData.notification);
+          setPulseNotifData(UserData.notification);
           setIsNotificationQuestionModalVisible(true);
         }
       }
