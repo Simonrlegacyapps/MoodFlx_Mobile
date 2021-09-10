@@ -465,3 +465,26 @@ export const getIsMoodLvlUp = (previousPoints, currentPoints) => {
   }
   return false;
 };
+
+export const getUpdateAnswerRewardPoints = (startDate) => {
+  if (typeof startDate !== 'string') {
+    return 0;
+  }
+  const startTime = moment(startDate)
+    ?.subtract?.(600, 'minute')
+    ?.add?.(moment().utcOffset(), 'minute');
+  if (!(startTime && moment.isMoment(startTime))) {
+    return 0;
+  }
+  const diffMinutes = moment().diff(startTime, 'minute');
+  if (diffMinutes <= 120) {
+    return 8;
+  } else if (diffMinutes > 120 && diffMinutes <= 180) {
+    return 6;
+  } else if (diffMinutes > 180 && diffMinutes <= 240) {
+    return 4;
+  } else if (diffMinutes > 240 && diffMinutes <= 300) {
+    return 2;
+  }
+  return 0;
+};

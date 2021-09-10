@@ -46,6 +46,7 @@ import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
 import {
   getIsInitialVideoVisible,
+  getUpdateAnswerRewardPoints,
   onDynamicLinkUpdate,
   onUnlinkUpdate,
   setFitnessDataSync,
@@ -446,7 +447,10 @@ const App: () => React$Node = () => {
         if (currentRoute && currentRoute.name !== 'MoodEmotionDetector') {
           isCurrentRoute = true;
           // console.log('----navigate to MoodEmotionDetector----');
-          RootNavigation.navigate('MoodEmotionDetector');
+          RootNavigation.navigate('MoodEmotionDetector', {
+            question: UserData?.notification?.data?.id,
+            points: getUpdateAnswerRewardPoints(UserData?.notification?.data?.start_date),
+          });
         } else if (!currentRoute) {
           isCurrentRoute = true;
         }

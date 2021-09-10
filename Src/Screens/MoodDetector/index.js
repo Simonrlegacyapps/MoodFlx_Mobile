@@ -91,6 +91,7 @@ import {
   getIsMoodLvlUp,
   getIsShowNegativeMoodInputPopup,
   getMoodInputRewardPoints,
+  getUpdateAnswerRewardPoints,
   openUrl,
   setIsInitialVideoVisible,
   setMoodInputTimeStamps,
@@ -166,6 +167,7 @@ export default function MoodDetector({ navigation }) {
   const [textForMood, setTextForMood] = useState("")
   const [moodInputRewardPoints, setMoodInputRewardPoints] = useState(0);
   const [notesInputRewardPoints, setNotesInputRewardPoints] = useState(0);
+  const [updateAnswerRewardPoints, setUpdateAnswerRewardPoints] = useState(0);
   const [isShowNegativeMoodModal, setIsShowNegativeMoodModal] = useState(false);
   const [savedMood, setSavedMood] = useState(null);
   const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
@@ -447,20 +449,19 @@ export default function MoodDetector({ navigation }) {
     wheelSizeChangeDisabled.current = false;
     const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
     const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
-    let newScrollerWidth =
-      offsetSize.current.scrollerWidth > mediumWheelSize
-        ? offsetSize.current.scrollerWidth
-        : mediumWheelSize;
-    let panX =
-      offsetSize.current.xMin +
-      offsetSize.current.scrollerWidth / 2 -
-      newScrollerWidth / 2 +
-      x;
-    let panY =
-      offsetSize.current.yMin +
-      offsetSize.current.bubbleCenterOffsetTop -
-      (offsetSize.current.toolTipHeight + mediumWheelSize / 2) +
-      y;
+    // let newScrollerWidth = (typeof offsetSize.current?.scrollerWidth === 'number' && offsetSize.current.scrollerWidth > mediumWheelSize)
+    //     ? offsetSize.current.scrollerWidth
+    //     : mediumWheelSize;
+    // let panX =
+    //   offsetSize.current.xMin +
+    //   offsetSize.current.scrollerWidth / 2 -
+    //   newScrollerWidth / 2 +
+    //   x;
+    // let panY =
+    //   offsetSize.current.yMin +
+    //   offsetSize.current.bubbleCenterOffsetTop -
+    //   (offsetSize.current.toolTipHeight + mediumWheelSize / 2) +
+    //   y;
     clearLongPressTimeouts({
       longPressPopUpTimeoutId,
       mediumPressTimeoutId,
@@ -490,23 +491,23 @@ export default function MoodDetector({ navigation }) {
           // pan.current.setValue({ x: panX, y: panY });
         }
         longPressTimeoutId.current = setTimeout(() => {
-          newScrollerWidth =
-            offsetSize.current.scrollerWidth > largeWheelSize
-              ? offsetSize.current.scrollerWidth
-              : largeWheelSize;
+          // newScrollerWidth =
+          //   offsetSize.current.scrollerWidth > largeWheelSize
+          //     ? offsetSize.current.scrollerWidth
+          //     : largeWheelSize;
           if (!wheelSizeChangeDisabled.current) {
-            if (offsetSize.current) {
-              panX =
-                offsetSize.current.xMin +
-                offsetSize.current.scrollerWidth / 2 -
-                newScrollerWidth / 2 +
-                x;
-              panY =
-                offsetSize.current.yMin +
-                offsetSize.current.bubbleCenterOffsetTop -
-                (offsetSize.current.toolTipHeight + largeWheelSize / 2) +
-                y;
-            }
+            // if (offsetSize.current) {
+              // panX =
+              //   offsetSize.current.xMin +
+              //   offsetSize.current.scrollerWidth / 2 -
+              //   newScrollerWidth / 2 +
+              //   x;
+              // panY =
+              //   offsetSize.current.yMin +
+              //   offsetSize.current.bubbleCenterOffsetTop -
+              //   (offsetSize.current.toolTipHeight + largeWheelSize / 2) +
+              //   y;
+            // }
             setScrollerWheelSize(largeWheelSize);
             setWheelSize(largeWheelSize);
             // pan.current.setValue({ x: panX, y: panY });
@@ -748,9 +749,9 @@ export default function MoodDetector({ navigation }) {
       blocksSize.current,
       screenContainerSize.current,
     );
+    offsetSize.current = offSetSize;
     let { xMin, xMax, yMin, yMax, initialX, initialY } = offSetSize;
     // console.log('updatePanResponder ', offSetSize);
-    offsetSize.current = offSetSize;
     constrainedX.current = pan.current.x.interpolate({
       inputRange: [xMin, 150, xMax],
       outputRange: [xMin, 150, xMax],
@@ -1234,7 +1235,12 @@ export default function MoodDetector({ navigation }) {
         console.log(`route.params.points`,route?.params?.points);
         var myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
-        const pulseAnswerRewardPoints = route?.params?.points ? route?.params?.points : 0;
+
+        let pulseAnswerRewardPoints = 0;
+        setUpdateAnswerRewardPoints((e) => {
+          pulseAnswerRewardPoints = e;
+          return e;
+        });
         var raw = JSON.stringify({
           device_id: deviceId,
           email: UserData.UserEmail,
@@ -1264,6 +1270,7 @@ export default function MoodDetector({ navigation }) {
           .then((result) => {
             console.log('quesstion updated', result);
             setLoading(false);
+            setUpdateAnswerRewardPoints(0);
             if (
               !isNaN(pulseAnswerRewardPoints) &&
               Number(pulseAnswerRewardPoints) > 0 &&
@@ -1462,10 +1469,17 @@ export default function MoodDetector({ navigation }) {
         if (isUnmounted === false) {
           setPulseNotifData(UserData.notification);
           setIsNotificationQuestionModalVisible(true);
+          if (UserData.notification?.data?.start_date) {
+            setUpdateAnswerRewardPoints(getUpdateAnswerRewardPoints(UserData.notification?.data?.start_date));
+          }
         }
       }
       // NotifService.cancelDeliveredNotifications([String(notification.id)]);
       console.log('NOTIFICATION: MoodDetector', UserData.notification);
+    }
+    if (typeof route?.params?.points === 'number') {
+      console.log('route?.params?.points -------->>>>>>>>', route?.params?.points);
+      setUpdateAnswerRewardPoints(route.params.points);
     }
   }, [isScreenFocused, pulseNotifData, UserData.notification, dispatch]);
 
@@ -1631,6 +1645,21 @@ export default function MoodDetector({ navigation }) {
     );
   };
 
+  let pts = -1;
+  if (
+    emotionText !== 'Slide finger' &&
+    moodInputRewardPoints !== 0 &&
+    !isNaN(moodInputRewardPoints)) {
+    pts = moodInputRewardPoints;
+  }
+  if (
+    emotionText !== 'Slide finger' &&
+    updateAnswerRewardPoints !== 0 &&
+    !isNaN(updateAnswerRewardPoints)
+  ) {
+    pts = updateAnswerRewardPoints;
+  }
+
   const renderBottomBar = (color) => (
     <View
       style={{
@@ -1670,9 +1699,7 @@ export default function MoodDetector({ navigation }) {
           }}>
           <View />
           <Text style={styles.saveText}>Save</Text>
-          {emotionText != 'Slide finger' &&
-            moodInputRewardPoints !== 0 &&
-            !isNaN(moodInputRewardPoints) && (
+          {pts > 0 && (
             <ImageBackground
               style={styles.pupView}
               imageStyle={styles.Pup}
@@ -1684,7 +1711,7 @@ export default function MoodDetector({ navigation }) {
                 h={getFontSize(12.5)}
               />
               <Text allowFontScaling={false} style={styles.coinText}>
-                + {`${moodInputRewardPoints}`} coins
+                + {`${pts}`} coins
               </Text>
             </ImageBackground>
           )}

@@ -35,6 +35,7 @@ import {moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import Clock from '../../../assets/svg/clock';
 import FloCoin from '../../../assets/svg/floCoins';
+import {getUpdateAnswerRewardPoints} from '../../services/commonService';
 
 const {height, width} = Dimensions.get('window');
 const MicScreen = ({navigation}) => {
@@ -218,16 +219,6 @@ const MicScreen = ({navigation}) => {
     );
   };
 
-  // console.log(`i for question`, i)
-  // // let givenDate = new Date(moment(i.end_date)).getTime();
-  // // let todayDate = new Date().getTime();
-  // let now = moment(Date.now())
-  // // let PresentTime = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds()
-  // let end = moment(i.end_date).format("HH:MM:SS")
-  // // let diff= endTime.diff(startTime, 'hours');
-  // // console.log(`presentTime`, now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds(), Date.now())
-  // console.log(`startTime`,  now )
-
   const getAnsweredQuestions = () => {
     let total = 0;
     for (let i in questions) {
@@ -396,18 +387,11 @@ const MicScreen = ({navigation}) => {
     const currentDate = moment().format('YYYY-MM-DD HH-mm-ss');
     console.log('endDate -', endDate);
     const isExpired = moment().isAfter(moment(endDate, 'YYYY-MM-DD HH-mm-ss'));
-    let givenDate = new Date(moment(endDate, 'YYYY-MM-DD HH-mm-ss')).getTime();
-    let todayDate = new Date().getTime();
-    // let EndDiff = DayHourDifference(moment(endDate, 'YYYY-MM-DD HH-mm-ss')?.toDate?.(), new Date());
     let EndDiff = dayHourDiffFormat(currentDate, endDate);
-    // let DayDif = DayDifference(new Date(moment(startDate, 'YYYY-MM-DD HH-mm-ss')), new Date());
-    let DayDif = dayDiff(startDate, currentDate);
-    // let hourDif = HourDifference(new Date(moment(startDate, 'YYYY-MM-DD HH-mm-ss')), new Date());
-    let hourDif = hrDiff(startDate, currentDate);
     // let totalTime = DayDifference(new Date(moment(endDate, 'YYYY-MM-DD HH-mm-ss')),new Date(moment(startDate, 'YYYY-MM-DD HH-mm-ss')));
     let totalTime = hrDiff(startDate, endDate);
     let timeTaken = hrDiff(startDate, currentDate);
-    // let timeTaken = dayDiff();
+    let rewardPts = getUpdateAnswerRewardPoints(i.start_date);
 
     console.log(`DateExpired`, DateExpired, showMore)
 
@@ -496,9 +480,10 @@ const MicScreen = ({navigation}) => {
                   <Text
                     style={[styles.Text, {fontSize: getFontSize(13), marginVertical: 0}]}>
                     {' '}
-                    {DayDif === 0
-                      ? `Earn ${getRewardsCoins(DayDif, hourDif)} flo coins`
-                      : 'Missed out on flo coins'}
+                    {rewardPts === 0
+                      ? 'Missed out on flo coins'
+                      : `Earn ${rewardPts} flo coins`
+                    }
                   </Text>
                 </View>
               </View>
@@ -507,7 +492,7 @@ const MicScreen = ({navigation}) => {
                     onPress={() => {
                       navigation.replace('MoodEmotionDetector', {
                         question: i.id,
-                        points: DayDif === 0 ? getRewardsCoins(DayDif, hourDif) : 0,
+                        points: rewardPts,
                       });
                     }}>
                     <Text
@@ -569,7 +554,7 @@ const MicScreen = ({navigation}) => {
                 flexDirection: 'row',
                 width: '100%',
                 alignItems: 'center',
-                // justifyContent: 'center',
+                justifyContent: 'space-between',
               }}>
               <View
                 style={{
@@ -889,7 +874,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   unansweredSubView: {
-    width: '100%%',
+    width: '100%',
     flexDirection: 'row',
     marginBottom: horizontalScale(5),
   },
