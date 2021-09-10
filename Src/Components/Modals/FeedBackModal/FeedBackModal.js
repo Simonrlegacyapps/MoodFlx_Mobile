@@ -282,7 +282,8 @@ const FeedBackModal = ({
               }}
               returnKeyType={'done'}
               onSubmitEditing={() => Keyboard.dismiss()}
-              style={{letterSpacing: 1}}
+              numberOfLines={4}
+              style={styles.feedBackInput}
               placeholder={`Please let us know how we can improve... \n\nThis is completely anonymous`}
               multiline={true}
             />
@@ -496,5 +497,17 @@ const styles = StyleSheet.create({
     width:90, resizeMode:'contain',
     // position:'absolute',
     // bottom:10
-  }
+  },
+  feedBackInput: {
+    letterSpacing: 1,
+    textAlignVertical: 'top',
+    ...Platform.select({
+      ios: {
+        height: getFontSize(70),
+      },
+      android: {
+        maxHeight: getFontSize(100),
+      },
+    }),
+  },
 });
