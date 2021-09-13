@@ -71,7 +71,7 @@ const MainProfileTab = ({navigation}) => {
   const getCoinsLabel = (min, max) => {
     // return floCoins >= min && floCoins < max ? `> ${getFloCoins(min)}` : floCoins >= min ?`> ${getFloCoins(max)}` : `${getFloCoins(min)} - ${getFloCoins(max)}`
     return floCoins >= min && floCoins < max
-      ? `${getFloCoins(min)} - ${getFloCoins(max)}`
+      ? `> ${getFloCoins(max)}`
       : floCoins < min
       ? `+ ${getFloCoins(min)}`
       : `> ${getFloCoins(max)}`;
@@ -258,7 +258,7 @@ const MainProfileTab = ({navigation}) => {
       </ScrollView>
       <ProfileCoinModal
         title={lvlName}
-        permission={`${CoinLevel} Flo Coins`}
+        permission={`${CoinLevel} Flo coins`}
         // image={Constants.Images.FitnessPopUp}
         dataType={'fitness'}
         smallText={CoinComment}
