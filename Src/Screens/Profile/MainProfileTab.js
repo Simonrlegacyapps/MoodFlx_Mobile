@@ -72,9 +72,9 @@ const MainProfileTab = ({navigation}) => {
     // return floCoins >= min && floCoins < max ? `> ${getFloCoins(min)}` : floCoins >= min ?`> ${getFloCoins(max)}` : `${getFloCoins(min)} - ${getFloCoins(max)}`
     return floCoins >= min && floCoins < max
       ? `${getFloCoins(min)} - ${getFloCoins(max)}`
-      : floCoins >= min
-      ? `> ${getFloCoins(max)}`
-      : `< ${getFloCoins(min)}`;
+      : floCoins < min
+      ? `+ ${getFloCoins(min)}`
+      : `> ${getFloCoins(max)}`;
   };
 
   const getCommentLabel = (min, max) => {
@@ -108,7 +108,7 @@ const MainProfileTab = ({navigation}) => {
     );
     return (
       <TouchableOpacity
-        onPress={() => onClickMedalIcon({min, max, type, LevelName})}
+        onPress={() => onClickMedalIcon({min, max, type, LevelName: `Mood ${LevelName}`})}
         style={[styles.medal]}>
         {floCoins >= min && floCoins < max && (
           <AnimatedCircularProgress
@@ -197,25 +197,25 @@ const MainProfileTab = ({navigation}) => {
               </Text>
             </Text>
             <View style={{flexDirection: 'row', marginTop: 10}}>
-              <Medals min={0} max={100} type={'a'} LevelName="Mood Activator" />
+              <Medals min={0} max={100} type={'a'} LevelName="Activator" />
               <Medals
                 min={100}
                 max={1000}
                 type={'n'}
-                LevelName="Mood Navigator"
+                LevelName="Navigator"
               />
-              <Medals min={1000} max={5000} type={'f'} LevelName="Mood Fit" />
+              <Medals min={1000} max={5000} type={'f'} LevelName="Fit" />
               <Medals
                 min={5000}
                 max={10000}
                 type={'p'}
-                LevelName="Mood Powerhouse"
+                LevelName="Powerhouse"
               />
               <Medals
                 min={10000}
                 max={20000}
                 type={'u'}
-                LevelName="Mood Unleashed"
+                LevelName="Unleashed"
               />
             </View>
           </View>
