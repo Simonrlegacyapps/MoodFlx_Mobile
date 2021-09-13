@@ -1,0 +1,26 @@
+import * as React from 'react';
+import Svg, {
+  G,
+  Path,
+  Defs,
+  Line,
+  LinearGradient,
+  Stop,
+  Mask,
+  Rect,
+  SvgXml,
+} from 'react-native-svg';
+import { getFontSize } from '../../Src/Constants/sizeChoose';
+
+
+export function NoteIcon(props) {
+  const xml = `
+    <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 7H5.0075H5ZM8 7H8.0075H8ZM11 7H11.0075H11ZM14.75 7C14.75 10.3135 11.7275 13 8 13C6.89648 13.0038 5.80609 12.7606 4.80875 12.2882L1.25 13L2.29625 10.21C1.634 9.2815 1.25 8.1805 1.25 7C1.25 3.6865 4.2725 1 8 1C11.7275 1 14.75 3.6865 14.75 7Z" stroke="#7265E3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    `;
+
+  return (
+    <SvgXml xml={xml} width={props.width ?? getFontSize(13.5)} height={props.height ?? getFontSize(12)} />
+  );
+}
