@@ -88,8 +88,9 @@ export default function DataInsights({
   dispatch,
 }) {
   const [isDailyInsights, setIsDailyInsights] = useState(
-    getWeeklyInsightsAvailable() !== true &&
-      !(!!weeklyInsights && isPermissionGiven),
+    getWeeklyInsightsAvailable() !== true ||
+    !weeklyInsights ||
+    !isPermissionGiven
   );
   const [showNotEnoughMoodsModal, setShowNotEnoughMoodsModal] = useState(false);
   const [ShowTarget, setShowTarget] = useState(false)
@@ -287,7 +288,7 @@ export default function DataInsights({
           </Text>
         </View>
          {!isDailyInsights &&  
-        <TouchableOpacity activeOpacity={0.7} onPress={()=>setShowTarget(!ShowTarget)}
+        <TouchableOpacity activeOpacity={0.7} onPress={() => setShowTarget((e) => !e)}
           style={styles.TargetView}>
           <View
             style={styles.targetSubView}>

@@ -48,7 +48,7 @@ const InstallGoogleFitModal = ({
         <View style={styles.upperContainer}>
           <Text
             style={styles.textOne}>
-            Please install Google Fit to sync all your health data.
+            Please install Google Fit to sync your health data.
           </Text>
 
           <TouchableOpacity style={styles.buttonOne} onPress={onClickButtonOne}>

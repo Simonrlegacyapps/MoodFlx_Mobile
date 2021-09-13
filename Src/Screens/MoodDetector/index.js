@@ -86,11 +86,23 @@ import {
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 import Insights from '../../../assets/svg/insights';
-import { getIsInitialVideoVisible, getIsShowNegativeMoodInputPopup, getMoodInputRewardPoints, openUrl, setIsInitialVideoVisible, setMoodInputTimeStamps, setSwiperIndexHome } from '../../services/commonService';
+import {
+  getIsInitialVideoVisible,
+  getIsMoodLvlUp,
+  getIsShowNegativeMoodInputPopup,
+  getMoodInputRewardPoints,
+  getUpdateAnswerRewardPoints,
+  openUrl,
+  setIsInitialVideoVisible,
+  setMoodInputTimeStamps,
+  setSwiperIndexHome,
+} from '../../services/commonService';
 import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 import NegativeMoodModal from '../../Components/Modals/NegativeMoodModal/NegativeMoodModal';
+import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
 import isEmpty from 'lodash.isempty';
+import getStore from '../../redux';
 
 let prevXY = { dx: 0, dy: 0 };
 let moveCount = 0;
@@ -149,14 +161,17 @@ export default function MoodDetector({ navigation }) {
   const [isHapticsEnabled, setisHapticsEnabled] = useState(false);
   const [hapticPosition, setHapticPosition] = useState(0);
   const [wheelSize, setWheelSize] = useState(getScrollerWheelSize());
-  const [NotifData, setNotifData] = useState(null);
+  const [pulseNotifData, setPulseNotifData] = useState(null);
   const [showLongPressText, setShowLongPressText] = useState(false);
   const [CurrentMood, setCurrentMood] = useState(null)
   const [textForMood, setTextForMood] = useState("")
   const [moodInputRewardPoints, setMoodInputRewardPoints] = useState(0);
   const [notesInputRewardPoints, setNotesInputRewardPoints] = useState(0);
+  const [updateAnswerRewardPoints, setUpdateAnswerRewardPoints] = useState(0);
   const [isShowNegativeMoodModal, setIsShowNegativeMoodModal] = useState(false);
   const [savedMood, setSavedMood] = useState(null);
+  const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
+  const isLvlUpOnMoodInput = useRef(false);
   const dispatch = useDispatch();
   const route = useRoute();
   const forceUpdate = useForceUpdate();
@@ -434,20 +449,19 @@ export default function MoodDetector({ navigation }) {
     wheelSizeChangeDisabled.current = false;
     const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
     const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
-    let newScrollerWidth =
-      offsetSize.current.scrollerWidth > mediumWheelSize
-        ? offsetSize.current.scrollerWidth
-        : mediumWheelSize;
-    let panX =
-      offsetSize.current.xMin +
-      offsetSize.current.scrollerWidth / 2 -
-      newScrollerWidth / 2 +
-      x;
-    let panY =
-      offsetSize.current.yMin +
-      offsetSize.current.bubbleCenterOffsetTop -
-      (offsetSize.current.toolTipHeight + mediumWheelSize / 2) +
-      y;
+    // let newScrollerWidth = (typeof offsetSize.current?.scrollerWidth === 'number' && offsetSize.current.scrollerWidth > mediumWheelSize)
+    //     ? offsetSize.current.scrollerWidth
+    //     : mediumWheelSize;
+    // let panX =
+    //   offsetSize.current.xMin +
+    //   offsetSize.current.scrollerWidth / 2 -
+    //   newScrollerWidth / 2 +
+    //   x;
+    // let panY =
+    //   offsetSize.current.yMin +
+    //   offsetSize.current.bubbleCenterOffsetTop -
+    //   (offsetSize.current.toolTipHeight + mediumWheelSize / 2) +
+    //   y;
     clearLongPressTimeouts({
       longPressPopUpTimeoutId,
       mediumPressTimeoutId,
@@ -477,23 +491,23 @@ export default function MoodDetector({ navigation }) {
           // pan.current.setValue({ x: panX, y: panY });
         }
         longPressTimeoutId.current = setTimeout(() => {
-          newScrollerWidth =
-            offsetSize.current.scrollerWidth > largeWheelSize
-              ? offsetSize.current.scrollerWidth
-              : largeWheelSize;
+          // newScrollerWidth =
+          //   offsetSize.current.scrollerWidth > largeWheelSize
+          //     ? offsetSize.current.scrollerWidth
+          //     : largeWheelSize;
           if (!wheelSizeChangeDisabled.current) {
-            if (offsetSize.current) {
-              panX =
-                offsetSize.current.xMin +
-                offsetSize.current.scrollerWidth / 2 -
-                newScrollerWidth / 2 +
-                x;
-              panY =
-                offsetSize.current.yMin +
-                offsetSize.current.bubbleCenterOffsetTop -
-                (offsetSize.current.toolTipHeight + largeWheelSize / 2) +
-                y;
-            }
+            // if (offsetSize.current) {
+              // panX =
+              //   offsetSize.current.xMin +
+              //   offsetSize.current.scrollerWidth / 2 -
+              //   newScrollerWidth / 2 +
+              //   x;
+              // panY =
+              //   offsetSize.current.yMin +
+              //   offsetSize.current.bubbleCenterOffsetTop -
+              //   (offsetSize.current.toolTipHeight + largeWheelSize / 2) +
+              //   y;
+            // }
             setScrollerWheelSize(largeWheelSize);
             setWheelSize(largeWheelSize);
             // pan.current.setValue({ x: panX, y: panY });
@@ -608,23 +622,58 @@ export default function MoodDetector({ navigation }) {
     }
   };
 
+  const onNoteInputComplete = (isLvlUpModalClose = false) => {
+    if (isLvlUpModalClose) {
+      setIsOpenLvlUpModal(false);
+    }
+    const closeId = setTimeout(() => {
+      let latitude = lat;
+      let longitude = lng;
+      setlat((e) => {
+        latitude = e;
+        return e;
+      });
+      setlng((e) => {
+        longitude = e;
+        return e;
+      });
+      setSwiperIndexHome(0, dispatch);
+      navigation.replace('HomeScreen', {
+        lat: latitude,
+        long: longitude,
+        screen: 'Home',
+        isMoodUpdate: true,
+      });
+      // onClose?.();
+      clearTimeout(closeId);
+    }, 300);
+  };
+
   const SaveMood = (isCallApi) => async () => {
-    const onSaveMoodComplete = () => {
-      setIsSaveMoodConfirmModalVisible(false);
-      const closeId = setTimeout(() => {
-        setSwiperIndexHome(0, dispatch);
-        navigation.replace('HomeScreen', {
-          lat: lat,
-          long: lng,
-          screen: 'Home',
-          isMoodUpdate: true,
-        });
-        // onClose?.();
-        clearTimeout(closeId);
-      }, 300);
-    };
+    setIsSaveMoodConfirmModalVisible(false);
+    // const onSaveMoodComplete = () => {
+    //   const closeId = setTimeout(() => {
+    //     setSwiperIndexHome(0, dispatch);
+    //     navigation.replace('HomeScreen', {
+    //       lat: lat,
+    //       long: lng,
+    //       screen: 'Home',
+    //       isMoodUpdate: true,
+    //     });
+    //     // onClose?.();
+    //     clearTimeout(closeId);
+    //   }, 300);
+    // };
     if (!(isCallApi && typeof moodIdForNotes.current === 'string' && moodIdForNotes.current)) {
-      onSaveMoodComplete();
+      if (isLvlUpOnMoodInput.current === true) {
+        const timeoutId = setTimeout(() => {
+          setIsOpenLvlUpModal(true);
+          isLvlUpOnMoodInput.current = false;
+          clearTimeout(timeoutId);
+        }, 400);
+      } else {
+        onNoteInputComplete();
+      }
       return;
     }
     let rewardPoint = 0;
@@ -649,21 +698,36 @@ export default function MoodDetector({ navigation }) {
       section_index: 5,
     };
     console.log(`params for update notes`, params);
+    setLoading(true);
+    const prevRewardPts = getStore?.()?.getState?.()?.First?.floCoins;
     const id = setTimeout(() => {
       PostRequestApi("updateNotes", params)
         .then((resp) => {
+          setLoading(false);
           setMoodInputTimeStamps(true);
-          console.log('Success Message of notes Input ✅ ✅ ✅ ✅', resp?.data);
+          console.log('✅ ✅ ✅ ✅ Success Message of notes Input ✅ ✅ ✅ ✅', resp?.data);
           if (!isNaN(resp?.data?.reward_point)) {
             dispatch(SetFloCoins(Number(resp.data.reward_point)));
           }
+          if (
+            isLvlUpOnMoodInput.current === true || (
+            !isNaN(rewardPoint) &&
+            Number(rewardPoint) > 0 &&
+            getIsMoodLvlUp(prevRewardPts, resp?.data?.reward_point)
+          )) {
+            setIsOpenLvlUpModal(true);
+            isLvlUpOnMoodInput.current = false;
+          } else {
+            onNoteInputComplete();
+          }
         })
         .catch((err) => {
+          setLoading(false);
+          onNoteInputComplete();
           console.log('err for notes addition', err);
         });
       clearTimeout(id);
     }, 200);
-    onSaveMoodComplete();
   };
 
   const updatePanResponder = () => {
@@ -685,9 +749,9 @@ export default function MoodDetector({ navigation }) {
       blocksSize.current,
       screenContainerSize.current,
     );
+    offsetSize.current = offSetSize;
     let { xMin, xMax, yMin, yMax, initialX, initialY } = offSetSize;
     // console.log('updatePanResponder ', offSetSize);
-    offsetSize.current = offSetSize;
     constrainedX.current = pan.current.x.interpolate({
       inputRange: [xMin, 150, xMax],
       outputRange: [xMin, 150, xMax],
@@ -841,7 +905,7 @@ export default function MoodDetector({ navigation }) {
   //           'Is it getting in here ======+++++++++=====+++++++++======+++++++++++====+++++++++++',
   //         );
   //         if (isUnmounted === false && isMoodDetectorScreenFocused === true) {
-  //           setNotifData(notification);
+  //           setPulseNotifData(notification);
   //           setIsNotificationQuestionModalVisible(true);
   //         }
   //         currentNotif = notification;
@@ -1045,6 +1109,30 @@ export default function MoodDetector({ navigation }) {
   // console.log(`route?.params?.question`, route?.params?.question);
   // console.log(`QuestionId`, QuestionID);
 
+  const onUpdateAnswerApiSuccess = (isLvlUpModalClose = false) => {
+    const onAction = () => {
+      setSwiperIndexHome(0, dispatch);
+      navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+    };
+    if (isLvlUpModalClose) {
+      setIsOpenLvlUpModal(false);
+      const timeoutId = setTimeout(() => {
+        onAction();
+        clearTimeout(timeoutId);
+      }, 500);
+    } else {
+      onAction();
+    }
+  };
+
+  const getLvlUpModalClose = () => {
+    if (route?.params?.question != undefined || QuestionID !== null) {
+      return () => onUpdateAnswerApiSuccess(true);
+    } else {
+      return () => onNoteInputComplete(true);
+    }
+  };
+
   const findId = async () => {
     let mood_type = moodTypes.regular;
     if (wheelSize === mediumWheelSize) {
@@ -1052,6 +1140,7 @@ export default function MoodDetector({ navigation }) {
     } else if (wheelSize === largeWheelSize) {
       mood_type = moodTypes.very;
     }
+    const prevRewardPts = getStore?.()?.getState?.()?.First?.floCoins;
 
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
@@ -1143,10 +1232,15 @@ export default function MoodDetector({ navigation }) {
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
-        console.log(`route.params.points`,route.params.points)
+        console.log(`route.params.points`,route?.params?.points);
         var myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
 
+        let pulseAnswerRewardPoints = 0;
+        setUpdateAnswerRewardPoints((e) => {
+          pulseAnswerRewardPoints = e;
+          return e;
+        });
         var raw = JSON.stringify({
           device_id: deviceId,
           email: UserData.UserEmail,
@@ -1157,7 +1251,7 @@ export default function MoodDetector({ navigation }) {
           mood_type,
           is_anonymous: !UserData.Anonymous ? 0 : 1,
           user_id: UserData.UserId,
-          reward_point: route?.params?.points ? route?.params?.points : 0,
+          reward_point: pulseAnswerRewardPoints,
           section_index: 3,
           description: 'team pulse answer',
         });
@@ -1176,8 +1270,16 @@ export default function MoodDetector({ navigation }) {
           .then((result) => {
             console.log('quesstion updated', result);
             setLoading(false);
-            setSwiperIndexHome(0, dispatch);
-            navigation.navigate('HomeScreen', { screen: 'MicScreen' });
+            setUpdateAnswerRewardPoints(0);
+            if (
+              !isNaN(pulseAnswerRewardPoints) &&
+              Number(pulseAnswerRewardPoints) > 0 &&
+              getIsMoodLvlUp(prevRewardPts, result?.reward_point)
+            ) {
+              setIsOpenLvlUpModal(true);
+            } else {
+              onUpdateAnswerApiSuccess();
+            }
           })
           .catch((error) => {
             console.log('error', error);
@@ -1200,11 +1302,13 @@ export default function MoodDetector({ navigation }) {
                 dispatch(SetFloCoins(Number(resp.data.reward_point)));
               }
               setLoading(false);
-              // navigation.navigate('VerifyEmail', {
-              //   code: resp.data.otp,
-              //   mail: value,
-              //   deviceID: deviceId,
-              // });
+              if (
+                !isNaN(rewardPoint) &&
+                Number(rewardPoint) >= 0 &&
+                getIsMoodLvlUp(prevRewardPts, resp?.data?.reward_point)
+              ) {
+                isLvlUpOnMoodInput.current = true;
+              }
               let showNegativeMoodModal = false;
               try {
                 setLoading(true);
@@ -1277,7 +1381,7 @@ export default function MoodDetector({ navigation }) {
   const verifyNotificationQuestion = (value) => {
     if (value === 'Yes') {
       setIsNotificationQuestionModalVisible(false);
-      setQuestionID(NotifData?.data?.id);
+      setQuestionID(pulseNotifData?.data?.id);
     } else {
       setIsNotificationQuestionModalVisible(false);
     }
@@ -1319,7 +1423,7 @@ export default function MoodDetector({ navigation }) {
       isMoodDetectorScreenFocused = true;
       setIsScreenFocused(true);
       // if(currentNotif) {
-      //   setNotifData(currentNotif);
+      //   setPulseNotifData(currentNotif);
       //   setIsNotificationQuestionModalVisible(true);
       // }
       // screen isFocused
@@ -1334,10 +1438,11 @@ export default function MoodDetector({ navigation }) {
         isMoodDetectorScreenFocused = false;
         setIsScreenFocused(false);
         dispatch(SetNotification(null));
-        setNotifData(null);
+        setPulseNotifData(null);
         // currentNotif = null;
         setWheelSize(regularWheelSize);
         setScrollerWheelSize(regularWheelSize);
+        isLvlUpOnMoodInput.current = false;
         // console.log('screen is out of focus: ', isActive);
       };
     }, []),
@@ -1348,7 +1453,7 @@ export default function MoodDetector({ navigation }) {
     if (UserData.notification) {
       if (
         isScreenFocused &&
-        !NotifData &&
+        !pulseNotifData &&
         UserData.notification?.data?.question &&
         UserData.notification?.data?.id
       ) {
@@ -1362,14 +1467,21 @@ export default function MoodDetector({ navigation }) {
           isMoodDetectorScreenFocused,
         );
         if (isUnmounted === false) {
-          setNotifData(UserData.notification);
+          setPulseNotifData(UserData.notification);
           setIsNotificationQuestionModalVisible(true);
+          if (UserData.notification?.data?.start_date) {
+            setUpdateAnswerRewardPoints(getUpdateAnswerRewardPoints(UserData.notification?.data?.start_date));
+          }
         }
       }
       // NotifService.cancelDeliveredNotifications([String(notification.id)]);
       console.log('NOTIFICATION: MoodDetector', UserData.notification);
     }
-  }, [isScreenFocused, NotifData, UserData.notification, dispatch]);
+    if (typeof route?.params?.points === 'number') {
+      console.log('route?.params?.points -------->>>>>>>>', route?.params?.points);
+      setUpdateAnswerRewardPoints(route.params.points);
+    }
+  }, [isScreenFocused, pulseNotifData, UserData.notification, dispatch]);
 
   const setLPXY = () => {
     // pan.current.setValue({
@@ -1533,6 +1645,21 @@ export default function MoodDetector({ navigation }) {
     );
   };
 
+  let pts = -1;
+  if (
+    emotionText !== 'Slide finger' &&
+    moodInputRewardPoints !== 0 &&
+    !isNaN(moodInputRewardPoints)) {
+    pts = moodInputRewardPoints;
+  }
+  if (
+    emotionText !== 'Slide finger' &&
+    updateAnswerRewardPoints !== 0 &&
+    !isNaN(updateAnswerRewardPoints)
+  ) {
+    pts = updateAnswerRewardPoints;
+  }
+
   const renderBottomBar = (color) => (
     <View
       style={{
@@ -1572,9 +1699,7 @@ export default function MoodDetector({ navigation }) {
           }}>
           <View />
           <Text style={styles.saveText}>Save</Text>
-          {emotionText != 'Slide finger' &&
-            moodInputRewardPoints !== 0 &&
-            !isNaN(moodInputRewardPoints) && (
+          {pts > 0 && (
             <ImageBackground
               style={styles.pupView}
               imageStyle={styles.Pup}
@@ -1586,7 +1711,7 @@ export default function MoodDetector({ navigation }) {
                 h={getFontSize(12.5)}
               />
               <Text allowFontScaling={false} style={styles.coinText}>
-                + {`${moodInputRewardPoints}`} coins
+                + {`${pts}`} coins
               </Text>
             </ImageBackground>
           )}
@@ -1703,7 +1828,7 @@ export default function MoodDetector({ navigation }) {
 
       <NotificationQuestion
         navigation={navigation}
-        question={NotifData}
+        question={pulseNotifData}
         modalVisible={isNotificationQuestionModalVisible}
         dismissModalHandler={dismissNotificationQuestionModal}
         verifyDone={(value) => verifyNotificationQuestion(value)}
@@ -1714,6 +1839,14 @@ export default function MoodDetector({ navigation }) {
         dismissModalHandler={dismissSkipMoodInputModal}
         onClickButtonOne={onAcceptSkipMoodInput}
         onClickButtonTwo={onDenySkipMoodInput}
+      />
+      <LvlUpModal
+        bigText="You’ve leveled up!"
+        modalVisible={isOpenLvlUpModal}
+        dismissModalHandler={getLvlUpModalClose()}
+        buttonText="Let's Go!"
+        verifyDone={getLvlUpModalClose()}
+        smallText="Check out what rewards you’ve unlocked"
       />
 
       {Loading && (

@@ -46,9 +46,11 @@ import {
 import {useFocusEffect} from '@react-navigation/native';
 import {getSleepDataAfterPermissionIOS} from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
-import {openHealthApp} from '../../services/commonService';
+import {getIsMoodLvlUp, openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
 import AsyncStorage from '@react-native-community/async-storage';
+import getStore from '../../redux';
+import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -88,6 +90,7 @@ const ProfileTab = ({ navigation }) => {
   const [Loading, setLoading] = useState(false);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -166,6 +169,10 @@ const ProfileTab = ({ navigation }) => {
       };
     }, [dispatch, UserData.UserEmail, UserData.UserId]),
   );
+
+  const closeLvlUpModal = useCallback(() => {
+    setIsOpenLvlUpModal(false);
+  }, []);
 
   useEffect(() => {
     AppState.addEventListener('change', _handleAppStateChange);
@@ -427,18 +434,19 @@ const ProfileTab = ({ navigation }) => {
 
   const onOpenHealthApp = useCallback(openHealthApp, []);
 
-  const checkStorage=async()=>{
-    navigation.navigate("ProgressScreens")
+  const checkStorage = async () => {
+    navigation.navigate("ProgressScreens");
     let p = await AsyncStorage.getItem('givePoints');
-    let points = await JSON.parse(p)
-    console.log(`points`, points)
-    if (points === null){
-      await AsyncStorage.setItem('givePoints', '1')
-      howMoodfloWorks()
+    let points = await JSON.parse(p);
+    console.log(`points`, points);
+    if (points === null) {
+      await AsyncStorage.setItem('givePoints', '1');
+      howMoodfloWorks();
     }
-  }
+  };
 
   const howMoodfloWorks = () => {
+    const prevRewardPts = getStore?.()?.getState?.()?.First?.floCoins;
     const deviceId = DeviceInfo.getUniqueId();
     let params = {
       "device_id": deviceId,
@@ -449,7 +457,15 @@ const ProfileTab = ({ navigation }) => {
       "description": "How moodflo works"
     };
     console.log(`params of how mood flo works 50 coins`, params);
-    getUpdateRewardPoint(params, dispatch);
+    getUpdateRewardPoint(params, dispatch).then((res) => {
+      console.log('getUpdateRewardPoint res.data----', res?.data);
+      if (
+        res?.data?.reward_point &&
+        getIsMoodLvlUp(prevRewardPts, res.data.reward_point)
+      ) {
+        setIsOpenLvlUpModal(true);
+      }
+    });
   };
 
   // console.log(
@@ -616,7 +632,7 @@ const ProfileTab = ({ navigation }) => {
             )}
           </View>
           <View style={styles.permissionTileContainer}>
-            <Text style={styles.permissionText}>Health Permission</Text>
+            <Text style={styles.permissionText}>Activity Permission</Text>
             {UserData.HealthPermission ? (
               <Pressable style={styles.syncingButton} onPress={onOpenHealthApp}>
                 <Text style={styles.allowed}>
@@ -715,6 +731,14 @@ const ProfileTab = ({ navigation }) => {
           <ActivityIndicator color='#9889F9' size="large" />
         </View>
       )}
+      <LvlUpModal
+        bigText="You’ve leveled up!"
+        modalVisible={isOpenLvlUpModal}
+        dismissModalHandler={closeLvlUpModal}
+        buttonText="Let's Go!"
+        verifyDone={closeLvlUpModal}
+        smallText="Check out what rewards you’ve unlocked"
+      />
     </>
   );
 };

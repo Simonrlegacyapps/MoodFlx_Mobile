@@ -159,7 +159,7 @@ export async function getDivisionName(
 
 export function getUpdateRewardPoint(params, dispatch) {
   console.log('params getUpdateRewardPoint', params);
-  PostRequestApi('getUpdateRewardPoint', params)
+  return PostRequestApi('getUpdateRewardPoint', params)
     .then((res) => {
       console.log(
         '✅ ✅ ✅ ✅ Success getUpdateRewardPoint ✅ ✅ ✅ ✅',
@@ -169,6 +169,7 @@ export function getUpdateRewardPoint(params, dispatch) {
         // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
         dispatch(SetFloCoins(Number(res.data.reward_point)));
       }
+      return Promise.resolve(res);
     })
     .catch((err) => {
       console.log('❌ ❌ ❌ ❌ Error getUpdateRewardPoint ❌ ❌ ❌ ❌', err);

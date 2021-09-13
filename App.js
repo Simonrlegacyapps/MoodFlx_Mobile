@@ -1,38 +1,22 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {
   View,
-  StatusBar,
-  Text,
-  ImageBackground,
   SafeAreaView,
-  ActivityIndicator,
   Dimensions,
   Image,
   Platform,
   AppState,
-  Button,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
-import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
-import thunk from 'redux-thunk';
-import {Provider, useDispatch, useSelector} from 'react-redux';
-import {createStore, applyMiddleware} from 'redux';
-import allReducers from './Src/redux/reducers';
-import ImageOne from './assets/OnBoarding/ImageOne';
-import FastImage from 'react-native-fast-image';
-import Carousel from 'react-native-snap-carousel';
-import One from './assets/OnBoarding/ImageOne.svg';
-import {SvgCssUri, SvgUri, SvgXml} from 'react-native-svg';
 import {
   GetUserId,
   HealthPerm,
   IsAnonymous,
   Lat,
-  LightPerm,
   Long,
   Moods,
   SetNotification,
@@ -40,7 +24,6 @@ import {
   SetWeeklyInsightsTimeLeft,
   SleepPerm,
   UserDetail,
-  UserDivision,
   UserEmail,
   WeatherPerm,
 } from './Src/redux/actions/actions';
@@ -61,9 +44,17 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import Analytics from './Src/services/analyticsService';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
-import { getIsInitialVideoVisible, onDynamicLinkUpdate, onUnlinkUpdate, setFitnessDataSync, setIsInitialVideoVisible, setMoodsArray } from './Src/services/commonService';
-import Toast, { BaseToast } from 'react-native-toast-message';
-import { getFontSize } from './Src/Constants/sizeChoose';
+import {
+  getIsInitialVideoVisible,
+  getUpdateAnswerRewardPoints,
+  onDynamicLinkUpdate,
+  onUnlinkUpdate,
+  setFitnessDataSync,
+  setIsInitialVideoVisible,
+  setMoodsArray,
+} from './Src/services/commonService';
+import Toast, {BaseToast} from 'react-native-toast-message';
+import {getFontSize} from './Src/Constants/sizeChoose';
 import Constants from './Src/Constants';
 import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
 import {
@@ -74,10 +65,11 @@ import {
 } from './Src/Constants/constants';
 import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
 import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgressModal/WeeklyInsightsProgressModal';
-import { setSleepDataSync } from './Src/Screens/Home/SleepData/sleepDataService';
+import {setSleepDataSync} from './Src/Screens/Home/SleepData/sleepDataService';
 import Screen1 from './Src/Screens/WalkThrough/Screen1';
 import BoardingNavigation from './Src/navigator/BoardingNavigation';
 import getStore from './Src/redux';
+import {useDispatch, useSelector} from 'react-redux';
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
@@ -455,7 +447,10 @@ const App: () => React$Node = () => {
         if (currentRoute && currentRoute.name !== 'MoodEmotionDetector') {
           isCurrentRoute = true;
           // console.log('----navigate to MoodEmotionDetector----');
-          RootNavigation.navigate('MoodEmotionDetector');
+          RootNavigation.navigate('MoodEmotionDetector', {
+            question: UserData?.notification?.data?.id,
+            points: getUpdateAnswerRewardPoints(UserData?.notification?.data?.start_date),
+          });
         } else if (!currentRoute) {
           isCurrentRoute = true;
         }

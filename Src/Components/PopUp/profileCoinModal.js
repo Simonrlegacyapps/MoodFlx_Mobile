@@ -20,6 +20,7 @@ import {
     RubikRegular,
     RubikSemiBold,
 } from '../../Constants/fonts/Fonts';
+import {horizontalScale} from '../../Constants/sizeChoose';
 type props = {
     modalVisible: Boolean,
     dismissModalHandler: Object,
@@ -37,6 +38,7 @@ const ProfileCoinModal = ({
     verifyDone,
     smallText,
     medal,
+    type,
     image,
     dataType,
     ComingUp,
@@ -84,7 +86,7 @@ const ProfileCoinModal = ({
                         style={{ height: 80, width: 80, margin: 15, resizeMode: 'contain' }}
                     /> */}
                     {medal &&<View style={{alignItems:'center', marginTop:30}}>
-                    <MedalPopUp/>
+                    <MedalPopUp type={type}/>
                     </View>}
 
                     {title &&<Text style={styles.titleText}>
@@ -107,7 +109,8 @@ const ProfileCoinModal = ({
                             style={{
                                 marginVertical: 24,
                                 height: 56,
-                                width: title==="Mood Navigator"? 150: 250,
+                                // width: title==="Mood Navigator"? 150: 250,
+                                paddingHorizontal: horizontalScale(18),
                                 backgroundColor: '#7265E3',
                                 borderRadius: 16,
                                 alignItems: 'center',

@@ -416,4 +416,75 @@ export const openUrl = (url) => async () => {
   } else {
     Alert.alert(`Can't open this URL: ${url}`);
   }
+};
+
+export function getLvlName(pts) {
+  let floCoins = pts ? pts : getStore?.()?.getState?.()?.First?.floCoins;
+  if (!isNaN(floCoins)) {
+    floCoins = Number(floCoins);
+    if (floCoins >= 0 && floCoins <= 100) {
+      return {title: 'Mood Activator', type: 'A'};
+    } else if (floCoins > 100 && floCoins <= 1000) {
+      return {title: 'Mood Navigator', type: 'N'};
+    } else if (floCoins > 1000 && floCoins <= 5000) {
+      return {title: 'Mood Fit', type: 'F'};
+    } else if (floCoins > 5000 && floCoins <= 10000) {
+      return {title: 'Mood Powerhouse', type: 'P'};
+    } else if (floCoins > 10000) {
+      return {title: 'Mood Unleashed', type: 'U'};
+    }
+  }
+  return null;
 }
+
+export const getIsMoodLvlUp = (previousPoints, currentPoints) => {
+  // console.log('getIsMoodLvlUp previousPoints--', previousPoints, '---currentPoints---', currentPoints);
+  if (isNaN(previousPoints)) {
+    return false;
+  }
+  if (isNaN(currentPoints)) {
+    return false;
+  }
+  let prevPts = Number(previousPoints);
+  let currentPts = Number(currentPoints);
+  if (prevPts >= currentPoints) {
+    return false;
+  }
+  if ((currentPts - prevPts) > 50) {
+    return false;
+  }
+  const prevLvl = getLvlName(prevPts) ?? -1;
+  const currentLvl = getLvlName(currentPts) ?? -1;
+  console.log('prevLvl --', prevLvl, '--currentLvl---', currentLvl);
+  if (
+    typeof prevLvl?.title === 'string' &&
+    typeof currentLvl?.title === 'string' &&
+    prevLvl.title !== currentLvl.title
+  ) {
+    return true;
+  }
+  return false;
+};
+
+export const getUpdateAnswerRewardPoints = (startDate) => {
+  if (typeof startDate !== 'string') {
+    return 0;
+  }
+  const startTime = moment(startDate)
+    ?.subtract?.(600, 'minute')
+    ?.add?.(moment().utcOffset(), 'minute');
+  if (!(startTime && moment.isMoment(startTime))) {
+    return 0;
+  }
+  const diffMinutes = moment().diff(startTime, 'minute');
+  if (diffMinutes <= 120) {
+    return 8;
+  } else if (diffMinutes > 120 && diffMinutes <= 180) {
+    return 6;
+  } else if (diffMinutes > 180 && diffMinutes <= 240) {
+    return 4;
+  } else if (diffMinutes > 240 && diffMinutes <= 300) {
+    return 2;
+  }
+  return 0;
+};
