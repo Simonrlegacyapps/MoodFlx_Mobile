@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
+  Pressable,
 } from 'react-native';
 import moment from 'moment';
 import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
@@ -28,6 +29,7 @@ import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import { useSelector } from 'react-redux';
 import PostRequestApi from '../../apirequest/PostRequestApi'
 import DeviceInfo from 'react-native-device-info';
+import isFunction from 'lodash.isfunction';
 
 const getInsightsArray = (text) => {
   let insights = [];
@@ -86,6 +88,7 @@ export default function DataInsights({
   timeLeft,
   isPermissionGiven,
   dispatch,
+  onPressInsights,
 }) {
   const [isDailyInsights, setIsDailyInsights] = useState(
     getWeeklyInsightsAvailable() !== true ||
@@ -268,7 +271,7 @@ export default function DataInsights({
               </AnimatedCircularProgress>
             )}
         </View>
-        <View style={styles.tabDetailsView}>
+        <Pressable style={styles.tabDetailsView} onPress={onPressInsights}>
           <Text style={styles.tabDetailsText}>
             {isPermissionGiven ? (
               ''
@@ -286,7 +289,7 @@ export default function DataInsights({
               );
             })}
           </Text>
-        </View>
+        </Pressable>
          {!isDailyInsights &&  
         <TouchableOpacity activeOpacity={0.7} onPress={() => setShowTarget((e) => !e)}
           style={styles.TargetView}>

@@ -459,6 +459,7 @@ const FitnessData = ({
           {skeleton && <Skeleton/>}
           <DataInsights
             dailyInsights={!UserData.HealthPermission ? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
+            onPressInsights={insights?.dailyInsights.includes('permissions') ? openHealthApp : undefined}
             weeklyInsights={!UserData.HealthPermission ? "Your weekly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.weeklyInsights}
             dailySuggestion={!UserData.HealthPermission ? "Try take a 20 min walk during lunch - 1,800 steps" : insights?.dailySuggestion}
             dailySuggestionType={!UserData.HealthPermission ? "warning" : insights?.dailySuggestionType}
