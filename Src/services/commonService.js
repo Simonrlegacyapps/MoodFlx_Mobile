@@ -374,7 +374,7 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     return false;
   }
   let values = Object.values(response?.data?.moodList);
-  if (!(Array.isArray(values) && values.length > 0)) {
+  if (!(Array.isArray(values) && values.length >= 7)) {
     return false;
   }
   values.forEach((e) => {
