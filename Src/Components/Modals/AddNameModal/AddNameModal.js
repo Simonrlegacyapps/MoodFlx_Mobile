@@ -153,7 +153,8 @@ const AddNameModal = ({
                 paddingLeft: 15,
               }}
               onChangeText={(text) => {
-                onChangeText(text);
+                // onChangeText(text);
+                onChangeText('Tester');
               }}
               value={value}
             />
