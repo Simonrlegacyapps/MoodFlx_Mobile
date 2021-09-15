@@ -40,6 +40,7 @@ import {
   SET_SLEEP_DATA_SYNC_STATUS,
   SET_WEATHER_INSIGHTS,
   SET_SCROLLING,
+  RESET_LINK_TO_COMPANY_PARAMS,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -295,6 +296,13 @@ export const SetWeatherInsights = (data) => {
 export const setScrolling = (data) => {
   return {
     type: SET_SCROLLING,
+    payload: data,
+  };
+};
+
+export const ResetLinkToCompanyParams = (data) => {
+  return {
+    type: RESET_LINK_TO_COMPANY_PARAMS,
     payload: data,
   };
 };

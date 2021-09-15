@@ -40,6 +40,7 @@ import {
   SET_SLEEP_DATA_SYNC_STATUS,
   SET_WEATHER_INSIGHTS,
   SET_SCROLLING,
+  RESET_LINK_TO_COMPANY_PARAMS,
   
 } from '../constants/action-types';
 
@@ -89,7 +90,8 @@ const intializedState = {
     weeklySuggestion: '',
     weeklySuggestionType: '',
   },
-  Scrolling:false
+  Scrolling: false,
+  isLinkToCompanyRouteParamsReset: false,
 };
 
 export const First = (state = intializedState, action) => {
@@ -261,6 +263,10 @@ export const First = (state = intializedState, action) => {
     case SET_SCROLLING:
       return Object.assign({}, state, {
         Scrolling: action.payload,
+      });
+    case RESET_LINK_TO_COMPANY_PARAMS:
+      return Object.assign({}, state, {
+        isLinkToCompanyRouteParamsReset: action.payload,
       });
     default:
       return state;

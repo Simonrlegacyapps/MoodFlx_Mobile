@@ -24,6 +24,7 @@ import {
   HealthPerm,
   IsAnonymous,
   OTP_Verify,
+  ResetLinkToCompanyParams,
   UserDetail,
   UserDivision,
   UserEmail,
@@ -97,6 +98,13 @@ const Linktocompany = ({ navigation }) => {
   //   UserData.UserEmail,
   //   UserData.UserDivision,
   // );
+
+  useEffect(() => {
+    if (UserData.isLinkToCompanyRouteParamsReset === true) {
+      route?.params?.email && navigation?.setParams?.({ email: null });
+      dispatch(ResetLinkToCompanyParams(false));
+    }
+  }, [UserData.isLinkToCompanyRouteParamsReset]);
 
   useEffect(() => {
     if (UserData.UserEmail && UserData.UserId) {
