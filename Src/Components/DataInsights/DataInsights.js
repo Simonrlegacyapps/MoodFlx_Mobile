@@ -252,6 +252,7 @@ export default function DataInsights({
           {getWeeklyInsightsAvailable() !== true &&
             timeLeft !== -1 &&
             !isNaN(timeLeft) && (
+              <Pressable onPress={onPressWeeklyTab}>
               <AnimatedCircularProgress
                 duration={900}
                 arcSweepAngle={360}
@@ -269,6 +270,7 @@ export default function DataInsights({
                   </Text>
                 )}
               </AnimatedCircularProgress>
+              </Pressable>
             )}
         </View>
         <Pressable style={styles.tabDetailsView} onPress={onPressInsights}>
