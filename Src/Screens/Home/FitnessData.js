@@ -128,7 +128,7 @@ const FitnessData = ({
   );
   const [isCallSync, setIsCallSync] = useState(false);
   const prevHealthUpdateApiCount = useRef(healthUpdateApiCount);
-  const [skeleton, setskeleton] = useState(false)
+  const [skeleton, setskeleton] = useState(false);
 
   // console.log(`UserData`, UserData);
 
@@ -455,8 +455,8 @@ const FitnessData = ({
         </View>
 
         <View style={styles.subViewTwo}>
-          {Loading && <ActivityIndicator color='#9889F9' size='large' />}
-          {skeleton && <Skeleton/>}
+          {(Loading || skeleton) && <View style={styles.activityIndicator}><ActivityIndicator color='#9889F9' size='large' /></View>}
+          {(Loading || skeleton) && <Skeleton/>}
           <DataInsights
             dailyInsights={!UserData.HealthPermission ? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
             onPressInsights={insights?.dailyInsights.includes('permissions') ? openHealthApp : undefined}
@@ -756,7 +756,7 @@ const FitnessData = ({
             height: '100%',
             width: '100%',
             backgroundColor: 'black',
-            opacity: 0.2,
+            backgroundColor: 'rgba(0,0,0,0.2)',
             justifyContent: 'center',
             alignItems: 'center',
           }}/>
@@ -862,6 +862,12 @@ const styles = StyleSheet.create({
   },
   subViewTwo: {
     marginTop: horizontalScale(20),
+  },
+  activityIndicator: {
+    position: 'absolute',
+    top: horizontalScale(20),
+    alignSelf: 'center',
+    zIndex: 5,
   },
   SmallThinBlackText: {
     fontFamily: RubikLight,
