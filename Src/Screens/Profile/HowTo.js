@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import React, {useRef, useEffect, useCallback} from 'react';
+import {View, Text, ScrollView, StyleSheet, RefreshControl} from 'react-native';
 import { getFontScale } from 'react-native/Libraries/Utilities/PixelRatio';
 import BigRing from '../../../assets/svg/BigRing';
 import Rings from '../../../assets/svg/rings';
@@ -32,11 +32,35 @@ const SimpleText = ({label, text, mt}) => {
   );
 };
 
-const HowTo = () => {
+
+const HowTo = ({setIsLevelsHide, islevelsHide}) => {
+  const offset = useRef(0);
+  const isHidden = useRef(false);
+
+  useEffect(() => {
+    if (!islevelsHide) {
+      isHidden.current = false;
+    }
+  }, [islevelsHide]);
+
+  const onScroll = useCallback((event) => {
+    var currentOffset = event.nativeEvent.contentOffset.y;
+    var isDown = currentOffset > offset.current;
+    offset.current = currentOffset;
+    if (!islevelsHide && !isHidden.current && isDown && currentOffset > 0) {
+      isHidden.current = true;
+      setIsLevelsHide(true);
+    } else if (!isDown && currentOffset <= 0 && islevelsHide) {
+      isHidden.current = false;
+      setIsLevelsHide(false);
+    }
+  }, [setIsLevelsHide]);
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       scrollEnabled={true}
+      onScroll={onScroll}
       style={{
         height: '100%',
         width: '100%',

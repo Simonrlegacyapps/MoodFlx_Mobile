@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,9 +15,11 @@ import Images from '../../Constants/Images/Images';
 import { getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import { setScrolling } from '../../redux/actions/actions';
 
-const Rewards = () => {
+const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   const [openActionSheet, setopenActionSheet] = useState(false)
-  const data = [
+  const offset = useRef(0);
+  const isHidden = useRef(false);
+  const data = useRef([
     {
       id: '1',
       image: Images.MusicFestivalImg,
@@ -127,14 +129,32 @@ const Rewards = () => {
       details: 'Anaconda Member Benefits',
       price: 500,
     },
-  ];
-
+  ]); 
 
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    if (!islevelsHide) {
+      isHidden.current = false;
+    }
+  }, [islevelsHide]);
+
   const VerifyDone = () => {
     setopenActionSheet(false)
-  }
+  };
+
+  const onScroll = useCallback((event) => {
+    var currentOffset = event.nativeEvent.contentOffset.y;
+    var isDown = currentOffset > offset.current;
+    offset.current = currentOffset;
+    if (!islevelsHide && !isHidden.current && isDown && currentOffset > 0) {
+      isHidden.current = true;
+      setIsLevelsHide(true);
+    } else if (!isDown && currentOffset <= 0 && islevelsHide) {
+      isHidden.current = false;
+      setIsLevelsHide(false);
+    }
+  }, [setIsLevelsHide]);
 
   const renderItem = ({ item, index }) => {
     return (
@@ -182,7 +202,13 @@ const Rewards = () => {
         height: '100%',
         width: '100%',
       }}>
-      <FlatList onScroll={() => { dispatch(setScrolling(true)), console.log(`top`) }} onScrollToTop={() => { dispatch(setScrolling(false)), console.log(`bobttom`) }} scrollEnabled={true} data={data} renderItem={renderItem} showsVerticalScrollIndicator={false} />
+      <FlatList
+        scrollEnabled={true}
+        data={data.current}
+        renderItem={renderItem}
+        onScroll={onScroll}
+        showsVerticalScrollIndicator={false}
+      />
       <View style={{ padding: 40 }} />
       <ProfileCoinModal
         permission={"Hang in there you'll be able to cash in your Flo soon!"}

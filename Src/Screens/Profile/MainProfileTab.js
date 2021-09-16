@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
+  LayoutAnimation,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useSelector} from 'react-redux';
@@ -45,15 +46,25 @@ const MainProfileTab = ({navigation}) => {
   const [CoinComment, setCoinComment] = useState('');
   const [lvlName, setLvlName] = useState('');
   const [type, setType] = useState('');
+  const [isLevelsHide, setIsLevelsHide] = useState(false);
 
   const UserData = useSelector((state) => state.First);
-  const {Scrolling, floCoins} = UserData;
+  const {floCoins} = UserData;
 
   // let floCoins = 3000
 
   const VerifyDone = () => {
     setopenActionSheet(false);
   };
+
+  const changeLayout = useCallback((flag) => {
+    setIsLevelsHide((e) => {
+      if (e !== flag) {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      }
+      return flag;
+    });
+  }, []);
 
   const getPromotionCoinLeft = () => {
     return floCoins >= 0 && floCoins < 100
@@ -77,6 +88,7 @@ const MainProfileTab = ({navigation}) => {
       : `> ${getFloCoins(max)}`;
   };
 
+
   const getCommentLabel = (min, max) => {
     // return floCoins >= min && floCoins < max ? `You’ve already smashed this level` : floCoins > min ?  `You’ve already smashed this level` : `Just another ${getPromotionCoinLeft()} until you’re promoted!`
     return floCoins >= min && floCoins < max
@@ -85,6 +97,33 @@ const MainProfileTab = ({navigation}) => {
       ? modalComments.lvlPassed
       : modalComments.lvlNotUnlocked;
   };
+
+  const rewards = useCallback(() => {
+    return (
+      <Rewards
+        setIsLevelsHide={changeLayout}
+        islevelsHide={isLevelsHide}
+      />
+    );
+  }, [changeLayout, isLevelsHide]);
+
+  const howTo = useCallback(() => {
+    return (
+      <HowTo
+        setIsLevelsHide={changeLayout}
+        islevelsHide={isLevelsHide}
+      />
+    );
+  }, [changeLayout, isLevelsHide]);
+
+  const history = useCallback(() => {
+    return (
+      <History
+        setIsLevelsHide={changeLayout}
+        islevelsHide={isLevelsHide}
+      />
+    );
+  }, [changeLayout, isLevelsHide]);
 
   let lightGold = '#FFE609';
   let Gold = '#FFBD20';
@@ -182,44 +221,44 @@ const MainProfileTab = ({navigation}) => {
       <ProfileHeader navigation={navigation} />
       {/* {!Scrolling && <View style={{flexDirection: 'row', marginHorizontal: 15}}> */}
       {/* <ScrollView> */}
-        <View style={{flexDirection: 'row', marginHorizontal: 15}}>
-          <View style={styles.nameTexts}>
-            {/* <Text style={styles.since}>Points</Text> */}
-            <Text style={styles.name}>
-              Mood status | <Rings />{' '}
-              <Text
-                style={{
-                  color: '#FB8D09',
-                  fontFamily: RubikLight,
-                  fontSize: 14,
-                }}>
-                {getPromotionCoinLeft()} until promotion
-              </Text>
+      <View style={{ flexDirection: 'row', marginHorizontal: 15, height: !isLevelsHide ? null : 0, overflow: 'hidden' }}>
+        <View style={styles.nameTexts}>
+          {/* <Text style={styles.since}>Points</Text> */}
+          <Text style={styles.name}>
+            Mood status | <Rings />{' '}
+            <Text
+              style={{
+                color: '#FB8D09',
+                fontFamily: RubikLight,
+                fontSize: 14,
+              }}>
+              {getPromotionCoinLeft()} until promotion
             </Text>
-            <View style={{flexDirection: 'row', marginTop: 10}}>
-              <Medals min={0} max={100} type={'a'} LevelName="Activator" />
-              <Medals
-                min={100}
-                max={1000}
-                type={'n'}
-                LevelName="Navigator"
-              />
-              <Medals min={1000} max={5000} type={'f'} LevelName="Fit" />
-              <Medals
-                min={5000}
-                max={10000}
-                type={'p'}
-                LevelName="Powerhouse"
-              />
-              <Medals
-                min={10000}
-                max={20000}
-                type={'u'}
-                LevelName="Unleashed"
-              />
-            </View>
+          </Text>
+          <View style={{ flexDirection: 'row', marginTop: 10 }}>
+            <Medals min={0} max={100} type={'a'} LevelName="Activator" />
+            <Medals
+              min={100}
+              max={1000}
+              type={'n'}
+              LevelName="Navigator"
+            />
+            <Medals min={1000} max={5000} type={'f'} LevelName="Fit" />
+            <Medals
+              min={5000}
+              max={10000}
+              type={'p'}
+              LevelName="Powerhouse"
+            />
+            <Medals
+              min={10000}
+              max={20000}
+              type={'u'}
+              LevelName="Unleashed"
+            />
           </View>
-          {/* <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        </View>
+        {/* <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <LinearGradient
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -233,28 +272,28 @@ const MainProfileTab = ({navigation}) => {
             </View>
           </LinearGradient>
         </View> */}
-        </View>
+      </View>
         {/* </View>} */}
         {/* <ScrollView> */}
-        <Tab.Navigator
-          swipeEnabled={true}
-          tabBarOptions={{
-            // style: { height: 30 },
-            labelStyle: {
-              // marginTop: -10,
-              fontFamily: RubikRegular,
-              color: '#7265E3',
-              letterSpacing: 1,
-            },
-            activeTintColor: '#6A6D90',
-            inactiveTintColor: '#6A6D90',
-            indicatorStyle: {borderColor: '#7265E3', borderWidth: 1.5},
-            // tabStyle: { borderWidth: 0 }
-          }}>
-          <Tab.Screen name="Rewards" component={Rewards} options={{}} />
-          <Tab.Screen name="History" component={History} />
-          <Tab.Screen name="How To" component={HowTo} />
-        </Tab.Navigator>
+      <Tab.Navigator
+        swipeEnabled={true}
+        tabBarOptions={{
+          // style: { height: 30 },
+          labelStyle: {
+            // marginTop: -10,
+            fontFamily: RubikRegular,
+            color: '#7265E3',
+            letterSpacing: 1,
+          },
+          activeTintColor: '#6A6D90',
+          inactiveTintColor: '#6A6D90',
+          indicatorStyle: { borderColor: '#7265E3', borderWidth: 1.5 },
+          // tabStyle: { borderWidth: 0 }
+        }}>
+        <Tab.Screen name="Rewards" component={rewards} />
+        <Tab.Screen name="History" component={history} />
+        <Tab.Screen name="How To" component={howTo} />
+      </Tab.Navigator>
       {/* </ScrollView> */}
       <ProfileCoinModal
         title={lvlName}

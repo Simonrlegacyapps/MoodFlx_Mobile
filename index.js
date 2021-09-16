@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import {AppRegistry, Platform, LogBox} from 'react-native';
+import {AppRegistry, Platform, LogBox, UIManager} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 import {Provider} from 'react-redux';
@@ -13,6 +13,10 @@ import getStore from './Src/redux';
 LogBox.ignoreAllLogs(true);
 
 const store = getStore();
+
+if (Platform.OS === 'android') {
+  UIManager?.setLayoutAnimationEnabledExperimental?.(true);
+}
 
 // Must be outside of any component LifeCycle (such as `componentDidMount`).
 PushNotification.configure({

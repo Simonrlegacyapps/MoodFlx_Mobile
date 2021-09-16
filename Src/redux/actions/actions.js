@@ -293,13 +293,6 @@ export const SetWeatherInsights = (data) => {
   };
 };
 
-export const setScrolling = (data) => {
-  return {
-    type: SET_SCROLLING,
-    payload: data,
-  };
-};
-
 export const ResetLinkToCompanyParams = (data) => {
   return {
     type: RESET_LINK_TO_COMPANY_PARAMS,
