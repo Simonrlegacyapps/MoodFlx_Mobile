@@ -5,7 +5,7 @@ import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts'
 
 const History = () => {
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: 'white',  }} scrollEnabled={false} >
+        <ScrollView style={{ flex: 1, backgroundColor: 'white',  }} scrollEnabled={true} >
             <View style={{alignItems: 'center',}}>
             <View style={{ marginTop: 30 }}>
                 <HisotyImage />

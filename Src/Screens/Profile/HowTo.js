@@ -36,7 +36,7 @@ const HowTo = () => {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      scrollEnabled={false}
+      scrollEnabled={true}
       style={{
         height: '100%',
         width: '100%',
