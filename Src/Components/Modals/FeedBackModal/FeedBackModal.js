@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
     color: '#9C9EB9',
   },
   buttonOne: {
-    minWidth: '50%',
+    minWidth: '66%',
     backgroundColor: '#7265E3',
     paddingVertical: horizontalScale(10),
     borderRadius: horizontalScale(15),
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   },
   buttonTwoText: {
     fontFamily: RubikMedium,
-    fontSize: getFontSize(15),
+    fontSize: getFontSize(14),
     color: '#9C9EB9',
   },
   purpleBackground: {

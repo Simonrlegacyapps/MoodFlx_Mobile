@@ -1,13 +1,14 @@
-import React from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import React, {useRef, useEffect, useCallback} from 'react';
+import {View, Text, ScrollView, StyleSheet, RefreshControl} from 'react-native';
+import { getFontScale } from 'react-native/Libraries/Utilities/PixelRatio';
 import BigRing from '../../../assets/svg/BigRing';
 import Rings from '../../../assets/svg/rings';
 import {RubikLight, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
-import { dynamicSize } from '../../Constants/sizeChoose';
+import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 
 const BoldHeader = ({label}) => {
   return (
-    <View style={{marginVertical: 15}}>
+    <View style={{marginTop: horizontalScale(50), marginBottom: horizontalScale(30)}}>
       <Text style={{fontFamily: RubikMedium, color:"##2D3142", fontSize:18}}>{label}</Text>
     </View>
   );
@@ -31,11 +32,35 @@ const SimpleText = ({label, text, mt}) => {
   );
 };
 
-const HowTo = () => {
+
+const HowTo = ({setIsLevelsHide, islevelsHide}) => {
+  const offset = useRef(0);
+  const isHidden = useRef(false);
+
+  useEffect(() => {
+    if (!islevelsHide) {
+      isHidden.current = false;
+    }
+  }, [islevelsHide]);
+
+  const onScroll = useCallback((event) => {
+    var currentOffset = event.nativeEvent.contentOffset.y;
+    var isDown = currentOffset > offset.current;
+    offset.current = currentOffset;
+    if (!islevelsHide && !isHidden.current && isDown && currentOffset > 0) {
+      isHidden.current = true;
+      setIsLevelsHide(true);
+    } else if (!isDown && currentOffset <= 0 && islevelsHide) {
+      isHidden.current = false;
+      setIsLevelsHide(false);
+    }
+  }, [setIsLevelsHide]);
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      scrollEnabled={false}
+      scrollEnabled={true}
+      onScroll={onScroll}
       style={{
         height: '100%',
         width: '100%',
@@ -87,7 +112,8 @@ const HowTo = () => {
             <Text style={styles.hours}>12:00 PM - 6:00 PM</Text>
             <Text style={styles.hours}>6:00 PM - 12:00 AM</Text>
             </View>
-            <View style={{ width:dynamicSize(180), paddingHorizontal:10, marginLeft:dynamicSize(25),  justifyContent:'center', borderLeftWidth:0.4, borderColor:'#F5F5F5'}}>
+            <View style={styles.verticalDivider}/>
+            <View style={{ width:dynamicSize(180), paddingRight:10,  justifyContent:'center', borderLeftWidth:0.4, borderColor:'#F5F5F5'}}>
                 <Text style={[styles.text, {marginBottom:10}]}>2 notes per interval</Text>
                 <Text style={styles.text}>earn coins if there is a 2 hour gap between each note</Text>
             </View>
@@ -107,13 +133,28 @@ const HowTo = () => {
             <Text style={styles.hours}>12:00 PM - 6:00 PM</Text>
             <Text style={styles.hours}>6:00 PM - 12:00 AM</Text>
             </View>
-            <View style={{ width:dynamicSize(180), paddingHorizontal:10, paddingLeft:14, marginLeft:dynamicSize(25),  justifyContent:'center', borderLeftWidth:0.4, borderColor:'#F5F5F5'}}>
+            <View style={styles.verticalDivider}/>
+            <View style={{ width:dynamicSize(180), paddingRight:10,  justifyContent:'center', borderLeftWidth:0.4, borderColor:'#F5F5F5'}}>
                 <Text style={[styles.text, {marginBottom:10,letterSpacing:0.7}]}>2 notes per interval</Text>
                 <Text style={[styles.text, {letterSpacing:0.7}]}>earn coins if there is a 2 hour gap between each note</Text>
             </View>
         </View>
         </View>
+        <View>
+        <BoldHeader label={'Mood Status'} />
+        <View style={styles.levelRowView}>
+        <Text style={{fontSize: getFontSize(12), fontFamily:RubikLight, color:'#9C9EB9', }}>Level</Text>
+        <Text style={{fontSize: getFontSize(12), fontFamily:RubikLight, color:'#9C9EB9', }}>Flo coins</Text>
+        </View>
+        <SimpleText label={'Mood Activator'} text={' 0 - 100'} />
+        <SimpleText label={'Mood Navigator'} text={' 100 - 1,000'} />
+        <SimpleText label={'Mood Fit'} text={' 1,000 - 5,000'} />
+        <SimpleText label={'Mood Powerhouse'} text={' 5,000 - 10,000'} />
+        <SimpleText label={'Mood Unleashed'} text={' Mood Unleashed'} />
+          
+        </View>
       </View>
+      
       <View style={{marginBottom: 120}} />
     </ScrollView>
   );
@@ -126,10 +167,23 @@ const styles=StyleSheet.create({
         margin:8,
         marginLeft:0
     },
+    verticalDivider: {
+      width: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.06)',
+      height: '100%',
+      marginLeft: horizontalScale(37),
+      marginRight: horizontalScale(18),
+    },
     text:{
         fontSize:12,
         color:"#4C5980"
-    }
+    },
+    levelRowView: {
+      flexDirection: 'row',
+      width: '100%',
+      justifyContent: 'space-between',
+      marginBottom: horizontalScale(10),
+    },
 })
 
 export default HowTo;

@@ -1,11 +1,33 @@
-import React from 'react'
+import React, {useRef, useEffect, useCallback} from 'react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import HisotyImage from '../../../assets/svg/historyImage'
 import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts'
 
-const History = () => {
+const History = ({setIsLevelsHide, islevelsHide}) => {
+    const offset = useRef(0);
+    const isHidden = useRef(false);
+  
+    useEffect(() => {
+      if (!islevelsHide) {
+        isHidden.current = false;
+      }
+    }, [islevelsHide]);
+
+  const onScroll = useCallback((event) => {
+    var currentOffset = event.nativeEvent.contentOffset.y;
+    var isDown = currentOffset > offset.current;
+    offset.current = currentOffset;
+    if (!islevelsHide && !isHidden.current && isDown && currentOffset > 0) {
+      isHidden.current = true;
+      setIsLevelsHide(true);
+    } else if (!isDown && currentOffset <= 0 && islevelsHide) {
+      isHidden.current = false;
+      setIsLevelsHide(false);
+    }
+  }, [setIsLevelsHide]);
+
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: 'white',  }} scrollEnabled={false} >
+        <ScrollView style={{ flex: 1, backgroundColor: 'white',  }} scrollEnabled={true} onScroll={onScroll}>
             <View style={{alignItems: 'center',}}>
             <View style={{ marginTop: 30 }}>
                 <HisotyImage />

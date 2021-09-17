@@ -51,6 +51,7 @@ import PlayButton from '../../../assets/svg/playButton';
 import AsyncStorage from '@react-native-community/async-storage';
 import getStore from '../../redux';
 import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
+import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -64,12 +65,12 @@ const bottomList = [
   {
     name: 'Terms & Conditions',
     icon: <TermsIcon />,
-    link: 'https://admin.moodflo.com/terms&conditions',
+    link: TERMS_OF_USE_URL,
   },
   {
     name: 'Privacy Policy',
     icon: <PrivacyIcon />,
-    link: 'https://admin.moodflo.com/privacy_policy',
+    link: PRIVACY_POLICY_URL,
   },
 ];
 

@@ -46,12 +46,9 @@ const PERMISSION_TYPE = {
 const googleFitScopes = {
   scopes: [
     Scopes.FITNESS_ACTIVITY_READ,
-    Scopes.FITNESS_ACTIVITY_WRITE,
     Scopes.FITNESS_BODY_READ,
-    Scopes.FITNESS_BODY_WRITE,
     Scopes.FITNESS_SLEEP_READ,
-    Scopes.FITNESS_HEART_RATE_READ,
-    Scopes.FITNESS_BLOOD_PRESSURE_READ,
+    Scopes.FITNESS_LOCATION_READ,
   ],
 };
 

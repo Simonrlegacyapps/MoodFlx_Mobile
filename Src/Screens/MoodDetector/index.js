@@ -1269,6 +1269,7 @@ export default function MoodDetector({ navigation }) {
           .then((response) => response.json())
           .then((result) => {
             console.log('quesstion updated', result);
+            console.log('quesstion updated', result?.reward_point);
             setLoading(false);
             setUpdateAnswerRewardPoints(0);
             if (
@@ -1654,7 +1655,7 @@ export default function MoodDetector({ navigation }) {
   }
   if (
     emotionText !== 'Slide finger' &&
-    updateAnswerRewardPoints !== 0 &&
+    (route?.params?.question != undefined || QuestionID !== null) &&
     !isNaN(updateAnswerRewardPoints)
   ) {
     pts = updateAnswerRewardPoints;

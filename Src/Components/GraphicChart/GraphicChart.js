@@ -41,10 +41,11 @@ const BasicExample = ({
   fours,
   fives,
   dataOfWeatherGraph,
+  weeklyHealthGraphData,
   fitness,
   sleepGraphData,
   isDailyDisabled,
-  graphType
+  graphType,
 }) => {
   const [Duration, setDuration] = useState(sleepGraphData ? durationTypes.week : durationTypes.daily);
 
@@ -262,7 +263,7 @@ const BasicExample = ({
         setDuration={setDuration}
         duration={Duration}
       />
-    )
+    );
   } else if (dataOfWeatherGraph) {
     return (
       <DataGraph 
@@ -273,7 +274,18 @@ const BasicExample = ({
         // setDuration={setDuration}
         duration={durationTypes.daily}
       />
-    )
+    );
+  } else if (weeklyHealthGraphData) {
+    return (
+      <DataGraph
+        data={weeklyHealthGraphData}
+        yAxisLabel=""
+        yAxisSuffix=""
+        graphType={graphType}
+        // setDuration={setDuration}
+        duration={durationTypes.week}
+      />
+    );
   }
   return (
     <View

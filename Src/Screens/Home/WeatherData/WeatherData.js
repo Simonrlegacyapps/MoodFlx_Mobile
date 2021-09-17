@@ -1402,30 +1402,6 @@ const WeatherData = ({
             />
           )}
           {!UserData.WeatherPermission && (
-            <View
-              style={{
-                position: 'absolute',
-                top: 420,
-                alignItems: 'center',
-                height: '100%',
-                width: '100%',
-                zIndex: -234234,
-              }}>
-              <Text
-                allowFontScaling={false}
-                style={{
-                  marginTop: dynamicSize(-300),
-                  fontWeight: '700',
-                  fontFamily: RubikExtraBold,
-                  fontSize: SIZE / 3.5,
-                  color: '#E0DDED',
-                  transform: [{ rotate: '-15deg' }],
-                }}>
-                Demo
-              </Text>
-            </View>
-          )}
-          {!UserData.WeatherPermission && (
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {

@@ -13,6 +13,7 @@ import {
 import Modal from 'react-native-modal';
 import {useSelector} from 'react-redux';
 import Constants from '../../Constants';
+import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
 import {
   RubikLight,
   RubikMedium,
@@ -118,7 +119,7 @@ const PopUp = ({
             ]}>
             <TouchableOpacity
               onPress={() =>
-                Linking.openURL('https://admin.moodflo.com/terms&conditions')
+                Linking.openURL(TERMS_OF_USE_URL)
               }>
               <Text style={{fontSize: 12, paddingTop: 12}}>
                 {' '}
@@ -127,7 +128,7 @@ const PopUp = ({
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() =>
-                Linking.openURL('https://admin.moodflo.com/privacy_policy')
+                Linking.openURL(PRIVACY_POLICY_URL)
               }>
               <Text style={{fontSize: 12, paddingTop: 12}}>
                 {' '}

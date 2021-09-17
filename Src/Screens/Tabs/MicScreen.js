@@ -30,12 +30,17 @@ import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpir
 import AsyncStorage from '@react-native-community/async-storage';
 import {GetUserId, UserEmail} from '../../redux/actions/actions';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
-import {GetStaffUserData} from '../../apirequest/PostRequestApi';
+import {getDivisionName, GetStaffUserData} from '../../apirequest/PostRequestApi';
 import {moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import Clock from '../../../assets/svg/clock';
 import FloCoin from '../../../assets/svg/floCoins';
 import {getUpdateAnswerRewardPoints} from '../../services/commonService';
+import getStore from '../../redux';
+import {
+  PulseConnect,
+  PulseSelectDivision,
+} from '../../Components/PulseComponents/PulseConnect';
 
 const {height, width} = Dimensions.get('window');
 const MicScreen = ({navigation}) => {
@@ -142,6 +147,11 @@ const MicScreen = ({navigation}) => {
 
   useFocusEffect(
     useCallback(() => {
+      const userEmail = getStore?.()?.getState?.()?.First?.UserEmail;
+      const userDivision = getStore?.()?.getState?.()?.First?.UserDivision;
+      if (userEmail && typeof userEmail === 'string' && !userDivision) {
+        getDivisionName();
+      }
       getQuestions();
       return () => {
         // screen is out of focus
@@ -361,6 +371,10 @@ const MicScreen = ({navigation}) => {
       }
     }
   }
+
+  const onConnect = useCallback(() => {
+    navigation.navigate('LinkCompanyStackNavigation');
+  }, []);
 
   const Questions = ({item, index}) => {
     const [showMore, setshowMore] = useState(false);
@@ -622,6 +636,27 @@ const MicScreen = ({navigation}) => {
       </>
     );
   };
+
+  if (
+    !UserData.UserEmail ||
+    !UserData.UserId ||
+    (!UserData.UserDivision && !(
+      Array.isArray(UserData.getDivision) &&
+      UserData.getDivision.length > 0))
+  ) {
+    return <PulseConnect onConnect={onConnect} />;
+  } else if (
+    !UserData.UserDivision &&
+    Array.isArray(UserData.getDivision) &&
+    UserData.getDivision.length > 0
+  ) {
+    return (
+      <PulseSelectDivision
+        divisions={UserData.getDivision}
+        userEmail={UserData.UserEmail}
+      />
+    );
+  }
 
   return (
     <View

@@ -12,7 +12,7 @@ const Skeleton = () => {
         // width: '90%',
        alignSelf: 'center',
        minHeight: 200,
-       marginTop: 50,
+      //  marginTop: 50,
        padding: 20,
        borderRadius: 20,
      }}>

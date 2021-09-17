@@ -1,6 +1,9 @@
 export const PHOTO_URL = 'https://admin.moodflo.com/';
 import moment from 'moment';
 
+export const PRIVACY_POLICY_URL = 'https://moodflo.com/privacy-policy';
+export const TERMS_OF_USE_URL = 'https://moodflo.com/terms-of-use';
+
 export const hapticsConfigs = {
   car: {
     light: 'impactLight',
@@ -101,23 +104,23 @@ export const getScreensPriority = (data) => {
       priority: 1,
     },
     {
-      name: dataTypes.screenTime,
-      permission: false,
-      priority: 2,
-    },
-    {
       name: dataTypes.light,
       permission: true,
-      priority: 3,
+      priority: 2,
     },
     {
       name: dataTypes.weather,
       permission: data?.WeatherPermission,
-      priority: 4,
+      priority: 3,
     },
     {
       name: dataTypes.sleep,
       permission: data?.SleepPermission,
+      priority: 4,
+    },
+    {
+      name: dataTypes.screenTime,
+      permission: false,
       priority: 5,
     },
   ];

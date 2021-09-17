@@ -37,7 +37,7 @@ import PostRequestApi, {
 } from '../../apirequest/PostRequestApi';
 import DataInsights from '../../Components/DataInsights/DataInsights';
 import moment from 'moment';
-import { getWeeklyInsightsAvailable } from '../../Constants/constants';
+import { dataTypes, getWeeklyInsightsAvailable } from '../../Constants/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
 import { getFloCoins, openHealthApp } from '../../services/commonService';
@@ -89,6 +89,38 @@ function fitnessInsightsReducer(state, action) {
   }
 }
 
+function getWeeklyHealthGraphData(dataArray) {
+  let weekDates = [];
+  let dates = [6, 5, 4, 3, 2, 1, 0];
+  let todaySteps = getStore?.().getState?.()?.First?.UserSteps ?? '0';
+  let apiDataArray = [];
+  dates.forEach((e, idx) => {
+    const d = moment().startOf('day').subtract(e, 'days');
+    weekDates.push({ date: d.format('YYYY-MM-DD'), day: d.format('dd'), y: e === 0 ? todaySteps : "0" });
+  });
+  console.log('dates ->', weekDates);
+  if (!(Array.isArray(dataArray) && dataArray.length > 0)) {
+    return weekDates;
+  }
+  let flag = false;
+  weekDates.forEach((e, idx) => {
+    dataArray.forEach((x) => {
+      if (!flag && x?.date === (e?.date ?? '-1')) {
+        apiDataArray.push({ ...e, y: x?.steps ?? "0" });
+        flag = true;
+      }
+    });
+    if (!flag) {
+      apiDataArray.push({...e});
+    }
+    flag = false;
+  });
+  apiDataArray = apiDataArray.map((e) => {
+    return { ...e, y: typeof e?.y === 'number' ? String(e.y) : (e?.y ?? '0') };
+  })
+  return apiDataArray;
+}
+
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
 const FitnessData = ({
@@ -122,13 +154,14 @@ const FitnessData = ({
   const [ShowAddName, setShowAddName] = useState(false);
   const [FitnessPopUp, setFitnessPopUp] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
+  const [weeklyHealthGraphData, setWeeklyHealthGraphData] = useState(null);
   const [insights, setInsights] = useReducer(
     fitnessInsightsReducer,
     fitnessInsightsInitialState,
   );
   const [isCallSync, setIsCallSync] = useState(false);
   const prevHealthUpdateApiCount = useRef(healthUpdateApiCount);
-  const [skeleton, setskeleton] = useState(false)
+  const [skeleton, setskeleton] = useState(false);
 
   // console.log(`UserData`, UserData);
 
@@ -173,6 +206,26 @@ const FitnessData = ({
   };
   const VerifyAddName = () => {
     ProfileApiCallHere();
+  };
+
+  const callGetHealthDataApi = () => {
+    const deviceId = DeviceInfo.getUniqueId();
+    const store = getStore?.()?.getState?.();
+    const params = {
+      device_id: deviceId,
+      email: store?.First?.UserEmail ?? '',
+      user_id: store?.First?.UserId ?? '',
+    };
+    console.log('getHealthData params --->', params);
+    PostRequestApi('getHealthData', params)
+      .then((res) => {
+        console.log('✅ ✅ ✅ ✅ Success getHealthData ✅ ✅ ✅ ✅', res?.data);
+        setWeeklyHealthGraphData(getWeeklyHealthGraphData(res?.data?.healthData));
+      })
+      .catch(function (error) {
+        setskeleton(false)
+        console.log('❌ ❌ ❌ ❌ Error getHealthData ❌ ❌ ❌ ❌', error);
+      });
   };
 
   const getInsights = () => {
@@ -263,6 +316,7 @@ const FitnessData = ({
       healthUpdateApiCount > 0
     ) {
       getInsights();
+      callGetHealthDataApi();
       prevHealthUpdateApiCount.current = healthUpdateApiCount;
     }
   }, [healthUpdateApiCount, UserData.UserEmail, UserData.UserId]);
@@ -455,10 +509,11 @@ const FitnessData = ({
         </View>
 
         <View style={styles.subViewTwo}>
-          {Loading && <ActivityIndicator color='#9889F9' size='large' />}
-          {skeleton && <Skeleton/>}
+          {(Loading || skeleton) && <View style={styles.activityIndicator}><ActivityIndicator color='#9889F9' size='large' /></View>}
+          {(Loading || skeleton) && <Skeleton/>}
           <DataInsights
             dailyInsights={!UserData.HealthPermission ? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
+            onPressInsights={insights?.dailyInsights.includes('permissions') ? openHealthApp : undefined}
             weeklyInsights={!UserData.HealthPermission ? "Your weekly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.weeklyInsights}
             dailySuggestion={!UserData.HealthPermission ? "Try take a 20 min walk during lunch - 1,800 steps" : insights?.dailySuggestion}
             dailySuggestionType={!UserData.HealthPermission ? "warning" : insights?.dailySuggestionType}
@@ -672,6 +727,7 @@ const FitnessData = ({
           {/* <GraphBezierCustom /> */}
           <GraphicChart
             fitness={true}
+            graphType={dataTypes.activity}
             day
             zero={zero}
             ones={ones}
@@ -679,6 +735,7 @@ const FitnessData = ({
             threes={threes}
             fours={fours}
             fives={fives}
+            weeklyHealthGraphData={weeklyHealthGraphData}
           />
           {/* {!UserData.HealthPermission && (
             <View
@@ -755,7 +812,7 @@ const FitnessData = ({
             height: '100%',
             width: '100%',
             backgroundColor: 'black',
-            opacity: 0.2,
+            backgroundColor: 'rgba(0,0,0,0.2)',
             justifyContent: 'center',
             alignItems: 'center',
           }}/>
@@ -861,6 +918,12 @@ const styles = StyleSheet.create({
   },
   subViewTwo: {
     marginTop: horizontalScale(20),
+  },
+  activityIndicator: {
+    position: 'absolute',
+    top: horizontalScale(20),
+    alignSelf: 'center',
+    zIndex: 5,
   },
   SmallThinBlackText: {
     fontFamily: RubikLight,

@@ -53,13 +53,21 @@ export function DataGraph({
   }, [data, graphType]);
 
   const _dataSet = useMemo(() => {
+    console.log('graphType =>', graphType);
+    console.log('graph data --->', data);
     let d = [];
-    if (Array.isArray(data) && data.length === 7) {
-    d.push({
-      data: data.map(e => {
-        return e?.y;
-      })
-    });
+    if (graphType === dataTypes.activity && Array.isArray(data) && data.length === 7) {
+      d.push({
+        data: data.map(e => {
+          return e?.y;
+        }),
+      });
+    } else if (Array.isArray(data) && data.length === 7) {
+      d.push({
+        data: data.map(e => {
+          return e?.y;
+        })
+      });
     } else if (graphType === dataTypes.weather) {
       d.push({
         data: data.map(e => {
@@ -85,6 +93,7 @@ export function DataGraph({
         data: [10, 15, 20, 15, 10, 15]
       });
     }
+    console.log('_dataSet -', d);
     return d;
   }, [data]);
 
@@ -102,7 +111,7 @@ export function DataGraph({
         alignItems: 'center',
         alignSelf: 'center',
       }}>
-      {graphType !== dataTypes.sleep && graphType !== dataTypes.weather && (
+      {graphType !== dataTypes.sleep && graphType !== dataTypes.weather && graphType !== dataTypes.activity && (
       <View
         style={{
           flexDirection: 'row',

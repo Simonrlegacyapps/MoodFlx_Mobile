@@ -4,6 +4,7 @@ import {
   Dimensions,
   Image,
   Modal,
+  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -23,28 +24,46 @@ import {
   HealthPerm,
   IsAnonymous,
   OTP_Verify,
+  ResetLinkToCompanyParams,
   UserDetail,
   UserDivision,
   UserEmail,
   WeatherPerm,
 } from '../../redux/actions/actions';
-import { dynamicSize } from '../../Constants/sizeChoose';
+import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
 import {
   RubikBlack,
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import PostRequestApi, { getDivisionName } from '../../apirequest/PostRequestApi';
-import { useRoute, useFocusEffect } from '@react-navigation/native';
+import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
+import {useRoute, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 import { PHOTO_URL } from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
-import { onUnlinkUpdate } from '../../services/commonService';
+import {onUnlinkUpdate} from '../../services/commonService';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import FeedBackModal from '../../Components/Modals/FeedBackModal/FeedBackModal';
+import {NoteIcon} from '../../../assets/svg/noteIcon';
+
+const FeedbackButton = ({onClick}) => (
+  <Pressable
+    // disabled={selectedLanguage ? false : true}
+    onPress={() => onClick?.(true)}>
+    <View style={styles.feedbackButtonContainer}>
+      <Text style={styles.feedbackButtonDetails}>
+        We’d love to hear your anonymous feedback {'&'} recommendations!
+      </Text>
+      <View style={styles.sendNoteView}>
+        <Text style={styles.sendNoteText}>Send a note</Text>
+        <NoteIcon width={getFontSize(13.5)} height={getFontSize(12)} />
+      </View>
+    </View>
+  </Pressable>
+)
 
 const Linktocompany = ({ navigation }) => {
   const { OTPVerified, setDivision, getDivision } = useSelector(
@@ -79,6 +98,13 @@ const Linktocompany = ({ navigation }) => {
   //   UserData.UserEmail,
   //   UserData.UserDivision,
   // );
+
+  useEffect(() => {
+    if (UserData.isLinkToCompanyRouteParamsReset === true) {
+      route?.params?.email && navigation?.setParams?.({ email: null });
+      dispatch(ResetLinkToCompanyParams(false));
+    }
+  }, [UserData.isLinkToCompanyRouteParamsReset]);
 
   useEffect(() => {
     if (UserData.UserEmail && UserData.UserId) {
@@ -427,6 +453,7 @@ const Linktocompany = ({ navigation }) => {
       </View>
 
       <AnonymousHeader backGround />
+      <ScrollView>
       {!UserData.UserDivision && !UserData.UserEmail && (
         <View
           style={{ flex: 1, alignItems: 'center', marginTop: dynamicSize(95) }}>
@@ -470,32 +497,8 @@ const Linktocompany = ({ navigation }) => {
               </Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
-            // disabled={selectedLanguage ? false : true}
-            onPress={() => {setshowFeedBack(true)}}>
-            <View
-              style={{
-                marginTop: 40,
-                height: dynamicSize(46),
-                width: dynamicSize(150),
-                backgroundColor: '#7265E3',
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'row',
-              }}>
-              {/* <UnlockIcon /> */}
-              <Text
-                style={{
-                  fontWeight: '500',
-                  fontSize: 16,
-                  color: '#FFFFFF',
-                  marginLeft: dynamicSize(11),
-                }}>
-                Feedback
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <View style={styles.lineSeperator} />
+          <FeedbackButton onClick={setshowFeedBack} />
         </View>
       )}
       {UserData.UserEmail && (UserData.UserDivision === null || route?.params?.email) && (
@@ -730,7 +733,7 @@ const Linktocompany = ({ navigation }) => {
               marginLeft: 62,
               marginRight: 62,
               textAlign: 'center',
-              marginBottom: 42,
+              marginBottom: horizontalScale(42),
               width: 270,
             }}>
             {UserData?.UserDivision ?? ''}
@@ -740,7 +743,7 @@ const Linktocompany = ({ navigation }) => {
             onPress={() => setUnlinkConfirm(true)}>
             <View
               style={{
-                marginTop: 20,
+                // marginTop: 20,
                 height: dynamicSize(56),
                 width: dynamicSize(250),
                 backgroundColor: '#7265E3',
@@ -761,32 +764,8 @@ const Linktocompany = ({ navigation }) => {
               </Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
-            // disabled={selectedLanguage ? false : true}
-            onPress={() => setshowFeedBack(true)}>
-            <View
-              style={{
-                marginTop: 40,
-                height: dynamicSize(46),
-                width: dynamicSize(150),
-                backgroundColor: '#7265E3',
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'row',
-              }}>
-              {/* <UnlockIcon /> */}
-              <Text
-                style={{
-                  fontWeight: '500',
-                  fontSize: 16,
-                  color: '#FFFFFF',
-                  marginLeft: dynamicSize(11),
-                }}>
-                Feedback
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <View style={styles.lineSeperator} />
+          <FeedbackButton onClick={setshowFeedBack} />
 
           {/* <Text
             style={{
@@ -803,6 +782,7 @@ const Linktocompany = ({ navigation }) => {
           </Text> */}
         </View>
       )}
+      </ScrollView>
       {Loading && (
         <View
           style={{
@@ -876,6 +856,37 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 16,
     color: '#FFFFFF',
+  },
+  lineSeperator: {
+    marginTop: horizontalScale(44),
+    marginBottom: horizontalScale(40),
+    height: horizontalScale(1),
+    width: '90%',
+    backgroundColor: 'rgba(0,0,0, 0.07)',
+  },
+  feedbackButtonContainer: {
+    width: dynamicSize(250),
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginBottom: horizontalScale(120),
+  },
+  feedbackButtonDetails: {
+    fontWeight: '400',
+    fontSize: getFontSize(13),
+    textAlign: 'center',
+    color: '#9C9EB9',
+  },
+  sendNoteView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: horizontalScale(10),
+  },
+  sendNoteText: {
+    color: '#7265E3',
+    fontWeight: '500',
+    fontFamily: RubikRegular,
+    fontSize: getFontSize(15),
+    marginRight: horizontalScale(8),
   },
 });
 
