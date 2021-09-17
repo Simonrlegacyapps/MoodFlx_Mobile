@@ -952,8 +952,10 @@ const App = (props) => {
         }
         console.log('getWeightSamples Weight', Weight);
         console.log('userWeight', userWeight);
+        onFinish?.(true);
       } catch (e) {
         console.log('getWeightSamples error: ', e);
+        onFinish?.(true);
       }
 
       // Height data
@@ -969,32 +971,32 @@ const App = (props) => {
       // }
 
       // Heart Rate data
-      try {
-        const heartrate = await GoogleFit.getHeartRateSamples(
-          heartRateBPOptions,
-        );
-        if (Array.isArray(heartrate) && heartrate.length > 0) {
-          HeartRate = heartrate;
-        }
-        console.log('getHeartRateSamples', heartrate);
-      } catch (e) {
-        console.log('getHeartRateSamples error: ', e);
-      }
+      // try {
+      //   const heartrate = await GoogleFit.getHeartRateSamples(
+      //     heartRateBPOptions,
+      //   );
+      //   if (Array.isArray(heartrate) && heartrate.length > 0) {
+      //     HeartRate = heartrate;
+      //   }
+      //   console.log('getHeartRateSamples', heartrate);
+      // } catch (e) {
+      //   console.log('getHeartRateSamples error: ', e);
+      // }
 
       // Blood Pressure data
-      try {
-        const bloodpressure = await GoogleFit.getBloodPressureSamples(
-          heartRateBPOptions,
-        );
-        if (Array.isArray(bloodpressure) && bloodpressure.length > 0) {
-          BP = bloodpressure;
-        }
-        console.log('getBloodPressureSamples', bloodpressure);
-        onFinish?.(true);
-      } catch (e) {
-        console.log('getBloodPressureSamples error: ', e);
-        onFinish?.(true);
-      }
+    //   try {
+    //     const bloodpressure = await GoogleFit.getBloodPressureSamples(
+    //       heartRateBPOptions,
+    //     );
+    //     if (Array.isArray(bloodpressure) && bloodpressure.length > 0) {
+    //       BP = bloodpressure;
+    //     }
+    //     console.log('getBloodPressureSamples', bloodpressure);
+    //     onFinish?.(true);
+    //   } catch (e) {
+    //     console.log('getBloodPressureSamples error: ', e);
+    //     onFinish?.(true);
+    //   }
     }
 
     const health = async () => {
