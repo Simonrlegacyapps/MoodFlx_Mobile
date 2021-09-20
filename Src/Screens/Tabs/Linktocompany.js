@@ -813,7 +813,6 @@ const Linktocompany = ({ navigation }) => {
         dismissModalHandler={() => cancelled()}
         verifyDone={(value) => VerifyDone(value)}
       />
-      {console.log('Loading: ', Loading, 'noDivisionModalVisible: ', noDivisionMdalVisible)}
       <CustomModal
         modalVisible={!Loading && noDivisionMdalVisible}
         dismissModalHandler={closeNoDivisionModal}
