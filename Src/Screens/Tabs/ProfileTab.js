@@ -50,7 +50,6 @@ import {getIsMoodLvlUp, openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
 import AsyncStorage from '@react-native-community/async-storage';
 import getStore from '../../redux';
-import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
 import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
 
 const listData = [
@@ -91,7 +90,6 @@ const ProfileTab = ({ navigation }) => {
   const [Loading, setLoading] = useState(false);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -170,10 +168,6 @@ const ProfileTab = ({ navigation }) => {
       };
     }, [dispatch, UserData.UserEmail, UserData.UserId]),
   );
-
-  const closeLvlUpModal = useCallback(() => {
-    setIsOpenLvlUpModal(false);
-  }, []);
 
   useEffect(() => {
     AppState.addEventListener('change', _handleAppStateChange);
@@ -435,40 +429,6 @@ const ProfileTab = ({ navigation }) => {
 
   const onOpenHealthApp = useCallback(openHealthApp, []);
 
-  const checkStorage = async () => {
-    navigation.navigate("ProgressScreens");
-    let p = await AsyncStorage.getItem('givePoints');
-    let points = await JSON.parse(p);
-    console.log(`points`, points);
-    if (points === null) {
-      await AsyncStorage.setItem('givePoints', '1');
-      howMoodfloWorks();
-    }
-  };
-
-  const howMoodfloWorks = () => {
-    const prevRewardPts = getStore?.()?.getState?.()?.First?.floCoins;
-    const deviceId = DeviceInfo.getUniqueId();
-    let params = {
-      "device_id": deviceId,
-      "email": UserData?.UserEmail ? UserData?.UserEmail : null,
-      "user_id": UserData?.UserId ? UserData?.UserId : null,
-      "section_index": 1,
-      "reward_point": 50,
-      "description": "How moodflo works"
-    };
-    console.log(`params of how mood flo works 50 coins`, params);
-    getUpdateRewardPoint(params, dispatch).then((res) => {
-      console.log('getUpdateRewardPoint res.data----', res?.data);
-      if (
-        res?.data?.reward_point &&
-        getIsMoodLvlUp(prevRewardPts, res.data.reward_point)
-      ) {
-        setIsOpenLvlUpModal(true);
-      }
-    });
-  };
-
   // console.log(
   //   "name != '' && UserData?.UserDetails?.full_name",
   //   name != 'Anonymous'
@@ -689,7 +649,7 @@ const ProfileTab = ({ navigation }) => {
           <View
             style={[styles.flatlistContainer, { marginBottom: dynamicSize(56) }]}>
               <TouchableOpacity
-                onPress={() => {checkStorage()}}>
+                onPress={() => navigation.navigate("ProgressScreens", {howMoodFloWorks: true})}>
                 <View style={styles.bottomFlatlistContainer}>
                   <View style={{ marginTop: dynamicSize(7) }}><PlayButton/></View>
                   <Text
@@ -732,14 +692,6 @@ const ProfileTab = ({ navigation }) => {
           <ActivityIndicator color='#9889F9' size="large" />
         </View>
       )}
-      <LvlUpModal
-        bigText="You’ve leveled up!"
-        modalVisible={isOpenLvlUpModal}
-        dismissModalHandler={closeLvlUpModal}
-        buttonText="Let's Go!"
-        verifyDone={closeLvlUpModal}
-        smallText="Check out what rewards you’ve unlocked"
-      />
     </>
   );
 };
