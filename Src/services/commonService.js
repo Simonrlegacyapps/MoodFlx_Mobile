@@ -21,6 +21,7 @@ import getStore from '../redux';
 
 let moodsArray = [];
 let isInitialVideoVisisble = false;
+let prevFloCoins = 0;
 
 export function setIsInitialVideoVisible(flag) {
   isInitialVideoVisisble = flag;
@@ -28,6 +29,14 @@ export function setIsInitialVideoVisible(flag) {
 
 export function getIsInitialVideoVisible() {
   return isInitialVideoVisisble;
+}
+
+export function setPrevFloCoins(v) {
+  prevFloCoins = v;
+}
+
+export function getPrevFloCoins() {
+  return prevFloCoins;
 }
 
 export function setMoodsArray(moods) {

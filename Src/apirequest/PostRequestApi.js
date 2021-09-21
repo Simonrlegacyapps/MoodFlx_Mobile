@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { getDivisions, SetFloCoins, UserDivision } from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
-import { onUnlinkUpdate } from '../services/commonService';
+import { onUnlinkUpdate, setPrevFloCoins } from '../services/commonService';
 
 const PostRequestApi = async (url, params) => {
   return await axios
@@ -167,6 +167,7 @@ export function getUpdateRewardPoint(params, dispatch) {
       );
       if (!isNaN(res?.data?.reward_point)) {
         // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
+        setPrevFloCoins(Number(res.data.reward_point));
         dispatch(SetFloCoins(Number(res.data.reward_point)));
       }
       return Promise.resolve(res);

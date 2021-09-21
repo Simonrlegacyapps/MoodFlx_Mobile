@@ -17,10 +17,11 @@ import DeviceInfo from 'react-native-device-info';
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 import { FloCoinIcon } from '../../../assets/svg/floCoinIcon';
-import { getFloCoins } from '../../services/commonService';
+import { getFloCoins, getPrevFloCoins } from '../../services/commonService';
 import CustomSwitch from '../CustomSwitch/CustomSwitch';
+import AnimatedNumbers from 'react-native-animated-numbers';
 
-const AnonymousHeader = ({ backGround }) => {
+const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   const [Anonymous, setAnonymous] = useState(false);
@@ -155,7 +156,11 @@ const AnonymousHeader = ({ backGround }) => {
           <FloCoinIcon />
         </View>
         <View>
-          <Text style={styles.floCoinsTextOne}>{getFloCoins(UserData.floCoins)}</Text>
+          <AnimatedNumbers
+            includeComma
+            animateToNumber={isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins}
+            fontStyle={styles.floCoinsTextOne}
+          />
           <Text style={styles.floCoinsTextTwo}>Flo Coins</Text>
         </View>
         <View style={styles.verifcalBarView} />

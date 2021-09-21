@@ -95,6 +95,7 @@ import {
   openUrl,
   setIsInitialVideoVisible,
   setMoodInputTimeStamps,
+  setPrevFloCoins,
   setSwiperIndexHome,
 } from '../../services/commonService';
 import Colors from '../../Constants/Colors/Colors';
@@ -171,6 +172,7 @@ export default function MoodDetector({ navigation }) {
   const [isShowNegativeMoodModal, setIsShowNegativeMoodModal] = useState(false);
   const [savedMood, setSavedMood] = useState(null);
   const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
+  const [isShowPrevFloCoins, setIsShowPrevFloCoins] = useState(true);
   const isLvlUpOnMoodInput = useRef(false);
   const dispatch = useDispatch();
   const route = useRoute();
@@ -626,6 +628,7 @@ export default function MoodDetector({ navigation }) {
     if (isLvlUpModalClose) {
       setIsOpenLvlUpModal(false);
     }
+    setIsShowPrevFloCoins(false);
     const closeId = setTimeout(() => {
       let latitude = lat;
       let longitude = lng;
@@ -932,6 +935,7 @@ export default function MoodDetector({ navigation }) {
   // }, []);
 
   useEffect(() => {
+    setPrevFloCoins(getStore?.()?.getState?.()?.First?.floCoins ?? 0);
     const callSetMoodInputNotes = async () => {
       try {
         const rewardPointsMoodInput = await getMoodInputRewardPoints(false);
@@ -1747,7 +1751,7 @@ export default function MoodDetector({ navigation }) {
       ref={screenContainerRef}
       style={[styles.container, { backgroundColor: topBottomColor }]}>
       <TouchableOpacity disabled={true} style={styles.anonymousHeaderView}>
-        <AnonymousHeader />
+        <AnonymousHeader isShowPrevFloCoins={isShowPrevFloCoins} />
       </TouchableOpacity>
       {emotionText !== 'Slide finger' &&
         showLongPressText &&
