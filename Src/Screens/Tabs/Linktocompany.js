@@ -41,7 +41,7 @@ import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
 import {useRoute, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
-import { PHOTO_URL } from '../../Constants/constants';
+import { getApiBaseUrl, PHOTO_URL } from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
 import {onUnlinkUpdate} from '../../services/commonService';
@@ -167,7 +167,7 @@ const Linktocompany = ({ navigation }) => {
       redirect: 'follow',
     };
     UserData.UserDivision !== null &&
-      fetch('https://admin.moodflo.com/api/getCompanyDetails', requestOptions)
+      fetch(`${getApiBaseUrl()}getCompanyDetails`, requestOptions)
         .then((response) => response.json())
         .then((result) => {
           console.log('getting company details', result);

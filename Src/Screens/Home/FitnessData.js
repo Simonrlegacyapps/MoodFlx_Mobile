@@ -37,7 +37,7 @@ import PostRequestApi, {
 } from '../../apirequest/PostRequestApi';
 import DataInsights from '../../Components/DataInsights/DataInsights';
 import moment from 'moment';
-import { dataTypes, getWeeklyInsightsAvailable } from '../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getWeeklyInsightsAvailable } from '../../Constants/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
 import { getFloCoins, openHealthApp } from '../../services/commonService';
@@ -360,12 +360,12 @@ const FitnessData = ({
         //   result?.userData
         // );
         if (result?.userData?.status !== 2) {
-          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+          return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         } else {
           raw.user_id = '';
           raw.email = ''
           requestOptions.body = JSON.stringify(raw)
-          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+          return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         }
       })
       .then(async (result) => result.json())
@@ -402,7 +402,7 @@ const FitnessData = ({
       redirect: 'follow',
     };
 
-    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+    fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         console.log('UserDetail', result.userData);

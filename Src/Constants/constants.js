@@ -1,8 +1,18 @@
 export const PHOTO_URL = 'https://admin.moodflo.com/';
+export const BASE_URL_DEV_API = 'https://dev.moodflo.com/api/';
+export const BASE_URL_PRODUCTION_API = 'https://admin.moodflo.com/api/';
 import moment from 'moment';
 
 export const PRIVACY_POLICY_URL = 'https://moodflo.com/privacy-policy';
 export const TERMS_OF_USE_URL = 'https://moodflo.com/terms-of-use';
+
+export const getApiBaseUrl = () => {
+  if (__DEV__) {
+    return BASE_URL_DEV_API;
+  } else {
+    return BASE_URL_PRODUCTION_API;
+  }
+};
 
 export const hapticsConfigs = {
   car: {

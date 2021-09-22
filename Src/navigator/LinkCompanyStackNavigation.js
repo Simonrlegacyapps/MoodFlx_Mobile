@@ -1,8 +1,6 @@
 import React from 'react';
 import HomeScreen from '../Screens/HomeScreen';
 import {createStackNavigator} from '@react-navigation/stack';
-import MoodEmotionDetector from '../Screens/MoodEmotionDetector';
-import MoodEmotionDetectorTouch from '../Screens/MoodEmotionDetectorTouch';
 import EmailConfirmation from '../Screens/EmailConfirmation/EmailConfirmation';
 import VerifyEmail from '../Screens/VerifyEmail/VerifyEmail';
 import {Animated, Easing} from 'react-native';

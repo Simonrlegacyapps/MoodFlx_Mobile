@@ -59,6 +59,7 @@ import Constants from './Src/Constants';
 import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
 import {
   defaultLocation,
+  getApiBaseUrl,
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
   isCountryIndia,
@@ -699,7 +700,7 @@ const App: () => React$Node = () => {
           console.log('error getting lat lon from geolocation api', code, message);
         });
     UserData.AllMoods == null &&
-      fetch('https://admin.moodflo.com/api/getMood')
+      fetch(`${getApiBaseUrl()}getMood`)
         .then((data) => data.json())
         .then(async (res) => {
           // await setGetMoods(res.data);

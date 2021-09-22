@@ -44,6 +44,7 @@ import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDu
 import {
   dataTypes,
   defaultLocation,
+  getApiBaseUrl,
   getWeeklyInsightsAvailable,
   isCountryIndia,
   weatherActions,
@@ -554,7 +555,7 @@ const WeatherData = ({
     // console.log('Weather update temp ------------', _temp_);
     var config = {
       method: 'post',
-      url: 'https://admin.moodflo.com/api/updateWeather',
+      url: `${getApiBaseUrl()}updateWeather`,
       headers: {
         'Content-Type': 'application/json',
         Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
@@ -698,7 +699,7 @@ const WeatherData = ({
 
     let timeOutId = setTimeout(() => {
       console.log(`Weather Graph Data Params`, raw);
-      fetch('https://admin.moodflo.com/api/getWeatherReport', requestOptions)
+      fetch(`${getApiBaseUrl()}getWeatherReport`, requestOptions)
         .then((response) => response.json())
         .then(async (result) => {
           console.log('Get weather Graph data', result),

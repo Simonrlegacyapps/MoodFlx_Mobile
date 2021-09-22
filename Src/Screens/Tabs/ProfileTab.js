@@ -50,7 +50,7 @@ import {getIsMoodLvlUp, openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
 import AsyncStorage from '@react-native-community/async-storage';
 import getStore from '../../redux';
-import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
+import { getApiBaseUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -222,7 +222,7 @@ const ProfileTab = ({ navigation }) => {
       redirect: 'follow',
     };
 
-    fetch('https://admin.moodflo.com/api/getGenderPronoun', requestOptions)
+    fetch(`${getApiBaseUrl()}getGenderPronoun`, requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
         console.log('Gender Pronoun Data', await result),
@@ -261,7 +261,7 @@ const ProfileTab = ({ navigation }) => {
         : '',
     );
     console.warn('this data', JSON.stringify(formData));
-    fetch('https://admin.moodflo.com/api/updateStaffProfileImage', {
+    fetch(`${getApiBaseUrl()}updateStaffProfileImage`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -377,10 +377,7 @@ const ProfileTab = ({ navigation }) => {
     console.log('raw', raw);
     setLoading(true);
 
-    await fetch(
-      'https://admin.moodflo.com/api/updateStaffProfile',
-      requestOptions,
-    )
+    await fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions)
       .then((response) => response.text())
       .then((result) => {
         console.log('profile updated', result), getProfileUserData();

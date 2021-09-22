@@ -36,7 +36,7 @@ import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-community/async-storage';
 import {GetStaffUserData} from '../../../apirequest/PostRequestApi';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
-import {PHOTO_URL} from '../../../Constants/constants';
+import {getApiBaseUrl, PHOTO_URL} from '../../../Constants/constants';
 import Constants from '../../../Constants';
 import {BitCoinIcon} from '../../../../assets/svg/bitCoin';
 
@@ -133,18 +133,12 @@ const NegativeMoodModal = ({
         //   result?.userData
         // );
         if (result?.userData?.status !== 2) {
-          return fetch(
-            'https://admin.moodflo.com/api/updateStaffProfile',
-            requestOptions,
-          );
+          return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         } else {
           raw.email = '';
           raw.user_id = '';
           requestOptions.body = JSON.stringify(raw);
-          return fetch(
-            'https://admin.moodflo.com/api/updateStaffProfile',
-            requestOptions,
-          );
+          return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         }
       })
       .then(async (result) => {
@@ -187,7 +181,7 @@ const NegativeMoodModal = ({
       redirect: 'follow',
     };
 
-    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+    fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         console.log('UserDetail', result.userData);

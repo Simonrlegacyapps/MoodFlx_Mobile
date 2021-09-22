@@ -5,7 +5,7 @@ import Crown from '../../../assets/svg/Crown'
 import { RubikRegular } from '../../Constants/fonts/Fonts'
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose'
 import { getFloCoins } from '../../services/commonService'
-import AnimatedNumbers from 'react-native-animated-numbers';
+import AnimatedNumber from '../AnimatedNumber/AnimatedNumber';
 
 const CrownBox = ({floCoins}) => {
     return (
@@ -19,7 +19,7 @@ const CrownBox = ({floCoins}) => {
             <View style={{ marginHorizontal: dynamicSize(15), flexDirection: 'row', alignItems: 'center', marginVertical: 9, }}>
               <Crown />
               <View style={styles.coinsView}>
-                <AnimatedNumbers
+                <AnimatedNumber
                   includeComma
                   animateToNumber={floCoins}
                   fontStyle={styles.text}

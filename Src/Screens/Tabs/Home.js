@@ -75,7 +75,7 @@ import {
   googleFitScopes,
   activityHealthKitOptions,
 } from '../../services/appPermissions';
-import { dataTypes, getScreensPriority } from '../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getScreensPriority } from '../../Constants/constants';
 import { setFitnessDataSync, setSwiperIndexHome } from '../../services/commonService';
 import { setSleepDataSync } from '../Home/SleepData/sleepDataService';
 import getStore from '../../redux';
@@ -1274,7 +1274,7 @@ const App = (props) => {
 
       var config = {
         method: 'post',
-        url: 'https://admin.moodflo.com/api/updateStaffHealth',
+        url: `${getApiBaseUrl()}updateStaffHealth`,
         headers: {
           'Content-Type': 'application/json',
           Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',

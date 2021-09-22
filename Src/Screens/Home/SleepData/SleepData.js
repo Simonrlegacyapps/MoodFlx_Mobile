@@ -41,7 +41,7 @@ import {
   fetchSleepDataForLastThirtyDays,
   getSleepDataForUpdateApi,
 } from './sleepDataService';
-import { dataTypes, getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox';
@@ -348,7 +348,7 @@ const SleepData = ({
     };
 
     console.log(`Get Sleep Data Params`, params);
-    fetch('https://admin.moodflo.com/api/getSleepQualityReport', requestOptions)
+    fetch(`${getApiBaseUrl()}getSleepQualityReport`, requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
         console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', JSON.stringify(result));
@@ -394,7 +394,7 @@ const SleepData = ({
     };
     var config = {
       method: 'post',
-      url: 'https://admin.moodflo.com/api/updateSleepQuality',
+      url: `${getApiBaseUrl()}updateSleepQuality`,
       headers: {
         'Content-Type': 'application/json',
         Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',

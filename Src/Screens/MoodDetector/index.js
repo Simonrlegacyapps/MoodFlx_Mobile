@@ -79,6 +79,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import messaging, { firebase } from '@react-native-firebase/messaging';
 import {
   defaultLocation,
+  getApiBaseUrl,
   hapticsTopFlags,
   isCountryIndia,
   moodTypes,
@@ -889,7 +890,7 @@ export default function MoodDetector({ navigation }) {
       redirect: 'follow',
     };
 
-    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+    fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
         // console.log('UserDetailsssssssssssssssss here', await result);
@@ -1269,7 +1270,7 @@ export default function MoodDetector({ navigation }) {
           redirect: 'follow',
         };
 
-        fetch('https://admin.moodflo.com/api/updateAnswer', requestOptions)
+        fetch(`${getApiBaseUrl()}updateAnswer`, requestOptions)
           .then((response) => response.json())
           .then((result) => {
             console.log('quesstion updated', result);

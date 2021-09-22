@@ -51,7 +51,7 @@ import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
 import { getBulbColorFromLux } from '../../../services/commonService';
-import { getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import { getApiBaseUrl, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
@@ -188,7 +188,7 @@ const LightData = ({
       };
       console.log('callUpdateLightApi params ==> ', params);
       // return;
-      axios.post('https://admin.moodflo.com/api/updateLightData', params)
+      axios.post(`${getApiBaseUrl()}updateLightData`, params)
         .then(function (response) {
           console.log('✅ ✅ ✅ ✅ Success Update Light Data ✅ ✅ ✅ ✅', params);
           callGetLightApi();
@@ -208,7 +208,7 @@ const LightData = ({
       "user_id": UserData.UserId ?? ""
     };
     console.log('callGetLightApi params ==> ', params);
-    axios.post('https://admin.moodflo.com/api/getLightReport', params)
+    axios.post(`${getApiBaseUrl()}getLightReport`, params)
       .then(function (response) {
         console.log('✅ ✅ ✅ ✅ Success Get Light Data ✅ ✅ ✅ ✅');
         console.log('Get Light Data response: ', response?.data?.lightData);
