@@ -1,13 +1,30 @@
-import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
-import Crown from '../../../assets/svg/Crown'
-import { RubikRegular } from '../../Constants/fonts/Fonts'
-import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose'
-import { getFloCoins } from '../../services/commonService'
+import React, {useEffect, useState, useRef} from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Crown from '../../../assets/svg/Crown';
+import { RubikRegular } from '../../Constants/fonts/Fonts';
+import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+import { getFloCoins } from '../../services/commonService';
 import AnimatedNumber from '../AnimatedNumber/AnimatedNumber';
 
 const CrownBox = ({floCoins}) => {
+  const [rewardPts, setRewardPts] = useState(floCoins);
+  const prevRewardPoints = useRef(floCoins);
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      let pts = rewardPts;
+      setRewardPts((e) => {
+        pts = e;
+        return e;
+      });
+      if (prevRewardPoints.current !== floCoins) {
+        setRewardPts(floCoins);
+        prevRewardPoints.current = floCoins;
+      }
+      clearTimeout(timeoutId);
+    }, 250);
+  }, [floCoins]);
+
     return (
         // <View>
             <View style={{ alignItems: 'center'}}>
@@ -21,7 +38,7 @@ const CrownBox = ({floCoins}) => {
               <View style={styles.coinsView}>
                 <AnimatedNumber
                   includeComma
-                  animateToNumber={floCoins}
+                  animateToNumber={rewardPts}
                   fontStyle={styles.text}
                 />
               </View>
