@@ -85,7 +85,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
             marginVertical: 10,
             fontSize: 21,
           }}>
-          Earn Flo Coins!
+          Earn Flo Coins
         </Text>
         <Text
           style={{
@@ -99,10 +99,10 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
           Advance your Mood Status, unlock more rewards and cash in your Flo Coins!
         </Text>
 <View>
-        <BoldHeader label={'Mood inputs'} />
-        <SimpleText label={'Per Mood'} text={' 3 coins'} />
+        <BoldHeader label={'Mood Inputs'} />
+        <SimpleText label={'Per mood'} text={' 3 coins'} />
         <View style={{height:0.6, width:'100%', backgroundColor:'#ebebeb'}}/>
-        <SimpleText label={'3+ moods/day'} text={' 1 bonus Coin'} mt={12} />
+        <SimpleText label={'3+ moods/day'} text={' 1 bonus coin'} mt={12} />
         <Text style={{fontSize:10, fontFamily:RubikLight, color:'#9C9EB9', }}>Recommended</Text>
         <Text style={{fontFamily:RubikRegular, fontSize:12, color:'#7265E3', marginVertical:10}}>6-HOUR INTERVALS</Text>
         <View style={{flexDirection:'row'}}>
@@ -114,16 +114,16 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
             </View>
             <View style={styles.verticalDivider}/>
             <View style={{ width:dynamicSize(180), paddingRight:10,  justifyContent:'center', borderLeftWidth:0.4, borderColor:'#F5F5F5'}}>
-                <Text style={[styles.text, {marginBottom:10}]}>2 notes per interval</Text>
-                <Text style={styles.text}>earn coins if there is a 2 hour gap between each note</Text>
+                <Text style={[styles.text, {marginBottom:10}]}>2 moods per interval</Text>
+                <Text style={styles.text}>earn coins if there is a 2 hour gap between each mood</Text>
             </View>
         </View>
         </View>
 <View>
         <BoldHeader label={'Mood Journaling'} />
-        <SimpleText label={'Per Mood'} text={' 3 coins'} />
+        <SimpleText label={'Per note'} text={' 3 coins'} />
         <View style={{height:0.6, width:'100%', backgroundColor:'#ebebeb'}}/>
-        <SimpleText label={'3+ moods/day'} text={' 1 bonus Coin'} mt={12} />
+        <SimpleText label={'3+ notes/day'} text={' 1 bonus coin'} mt={12} />
         <Text style={{fontSize:10, fontFamily:RubikLight, color:'#9C9EB9', }}>Recommended</Text>
         <Text style={{fontFamily:RubikRegular, fontSize:12, color:'#7265E3', marginVertical:10}}>6-HOUR INTERVALS</Text>
         <View style={{flexDirection:'row'}}>
@@ -150,7 +150,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
         <SimpleText label={'Mood Navigator'} text={' 100 - 1,000'} />
         <SimpleText label={'Mood Fit'} text={' 1,000 - 5,000'} />
         <SimpleText label={'Mood Powerhouse'} text={' 5,000 - 10,000'} />
-        <SimpleText label={'Mood Unleashed'} text={' Mood Unleashed'} />
+        <SimpleText label={'Mood Unleashed'} text={' 10,000 - 20,000'} />
           
         </View>
       </View>
