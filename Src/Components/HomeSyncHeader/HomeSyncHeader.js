@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import CrownBox from '../crownBox/crownBox';
 import DeviceInfo from 'react-native-device-info';
 import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { getPrevFloCoins, setPrevFloCoins } from '../../services/commonService';
+import getStore from '../../redux';
 
 const {height} = Dimensions.get('screen');
 
@@ -29,6 +31,7 @@ const HomeSyncHeader = ({
   const UserData = useSelector((state) => state.First);
   const navigation = useNavigation();
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
+  const [isShowPrevFloCoins, setIsShowPrevFloCoins] = useState(true);
 
   let headerSyncText = isPermissionGiven ? 'Syncing your' : 'Sync your';
   if (isPermissionGiven && typeof syncText === 'string' && syncText) {
@@ -40,6 +43,19 @@ const HomeSyncHeader = ({
 
   const onAnimationFinished = useCallback(() => {
     setIsAnimationFinished(true);
+  }, []);
+
+  useEffect(() => {
+    const currentFloCoins = getStore?.()?.getState?.()?.First?.floCoins;
+    if (getPrevFloCoins() === currentFloCoins) {
+      setIsShowPrevFloCoins(false);
+    } else {
+      const timeoutId = setTimeout(() => {
+        setPrevFloCoins(currentFloCoins);
+        setIsShowPrevFloCoins(false);
+        clearTimeout(timeoutId);
+      }, 700);
+    }
   }, []);
 
   return (
@@ -68,7 +84,7 @@ const HomeSyncHeader = ({
       </TouchableOpacity>
       <View style={styles.buttons}>
         <TouchableOpacity onPress={()=>{navigation.navigate("MainProfileTab")}}>
-        <CrownBox floCoins={UserData.floCoins} />
+          <CrownBox floCoins={isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins} />
         </TouchableOpacity>
         {/* <TouchableOpacity
           onPress={() => setAnonymousClick(true)}

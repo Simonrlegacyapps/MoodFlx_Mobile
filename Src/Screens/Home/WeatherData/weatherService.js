@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Geocoder from 'react-native-geocoding';
 import {
   defaultLocation,
+  getApiBaseUrl,
   getWeeklyInsightsAvailable,
   isCountryIndia,
   weatherApiDataTypes,
@@ -283,7 +284,7 @@ export async function syncWeatherData() {
   // console.log('weather', data);
   var config = {
     method: 'post',
-    url: 'https://admin.moodflo.com/api/updateWeather',
+    url: `${getApiBaseUrl()}updateWeather`,
     headers: {
       'Content-Type': 'application/json',
       Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',

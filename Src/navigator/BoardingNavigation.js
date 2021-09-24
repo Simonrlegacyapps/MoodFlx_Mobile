@@ -9,16 +9,6 @@ const Stack = createStackNavigator();
 const BoardingNavigation = () => {
   return (
     <Stack.Navigator>
-      
-      {/* <Stack.Screen
-        name="MoodEmotionDetector"
-        component={MoodEmotionDetector}
-        options={{
-          header: () => null,
-          animationEnabled: false,
-          gestureEnabled: false,
-        }}
-      /> */}
       <Stack.Screen
         name="Screen1"
         component={Screen1}

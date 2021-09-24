@@ -34,7 +34,7 @@ import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-community/async-storage';
 import {GetStaffUserData} from '../../../apirequest/PostRequestApi';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
-import {PHOTO_URL} from '../../../Constants/constants';
+import {getApiBaseUrl, PHOTO_URL} from '../../../Constants/constants';
 import Constants from '../../../Constants';
 
 type props = {
@@ -135,18 +135,12 @@ const FeedBackModal = ({
         //   result?.userData
         // );
         if (result?.userData?.status !== 2) {
-          return fetch(
-            'https://admin.moodflo.com/api/updateStaffProfile',
-            requestOptions,
-          );
+          return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         } else {
           raw.email = '';
           raw.user_id = '';
           requestOptions.body = JSON.stringify(raw);
-          return fetch(
-            'https://admin.moodflo.com/api/updateStaffProfile',
-            requestOptions,
-          );
+          return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         }
       })
       .then(async (result) => {
@@ -189,7 +183,7 @@ const FeedBackModal = ({
       redirect: 'follow',
     };
 
-    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+    fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         console.log('UserDetail', result.userData);
@@ -281,8 +275,9 @@ const FeedBackModal = ({
                 setnote(i), setShowPurple(false), text(i)
               }}
               returnKeyType={'done'}
+              allowFontScaling={false}
               onSubmitEditing={() => Keyboard.dismiss()}
-              numberOfLines={4}
+              numberOfLines={5}
               style={styles.feedBackInput}
               placeholder={`Please let us know how we can improve... \n\nThis is completely anonymous`}
               multiline={true}
@@ -500,13 +495,14 @@ const styles = StyleSheet.create({
   },
   feedBackInput: {
     letterSpacing: 1,
+    fontSize: getFontSize(14),
     textAlignVertical: 'top',
     ...Platform.select({
       ios: {
-        height: getFontSize(70),
+        height: getFontSize(100),
       },
       android: {
-        maxHeight: getFontSize(100),
+        maxHeight: getFontSize(115),
       },
     }),
   },

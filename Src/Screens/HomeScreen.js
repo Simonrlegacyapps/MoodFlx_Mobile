@@ -15,7 +15,6 @@ import MicActiveIcon from '../../assets/tabicons/MicActiveIcon';
 import LinkActive from '../../assets/tabicons/LinkActive';
 import LinkIcon from '../../assets/tabicons/LinkIcon';
 import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation';
-import MoodEmotionDetector from './MoodEmotionDetector';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MainProfileTab from './Profile/MainProfileTab';
 

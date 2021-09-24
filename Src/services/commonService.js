@@ -18,9 +18,11 @@ import {GetStaffUserData} from '../apirequest/PostRequestApi';
 import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
 import getStore from '../redux';
+import { getApiBaseUrl } from '../Constants/constants';
 
 let moodsArray = [];
 let isInitialVideoVisisble = false;
+let prevFloCoins = 0;
 
 export function setIsInitialVideoVisible(flag) {
   isInitialVideoVisisble = flag;
@@ -28,6 +30,14 @@ export function setIsInitialVideoVisible(flag) {
 
 export function getIsInitialVideoVisible() {
   return isInitialVideoVisisble;
+}
+
+export function setPrevFloCoins(v) {
+  prevFloCoins = v;
+}
+
+export function getPrevFloCoins() {
+  return prevFloCoins;
 }
 
 export function setMoodsArray(moods) {
@@ -359,7 +369,7 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
   };
   let response;
   try {
-    response = await axios.post('https://admin.moodflo.com/api/getMoodInputData', params);
+    response = await axios.post(`${getApiBaseUrl()}getMoodInputData`, params);
     console.log('✅ ✅ ✅ ✅ Success getMoodInputData response.data✅ ✅ ✅ ✅', response?.data);
   } catch (error) {
     console.error(error);

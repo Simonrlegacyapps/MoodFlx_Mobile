@@ -31,7 +31,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {GetUserId, UserEmail} from '../../redux/actions/actions';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {getDivisionName, GetStaffUserData} from '../../apirequest/PostRequestApi';
-import {moodTypes} from '../../Constants/constants';
+import {getApiBaseUrl, moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import Clock from '../../../assets/svg/clock';
 import FloCoin from '../../../assets/svg/floCoins';
@@ -114,20 +114,14 @@ const MicScreen = ({navigation}) => {
         //   result?.userData
         // );
         if (result?.userData?.status !== 2) {
-          return fetch(
-            'https://admin.moodflo.com/api/getQuestions',
-            requestOptions,
-          );
+          return fetch(`${getApiBaseUrl()}getQuestions`, requestOptions);
         } else {
           requestOptions.body = JSON.stringify({
             device_id: deviceId,
             email: '',
             user_id: '',
           });
-          return fetch(
-            'https://admin.moodflo.com/api/getQuestions',
-            requestOptions,
-          );
+          return fetch(`${getApiBaseUrl()}getQuestions`, requestOptions);
         }
       })
       .then(async (result) => result.json())

@@ -59,6 +59,7 @@ import Constants from './Src/Constants';
 import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
 import {
   defaultLocation,
+  getApiBaseUrl,
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
   isCountryIndia,
@@ -150,6 +151,7 @@ const App: () => React$Node = () => {
   const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
   const [linkModalText, setLinkModalText] = useState('');
   const newOrg = useRef(null);
+  const isHandleDynamicLinkCalled = useRef(false);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -317,6 +319,12 @@ const App: () => React$Node = () => {
   }, []);
 
   const handleDynamicLink = async (link) => {
+    if (isHandleDynamicLinkCalled.current === true) {
+      return;
+    }
+    if (link) {
+      isHandleDynamicLinkCalled.current = true;
+    }
     let userEmail;
     let existingOrgName;
     try {
@@ -579,10 +587,12 @@ const App: () => React$Node = () => {
       setSleepDataSync(dispatch);
     }
     // console.log(`Sleep Permission`, SleepP);
-    dispatch(UserEmail(e));
+    if ((e && Id) || isHandleDynamicLinkCalled.current === true) {
+      dispatch(UserEmail(e));
+      dispatch(GetUserId(Id));
+    }
     // dispatch(UserDivision(division));
     dispatch(WeatherPerm(WeatherP));
-    dispatch(GetUserId(Id));
     dispatch(IsAnonymous(a == null ? true : a));
 
     // ---> calling api for get user details
@@ -621,7 +631,7 @@ const App: () => React$Node = () => {
       .catch((error) => {
         console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error);
       });
-    getDivisionName(raw, dispatch, true);
+    getDivisionName(raw, dispatch, isHandleDynamicLinkCalled.current !== true);
   };
 
   const requestNotificationPermissions = async () => {
@@ -654,6 +664,9 @@ const App: () => React$Node = () => {
   }, []);
 
   const fp = () => {
+    if (!isHandleDynamicLinkCalled.current && Platform.OS === 'ios' && !UserData.UserId && !UserData.UserEmail) {
+      handleDynamicLink({url: 'https://moodflo/org/Mjc=/n/aia'});
+    }
     notifService.scheduleMoodFloLocalNotif();
   };
   useEffect(() => {
@@ -687,7 +700,7 @@ const App: () => React$Node = () => {
           console.log('error getting lat lon from geolocation api', code, message);
         });
     UserData.AllMoods == null &&
-      fetch('https://admin.moodflo.com/api/getMood')
+      fetch(`${getApiBaseUrl()}getMood`)
         .then((data) => data.json())
         .then(async (res) => {
           // await setGetMoods(res.data);
@@ -714,6 +727,12 @@ const App: () => React$Node = () => {
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     // When the component is unmounted, remove the listener
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!isHandleDynamicLinkCalled.current && !UserData.UserId && !UserData.UserEmail && Platform.OS === 'android') {
+      handleDynamicLink({url: 'https://moodflo/org/Mjc=/n/aia'});
+    }
   }, []);
 
   useEffect(() => {

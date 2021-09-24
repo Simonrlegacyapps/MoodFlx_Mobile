@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -25,15 +25,74 @@ import ScienceG from '../../../assets/svg/ScienceG';
 import RewardG from '../../../assets/svg/RewardG';
 import Graph from '../../../assets/svg/graph';
 import BackIcon from '../../../assets/svg/backIcon';
+import getStore from '../../redux';
+import {getUpdateRewardPoint} from '../../apirequest/PostRequestApi';
+import AsyncStorage from '@react-native-community/async-storage';
+import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
+import {getIsMoodLvlUp} from '../../services/commonService';
+import {useDispatch} from 'react-redux';
+import DeviceInfo from 'react-native-device-info';
 
 const {height} = Dimensions.get("window")
 
-const ProgressScreen = ({navigation}) => {
+const ProgressScreen = ({navigation, route}) => {
   const [number, setnumber] = useState(0);
+  const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
+  const dispatch = useDispatch();
 
-  const onDone = ()=>{
-    navigation.goBack()
-  }
+  const closeLvlUpModal = useCallback(() => {
+    setIsOpenLvlUpModal(false);
+    const timeoutId = setTimeout(() => {
+      navigation.goBack();
+      clearTimeout(timeoutId);
+    }, 400);
+  }, [navigation]);
+
+  const checkStorage = async () => {
+    let p = await AsyncStorage.getItem('givePoints');
+    let points = await JSON.parse(p);
+    console.log(`points`, points);
+    if (points === null) {
+      await AsyncStorage.setItem('givePoints', '1');
+      howMoodfloWorks();
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  const howMoodfloWorks = () => {
+    const userData = getStore?.()?.getState?.()?.First;
+    const prevRewardPts = userData?.floCoins;
+    const deviceId = DeviceInfo.getUniqueId();
+    let params = {
+      "device_id": deviceId,
+      "email": userData?.UserEmail ?? null,
+      "user_id": userData?.UserId ?? null,
+      "section_index": 1,
+      "reward_point": 50,
+      "description": "How moodflo works"
+    };
+    console.log(`params of how mood flo works 50 coins`, params);
+    getUpdateRewardPoint(params, dispatch).then((res) => {
+      console.log('getUpdateRewardPoint res.data----', res?.data);
+      if (
+        res?.data?.reward_point &&
+        getIsMoodLvlUp(prevRewardPts, res.data.reward_point)
+      ) {
+        setIsOpenLvlUpModal(true);
+      } else {
+        navigation.goBack();
+      }
+    });
+  };
+
+  const onDone = (isClickFromDoneButton) => {
+    if (isClickFromDoneButton && route?.params?.howMoodFloWorks) {
+      checkStorage();
+    } else {
+      navigation.goBack();
+    }
+  };
 
   const data = [
     {
@@ -86,117 +145,127 @@ const ProgressScreen = ({navigation}) => {
   ];
 
   return (
-    <View>
-      <ImageBackground
-        source={require('../../../assets/newImage/WalkThrough/Onboarding.png')}
-        style={{height: '100%', width: '100%'}}>
-        <SafeAreaView>
-          {number === 0 ? (
-            <View style={styles.Container}>
-              <View style={{marginTop: dynamicSize(80)}}>
-                <Mood />
+    <>
+      <View>
+        <ImageBackground
+          source={require('../../../assets/newImage/WalkThrough/Onboarding.png')}
+          style={{ height: '100%', width: '100%' }}>
+          <SafeAreaView>
+            {number === 0 ? (
+              <View style={styles.Container}>
+                <View style={{ marginTop: dynamicSize(80) }}>
+                  <Mood />
+                </View>
+                <View style={{ width: '100%', paddingHorizontal: dynamicSize(13) }}>
+                  <Text allowFontScaling={false} style={styles.bigText}>
+                    It’s time to unleash your untapped!
+                  </Text>
+                  <Text allowFontScaling={false} style={styles.smallText0}>
+                    Let’s take you through Flo’s features
+                  </Text>
+                </View>
+                <View style={styles.bottomButtons}>
+                  <TouchableOpacity onPress={onDone} style={{ flex: 1 }}>
+                    <Text allowFontScaling={false} style={styles.skip}>Skip > ></Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setnumber(number + 1);
+                    }}
+                    style={{ backgroundColor: '#7265E3', borderRadius: 7 }}>
+                    <Text allowFontScaling={false} style={styles.next}>Next</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View style={{width: '100%', paddingHorizontal: dynamicSize(13)}}>
-                <Text allowFontScaling={false} style={styles.bigText}>
-                  It’s time to unleash your untapped!
-                </Text>
-                <Text allowFontScaling={false} style={styles.smallText0}>
-                  Let’s take you through Flo’s features
-                </Text>
-              </View>
-              <View style={styles.bottomButtons}>
-                <TouchableOpacity onPress={onDone} style={{flex: 1}}>
-                  <Text allowFontScaling={false} style={styles.skip}>Skip > ></Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    setnumber(number + 1);
-                  }}
-                  style={{backgroundColor: '#7265E3', borderRadius: 7}}>
-                  <Text allowFontScaling={false} style={styles.next}>Next</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <View style={styles.Container}>
-              <View style={styles.topBar}>
-                <TouchableOpacity onPress={()=>{setnumber(number - 1)}} style={{ position:'absolute', left:10, top:10 }}>
-                <BackIcon w={dynamicSize(22)} h={dynamicSize(22)}/>
-                </TouchableOpacity>
-                <Text allowFontScaling={false}
-                  style={{
-                    fontSize: 16,
-                    fontFamily: RubikRegular,
-                    color:
-                      number <= 3
-                        ? '#7265E3'
-                        : number === 4
-                        ? '#3FD7C8'
-                        : '#EE64DB',
-                  }}>
-                  {/* {number <= 3
+            ) : (
+              <View style={styles.Container}>
+                <View style={styles.topBar}>
+                  <TouchableOpacity onPress={() => { setnumber(number - 1) }} style={{ position: 'absolute', left: 10, top: 10 }}>
+                    <BackIcon w={dynamicSize(22)} h={dynamicSize(22)} />
+                  </TouchableOpacity>
+                  <Text allowFontScaling={false}
+                    style={{
+                      fontSize: 16,
+                      fontFamily: RubikRegular,
+                      color:
+                        number <= 3
+                          ? '#7265E3'
+                          : number === 4
+                            ? '#3FD7C8'
+                            : '#EE64DB',
+                    }}>
+                    {/* {number <= 3
                     ? 'Anonymity'
                     : number === 4
                     ? 'The Science'
                     : 'Rewards'} */}
                     {data[number - 1].label}
-                </Text>
-                <View style={styles.rewardsTypes}>
-                  <Anonimity color={ data[number - 1].label === "Anonymity"? '#7265E3' : '#9C9EB9'} />
-                  <Science color={data[number - 1].label === "The Science" ? '#3FD7C8' : '#9C9EB9'} />
-                  <Rewards color={data[number - 1].label === "Rewards" ? '#EE64DB' : '#9C9EB9'} />
-                </View>
-                {console.log(`number`, number)}
-              </View>
-
-              <View style={{paddingHorizontal: 30}}>
-                <ScrollView style={{height:'100%'}}>
-                <View style={styles.whiteBox}>
-                  <View style={{marginBottom: 20}}>
-                    {data[number - 1].img1}
-                  </View>
-                  {data[number - 1].t1 != '' && (
-                    <Text allowFontScaling={false} style={styles.blackText}>{data[number - 1].t1}</Text>
-                  )}
-                  {data[number - 1].t2 != '' && (
-                    <Text allowFontScaling={false} style={[styles.blackText, styles.purpleText]}>
-                      {data[number - 1].t2}
-                    </Text>
-                  )}
-                  {data[number - 1].t3 != '' && (
-                    <Text allowFontScaling={false} style={styles.smallText}>{data[number - 1].t3}</Text>
-                  )}
-                  {data[number - 1].t4 != '' && (
-                    <Text allowFontScaling={false} style={styles.smallGrey}>{data[number - 1].t4}</Text>
-                  )}
-                  {data[number - 1].t4 != null && (
-                    <View style={{}}>{data[number - 1].img2}</View>
-                  )}
-                </View>
-                <View style={{paddingBottom:100}}/>
-                </ScrollView>
-              </View>
-
-              {/* // bottom buttons */}
-              <View style={styles.bottomButtons}>
-                <TouchableOpacity onPress={onDone} style={{flex: 1}}>
-                  <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    data[number - 1].button === "Next" ? setnumber(number + 1) : onDone();
-                  }}
-                  style={{backgroundColor: '#7265E3', borderRadius: 7}}>
-                  <Text allowFontScaling={false} style={styles.next}>
-                    {data[number - 1].button}
                   </Text>
-                </TouchableOpacity>
+                  <View style={styles.rewardsTypes}>
+                    <Anonimity color={data[number - 1].label === "Anonymity" ? '#7265E3' : '#9C9EB9'} />
+                    <Science color={data[number - 1].label === "The Science" ? '#3FD7C8' : '#9C9EB9'} />
+                    <Rewards color={data[number - 1].label === "Rewards" ? '#EE64DB' : '#9C9EB9'} />
+                  </View>
+                  {console.log(`number`, number)}
+                </View>
+
+                <View style={{ paddingHorizontal: 30 }}>
+                  <ScrollView style={{ height: '100%' }}>
+                    <View style={styles.whiteBox}>
+                      <View style={{ marginBottom: 20 }}>
+                        {data[number - 1].img1}
+                      </View>
+                      {data[number - 1].t1 != '' && (
+                        <Text allowFontScaling={false} style={styles.blackText}>{data[number - 1].t1}</Text>
+                      )}
+                      {data[number - 1].t2 != '' && (
+                        <Text allowFontScaling={false} style={[styles.blackText, styles.purpleText]}>
+                          {data[number - 1].t2}
+                        </Text>
+                      )}
+                      {data[number - 1].t3 != '' && (
+                        <Text allowFontScaling={false} style={styles.smallText}>{data[number - 1].t3}</Text>
+                      )}
+                      {data[number - 1].t4 != '' && (
+                        <Text allowFontScaling={false} style={styles.smallGrey}>{data[number - 1].t4}</Text>
+                      )}
+                      {data[number - 1].t4 != null && (
+                        <View style={{}}>{data[number - 1].img2}</View>
+                      )}
+                    </View>
+                    <View style={{ paddingBottom: 100 }} />
+                  </ScrollView>
+                </View>
+
+                {/* // bottom buttons */}
+                <View style={styles.bottomButtons}>
+                  <TouchableOpacity onPress={onDone} style={{ flex: 1 }}>
+                    <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      data[number - 1].button === "Next" ? setnumber(number + 1) : onDone(true);
+                    }}
+                    style={{ backgroundColor: '#7265E3', borderRadius: 7 }}>
+                    <Text allowFontScaling={false} style={styles.next}>
+                      {data[number - 1].button}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
-        </SafeAreaView>
-      </ImageBackground>
-    </View>
+            )}
+          </SafeAreaView>
+        </ImageBackground>
+      </View>
+      <LvlUpModal
+        bigText="You’ve leveled up!"
+        modalVisible={isOpenLvlUpModal}
+        dismissModalHandler={closeLvlUpModal}
+        buttonText="Let's Go!"
+        verifyDone={closeLvlUpModal}
+        smallText="Check out what rewards you’ve unlocked"
+      />
+    </>
   );
 };
 

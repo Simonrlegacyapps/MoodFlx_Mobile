@@ -1,15 +1,18 @@
 import React from 'react';
 import axios from 'axios';
-import { getDivisions, SetFloCoins, UserDivision } from '../redux/actions/actions';
+import {
+  getDivisions,
+  SetFloCoins,
+  UserDivision,
+} from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
-import { onUnlinkUpdate } from '../services/commonService';
+import {onUnlinkUpdate, setPrevFloCoins} from '../services/commonService';
+import {getApiBaseUrl} from '../Constants/constants';
 
 const PostRequestApi = async (url, params) => {
-  return await axios
-    .post('https://admin.moodflo.com/api/' + url, params)
-    .then((resp) => {
-      return resp;
-    });
+  return await axios.post(getApiBaseUrl() + url, params).then((resp) => {
+    return resp;
+  });
 };
 
 export async function GetStaffUserData(
@@ -30,10 +33,7 @@ export async function GetStaffUserData(
     redirect: 'follow',
   };
 
-  return await fetch(
-    'https://admin.moodflo.com/api/getStaffUserData',
-    requestOptions,
-  )
+  return await fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
     .then((response) => response.json())
     .then(async (result) => {
       console.log(
@@ -70,7 +70,7 @@ export async function getDivisionName(
       // return new Promise((resolve, reject) => {
       if (result?.userData?.status !== 2) {
         axios
-          .post('https://admin.moodflo.com/api/getAllDivision', params)
+          .post(`${getApiBaseUrl()}getAllDivision`, params)
           .then((res) => {
             let divisionName = '';
             if (Array.isArray(res?.data?.data)) {
@@ -167,6 +167,7 @@ export function getUpdateRewardPoint(params, dispatch) {
       );
       if (!isNaN(res?.data?.reward_point)) {
         // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
+        setPrevFloCoins(Number(res.data.reward_point));
         dispatch(SetFloCoins(Number(res.data.reward_point)));
       }
       return Promise.resolve(res);

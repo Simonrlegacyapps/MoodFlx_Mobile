@@ -11,16 +11,17 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { IsAnonymous, UserDetail } from '../../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
-import { PHOTO_URL } from '../../Constants/constants';
+import { getApiBaseUrl, PHOTO_URL } from '../../Constants/constants';
 import AddNameModal from '../Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import { GetStaffUserData } from '../../apirequest/PostRequestApi';
 import { FloCoinIcon } from '../../../assets/svg/floCoinIcon';
-import { getFloCoins } from '../../services/commonService';
+import { getFloCoins, getPrevFloCoins } from '../../services/commonService';
 import CustomSwitch from '../CustomSwitch/CustomSwitch';
+import AnimatedNumber from '../AnimatedNumber/AnimatedNumber';
 
-const AnonymousHeader = ({ backGround }) => {
+const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   const [Anonymous, setAnonymous] = useState(false);
@@ -71,12 +72,12 @@ const AnonymousHeader = ({ backGround }) => {
         //   result?.userData
         // );
         if (result?.userData?.status !== 2) {
-          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+          return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         } else {
           raw.email = '';
           raw.user_id = '';
           requestOptions.body = JSON.stringify(raw);
-          return fetch('https://admin.moodflo.com/api/updateStaffProfile', requestOptions);
+          return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         }
       })
       .then(async (result) => {
@@ -115,7 +116,7 @@ const AnonymousHeader = ({ backGround }) => {
       redirect: 'follow',
     };
 
-    fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
+    fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         console.log('UserDetail', result.userData);
@@ -155,7 +156,11 @@ const AnonymousHeader = ({ backGround }) => {
           <FloCoinIcon />
         </View>
         <View>
-          <Text style={styles.floCoinsTextOne}>{getFloCoins(UserData.floCoins)}</Text>
+          <AnimatedNumber
+            includeComma
+            animateToNumber={isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins}
+            fontStyle={styles.floCoinsTextOne}
+          />
           <Text style={styles.floCoinsTextTwo}>Flo Coins</Text>
         </View>
         <View style={styles.verifcalBarView} />
