@@ -412,12 +412,12 @@ const MicScreen = ({navigation}) => {
         <TouchableOpacity
           onPress={() => setshowMore((e) => !e)}>
           <View style={{flexDirection: 'row'}}>
-            <Text style={[styles.questionText, {marginHorizontal: 6}]}>
+            <Text style={[styles.questionText, {marginRight: horizontalScale(6)}]}>
               {index + 1}.{' '}
             </Text>
-            <Text style={[styles.questionText, {width: '82%'}]}>
-              {i.question}
-            </Text>
+              <View style={styles.questionTextView}>
+                <Text style={[styles.questionText]}>{i.question}</Text>
+              </View>
             <Image
               source={require('../../../assets/newImage/arrow/arrow.png')}
               style={[
@@ -711,7 +711,7 @@ const MicScreen = ({navigation}) => {
           }}
           source={Constants.Images.Circles}
         />
-        <View style={{marginHorizontal: 15, paddingBottom: 90}}>
+        <View style={{marginHorizontal: horizontalScale(20), paddingBottom: 90}}>
           <Text style={styles.normalText}>Team Pulse</Text>
           {UserData.UserEmail ? (
             questions && questions.length > 0 ? (
@@ -896,7 +896,7 @@ const styles = StyleSheet.create({
     width: 15,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginHorizontal: 20,
+    marginLeft: horizontalScale(20),
   },
   unansweredContainer: {
     alignItems: 'center',
@@ -918,7 +918,10 @@ const styles = StyleSheet.create({
   answerFloCoinsView: {
     marginVertical: horizontalScale(10),
     flexDirection: 'row',
-  }
+  },
+  questionTextView: {
+    flex: 1,
+  },
 });
 
 export default MicScreen;
