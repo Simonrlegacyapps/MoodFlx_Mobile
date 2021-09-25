@@ -48,6 +48,7 @@ import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import Skeleton from '../../../Components/Skeleton/Skeleton';
+import getStore from '../../../redux';
 
 const sleepInsightsInitialState = {
   dailyInsights: '',
@@ -160,6 +161,13 @@ const SleepData = ({
     // if (SleepP == null) {
     //   onSleepDataPerm();
     // }
+  };
+
+  const onSync = () => {
+    const sleepPermission = getStore?.()?.getState?.()?.First?.SleepPermission;
+    if (sleepPermission) {
+      VerifyDone();
+    }
   };
 
   useEffect(() => {
@@ -523,6 +531,7 @@ const SleepData = ({
             timeLeft={UserData?.weeklyInsightsTimeLeft}
             isPermissionGiven={UserData.SleepPermission}
             dispatch={dispatch}
+            onSync={onSync}
           />
           {/* {!UserData.SleepPermission ? (
             <View

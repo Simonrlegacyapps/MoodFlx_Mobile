@@ -208,6 +208,13 @@ const FitnessData = ({
     ProfileApiCallHere();
   };
 
+  const onSync = () => {
+    const healthPermission = getStore?.()?.getState?.()?.First?.HealthPermission;
+    if (healthPermission) {
+      checkStorage();
+    }
+  };
+
   const callGetHealthDataApi = () => {
     const deviceId = DeviceInfo.getUniqueId();
     const store = getStore?.()?.getState?.();
@@ -522,6 +529,7 @@ const FitnessData = ({
             timeLeft={UserData?.weeklyInsightsTimeLeft}
             isPermissionGiven={UserData.HealthPermission}
             dispatch={dispatch}
+            onSync={onSync}
           />
           {/* {!UserData.HealthPermission ? (
             <View
