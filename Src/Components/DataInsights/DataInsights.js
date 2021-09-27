@@ -255,27 +255,28 @@ export default function DataInsights({
               TODAY
             </Text>
           </TouchableOpacity>
-          <Pressable onPress={onPressWeeklyTab}>
-            <View
-              // disabled={weeklyInsights ? false : true}
-              style={[
+          <TouchableOpacity
+            // disabled={weeklyInsights ? false : true}
+            style={[
+              !isDailyInsights
+                ? styles.activeTabHeader
+                : styles.inactiveTabHeader,
+              { marginLeft: horizontalScale(10) },
+            ]}
+            onPress={onPressWeeklyTab}>
+            <Text
+              style={
                 !isDailyInsights
-                  ? styles.activeTabHeader
-                  : styles.inactiveTabHeader,
-                { marginLeft: horizontalScale(10) },
-              ]}>
-              <Text
-                style={
-                  !isDailyInsights
-                    ? styles.activeTabHeaderText
-                    : styles.inactiveTabHeaderText
-                }>
-                THIS WEEK
-              </Text>
-            </View>
-            {getWeeklyInsightsAvailable() !== true &&
-              timeLeft !== -1 &&
-              !isNaN(timeLeft) && (
+                  ? styles.activeTabHeaderText
+                  : styles.inactiveTabHeaderText
+              }>
+              THIS WEEK
+            </Text>
+          </TouchableOpacity>
+          {getWeeklyInsightsAvailable() !== true &&
+            timeLeft !== -1 &&
+            !isNaN(timeLeft) && (
+              <Pressable onPress={onPressWeeklyTab}>
                 <AnimatedCircularProgress
                   duration={900}
                   arcSweepAngle={360}
@@ -293,8 +294,8 @@ export default function DataInsights({
                     </Text>
                   )}
                 </AnimatedCircularProgress>
-              )}
-          </Pressable>
+              </Pressable>
+            )}
         </View>
         <Pressable style={styles.tabDetailsView} onPress={onPressInsights}>
           <Text style={styles.tabDetailsText}>
