@@ -50,7 +50,7 @@ import {getIsMoodLvlUp, openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
 import AsyncStorage from '@react-native-community/async-storage';
 import getStore from '../../redux';
-import { getApiBaseUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
+import { FAQ_URL, getApiBaseUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -62,11 +62,19 @@ const listData = [
 const bottomList = [
   // {name: 'FAQ', icon: <FaqIcon />},
   {
+    id: "1",
+    name: 'FAQ',
+    icon: <FaqIcon />,
+    link: FAQ_URL,
+  },
+  {
+    id: "2",
     name: 'Terms & Conditions',
     icon: <TermsIcon />,
     link: TERMS_OF_USE_URL,
   },
   {
+    id: "3",
     name: 'Privacy Policy',
     icon: <PrivacyIcon />,
     link: PRIVACY_POLICY_URL,
@@ -764,6 +772,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: dynamicSize(10),
     marginBottom: dynamicSize(20),
+    alignItems: 'center',
   },
   loader: {
     position: 'absolute',
