@@ -9,7 +9,7 @@ import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeC
 const BoldHeader = ({label}) => {
   return (
     <View style={{marginTop: horizontalScale(50), marginBottom: horizontalScale(30)}}>
-      <Text style={{fontFamily: RubikMedium, color:"##2D3142", fontSize:18}}>{label}</Text>
+      <Text style={{fontFamily: RubikMedium, color:"#2D3142", fontSize:18}}>{label}</Text>
     </View>
   );
 };

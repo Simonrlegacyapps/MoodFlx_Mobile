@@ -16,11 +16,12 @@ import {
   StatusBar,
   Pressable,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
 import AddButton from '../../Components/buttons/AddButton';
 import Constants from '../../Constants';
-import { dynamicSize } from '../../Constants/sizeChoose';
+import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import PrivacyIcon from '../../../assets/profileicons/PrivacyIcon';
 import PickImageIcon from '../../../assets/profileicons/PickImageIcon';
 import FaqIcon from '../../../assets/profileicons/FaqIcon';
@@ -51,6 +52,9 @@ import PlayButton from '../../../assets/svg/playButton';
 import AsyncStorage from '@react-native-community/async-storage';
 import getStore from '../../redux';
 import { FAQ_URL, getApiBaseUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
+import Colors from '../../Constants/Colors/Colors';
+import {BitCoinIcon} from '../../../assets/svg/bitCoin';
+import {RubikRegular} from '../../Constants/fonts/Fonts';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -98,6 +102,7 @@ const ProfileTab = ({ navigation }) => {
   const [Loading, setLoading] = useState(false);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [isHowMoodFloWorksPtsGiven, setIsHowMoodFloWorksPtsGiven] = useState(true);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -133,6 +138,7 @@ const ProfileTab = ({ navigation }) => {
           '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
           result?.userData,
         );
+        setIsHowMoodFloWorksPtsGiven(result?.specialPointFlag === 1);
         if (result?.userData?.status !== 2) {
           // console.log('UserDetaills', result.userData);
           dispatch(UserDetail(result.userData));
@@ -653,10 +659,11 @@ const ProfileTab = ({ navigation }) => {
           </View>
           <View
             style={[styles.flatlistContainer, { marginBottom: dynamicSize(56) }]}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("ProgressScreens", {howMoodFloWorks: true})}>
-                <View style={styles.bottomFlatlistContainer}>
-                  <View style={{ marginTop: dynamicSize(7) }}><PlayButton/></View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ProgressScreens", { howMoodFloWorks: true })}>
+              <View style={[styles.bottomFlatlistContainer, { paddingTop: horizontalScale(15) }]}>
+                <View style={{ marginTop: dynamicSize(7) }}><PlayButton /></View>
+                <View>
                   <Text
                     style={[
                       styles.anonymousTextStyle,
@@ -664,8 +671,25 @@ const ProfileTab = ({ navigation }) => {
                     ]}>
                     How MoodFlo Works
                   </Text>
+                  {isHowMoodFloWorksPtsGiven === false && (
+                    <ImageBackground
+                      style={styles.pupView}
+                      imageStyle={styles.pup}
+                      source={require('../../../assets/newImage/AddCoinsPopUp/popUp.png')}>
+                      <BitCoinIcon
+                        style={styles.bitCoinIconView}
+                        color={'#FFFFFF'}
+                        w={getFontSize(12.5)}
+                        h={getFontSize(12.5)}
+                      />
+                      <Text allowFontScaling={false} style={styles.coinText}>
+                        +50 coins
+                      </Text>
+                    </ImageBackground>
+                  )}
                 </View>
-              </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
             {bottomList.map((item, idx) => (
               <TouchableOpacity
                 onPress={() => {
@@ -737,7 +761,7 @@ const styles = StyleSheet.create({
     marginTop: dynamicSize(8),
   },
   flatlistContainer: {
-    flex: 1,
+    // flex: 1,
     marginTop: dynamicSize(10),
     marginLeft: dynamicSize(20),
     marginRight: dynamicSize(20),
@@ -815,6 +839,43 @@ const styles = StyleSheet.create({
     borderRadius: dynamicSize(12),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  pupView: {
+    flexDirection: 'row',
+    position: 'absolute',
+    alignSelf: 'center',
+    height: horizontalScale(45),
+    width: horizontalScale(100),
+    top: horizontalScale(-25),
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  pup: {
+    height: horizontalScale(45),
+    width: horizontalScale(100),
+    resizeMode: 'stretch',
+    tintColor: Colors.coinOrange,
+  },
+  coinText: {
+    ...Platform.select({
+      android: {
+        top: horizontalScale(6),
+      },
+      ios: {
+        top: horizontalScale(5),
+      },
+      default: {
+        // other platforms, web for example
+        top: horizontalScale(6),
+      },
+    }),
+    color: '#FFFFFF',
+    fontSize: getFontSize(12.5),
+    fontFamily: RubikRegular,
+  },
+  bitCoinIconView: {
+    top: horizontalScale(7),
+    marginRight: horizontalScale(3),
   },
 });
 
