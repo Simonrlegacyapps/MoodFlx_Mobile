@@ -35,7 +35,7 @@ import {getApiBaseUrl, moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import Clock from '../../../assets/svg/clock';
 import FloCoin from '../../../assets/svg/floCoins';
-import {getUpdateAnswerRewardPoints} from '../../services/commonService';
+import {getDivisionSetFlag, getUpdateAnswerRewardPoints} from '../../services/commonService';
 import getStore from '../../redux';
 import {
   PulseConnect,
@@ -47,6 +47,7 @@ const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
+  const [count, setCount] = useState(0);
   // const [DateExpired, setDateExpired] = useState(false);
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -640,7 +641,7 @@ const MicScreen = ({navigation}) => {
   ) {
     return <PulseConnect onConnect={onConnect} />;
   } else if (
-    !UserData.UserDivision &&
+    getDivisionSetFlag() === false &&
     Array.isArray(UserData.getDivision) &&
     UserData.getDivision.length > 0
   ) {
@@ -648,6 +649,8 @@ const MicScreen = ({navigation}) => {
       <PulseSelectDivision
         divisions={UserData.getDivision}
         userEmail={UserData.UserEmail}
+        userDivisionName={UserData.UserDivision}
+        setCount={setCount}
       />
     );
   }
@@ -688,7 +691,7 @@ const MicScreen = ({navigation}) => {
             backgroundColor: '#89A1F7',
             alignItems: 'center',
             justifyContent: 'center',
-            // flex: 1,
+            flex: 1,
           }}>
           <Image
             source={Constants.Images.TeamPulse}

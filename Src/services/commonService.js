@@ -23,6 +23,15 @@ import { getApiBaseUrl } from '../Constants/constants';
 let moodsArray = [];
 let isInitialVideoVisisble = false;
 let prevFloCoins = 0;
+let divisionSetFlag = false;
+
+export function setDivisionSetFlag(flag = true) {
+  divisionSetFlag = flag;
+}
+
+export function getDivisionSetFlag() {
+  return divisionSetFlag;
+}
 
 export function setIsInitialVideoVisible(flag) {
   isInitialVideoVisisble = flag;
