@@ -5,6 +5,7 @@ import moment from 'moment';
 
 export const PRIVACY_POLICY_URL = 'https://moodflo.com/privacy-policy';
 export const TERMS_OF_USE_URL = 'https://moodflo.com/terms-of-use';
+export const FAQ_URL = 'https://moodflo.com/frequently-asked-questions';
 
 export const getApiBaseUrl = () => {
   if (__DEV__) {

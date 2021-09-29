@@ -89,6 +89,7 @@ export default function DataInsights({
   isPermissionGiven,
   dispatch,
   onPressInsights,
+  onSync,
 }) {
   const [isDailyInsights, setIsDailyInsights] = useState(
     getWeeklyInsightsAvailable() !== true ||
@@ -96,18 +97,34 @@ export default function DataInsights({
     !isPermissionGiven
   );
   const [showNotEnoughMoodsModal, setShowNotEnoughMoodsModal] = useState(false);
-  const [ShowTarget, setShowTarget] = useState(false)
-  const [MoodCountData, setMoodCountData] = useState(null)
+  const [showNotEnoughData, setShowNotEnoughData] = useState(false);
+  const [ShowTarget, setShowTarget] = useState(false);
+  const [MoodCountData, setMoodCountData] = useState(null);
 
   const openCloseShowNotEnoughMoodsModal = useCallback((flag) => {
     const fn = () => setShowNotEnoughMoodsModal(flag);
     return fn;
   }, []);
 
+  const openCloseShowNotEnoughDataModal = useCallback((flag) => {
+    const fn = () => setShowNotEnoughData(flag);
+    return fn;
+  }, []);
+
+  const onSyncButtonClick = useCallback(() => {
+    setShowNotEnoughData(false);
+    if (isFunction(onSync)) {
+      const timeoutId = setTimeout(() => {
+        onSync();
+        clearTimeout(timeoutId);
+      }, 400);
+    }
+  }, [onSync]);
+
   useEffect(() => {
-    console.log(`isDailyInsights`, isDailyInsights)
-    getWeekMoodData()
-  }, [])
+    console.log(`isDailyInsights`, isDailyInsights);
+    getWeekMoodData();
+  }, []);
 
   const UserData = useSelector((state) => state.First);
 
@@ -115,8 +132,10 @@ export default function DataInsights({
     if (getWeeklyInsightsAvailable() === true) {
       if (weeklyInsights) {
         setIsDailyInsights(false);
-      } else {
+      } else if (getTotalMood() < 4 || !isFunction(onSync)) {
         setShowNotEnoughMoodsModal(true);
+      } else {
+        setShowNotEnoughData(true);
       }
     } else {
       /*
@@ -201,9 +220,14 @@ export default function DataInsights({
   }
 
   const getTotalMood = ()=>{
-    let total = 0
-    for(let i in MoodCountData){
-      total = total + MoodCountData[i].mood_count
+    let total = 0;
+    let moodCountData = MoodCountData;
+    // setMoodCountData((e) => {
+    //   moodCountData = e;
+    //   return e;
+    // });
+    for(let i in moodCountData){
+      total = total + moodCountData[i].mood_count
       console.log(`total`, total)
     }
     return total
@@ -237,7 +261,7 @@ export default function DataInsights({
               !isDailyInsights
                 ? styles.activeTabHeader
                 : styles.inactiveTabHeader,
-              {marginLeft: horizontalScale(10)},
+              { marginLeft: horizontalScale(10) },
             ]}
             onPress={onPressWeeklyTab}>
             <Text
@@ -253,23 +277,23 @@ export default function DataInsights({
             timeLeft !== -1 &&
             !isNaN(timeLeft) && (
               <Pressable onPress={onPressWeeklyTab}>
-              <AnimatedCircularProgress
-                duration={900}
-                arcSweepAngle={360}
-                size={horizontalScale(28)}
-                padding={1}
-                width={2.5}
-                fill={(timeLeft / 5) * 100}
-                rotation={0}
-                tintColor="#7265E3"
-                lineCap={'round'}
-                backgroundColor="#CFF9ED">
-                {(fill) => (
-                  <Text allowFontScaling={false} style={styles.progressText}>
-                    {timeLeft}
-                  </Text>
-                )}
-              </AnimatedCircularProgress>
+                <AnimatedCircularProgress
+                  duration={900}
+                  arcSweepAngle={360}
+                  size={horizontalScale(28)}
+                  padding={1}
+                  width={2.5}
+                  fill={(timeLeft / 5) * 100}
+                  rotation={0}
+                  tintColor="#7265E3"
+                  lineCap={'round'}
+                  backgroundColor="#CFF9ED">
+                  {(fill) => (
+                    <Text allowFontScaling={false} style={styles.progressText}>
+                      {timeLeft}
+                    </Text>
+                  )}
+                </AnimatedCircularProgress>
               </Pressable>
             )}
         </View>
@@ -358,6 +382,15 @@ export default function DataInsights({
         textTwo="Try input your mood at least 3 times per week to unlock this"
         buttonOneText="Next Week!"
         onButtonOnePress={openCloseShowNotEnoughMoodsModal(false)}
+      />
+      <NotEnoughMoodsModal
+        modalVisible={showNotEnoughData}
+        dismissModalHandler={openCloseShowNotEnoughDataModal(false)}
+        image={Images.SadButRelievedFaceImg}
+        textOne="Want to see your weekly insights?"
+        textTwo="Sync your data to find out"
+        buttonOneText="Sync"
+        onButtonOnePress={onSyncButtonClick}
       />
     </>
   );

@@ -279,7 +279,7 @@ const FeedBackModal = ({
               onSubmitEditing={() => Keyboard.dismiss()}
               numberOfLines={5}
               style={styles.feedBackInput}
-              placeholder={`Please let us know how we can improve... \n\nThis is completely anonymous`}
+              placeholder={`Please let us know how we can improve... \n\nThis is anonymous`}
               multiline={true}
             />
           </View>

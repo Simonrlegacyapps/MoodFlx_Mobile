@@ -8,6 +8,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import {onUnlinkUpdate, setPrevFloCoins} from '../services/commonService';
 import {getApiBaseUrl} from '../Constants/constants';
+import isFunction from 'lodash.isfunction';
 
 const PostRequestApi = async (url, params) => {
   return await axios.post(getApiBaseUrl() + url, params).then((resp) => {
@@ -157,7 +158,7 @@ export async function getDivisionName(
     });
 }
 
-export function getUpdateRewardPoint(params, dispatch) {
+export function getUpdateRewardPoint(params, dispatch, onError) {
   console.log('params getUpdateRewardPoint', params);
   return PostRequestApi('getUpdateRewardPoint', params)
     .then((res) => {
@@ -174,6 +175,9 @@ export function getUpdateRewardPoint(params, dispatch) {
     })
     .catch((err) => {
       console.log('❌ ❌ ❌ ❌ Error getUpdateRewardPoint ❌ ❌ ❌ ❌', err);
+      if (isFunction(onError)) {
+        onError();
+      }
     });
 }
 

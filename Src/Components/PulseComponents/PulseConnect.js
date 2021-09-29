@@ -19,6 +19,7 @@ import {useDispatch} from 'react-redux';
 import { Division, ResetLinkToCompanyParams, UserDivision } from '../../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
 import PostRequestApi from '../../apirequest/PostRequestApi';
+import {setDivisionSetFlag} from '../../services/commonService';
 
 const getMarginTop = () => {
   let top = horizontalScale(44)
@@ -83,16 +84,21 @@ export function PulseConnect({onConnect}) {
   );
 }
 
-export function PulseSelectDivision({divisions, userEmail}) {
+function getDivisionData(divisions, userDivisionName) {
+  let d = divisions?.filter?.((e) => e.name === userDivisionName)?.[0] ?? null;
+  return d;
+}
+
+export function PulseSelectDivision({divisions, userEmail, userDivisionName, setCount}) {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [userDivision, setUserDivision] = useState(null);
+  const [userDivision, setUserDivision] = useState(getDivisionData(divisions, userDivisionName));
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const companyName = userEmail?.split?.('@')?.pop?.().split?.('.')?.[0]?.toUpperCase?.() ?? 'your company';
   const onSaveDivision = useCallback(() => {
     let division_id = userDivision?.id;
     setUserDivision((e) => {
-      division_id = e;
+      division_id = e?.id;
       return e;
     });
     const params = {
@@ -115,8 +121,10 @@ export function PulseSelectDivision({divisions, userEmail}) {
             } catch (error) {
               console.log('Async Storage setItem Division error: ', error);
             }
+            setDivisionSetFlag(true);
             dispatch(UserDivision(resp.data.divisionName));
             dispatch(ResetLinkToCompanyParams(true));
+            setCount?.((e) => e + 1);
           }
         }
         setIsLoading(false);

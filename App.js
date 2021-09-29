@@ -214,8 +214,7 @@ const App: () => React$Node = () => {
           if (
             currentRoute &&
             currentRoute.name === 'Linktocompany' &&
-            userData?.email &&
-            !userData?.division_id
+            userData?.email
           ) {
             RootNavigation?.getNavigationRef?.()?.current?.setParams?.({
               email: userData?.email,
@@ -224,16 +223,7 @@ const App: () => React$Node = () => {
           onDynamicLinkUpdate(userData, dispatch, function (data) {
             if (data !== false) {
               // data = {...data, division_id: null};
-              if (data?.email && data?.division_id) {
-                var raw = {
-                  device_id: deviceId,
-                  email: data.email,
-                  user_id: data?.user_id,
-                };
-                getDivisionName(raw, dispatch, false);
-                console.log('handleDynamicLink user Successfully Connected', data);
-              } else if (data?.email && !data?.division_id) {
-                console.log('Link success, please Select division - email', data.email);
+              if (data?.email) {
                 if (RootNavigation?.navigationRef?.current?.navigate) {
                   RootNavigation?.navigationRef?.current?.navigate(
                     'HomeScreen',
@@ -259,7 +249,9 @@ const App: () => React$Node = () => {
           console.log('error calling getDownloadLink api: ', error);
         }
       }
-    }, [dispatch]);
+    },
+    [dispatch],
+  );
 
   const onLinkConfirm = useCallback(async () => {
     setLinkModalText('');
@@ -664,9 +656,6 @@ const App: () => React$Node = () => {
   }, []);
 
   const fp = () => {
-    if (!isHandleDynamicLinkCalled.current && Platform.OS === 'ios' && !UserData.UserId && !UserData.UserEmail) {
-      handleDynamicLink({url: 'https://moodflo/org/Mjc=/n/aia'});
-    }
     notifService.scheduleMoodFloLocalNotif();
   };
   useEffect(() => {
@@ -729,11 +718,6 @@ const App: () => React$Node = () => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (!isHandleDynamicLinkCalled.current && !UserData.UserId && !UserData.UserEmail && Platform.OS === 'android') {
-      handleDynamicLink({url: 'https://moodflo/org/Mjc=/n/aia'});
-    }
-  }, []);
 
   useEffect(() => {
     if (

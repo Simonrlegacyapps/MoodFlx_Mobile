@@ -44,7 +44,7 @@ import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/Unlin
 import { getApiBaseUrl, PHOTO_URL } from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
-import {onUnlinkUpdate} from '../../services/commonService';
+import {onUnlinkUpdate, setDivisionSetFlag} from '../../services/commonService';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import FeedBackModal from '../../Components/Modals/FeedBackModal/FeedBackModal';
 import {NoteIcon} from '../../../assets/svg/noteIcon';
@@ -98,6 +98,12 @@ const Linktocompany = ({ navigation }) => {
   //   UserData.UserEmail,
   //   UserData.UserDivision,
   // );
+
+  useEffect(() => {
+    if (route?.params?.email) {
+      setDivisionSetFlag(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (UserData.isLinkToCompanyRouteParamsReset === true) {
@@ -303,6 +309,7 @@ const Linktocompany = ({ navigation }) => {
             JSON.stringify(resp.data.divisionName),
           );
           dispatch(UserDivision(resp.data.divisionName));
+          setDivisionSetFlag(true);
           route.params.email && navigation?.setParams({ email: null });
           // navigation.navigate('VerifyEmail', {
           //   code: resp.data.otp,

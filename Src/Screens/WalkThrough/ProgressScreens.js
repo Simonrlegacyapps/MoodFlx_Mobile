@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import Mood from '../../../assets/svg/mood';
 import {
@@ -38,15 +39,20 @@ const {height} = Dimensions.get("window")
 const ProgressScreen = ({navigation, route}) => {
   const [number, setnumber] = useState(0);
   const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const closeLvlUpModal = useCallback(() => {
-    setIsOpenLvlUpModal(false);
+  const goBack = () => {
     const timeoutId = setTimeout(() => {
       navigation.goBack();
       clearTimeout(timeoutId);
     }, 400);
-  }, [navigation]);
+  };
+
+  const closeLvlUpModal = useCallback(() => {
+    setIsOpenLvlUpModal(false);
+    goBack();
+  }, []);
 
   const checkStorage = async () => {
     let p = await AsyncStorage.getItem('givePoints');
@@ -73,20 +79,29 @@ const ProgressScreen = ({navigation, route}) => {
       "description": "How moodflo works"
     };
     console.log(`params of how mood flo works 50 coins`, params);
-    getUpdateRewardPoint(params, dispatch).then((res) => {
+    setIsLoading(true);
+    function onError() {
+      setIsLoading(false);
+      goBack();
+    }
+    getUpdateRewardPoint(params, dispatch, onError).then((res) => {
       console.log('getUpdateRewardPoint res.data----', res?.data);
+      setIsLoading(false);
       if (
         res?.data?.reward_point &&
         getIsMoodLvlUp(prevRewardPts, res.data.reward_point)
       ) {
-        setIsOpenLvlUpModal(true);
+        const timeoutId = setTimeout(() => {
+          setIsOpenLvlUpModal(true);
+          clearTimeout(timeoutId);
+        }, 400);
       } else {
-        navigation.goBack();
+        goBack();
       }
     });
   };
 
-  const onDone = (isClickFromDoneButton) => {
+  const onDone = (isClickFromDoneButton) => () => {
     if (isClickFromDoneButton && route?.params?.howMoodFloWorks) {
       checkStorage();
     } else {
@@ -165,7 +180,7 @@ const ProgressScreen = ({navigation, route}) => {
                   </Text>
                 </View>
                 <View style={styles.bottomButtons}>
-                  <TouchableOpacity onPress={onDone} style={{ flex: 1 }}>
+                  <TouchableOpacity onPress={onDone(false)} style={{ flex: 1 }}>
                     <Text allowFontScaling={false} style={styles.skip}>Skip > ></Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -239,12 +254,12 @@ const ProgressScreen = ({navigation, route}) => {
 
                 {/* // bottom buttons */}
                 <View style={styles.bottomButtons}>
-                  <TouchableOpacity onPress={onDone} style={{ flex: 1 }}>
+                  <TouchableOpacity onPress={onDone(false)} style={{ flex: 1 }}>
                     <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
-                      data[number - 1].button === "Next" ? setnumber(number + 1) : onDone(true);
+                      data[number - 1].button === "Next" ? setnumber(number + 1) : onDone(true)();
                     }}
                     style={{ backgroundColor: '#7265E3', borderRadius: 7 }}>
                     <Text allowFontScaling={false} style={styles.next}>
@@ -257,9 +272,14 @@ const ProgressScreen = ({navigation, route}) => {
           </SafeAreaView>
         </ImageBackground>
       </View>
+      {isLoading && !isOpenLvlUpModal && (
+        <View style={styles.loader}>
+          <ActivityIndicator color='#9889F9' size="large" />
+        </View>
+      )}
       <LvlUpModal
         bigText="You’ve leveled up!"
-        modalVisible={isOpenLvlUpModal}
+        modalVisible={isOpenLvlUpModal && !isLoading}
         dismissModalHandler={closeLvlUpModal}
         buttonText="Let's Go!"
         verifyDone={closeLvlUpModal}
