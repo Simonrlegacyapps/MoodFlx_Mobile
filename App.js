@@ -2,16 +2,19 @@ import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {
   View,
   SafeAreaView,
+  TextInput,
   Dimensions,
   Image,
   Platform,
   AppState,
+  NativeModules,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
+import SharedGroupPreferences from 'react-native-shared-group-preferences';
 import {
   GetUserId,
   HealthPerm,
@@ -63,6 +66,7 @@ import {
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
   isCountryIndia,
+  widgetDataGroup,
 } from './Src/Constants/constants';
 import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
 import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgressModal/WeeklyInsightsProgressModal';
@@ -71,6 +75,8 @@ import Screen1 from './Src/Screens/WalkThrough/Screen1';
 import BoardingNavigation from './Src/navigator/BoardingNavigation';
 import getStore from './Src/redux';
 import {useDispatch, useSelector} from 'react-redux';
+
+const SharedStorage = NativeModules.SharedStorage;
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
@@ -152,6 +158,10 @@ const App: () => React$Node = () => {
   const [linkModalText, setLinkModalText] = useState('');
   const newOrg = useRef(null);
   const isHandleDynamicLinkCalled = useRef(false);
+  const [text, setText] = useState('');
+  const widgetData = {
+    text,
+  };
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -163,6 +173,21 @@ const App: () => React$Node = () => {
       RootNavigation.isReadyRef.current = false;
     };
   }, []);
+
+  const handleSubmit = async () => {
+    if (Platform.OS === 'ios') {
+      try {
+        console.log('widgetData ---->', widgetData);
+        // iOS
+        await SharedGroupPreferences.setItem('widgetKey', widgetData, widgetDataGroup);
+      } catch (error) {
+        console.log({error});
+      }
+    } else if (Platform.OS === 'android') {
+      // Android
+      SharedStorage.set(JSON.stringify({text}));
+    }
+  };
 
   const linkCompany = useCallback(
     async (org) => {
@@ -783,6 +808,20 @@ const App: () => React$Node = () => {
 
   return (
     <>
+    <TextInput
+        style={{
+          width: '100%',
+          borderBottomWidth: 1,
+          fontSize: 20,
+          marginTop: 50,
+          minHeight: 40,
+        }}
+        onChangeText={newText => setText(newText)}
+        value={text}
+        returnKeyType="send"
+        onEndEditing={handleSubmit}
+        placeholder="Enter the text to display..."
+      />
       {ShowWelcome === false ? (
         <NavigationContainer
           ref={RootNavigation.navigationRef}

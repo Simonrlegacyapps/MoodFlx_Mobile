@@ -7661,6 +7661,11 @@ react-native-sensor-manager@^0.1.10:
   resolved "https://registry.yarnpkg.com/react-native-sensor-manager/-/react-native-sensor-manager-0.1.10.tgz#c228280d67fddb668e715b4d7b823188de504da8"
   integrity sha1-wigoDWf922aOcVtNe4IxiN5QTag=
 
+react-native-shared-group-preferences@^1.1.23:
+  version "1.1.23"
+  resolved "https://registry.yarnpkg.com/react-native-shared-group-preferences/-/react-native-shared-group-preferences-1.1.23.tgz#f9b9a981728e5c5cef6cb5e26a337e0e60969bda"
+  integrity sha512-ZZyLNksXtuQU2AIe0RDNvjYewy2c8EVDNuA7DE141/43CaWjHScIqyQ+vOhQDVscAq/9XpfYWHQmeu2uteRqCg==
+
 react-native-size-matters@^0.4.0:
   version "0.4.0"
   resolved "https://registry.npmjs.org/react-native-size-matters/-/react-native-size-matters-0.4.0.tgz"
@@ -7703,6 +7708,11 @@ react-native-toast-message@^1.4.9:
   integrity sha512-QhHzzsiymKpHEWz2nUKQjQMRuGN+/a8cOwDXJcz3TQFY03p20f6sJW9JKw3KkMfvWiUhGbApCPpNU6tHaAZ32w==
   dependencies:
     prop-types "^15.7.2"
+
+react-native-today-widget@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-today-widget/-/react-native-today-widget-1.0.0.tgz#2547494c497aa7163b3a40a66937879be4b5412c"
+  integrity sha512-ZtxNcaDNSnKcv0NJNUhWlZSdzm6cHlvYi6emYxb/e1kyZgC7vBugR4S9Rm5HEOcsN+MEcBEaBIWSzJGJjRddkQ==
 
 "react-native-usage-stats@file:./react-native-usage-stats":
   version "1.0.0"

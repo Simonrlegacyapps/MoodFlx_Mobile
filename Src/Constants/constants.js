@@ -233,3 +233,5 @@ export const getWeeklyInsightsDaysLeft = () => {
     return Math.ceil(Number(duration));
   }
 };
+
+export const widgetDataGroup = 'group.moodflo';
