@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Platform,
+  AppState,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -36,6 +38,9 @@ import DataInsights from '../../../Components/DataInsights/DataInsights';
 import ScreenTimeBarGraph from '../../../Components/ScreenTimeGraph/ScreenTimeBarGraph';
 import ScreenTimeLineGraph from '../../../Components/ScreenTimeGraph/ScreenTimeLineGraph';
 import { horizontalScale } from '../../../Constants/sizeChoose';
+import isEmpty from 'lodash.isempty';
+import getStore from '../../../redux';
+import { ScreenTimePerm } from '../../../redux/actions/actions';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -63,9 +68,52 @@ const ScreenData = ({
   const [Graph, setGraph] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
+  const [currentDayScreenTime, setCurrentDayScreenTime] = useState(0);
+  const [yesterdayScreenTime, setYesterdayScreenTime] = useState(0);
+  const requestingPermission = useRef(false);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
+
+  const fetchScreenTimeData = () => {
+    if (Platform.OS === 'android') {
+      getDailyStats();
+      const timoutId = setTimeout(() => {
+        getPreviousDayStats();
+        clearTimeout(timoutId);
+      }, 500);
+    }
+  };
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        console.log("App has come to the foreground!");
+        if (requestingPermission.current === true) {
+          fetchScreenTimeData();
+          requestingPermission.current = false;
+        }
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log("AppState", appState.current);
+    });
+
+    return () => {
+      subscription?.remove?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchScreenTimeData();
+  }, []);
+
   const data = [
     {
       x: 1,
@@ -155,6 +203,12 @@ const ScreenData = ({
     // await AsyncStorage.setItem('GiveSleepPerm', 'true');
 
     setopenActionSheet(false);
+    if (Platform.OS === 'android') {
+      const timeoutId = setTimeout(() => {
+        requestUsageStatsPermission();
+        clearTimeout(timeoutId);
+      }, 400);
+    }
     //   let Sp = await AsyncStorage.getItem('GiveSleepPerm');
     //   let SleepP = await JSON.parse(Sp);
     //   console.log(`SleepPerm`, SleepP);
@@ -162,16 +216,58 @@ const ScreenData = ({
   };
 
   const requestUsageStatsPermission = () => {
-    if (!UsageStats.showUsageAccessSettings) {
+    // if (UsageStats.checkForPermission()) {
+    //   console.log('UsageStats.checkForPermission() ->', UsageStats?.checkForPermission?.());
+    //   return;
+    // }
+    if (Platform.OS !== 'android') {
+      return;
+    }
+    const s = moment().startOf('day').toDate();
+    if (!UsageStats) {
       Toast.show({
         type: 'error',
-        text2: 'Usage Stats showUsageAccessSettings not available',
+        text2: 'Usage Stats not available',
         visibilityTime: 4000,
         autoHide: true,
       });
       return;
     }
-    UsageStats.showUsageAccessSettings('com.moodflo');
+    if (!UsageStats?.queryUsageStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats queryUsageStats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    UsageStats.queryUsageStats(
+      UsageStats.INTERVAL_BEST,
+      s.getTime(),
+      new Date().getTime(),
+    )
+      .then((data) => {
+        console.log('SCREEN TIME DATA: ', data);
+        if (isEmpty(data)) {
+          if (!UsageStats?.showUsageAccessSettings) {
+            Toast.show({
+              type: 'error',
+              text2: 'Usage Stats showUsageAccessSettings not available',
+              visibilityTime: 4000,
+              autoHide: true,
+            });
+          } else {
+            UsageStats.showUsageAccessSettings('com.moodflo');
+            requestingPermission.current = true;
+          }
+        } else {
+          fetchScreenTimeData();
+        }
+      })
+      .catch((error) => {
+        console.log('Error in getting SCREEN TIME DATA: ', error);
+      });
   };
 
   const getUsageStats = () => {
@@ -193,14 +289,105 @@ const ScreenData = ({
       });
       return;
     }
-    const s = moment().startOf('day').subtract(1, 'day').toDate();
+    const s = moment().startOf('day').toDate();
     UsageStats.queryUsageStats(
-      UsageStats.INTERVAL_DAILY,
+      UsageStats.INTERVAL_BEST,
       s.getTime(),
       new Date().getTime(),
     )
       .then((data) => {
         console.log('SCREEN TIME DATA: ', data);
+      })
+      .catch((error) => {
+        console.log('Error in getting SCREEN TIME DATA: ', error);
+      });
+  };
+
+  const getTotalTimeInForeground = (screenTimeData) => {
+    let totalScreenTime = 0;
+    if (!screenTimeData) {
+      return totalScreenTime;
+    }
+    const keys = Object.keys(screenTimeData);
+    if (Array.isArray(keys) && keys.length > 0) {
+      keys.forEach((e) => {
+        let screenTime = screenTimeData?.[e]?.totalTimeInForeground ?? 0;
+        if (!isNaN(screenTime)) {
+          totalScreenTime += Number(screenTime);
+        }
+      });
+    }
+    console.log('screen time in milli --->', totalScreenTime);
+    totalScreenTime = totalScreenTime > 0 ? Math.ceil((totalScreenTime / 1000) / 60) : 0;
+    console.log('screen time in minutes --->', totalScreenTime);
+    if (totalScreenTime === 0) {
+      console.log('screen time in hours --->', 0);
+    } else {
+      console.log('screen time in hours --->', `${Math.floor(totalScreenTime / 60)} hours - ${totalScreenTime % 60} minutes`);
+    }
+    return totalScreenTime;
+  };
+
+  const getDailyStats = () => {
+    if (!UsageStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    if (!UsageStats.getDailyStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats queryUsageStats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    UsageStats.getDailyStats()
+      .then((data) => {
+        console.log('CURRENT DAY SCREEN TIME DATA: ', data);
+        setCurrentDayScreenTime(getTotalTimeInForeground(data));
+        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+        if (screenTimePermission === false && !isEmpty(data)) {
+          dispatch(ScreenTimePerm(true));
+        }
+      })
+      .catch((error) => {
+        console.log('Error in getting SCREEN TIME DATA: ', error);
+      });
+  };
+
+  const getPreviousDayStats = () => {
+    if (!UsageStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    if (!UsageStats.getPreviousDayStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats queryUsageStats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    UsageStats.getPreviousDayStats()
+      .then((data) => {
+        console.log('PREVIOUS DAY SCREEN TIME DATA: ', data);
+        setYesterdayScreenTime(getTotalTimeInForeground(data));
+        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+        if (screenTimePermission === false && !isEmpty(data)) {
+          dispatch(ScreenTimePerm(true));
+        }
       })
       .catch((error) => {
         console.log('Error in getting SCREEN TIME DATA: ', error);
@@ -274,6 +461,36 @@ const ScreenData = ({
             </Text>
           </View>
         </View>
+        {/* <TouchableOpacity
+          style={{
+            marginTop: 30,
+            alignSelf: 'center',
+            borderWidth: 1.5,
+            borderColor: '#000000',
+          }}
+          onPress={requestUsageStatsPermission}>
+              <Text>Check Usage Permission</Text>
+          </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            marginTop: 30,
+            alignSelf: 'center',
+            borderWidth: 1.5,
+            borderColor: '#000000',
+          }}
+          onPress={getDailyStats}>
+              <Text>Get Current Day Statistics</Text>
+          </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            marginTop: 30,
+            alignSelf: 'center',
+            borderWidth: 1.5,
+            borderColor: '#000000',
+          }}
+          onPress={getPreviousDayStats}>
+              <Text>Get Yesterday Statistics</Text>
+          </TouchableOpacity> */}
         <View>
           <DataInsights
             dailyInsights={'You became more tired and anxious as your screen time went over 5hrs per day'}
@@ -283,7 +500,7 @@ const ScreenData = ({
             weeklySuggestion={'Try to get less than 5 hrs per day'}
             weeklySuggestionType={'warning'}
             timeLeft={UserData?.weeklyInsightsTimeLeft}
-            isPermissionGiven={false}
+            isPermissionGiven={UserData.ScreenTimePermission}
             dispatch={dispatch}
           />
           {/* <View
@@ -323,6 +540,24 @@ const ScreenData = ({
             <ScreenCircleBar
               DarkColor="#0DDE79"
               lightColor="#CFF9ED"
+              Label="Today"
+              // Time="1hr 34min"
+              Time={currentDayScreenTime > 0 ? `${Math.floor(currentDayScreenTime / 60)}hr ${currentDayScreenTime % 60}min` : '0'}
+              value={54}
+              border={true}
+            />
+            <ScreenCircleBar
+              DarkColor="#F992BE"
+              lightColor="#FEE9F2"
+              Label="Yesterday"
+              Time={yesterdayScreenTime > 0 ? `${Math.floor(yesterdayScreenTime / 60)}hr ${yesterdayScreenTime % 60}min` : '0'}
+              // Time="1hr 34min"
+              value={32}
+              border={true}
+            />
+            {/* <ScreenCircleBar
+              DarkColor="#0DDE79"
+              lightColor="#CFF9ED"
               Label="Morning"
               Time="1hr 34min"
               value={54}
@@ -342,7 +577,7 @@ const ScreenData = ({
               Label="Evening"
               Time="1hr 34min"
               value={92}
-            />
+            /> */}
           </View>
           {/* <GraphicChart /> */}
           <ScreenTimeLineGraph />
@@ -370,7 +605,7 @@ const ScreenData = ({
               </Text>
             </View>
           )} */}
-          {true && (
+          {!UserData.ScreenTimePermission && (
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {
@@ -390,8 +625,8 @@ const ScreenData = ({
       </ScrollView>
 
       <PopUp
-        permission={false}
-        ComingUp
+        ComingUp={false}
+        permission={UserData.ScreenTimePermission}
         image={Constants.Images.ScreenPopUpImg}
         dataType={'screen'}
         modalVisible={openActionSheet}

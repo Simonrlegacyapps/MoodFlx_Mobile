@@ -18,6 +18,7 @@ export const GET_DAY_STEPS = 'GET_DAY_STEPS';
 export const GET_WEATHER_HOUR = 'GET_WEATHER_HOUR';
 export const GET_WEATHER_PERM = 'GET_WEATHER_PERM';
 export const GET_SLEEP_PERM = 'GET_SLEEP_PERM';
+export const GET_SCREENTIME_PERM = 'GET_SCREENTIME_PERM';
 export const GET_DAY_TEMP = 'GET_DAY_TEMP';
 export const SET_STEPS = 'SET_STEPS';
 export const SET_CALORIES = 'SET_CALORIES';

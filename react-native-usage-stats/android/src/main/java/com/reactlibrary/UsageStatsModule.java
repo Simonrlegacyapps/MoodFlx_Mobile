@@ -3,6 +3,7 @@ package com.reactlibrary;
 import android.app.AppOpsManager;
 import android.app.usage.NetworkStats;
 import android.app.usage.NetworkStatsManager;
+import android.app.usage.UsageEvents;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -22,16 +23,53 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.common.MapBuilder;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import static android.app.AppOpsManager.MODE_ALLOWED;
 import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
+
+class Stat {
+    private String packageName;
+    private long totalTime;
+    private List<ZonedDateTime> startTimes;
+
+    public Stat(String pkgName, long totalInterval, List<ZonedDateTime> startTimesList) {
+        this.packageName = pkgName;
+        this.totalTime = totalInterval;
+        this.startTimes = startTimesList;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public List<ZonedDateTime> getStartTimes() {
+        return startTimes;
+    }
+
+    public long getTotalTime() {
+        return totalTime;
+    }
+}
 
 public class UsageStatsModule extends ReactContextBaseJavaModule {
 
@@ -86,31 +124,45 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
         reactContext.startActivity(intent);
     }
 
+
+    public static String getAppNameFromPkgName(Context context, String Packagename) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            ApplicationInfo info = packageManager.getApplicationInfo(Packagename, PackageManager.GET_META_DATA);
+            String appName = (String) packageManager.getApplicationLabel(info);
+            return appName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     @ReactMethod
     public void queryUsageStats(int interval, double startTime, double endTime, Promise promise) {
         WritableMap result = new WritableNativeMap();
         UsageStatsManager usageStatsManager = (UsageStatsManager)reactContext.getSystemService(Context.USAGE_STATS_SERVICE);
         List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats(interval, (long) startTime, (long) endTime);
-        Map<String, UsageStats> stats = usageStatsManager.queryAndAggregateUsageStats((long) startTime, (long) endTime);
-        Log.d("UsageStats MAP: ", stats.toString());
-        // for (UsageStats us : queryUsageStats) {
-        //     Log.d("UsageStats", us.getPackageName() + " = " + us.getTotalTimeInForeground());
-        //     WritableMap usageStats = new WritableNativeMap();
-        //     usageStats.putString("packageName", us.getPackageName());
-        //     usageStats.putDouble("totalTimeInForeground", us.getTotalTimeInForeground());
-        //     usageStats.putDouble("firstTimeStamp", us.getFirstTimeStamp());
-        //     usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
-        //     usageStats.putDouble("lastTimeUsed", us.getLastTimeUsed());
-        //     usageStats.putInt("describeContents", us.describeContents());
-        //     result.putMap(us.getPackageName(), usageStats);
-        // }
-        promise.resolve(stats.toString());
-        // promise.resolve(result);
+        // Map<String, UsageStats> stats = usageStatsManager.queryAndAggregateUsageStats((long) startTime, (long) endTime);
+        // Log.d("UsageStats MAP: ", stats.toString());
+        for (UsageStats us : queryUsageStats) {
+            Log.d("UsageStats", us.getPackageName() + " = " + us.getTotalTimeInForeground());
+            WritableMap usageStats = new WritableNativeMap();
+            usageStats.putString("packageName", us.getPackageName());
+            usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
+            usageStats.putDouble("totalTimeInForeground", us.getTotalTimeInForeground());
+            usageStats.putDouble("firstTimeStamp", us.getFirstTimeStamp());
+            usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
+            usageStats.putDouble("lastTimeUsed", us.getLastTimeUsed());
+            usageStats.putInt("describeContents", us.describeContents());
+            result.putMap(us.getPackageName(), usageStats);
+        }
+        // promise.resolve(stats.toString());
+        promise.resolve(result);
     }
 
     /**
- * Returns the stats for the [date] (defaults to today) 
- */
+     * Returns the stats for the [date] (defaults to today)
+     */
 // fun getDailyStats(date: LocalDate = LocalDate.now()): List<Stat> {
 //     // The timezones we'll need 
 //     val utc = ZoneId.of("UTC")
@@ -187,6 +239,236 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
 //     }
 //     return stats
 // }
+
+    private static WritableMap convertJsonToMap(JSONObject jsonObject) throws JSONException {
+        WritableMap map = new WritableNativeMap();
+
+        Iterator<String> iterator = jsonObject.keys();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            Object value = jsonObject.get(key);
+            if (value instanceof JSONObject) {
+                map.putMap(key, convertJsonToMap((JSONObject) value));
+            } else if (value instanceof Boolean) {
+                map.putBoolean(key, (Boolean) value);
+            } else if (value instanceof Integer) {
+                map.putInt(key, (Integer) value);
+            } else if (value instanceof Double) {
+                map.putDouble(key, (Double) value);
+            } else if (value instanceof String) {
+                map.putString(key, (String) value);
+            } else {
+                map.putString(key, value.toString());
+            }
+        }
+        return map;
+    }
+
+    @ReactMethod
+    public void getDailyStats(Promise promise) {
+        // The timezones we'll need
+        UsageStatsManager usageStatsManager = (UsageStatsManager)reactContext.getSystemService(Context.USAGE_STATS_SERVICE);
+        ZoneId utc = ZoneId.of("UTC");
+        ZoneId defaultZone = ZoneId.systemDefault();
+        // Set the starting and ending times to be midnight in UTC time
+//        Date startDate = date.atStartOfDay(defaultZone).withZoneSameInstant(utc)
+        ZonedDateTime startDate = LocalDate.now().atStartOfDay(defaultZone).withZoneSameInstant(utc);
+        long start = startDate.toInstant().toEpochMilli();
+        long end = startDate.plusDays(1).toInstant().toEpochMilli();
+
+        // This will keep a map of all of the events per package name
+        Map<String, List<UsageEvents.Event>> sortedEvents = new HashMap<>();
+
+        // Query the list of events that has happened within that time frame
+        UsageEvents systemEvents = usageStatsManager.queryEvents(start, end);
+        while (systemEvents.hasNextEvent()) {
+            UsageEvents.Event event = new UsageEvents.Event();
+            systemEvents.getNextEvent(event);
+
+
+            // Get the list of events for the package name, create one if it doesn't exist
+            List<UsageEvents.Event> packageEvents = (sortedEvents.get(event.getPackageName()) != null) ? sortedEvents.get(event.getPackageName()) : new ArrayList<UsageEvents.Event>();
+            packageEvents.add(event);
+            sortedEvents.put(event.getPackageName(), packageEvents);
+        }
+
+        // This will keep a list of our final stats
+        List<Stat> stats = new ArrayList<Stat>();
+
+        // Go through the events by package name
+        for (Map.Entry<String, List<UsageEvents.Event>> set :
+                sortedEvents.entrySet()) {
+
+            // Printing all elements of a Map
+//            Log.d(set.getKey() + " = " + set.getValue());
+
+            // Keep track of the current start and end times
+            long startTime = 0L;
+            long endTime = 0L;
+            // Keep track of the total usage time for this app
+            long totalTime = 0L;
+            // Keep track of the start times for this app
+            List<ZonedDateTime> startTimes = new ArrayList<>();
+            for (UsageEvents.Event it : set.getValue()) {
+                int eventType = it.getEventType();
+                if (eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                    // App was moved to the foreground: set the start time
+                    startTime = it.getTimeStamp();
+                    // Add the start time within this timezone to the list
+                    startTimes.add(Instant.ofEpochMilli(startTime).atZone(utc)
+                            .withZoneSameInstant(defaultZone));
+                } else if (eventType == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+                    // App was moved to background: set the end time
+                    endTime = it.getTimeStamp();
+                }
+
+                // If there's an end time with no start time, this might mean that
+                //  The app was started on the previous day, so take midnight
+                //  As the start time
+                if (startTime == 0L && endTime != 0L) {
+                    startTime = start;
+                }
+
+                // If both start and end are defined, we have a session
+                if (startTime != 0L && endTime != 0L) {
+                    // Add the session time to the total time
+                    totalTime += endTime - startTime;
+                    // Reset the start/end times to 0
+                    startTime = 0L;
+                    endTime = 0L;
+                }
+            }
+            // If there is a start time without an end time, this might mean that
+            //  the app was used past midnight, so take (midnight - 1 second)
+            //  as the end time
+            if (startTime != 0L && endTime == 0L) {
+                totalTime = totalTime + end - 1000 - startTime;
+            }
+            stats.add(new Stat(set.getKey(), totalTime, startTimes));
+        }
+
+        WritableMap result = new WritableNativeMap();
+        for (Stat us : stats) {
+            Log.d("UsageStats", us.getPackageName() + " = " + us.getTotalTime());
+            WritableMap usageStats = new WritableNativeMap();
+            List<ZonedDateTime> sTimes = us.getStartTimes();
+            String sTimesString = sTimes == null ? "" : sTimes.toString();
+            usageStats.putString("packageName", us.getPackageName());
+            usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
+            usageStats.putDouble("totalTimeInForeground", us.getTotalTime());
+            usageStats.putString("startTimes", sTimesString);
+//            usageStats.putDouble("firstTimeStamp", us.getFirstTimeStamp());
+//            usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
+//            usageStats.putDouble("lastTimeUsed", us.getLastTimeUsed());
+//            usageStats.putInt("describeContents", us.describeContents());
+            result.putMap(us.getPackageName(), usageStats);
+        }
+        promise.resolve(result);
+//        return stats;
+    }
+
+    @ReactMethod
+    public void getPreviousDayStats(Promise promise) {
+        // The timezones we'll need
+        UsageStatsManager usageStatsManager = (UsageStatsManager)reactContext.getSystemService(Context.USAGE_STATS_SERVICE);
+        ZoneId utc = ZoneId.of("UTC");
+        ZoneId defaultZone = ZoneId.systemDefault();
+        // Set the starting and ending times to be midnight in UTC time
+//        Date startDate = date.atStartOfDay(defaultZone).withZoneSameInstant(utc)
+        ZonedDateTime startDate = LocalDate.now().minusDays(1).atStartOfDay(defaultZone).withZoneSameInstant(utc);
+        long start = startDate.toInstant().toEpochMilli();
+        long end = LocalDate.now().atStartOfDay(defaultZone).minusSeconds(1).withZoneSameInstant(utc).toInstant().toEpochMilli();
+
+        // This will keep a map of all of the events per package name
+        Map<String, List<UsageEvents.Event>> sortedEvents = new HashMap<>();
+
+        // Query the list of events that has happened within that time frame
+        UsageEvents systemEvents = usageStatsManager.queryEvents(start, end);
+        while (systemEvents.hasNextEvent()) {
+            UsageEvents.Event event = new UsageEvents.Event();
+            systemEvents.getNextEvent(event);
+
+
+            // Get the list of events for the package name, create one if it doesn't exist
+            List<UsageEvents.Event> packageEvents = (sortedEvents.get(event.getPackageName()) != null) ? sortedEvents.get(event.getPackageName()) : new ArrayList<UsageEvents.Event>();
+            packageEvents.add(event);
+            sortedEvents.put(event.getPackageName(), packageEvents);
+        }
+
+        // This will keep a list of our final stats
+        List<Stat> stats = new ArrayList<Stat>();
+
+        // Go through the events by package name
+        for (Map.Entry<String, List<UsageEvents.Event>> set :
+                sortedEvents.entrySet()) {
+
+            // Printing all elements of a Map
+//            Log.d(set.getKey() + " = " + set.getValue());
+
+            // Keep track of the current start and end times
+            long startTime = 0L;
+            long endTime = 0L;
+            // Keep track of the total usage time for this app
+            long totalTime = 0L;
+            // Keep track of the start times for this app
+            List<ZonedDateTime> startTimes = new ArrayList<>();
+            for (UsageEvents.Event it : set.getValue()) {
+                int eventType = it.getEventType();
+                if (eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                    // App was moved to the foreground: set the start time
+                    startTime = it.getTimeStamp();
+                    // Add the start time within this timezone to the list
+                    startTimes.add(Instant.ofEpochMilli(startTime).atZone(utc)
+                            .withZoneSameInstant(defaultZone));
+                } else if (eventType == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+                    // App was moved to background: set the end time
+                    endTime = it.getTimeStamp();
+                }
+
+                // If there's an end time with no start time, this might mean that
+                //  The app was started on the previous day, so take midnight
+                //  As the start time
+                if (startTime == 0L && endTime != 0L) {
+                    startTime = start;
+                }
+
+                // If both start and end are defined, we have a session
+                if (startTime != 0L && endTime != 0L) {
+                    // Add the session time to the total time
+                    totalTime += endTime - startTime;
+                    // Reset the start/end times to 0
+                    startTime = 0L;
+                    endTime = 0L;
+                }
+            }
+            // If there is a start time without an end time, this might mean that
+            //  the app was used past midnight, so take (midnight - 1 second)
+            //  as the end time
+            if (startTime != 0L && endTime == 0L) {
+                totalTime = totalTime + end - 1000 - startTime;
+            }
+            stats.add(new Stat(set.getKey(), totalTime, startTimes));
+        }
+
+        WritableMap result = new WritableNativeMap();
+        for (Stat us : stats) {
+            Log.d("UsageStats", us.getPackageName() + " = " + us.getTotalTime());
+            WritableMap usageStats = new WritableNativeMap();
+            List<ZonedDateTime> sTimes = us.getStartTimes();
+            String sTimesString = sTimes == null ? "" : sTimes.toString();
+            usageStats.putString("packageName", us.getPackageName());
+            usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
+            usageStats.putDouble("totalTimeInForeground", us.getTotalTime());
+            usageStats.putString("startTimes", sTimesString);
+//            usageStats.putDouble("firstTimeStamp", us.getFirstTimeStamp());
+//            usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
+//            usageStats.putDouble("lastTimeUsed", us.getLastTimeUsed());
+//            usageStats.putInt("describeContents", us.describeContents());
+            result.putMap(us.getPackageName(), usageStats);
+        }
+        promise.resolve(result);
+//        return stats;
+    }
 
 // // Helper class to keep track of all of the stats 
 // class Stat(val packageName: String, val totalTime: Long, val startTimes: List<ZonedDateTime>)

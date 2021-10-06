@@ -40,6 +40,7 @@ import {
   SET_SLEEP_DATA_SYNC_STATUS,
   SET_WEATHER_INSIGHTS,
   RESET_LINK_TO_COMPANY_PARAMS,
+  GET_SCREENTIME_PERM,
   
 } from '../constants/action-types';
 
@@ -58,6 +59,7 @@ const intializedState = {
   NotificationPermission: false,
   WeatherPermission: false,
   SleepPermission: false,
+  ScreenTimePermission: false,
   AllMoods: null,
   lat: null,
   lon: null,
@@ -147,6 +149,10 @@ export const First = (state = intializedState, action) => {
     case GET_SLEEP_PERM:
       return Object.assign({}, state, {
         SleepPermission: action.payload,
+      });
+    case GET_SCREENTIME_PERM:
+      return Object.assign({}, state, {
+        ScreenTimePermission: action.payload,
       });
     case GET_ALL_MOODS:
       return Object.assign({}, state, {
