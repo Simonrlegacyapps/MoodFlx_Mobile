@@ -41,7 +41,7 @@ import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
 import {useRoute, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
-import { getApiBaseUrl, PHOTO_URL } from '../../Constants/constants';
+import { getApiBaseUrl } from '../../Constants/constants';
 import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
 import {onUnlinkUpdate, setDivisionSetFlag} from '../../services/commonService';

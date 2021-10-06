@@ -11,7 +11,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { IsAnonymous, UserDetail } from '../../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
-import { getApiBaseUrl, PHOTO_URL } from '../../Constants/constants';
+import { getApiBaseUrl, getPhotoUrl } from '../../Constants/constants';
 import AddNameModal from '../Modals/AddNameModal/AddNameModal';
 import DeviceInfo from 'react-native-device-info';
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
@@ -173,7 +173,7 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
               <Image
                 style={styles.profileImage}
                 source={{
-                  uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
+                  uri: `${getPhotoUrl()}${UserData?.UserDetails?.profile_image}`,
                 }}
               />
             ) : !UserData?.UserDetails?.profile_image &&

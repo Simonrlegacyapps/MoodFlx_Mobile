@@ -36,7 +36,7 @@ import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-community/async-storage';
 import {GetStaffUserData} from '../../../apirequest/PostRequestApi';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
-import {getApiBaseUrl, PHOTO_URL} from '../../../Constants/constants';
+import {getApiBaseUrl, getPhotoUrl} from '../../../Constants/constants';
 import Constants from '../../../Constants';
 import {BitCoinIcon} from '../../../../assets/svg/bitCoin';
 
@@ -244,7 +244,7 @@ const SaveMoodConfirmModal = ({
                       <Image
                         style={styles.profileImage}
                         source={{
-                          uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
+                          uri: `${getPhotoUrl()}${UserData?.UserDetails?.profile_image}`,
                         }}
                       />
                     ) : (

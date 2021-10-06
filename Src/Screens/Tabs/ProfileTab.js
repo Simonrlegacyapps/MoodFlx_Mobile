@@ -51,7 +51,7 @@ import {getIsMoodLvlUp, openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
 import AsyncStorage from '@react-native-community/async-storage';
 import getStore from '../../redux';
-import { FAQ_URL, getApiBaseUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
+import { FAQ_URL, getApiBaseUrl, getPhotoUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
@@ -465,7 +465,7 @@ const ProfileTab = ({ navigation }) => {
                   <Image
                     style={styles.profileImage}
                     source={{
-                      uri: `https://admin.moodflo.com/${UserData?.UserDetails?.profile_image}`,
+                      uri: `${getPhotoUrl()}${UserData?.UserDetails?.profile_image}`,
                     }}
                   />
                 </View>

@@ -17,6 +17,7 @@ import EditProfile from '../../../assets/svg/editProfile';
 import {getFloCoins} from '../../services/commonService';
 import {FloCoinIcon} from '../../../assets/svg/floCoinIcon';
 import Edit from '../../../assets/svg/Edit';
+import { getPhotoUrl } from '../../Constants/constants';
 
 const ProfileHeader = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
@@ -40,7 +41,7 @@ const ProfileHeader = ({navigation}) => {
           ) : (
             <Image
               source={{
-                uri: `https://admin.moodflo.com/${UserData?.UserDetails?.profile_image}`,
+                uri: `${getPhotoUrl()}${UserData?.UserDetails?.profile_image}`,
               }}
               style={styles.image}
             />
