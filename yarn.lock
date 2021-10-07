@@ -1745,6 +1745,11 @@
     react-native-reanimated "^2.0.0-alpha.5"
     react-native-svg "^12.1.0"
 
+"@react-native-clipboard/clipboard@^1.8.4":
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.8.4.tgz#4bc1fb00643688e489d8220cd635844ab5c066f9"
+  integrity sha512-poFq3RvXzkbXcqoQNssbZ+aNbCRzBFAWkR9QL7u9xNMgsyWZtk7d16JQoaBo8D2E+kKi+/9JOiVQzA5w+9N67w==
+
 "@react-native-community/async-storage@^1.12.1":
   version "1.12.1"
   resolved "https://registry.npmjs.org/@react-native-community/async-storage/-/async-storage-1.12.1.tgz"
@@ -1872,7 +1877,7 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
-"@react-native-community/clipboard@^1.2.2", "@react-native-community/clipboard@^1.5.1":
+"@react-native-community/clipboard@^1.2.2":
   version "1.5.1"
   resolved "https://registry.npmjs.org/@react-native-community/clipboard/-/clipboard-1.5.1.tgz"
   integrity sha512-AHAmrkLEH5UtPaDiRqoULERHh3oNv7Dgs0bTC0hO5Z2GdNokAMPT5w8ci8aMcRemcwbtdHjxChgtjbeA38GBdA==

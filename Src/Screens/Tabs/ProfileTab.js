@@ -54,6 +54,7 @@ import { BASE_URL_PRODUCTION_API, FAQ_URL, getApiBaseUrl, getPhotoUrl, PRIVACY_P
 import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -490,13 +491,27 @@ const ProfileTab = ({ navigation }) => {
                 style={[styles.borderStyle, { marginRight: dynamicSize(17) }]}
               />
               <Text
-                onPress={() => alert(JSON.stringify({
-                  deviceId: getMyDeviceId(),
-                  email: UserData.UserEmail,
-                  userId: UserData.UserId,
-                  division: UserData.UserDivision,
-                  server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
-                }))}
+                // onPress={() => Alert.alert('Personal Details', JSON.stringify({
+                //   deviceId: getMyDeviceId(),
+                //   email: UserData.UserEmail,
+                //   userId: UserData.UserId,
+                //   division: UserData.UserDivision,
+                //   server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                // }), [
+                //   {
+                //     text: "Cancel",
+                //     onPress: () => console.log("Cancel Pressed"),
+                //     style: "cancel"
+                //   },
+                //   { text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
+                //     deviceId: getMyDeviceId(),
+                //     email: UserData.UserEmail,
+                //     userId: UserData.UserId,
+                //     division: UserData.UserDivision,
+                //     server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                //   }))
+                //   }
+                // ])}
               >PERSONAL DETAILS</Text>
               <View
                 style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}
