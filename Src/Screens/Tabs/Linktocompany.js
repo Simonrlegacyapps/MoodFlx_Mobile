@@ -318,6 +318,7 @@ const Linktocompany = ({ navigation }) => {
         } else {
           setLoading(false);
         }
+        navigation?.replace?.('MoodEmotionDetector');
       })
       .catch((err) => {
         console.log('err', err), setLoading(false), setAPIfail(true);
