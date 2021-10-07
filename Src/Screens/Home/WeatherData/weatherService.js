@@ -9,16 +9,16 @@ import {
   weatherTypes,
 } from '../../../Constants/constants';
 import GetLocation from 'react-native-get-location';
-import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
 import axios from 'axios';
 import getStore from '../../../redux';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import { SetWeatherInsights } from '../../../redux/actions/actions';
+import { getMyDeviceId } from '../../../services/commonService';
 
 export function callWeatherInsightsApi(reset) {
   const store = getStore();
-  const deviceId = DeviceInfo.getUniqueId();
+  const deviceId = getMyDeviceId();
   var myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
 
@@ -115,7 +115,7 @@ export async function syncWeatherData() {
   let temp_min = '';
   let temp_max = '';
   let temp = '';
-  let device_id = DeviceInfo.getUniqueId();
+  let device_id = getMyDeviceId();
   const isIndia = isCountryIndia();
   let WeatherP = false;
   try {
@@ -261,7 +261,7 @@ export async function syncWeatherData() {
     console.log('weatherService temp: ', temp);
   }
 
-  const deviceId = DeviceInfo.getUniqueId();
+  const deviceId = getMyDeviceId();
   const data = JSON.stringify({
     user_id,
     email,

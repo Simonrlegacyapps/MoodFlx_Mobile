@@ -25,7 +25,6 @@ import AppleHealthKit, {
 } from 'react-native-health';
 import isEmpty from 'lodash.isempty';
 import GetLocation from 'react-native-get-location';
-import DeviceInfo from 'react-native-device-info';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import {
   RubikBlack,
@@ -76,7 +75,7 @@ import {
   activityHealthKitOptions,
 } from '../../services/appPermissions';
 import { dataTypes, getApiBaseUrl, getScreensPriority } from '../../Constants/constants';
-import { setFitnessDataSync, setSwiperIndexHome } from '../../services/commonService';
+import { getMyDeviceId, setFitnessDataSync, setSwiperIndexHome } from '../../services/commonService';
 import { setSleepDataSync } from '../Home/SleepData/sleepDataService';
 import getStore from '../../redux';
 import Constants from '../../Constants';
@@ -1229,7 +1228,7 @@ const App = (props) => {
   };
 
   const AddDataToFilter = async () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     Fsteps.push();
 
     console.log(`Fsteps at last`, Fsteps);

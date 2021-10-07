@@ -30,7 +30,6 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
 import {useDispatch, useSelector} from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
-import DeviceInfo from 'react-native-device-info';
 import {
   NotificationPerm,
   SetSleepDataSyncStatus,
@@ -47,11 +46,11 @@ import {
 import {useFocusEffect} from '@react-navigation/native';
 import {getSleepDataAfterPermissionIOS} from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
-import {getIsMoodLvlUp, openHealthApp} from '../../services/commonService';
+import {getIsMoodLvlUp, getMyDeviceId, openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
 import AsyncStorage from '@react-native-community/async-storage';
 import getStore from '../../redux';
-import { FAQ_URL, getApiBaseUrl, getPhotoUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
+import { BASE_URL_PRODUCTION_API, FAQ_URL, getApiBaseUrl, getPhotoUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
@@ -121,7 +120,7 @@ const ProfileTab = ({ navigation }) => {
 
   const getProfileUserData = () => {
     // console.log('called called called called called called');
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -247,7 +246,7 @@ const ProfileTab = ({ navigation }) => {
 
   const imagePostFunction = (imageData) => {
     setImageLoading(true);
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     const imageResponse = imageData
       ? {
           ...imageData,
@@ -351,7 +350,7 @@ const ProfileTab = ({ navigation }) => {
 
   const ProfileApiCallHere = async ({ _name, _gender, _pronoun }) => {
     const name_ = _name ? _name : name;
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Content-Type', 'application/json');
@@ -490,7 +489,15 @@ const ProfileTab = ({ navigation }) => {
               <View
                 style={[styles.borderStyle, { marginRight: dynamicSize(17) }]}
               />
-              <Text>PERSONAL DETAILS</Text>
+              <Text
+                onPress={() => alert(JSON.stringify({
+                  deviceId: getMyDeviceId(),
+                  email: UserData.UserEmail,
+                  userId: UserData.UserId,
+                  division: UserData.UserDivision,
+                  server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                }))}
+              >PERSONAL DETAILS</Text>
               <View
                 style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}
               />

@@ -20,7 +20,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {SetShowWeeklyInsightsModal} from '../../redux/actions/actions';
 import {getWeeklyInsightsAvailable} from '../../Constants/constants';
-import {getMoodsArray} from '../../services/commonService';
+import {getMoodsArray, getMyDeviceId} from '../../services/commonService';
 import NotEnoughMoodsModal from '../Modals/NotEnoughtMoodsModal/NotEnoughMoodsModal';
 import Images from '../../Constants/Images/Images';
 import Eye from '../../../assets/svg/Eye';
@@ -28,7 +28,6 @@ import EyeClose from '../../../assets/svg/EyeClose';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import { useSelector } from 'react-redux';
 import PostRequestApi from '../../apirequest/PostRequestApi'
-import DeviceInfo from 'react-native-device-info';
 import isFunction from 'lodash.isfunction';
 
 const getInsightsArray = (text) => {
@@ -147,7 +146,7 @@ export default function DataInsights({
   };
 
   const getWeekMoodData = ()=>{
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     let params = { 
       "device_id": deviceId,
       "email": UserData.UserEmail,

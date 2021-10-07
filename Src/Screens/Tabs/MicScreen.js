@@ -23,7 +23,6 @@ import {
 import Svg, {Path, SvgUri} from 'react-native-svg';
 import {dynamicSize, getFontSize, horizontalScale, isTablet} from '../../Constants/sizeChoose';
 import axios from 'axios';
-import DeviceInfo from 'react-native-device-info';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
@@ -35,7 +34,7 @@ import {getApiBaseUrl, moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import Clock from '../../../assets/svg/clock';
 import FloCoin from '../../../assets/svg/floCoins';
-import {getDivisionSetFlag, getUpdateAnswerRewardPoints} from '../../services/commonService';
+import {getDivisionSetFlag, getMyDeviceId, getUpdateAnswerRewardPoints} from '../../services/commonService';
 import getStore from '../../redux';
 import {
   PulseConnect,
@@ -83,7 +82,7 @@ const MicScreen = ({navigation}) => {
       setquestions(null);
       return false;
     }
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var data = JSON.stringify({
       device_id: deviceId,
       email: e,

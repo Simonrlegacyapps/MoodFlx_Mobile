@@ -30,9 +30,8 @@ import getStore from '../../redux';
 import {getUpdateRewardPoint} from '../../apirequest/PostRequestApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
-import {getIsMoodLvlUp} from '../../services/commonService';
+import {getIsMoodLvlUp, getMyDeviceId} from '../../services/commonService';
 import {useDispatch} from 'react-redux';
-import DeviceInfo from 'react-native-device-info';
 
 const {height} = Dimensions.get("window")
 
@@ -69,7 +68,7 @@ const ProgressScreen = ({navigation, route}) => {
   const howMoodfloWorks = () => {
     const userData = getStore?.()?.getState?.()?.First;
     const prevRewardPts = userData?.floCoins;
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     let params = {
       "device_id": deviceId,
       "email": userData?.UserEmail ?? null,

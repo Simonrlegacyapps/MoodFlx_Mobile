@@ -7,7 +7,6 @@ import {
   getFontSize,
   horizontalScale,
 } from '../../Constants/sizeChoose';
-import DeviceInfo from 'react-native-device-info';
 import {GetStaffUserData} from '../../apirequest/PostRequestApi';
 import {UserDetail} from '../../redux/actions/actions';
 import PickImageIcon from '../../../assets/profileicons/PickImageIcon';

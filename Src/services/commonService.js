@@ -19,11 +19,50 @@ import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
 import getStore from '../redux';
 import { getApiBaseUrl } from '../Constants/constants';
+import uuid from 'react-native-uuid';
 
 let moodsArray = [];
 let isInitialVideoVisisble = false;
 let prevFloCoins = 0;
 let divisionSetFlag = false;
+let deviceId = DeviceInfo.getUniqueId();
+
+export function setDeviceId(id) {
+  if (!id) {
+    if (!(deviceId && typeof deviceId === 'string')) {
+      AsyncStorage.getItem('deviceId')
+        .then((e) => {
+          if (e && typeof e === 'string') {
+            deviceId = e;
+          } else {
+            deviceId = getMyDeviceId();
+          }
+        })
+        .catch((e) => {
+          console.log('error getting deviceId from AsyncStorage: ', e);
+        });
+    }
+  } else {
+    deviceId = id;
+  }
+}
+
+export function getMyDeviceId() {
+  if (typeof deviceId !== 'string' || deviceId === '') {
+    const uid = uuid.v4();
+    if (typeof uid === 'string' && uid !== '') {
+      AsyncStorage.setItem('deviceId', JSON.stringify(uid))
+        .then((e) => {
+          console.log('uuid generated and saved as deviceId in AsyncStorage');
+        })
+        .catch((e) => {
+          console.log('error saving uuid as deviceId in AsyncStorage: ', e);
+        });
+      deviceId = uid;
+    }
+  }
+  return deviceId;
+}
 
 export function setDivisionSetFlag(flag = true) {
   divisionSetFlag = flag;
@@ -85,7 +124,7 @@ export async function onUnlinkUpdate(dispatch, onFinish) {
     if (isFunction(onFinish)) {
       onFinish(true);
     }
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     GetStaffUserData(
       {
         device_id: deviceId,
@@ -371,7 +410,7 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     return false;
   }
   const params = {
-    "device_id": DeviceInfo?.getUniqueId?.() ?? '',
+    "device_id": getMyDeviceId?.() ?? '',
     "email": getStore?.()?.getState?.()?.First?.UserEmail ?? '',
     "user_id": getStore?.()?.getState?.()?.First?.UserId ?? '',
     "start_date": moment().subtract(13, 'days').format('YYYY-MM-DD'),

@@ -50,7 +50,6 @@ import QuestionMarkIcon from '../../../assets/commonicons/QuestionMarkIcon';
 import moment from 'moment';
 import GetLocation from 'react-native-get-location';
 import PostRequestApi from '../../apirequest/PostRequestApi';
-import DeviceInfo from 'react-native-device-info';
 import VideoModal from '../../Components/VideoModal/VideoModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
@@ -92,6 +91,7 @@ import {
   getIsMoodLvlUp,
   getIsShowNegativeMoodInputPopup,
   getMoodInputRewardPoints,
+  getMyDeviceId,
   getUpdateAnswerRewardPoints,
   openUrl,
   setIsInitialVideoVisible,
@@ -686,7 +686,7 @@ export default function MoodDetector({ navigation }) {
     } catch (error) {
       console.log('error in getNotesInputRewardPoints ', error);
     }
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     let notesText = '';
     setTextForMood((t) => {
       notesText = t;
@@ -873,7 +873,7 @@ export default function MoodDetector({ navigation }) {
   };
 
   const getProfileUserData = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -1197,7 +1197,7 @@ export default function MoodDetector({ navigation }) {
     setCurrentMood(Id)
 
     // console.log(`lat, lng`, UserData.lat, UserData.lon);
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     if (Id === undefined) {
       // console.log(`fail`);
       setLoading(false);

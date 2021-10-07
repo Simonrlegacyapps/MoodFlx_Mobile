@@ -42,7 +42,6 @@ import { LightPerm } from '../../../redux/actions/actions';
 const { SensorManager } = NativeModules;
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
 import AsyncStorage from '@react-native-community/async-storage';
 import LightGraph from '../../../Components/LightGraph/LightGraph';
@@ -50,7 +49,7 @@ import { getLightDataIOS } from '../../../services/moodDataModuleService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
-import { getBulbColorFromLux } from '../../../services/commonService';
+import { getBulbColorFromLux, getMyDeviceId } from '../../../services/commonService';
 import { getApiBaseUrl, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
@@ -176,7 +175,7 @@ const LightData = ({
 
   const callUpdateLightApi = (_light) => {
     isUpdateLightApiCalled.current = true;
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     if (_light !== -1) {
       // _light = isNaN(_light) ? Number.parseInt(_light, 10) : _light;
       const params = {
@@ -201,7 +200,7 @@ const LightData = ({
 
   const callGetLightApi = () => {
     setskeleton(true);
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     const params = {
       "device_id": deviceId,
       "email": UserData.UserEmail ?? "",
