@@ -1,3 +1,4 @@
+import isEmpty from 'lodash.isempty';
 import {
   COMPANY_NAME,
   FIRST_ACTION_TYPE,
@@ -256,14 +257,12 @@ export const First = (state = intializedState, action) => {
       return Object.assign({}, state, {
         sleepDataSyncStatus: action.payload,
       });
-      case SET_WEATHER_INSIGHTS:
-        let weatherInsights = state.weatherInsights ? state.weatherInsights : {};
-        weatherInsights = action.payload
-        ? {...weatherInsights, ...action.payload}
-        : action.payload;
-        return Object.assign({}, state, {
-          weatherInsights: weatherInsights,
-        });
+    case SET_WEATHER_INSIGHTS:
+      return Object.assign({}, state, {
+        weatherInsights: !isEmpty(action.payload)
+          ? Object.assign({}, state?.weatherInsights ? state.weatherInsights : {}, action.payload)
+          : state.weatherInsights,
+      });
     case RESET_LINK_TO_COMPANY_PARAMS:
       return Object.assign({}, state, {
         isLinkToCompanyRouteParamsReset: action.payload,

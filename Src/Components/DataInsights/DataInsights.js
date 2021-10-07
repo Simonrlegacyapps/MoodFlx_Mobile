@@ -121,7 +121,7 @@ export default function DataInsights({
   }, [onSync]);
 
   useEffect(() => {
-    console.log(`isDailyInsights`, isDailyInsights);
+    console.log('isDailyInsights', isDailyInsights);
     getWeekMoodData();
   }, []);
 

@@ -1109,17 +1109,18 @@ const WeatherData = ({
           </View>
         </View>
         <View>
-        <DataInsights
-              dailyInsights={!UserData.WeatherPermission? "Today you were more energetic when it was below 20°C and it rained for 2hrs" :insights?.dailyInsights}
-              weeklyInsights={insights?.weeklyInsights}
-              dailySuggestion={insights?.dailySuggestion}
-              dailySuggestionType={insights?.dailySuggestionType}
-              weeklySuggestion={insights?.weeklySuggestion}
-              weeklySuggestionType={insights?.weeklySuggestionType}
-              timeLeft={UserData?.weeklyInsightsTimeLeft}
-              isPermissionGiven={UserData.WeatherPermission}
-              dispatch={dispatch}
-            />
+          <DataInsights
+            dataType={dataTypes.weather}
+            dailyInsights={!UserData.WeatherPermission ? "Today you were more energetic when it was below 20°C and it rained for 2hrs" : insights?.dailyInsights}
+            weeklyInsights={insights?.weeklyInsights}
+            dailySuggestion={insights?.dailySuggestion}
+            dailySuggestionType={insights?.dailySuggestionType}
+            weeklySuggestion={insights?.weeklySuggestion}
+            weeklySuggestionType={insights?.weeklySuggestionType}
+            timeLeft={UserData?.weeklyInsightsTimeLeft}
+            isPermissionGiven={UserData.WeatherPermission}
+            dispatch={dispatch}
+          />
           {/* {!UserData.WeatherPermission ? (
             <View
               style={{
