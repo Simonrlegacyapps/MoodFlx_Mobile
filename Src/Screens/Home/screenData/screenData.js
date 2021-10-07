@@ -296,7 +296,7 @@ const ScreenData = ({
       new Date().getTime(),
     )
       .then((data) => {
-        console.log('SCREEN TIME DATA: ', data);
+        // console.log('SCREEN TIME DATA: ', data);
       })
       .catch((error) => {
         console.log('Error in getting SCREEN TIME DATA: ', error);
@@ -349,7 +349,7 @@ const ScreenData = ({
     }
     UsageStats.getDailyStats()
       .then((data) => {
-        console.log('CURRENT DAY SCREEN TIME DATA: ', data);
+        // console.log('CURRENT DAY SCREEN TIME DATA: ', data);
         setCurrentDayScreenTime(getTotalTimeInForeground(data));
         const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
         if (screenTimePermission === false && !isEmpty(data)) {
@@ -382,7 +382,7 @@ const ScreenData = ({
     }
     UsageStats.getPreviousDayStats()
       .then((data) => {
-        console.log('PREVIOUS DAY SCREEN TIME DATA: ', data);
+        // console.log('PREVIOUS DAY SCREEN TIME DATA: ', data);
         setYesterdayScreenTime(getTotalTimeInForeground(data));
         const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
         if (screenTimePermission === false && !isEmpty(data)) {

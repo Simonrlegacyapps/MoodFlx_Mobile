@@ -469,6 +469,7 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
         promise.resolve(result);
 //        return stats;
     }
+    
 
 // // Helper class to keep track of all of the stats 
 // class Stat(val packageName: String, val totalTime: Long, val startTimes: List<ZonedDateTime>)
