@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useCallback, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -90,15 +90,32 @@ export default function DataInsights({
   onPressInsights,
   onSync,
 }) {
+  const getIsWeeklyInsightsAvailable = (weekInsights, isPermGiven) => {
+    return (
+      getWeeklyInsightsAvailable() === true &&
+      !!weekInsights &&
+      typeof weekInsights === 'string' &&
+      !!isPermGiven
+    );
+  };
   const [isDailyInsights, setIsDailyInsights] = useState(
-    getWeeklyInsightsAvailable() !== true ||
-    !weeklyInsights ||
-    !isPermissionGiven
+    !getIsWeeklyInsightsAvailable(weeklyInsights, isPermissionGiven),
   );
   const [showNotEnoughMoodsModal, setShowNotEnoughMoodsModal] = useState(false);
   const [showNotEnoughData, setShowNotEnoughData] = useState(false);
   const [ShowTarget, setShowTarget] = useState(false);
   const [MoodCountData, setMoodCountData] = useState(null);
+  const prevWeeklyInsights = useRef(getIsWeeklyInsightsAvailable(weeklyInsights, isPermissionGiven));
+
+  useEffect(() => {
+    const currentFlag = getIsWeeklyInsightsAvailable(weeklyInsights, isPermissionGiven);
+    if (prevWeeklyInsights.current !== currentFlag) {
+      if (prevWeeklyInsights.current === false && currentFlag === true) {
+        prevWeeklyInsights.current = true;
+        setIsDailyInsights(false);
+      }
+    }
+  }, [weeklyInsights, isPermissionGiven]);
 
   const openCloseShowNotEnoughMoodsModal = useCallback((flag) => {
     const fn = () => setShowNotEnoughMoodsModal(flag);
