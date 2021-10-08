@@ -338,7 +338,7 @@ const ScreenData = ({
       });
       return;
     }
-    if (!UsageStats.getDailyStats) {
+    if (!UsageStats?.getDailyStats) {
       Toast.show({
         type: 'error',
         text2: 'Usage Stats queryUsageStats not available',
@@ -371,7 +371,7 @@ const ScreenData = ({
       });
       return;
     }
-    if (!UsageStats.getPreviousDayStats) {
+    if (!UsageStats?.getPreviousDayStats) {
       Toast.show({
         type: 'error',
         text2: 'Usage Stats queryUsageStats not available',

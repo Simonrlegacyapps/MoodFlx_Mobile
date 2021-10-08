@@ -9,6 +9,7 @@ import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -34,6 +35,7 @@ import org.json.JSONObject;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -148,7 +150,7 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
             Log.d("UsageStats", us.getPackageName() + " = " + us.getTotalTimeInForeground());
             WritableMap usageStats = new WritableNativeMap();
             usageStats.putString("packageName", us.getPackageName());
-            usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
+            // usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
             usageStats.putDouble("totalTimeInForeground", us.getTotalTimeInForeground());
             usageStats.putDouble("firstTimeStamp", us.getFirstTimeStamp());
             usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
@@ -264,6 +266,27 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
         return map;
     }
 
+    private boolean getIsSystemApp(String pkgName) {
+        PackageManager packageManager = (PackageManager)reactContext.getPackageManager();
+        boolean flag = false;
+        ApplicationInfo info = null;
+        try {
+            info = packageManager.getApplicationInfo(pkgName, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        
+        if (info != null && (info.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+            // System.out.println(">>>>>>packages is system package" + pkgName);
+            System.out.println(">>>>>>package is system package" + pkgName);
+            flag = true;
+        } else {
+            System.out.println(">>>>>>packages is not system package" + pkgName);    
+        }
+        
+        return flag;
+    }
+
     @ReactMethod
     public void getDailyStats(Promise promise) {
         // The timezones we'll need
@@ -274,7 +297,7 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
 //        Date startDate = date.atStartOfDay(defaultZone).withZoneSameInstant(utc)
         ZonedDateTime startDate = LocalDate.now().atStartOfDay(defaultZone).withZoneSameInstant(utc);
         long start = startDate.toInstant().toEpochMilli();
-        long end = startDate.plusDays(1).toInstant().toEpochMilli();
+        long end = LocalDateTime.now().atZone(defaultZone).withZoneSameInstant(utc).toInstant().toEpochMilli();
 
         // This will keep a map of all of the events per package name
         Map<String, List<UsageEvents.Event>> sortedEvents = new HashMap<>();
@@ -354,14 +377,16 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
             List<ZonedDateTime> sTimes = us.getStartTimes();
             String sTimesString = sTimes == null ? "" : sTimes.toString();
             usageStats.putString("packageName", us.getPackageName());
-            usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
+            // usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
             usageStats.putDouble("totalTimeInForeground", us.getTotalTime());
             usageStats.putString("startTimes", sTimesString);
 //            usageStats.putDouble("firstTimeStamp", us.getFirstTimeStamp());
 //            usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
 //            usageStats.putDouble("lastTimeUsed", us.getLastTimeUsed());
 //            usageStats.putInt("describeContents", us.describeContents());
-            result.putMap(us.getPackageName(), usageStats);
+            if (getIsSystemApp(us.getPackageName()) == false) {
+                result.putMap(us.getPackageName(), usageStats);
+            }
         }
         promise.resolve(result);
 //        return stats;
@@ -377,8 +402,8 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
 //        Date startDate = date.atStartOfDay(defaultZone).withZoneSameInstant(utc)
         ZonedDateTime startDate = LocalDate.now().minusDays(1).atStartOfDay(defaultZone).withZoneSameInstant(utc);
         long start = startDate.toInstant().toEpochMilli();
-        long end = LocalDate.now().atStartOfDay(defaultZone).minusSeconds(1).withZoneSameInstant(utc).toInstant().toEpochMilli();
-
+//        long end = LocalDate.now().atStartOfDay(defaultZone).minusSeconds(1).withZoneSameInstant(utc).toInstant().toEpochMilli();
+        long end = start + 86399000;
         // This will keep a map of all of the events per package name
         Map<String, List<UsageEvents.Event>> sortedEvents = new HashMap<>();
 
@@ -387,7 +412,6 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
         while (systemEvents.hasNextEvent()) {
             UsageEvents.Event event = new UsageEvents.Event();
             systemEvents.getNextEvent(event);
-
 
             // Get the list of events for the package name, create one if it doesn't exist
             List<UsageEvents.Event> packageEvents = (sortedEvents.get(event.getPackageName()) != null) ? sortedEvents.get(event.getPackageName()) : new ArrayList<UsageEvents.Event>();
@@ -457,19 +481,21 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
             List<ZonedDateTime> sTimes = us.getStartTimes();
             String sTimesString = sTimes == null ? "" : sTimes.toString();
             usageStats.putString("packageName", us.getPackageName());
-            usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
+            // usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
             usageStats.putDouble("totalTimeInForeground", us.getTotalTime());
             usageStats.putString("startTimes", sTimesString);
 //            usageStats.putDouble("firstTimeStamp", us.getFirstTimeStamp());
 //            usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
 //            usageStats.putDouble("lastTimeUsed", us.getLastTimeUsed());
 //            usageStats.putInt("describeContents", us.describeContents());
-            result.putMap(us.getPackageName(), usageStats);
+            if (getIsSystemApp(us.getPackageName()) == false) {
+                result.putMap(us.getPackageName(), usageStats);
+            }
         }
         promise.resolve(result);
 //        return stats;
     }
-    
+
 
 // // Helper class to keep track of all of the stats 
 // class Stat(val packageName: String, val totalTime: Long, val startTimes: List<ZonedDateTime>)

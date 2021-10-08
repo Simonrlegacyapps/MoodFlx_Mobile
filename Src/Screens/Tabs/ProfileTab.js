@@ -492,9 +492,9 @@ const ProfileTab = ({ navigation }) => {
               />
               <Text
                 // onPress={() => Alert.alert('Personal Details', JSON.stringify({
-                //   deviceId: getMyDeviceId(),
+                //   device_id: getMyDeviceId(),
                 //   email: UserData.UserEmail,
-                //   userId: UserData.UserId,
+                //   user_id: UserData.UserId,
                 //   division: UserData.UserDivision,
                 //   server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
                 // }), [
