@@ -30,27 +30,22 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
 import {useDispatch, useSelector} from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
-import {
-  NotificationPerm,
-  SetSleepDataSyncStatus,
-  UserDetail,
-} from '../../redux/actions/actions';
-import PostRequestApi, {
-  GetStaffUserData,
-  getUpdateRewardPoint,
-} from '../../apirequest/PostRequestApi';
-import {
-  AppPermissions,
-  activityHealthKitOptions,
-} from '../../services/appPermissions';
+import {NotificationPerm, UserDetail} from '../../redux/actions/actions';
+import {GetStaffUserData} from '../../apirequest/PostRequestApi';
+import {AppPermissions} from '../../services/appPermissions';
 import {useFocusEffect} from '@react-navigation/native';
 import {getSleepDataAfterPermissionIOS} from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
-import {getIsMoodLvlUp, getMyDeviceId, openHealthApp} from '../../services/commonService';
+import {getMyDeviceId, openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
-import AsyncStorage from '@react-native-community/async-storage';
-import getStore from '../../redux';
-import { BASE_URL_PRODUCTION_API, FAQ_URL, getApiBaseUrl, getPhotoUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
+import {
+  BASE_URL_PRODUCTION_API,
+  FAQ_URL,
+  getApiBaseUrl,
+  getPhotoUrl,
+  PRIVACY_POLICY_URL,
+  TERMS_OF_USE_URL,
+} from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
@@ -347,7 +342,6 @@ const ProfileTab = ({ navigation }) => {
       console.log('images', images);
     });
   };
-  console.log('ProfileTab Pronoun: ', Pronoun);
 
   const ProfileApiCallHere = async ({ _name, _gender, _pronoun }) => {
     const name_ = _name ? _name : name;

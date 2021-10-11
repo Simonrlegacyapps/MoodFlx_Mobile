@@ -141,10 +141,10 @@ const MainProfileTab = ({navigation}) => {
   };
 
   const Medals = ({min, max, type, LevelName}) => {
-    console.log(
-      `floCoins - min === 0 ? 1 : floCoins- min / max - min`,
-      (floCoins - min === 0 ? 1 : floCoins - min) / (max - min),
-    );
+    // console.log(
+    //   `floCoins - min === 0 ? 1 : floCoins- min / max - min`,
+    //   (floCoins - min === 0 ? 1 : floCoins - min) / (max - min),
+    // );
     return (
       <TouchableOpacity
         onPress={() => onClickMedalIcon({min, max, type, LevelName: `Mood ${LevelName}`})}

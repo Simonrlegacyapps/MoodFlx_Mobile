@@ -73,9 +73,30 @@ class Stat {
     }
 }
 
+
 public class UsageStatsModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
+    private class AppUsageInfo {
+        String appName, packageName;
+        long timeInForeground;
+        int launchCount;
+
+        AppUsageInfo(String pName) {
+            this.packageName=pName;
+        }
+        public String getPackageName() {
+            return packageName;
+        }
+
+        public int getLaunchCount() {
+            return launchCount;
+        }
+
+        public long getTimeInForeground() {
+            return timeInForeground;
+        }
+    }
 
     public UsageStatsModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -285,6 +306,156 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
         }
         
         return flag;
+    }
+
+    @ReactMethod
+    public void getTodayStats(Promise promise) {
+        long phoneUsageToday = 0;
+        List<AppUsageInfo> smallInfoList;
+        UsageEvents.Event currentEvent;
+        List<UsageEvents.Event> allEvents = new ArrayList<>();
+        HashMap<String, AppUsageInfo> map = new HashMap <String, AppUsageInfo> ();
+        ZoneId defaultZone = ZoneId.systemDefault();
+        long currTime = System.currentTimeMillis();
+        ZonedDateTime startDate = LocalDate.now().atStartOfDay(defaultZone);
+        long startTime = startDate.toInstant().toEpochMilli();
+
+        UsageStatsManager mUsageStatsManager =  (UsageStatsManager)
+                reactContext.getSystemService(Context.USAGE_STATS_SERVICE);
+
+        assert mUsageStatsManager != null;
+        UsageEvents usageEvents = mUsageStatsManager.queryEvents(startTime, currTime);
+
+        //capturing all events in a array to compare with next element
+
+        while (usageEvents.hasNextEvent()) {
+            currentEvent = new UsageEvents.Event();
+            usageEvents.getNextEvent(currentEvent);
+            if (currentEvent.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND ||
+                    currentEvent.getEventType() == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+                allEvents.add(currentEvent);
+                String key = currentEvent.getPackageName();
+        // taking it into a collection to access by package name
+                if (map.get(key)==null)
+                    map.put(key,new AppUsageInfo(key));
+            }
+        }
+
+        //iterating through the arraylist
+        for (int i=0;i<allEvents.size()-1;i++){
+            UsageEvents.Event E0=allEvents.get(i);
+            UsageEvents.Event E1=allEvents.get(i+1);
+
+        //for launchCount of apps in time range
+            if (!E0.getPackageName().equals(E1.getPackageName()) && E1.getEventType()==1){
+        // if true, E1 (launch event of an app) app launched
+                map.get(E1.getPackageName()).launchCount++;
+            }
+
+        //for UsageTime of apps in time range
+            if (E0.getEventType()==1 && E1.getEventType()==2
+                    && E0.getClassName().equals(E1.getClassName())){
+                long diff = E1.getTimeStamp()-E0.getTimeStamp();
+                phoneUsageToday+=diff; //gloabl Long var for total usagetime in the timerange
+                map.get(E0.getPackageName()).timeInForeground+= diff;
+            }
+        }
+        //transferred final data into modal class object
+        smallInfoList = new ArrayList<>(map.values());
+        WritableMap result = new WritableNativeMap();
+        for (AppUsageInfo us : smallInfoList) {
+            Log.d("UsageStats", us.getPackageName() + " = " + us.getTimeInForeground());
+            WritableMap usageStats = new WritableNativeMap();
+            int launchCount = us.getLaunchCount();
+            usageStats.putString("packageName", us.getPackageName());
+            // usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
+            usageStats.putDouble("totalTimeInForeground", us.getTimeInForeground());
+            usageStats.putDouble("totalTime", phoneUsageToday);
+            usageStats.putInt("launchCount", launchCount);
+//            usageStats.putDouble("firstTimeStamp", us.getFirstTimeStamp());
+//            usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
+//            usageStats.putDouble("lastTimeUsed", us.getLastTimeUsed());
+//            usageStats.putInt("describeContents", us.describeContents());
+            if (getIsSystemApp(us.getPackageName()) == false) {
+                result.putMap(us.getPackageName(), usageStats);
+            }
+        }
+        promise.resolve(result);
+    }
+
+    @ReactMethod
+    public void getYesterdayStats(Promise promise) {
+        long phoneUsageToday = 0;
+        List<AppUsageInfo> smallInfoList;
+        UsageEvents.Event currentEvent;
+        List<UsageEvents.Event> allEvents = new ArrayList<>();
+        HashMap<String, AppUsageInfo> map = new HashMap <String, AppUsageInfo> ();
+        ZoneId defaultZone = ZoneId.systemDefault();
+        ZonedDateTime startDate = LocalDate.now().minusDays(1).atStartOfDay(defaultZone);
+        long startTime = startDate.toInstant().toEpochMilli();
+        long currTime = startTime + 86399000;
+
+        UsageStatsManager mUsageStatsManager =  (UsageStatsManager)
+                reactContext.getSystemService(Context.USAGE_STATS_SERVICE);
+
+        assert mUsageStatsManager != null;
+        UsageEvents usageEvents = mUsageStatsManager.queryEvents(startTime, currTime);
+
+        //capturing all events in a array to compare with next element
+
+        while (usageEvents.hasNextEvent()) {
+            currentEvent = new UsageEvents.Event();
+            usageEvents.getNextEvent(currentEvent);
+            if (currentEvent.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND ||
+                    currentEvent.getEventType() == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+                allEvents.add(currentEvent);
+                String key = currentEvent.getPackageName();
+                // taking it into a collection to access by package name
+                if (map.get(key)==null)
+                    map.put(key,new AppUsageInfo(key));
+            }
+        }
+
+        //iterating through the arraylist
+        for (int i=0;i<allEvents.size()-1;i++){
+            UsageEvents.Event E0=allEvents.get(i);
+            UsageEvents.Event E1=allEvents.get(i+1);
+
+            //for launchCount of apps in time range
+            if (!E0.getPackageName().equals(E1.getPackageName()) && E1.getEventType()==1){
+                // if true, E1 (launch event of an app) app launched
+                map.get(E1.getPackageName()).launchCount++;
+            }
+
+            //for UsageTime of apps in time range
+            if (E0.getEventType()==1 && E1.getEventType()==2
+                    && E0.getClassName().equals(E1.getClassName())){
+                long diff = E1.getTimeStamp()-E0.getTimeStamp();
+                phoneUsageToday+=diff; //gloabl Long var for total usagetime in the timerange
+                map.get(E0.getPackageName()).timeInForeground+= diff;
+            }
+        }
+        //transferred final data into modal class object
+        smallInfoList = new ArrayList<>(map.values());
+        WritableMap result = new WritableNativeMap();
+        for (AppUsageInfo us : smallInfoList) {
+            Log.d("UsageStats", us.getPackageName() + " = " + us.getTimeInForeground());
+            WritableMap usageStats = new WritableNativeMap();
+            int launchCount = us.getLaunchCount();
+            usageStats.putString("packageName", us.getPackageName());
+            // usageStats.putString("appName", getAppNameFromPkgName(reactContext, us.getPackageName()));
+            usageStats.putDouble("totalTimeInForeground", us.getTimeInForeground());
+            usageStats.putDouble("totalTime", phoneUsageToday);
+            usageStats.putInt("launchCount", launchCount);
+//            usageStats.putDouble("firstTimeStamp", us.getFirstTimeStamp());
+//            usageStats.putDouble("lastTimeStamp", us.getLastTimeStamp());
+//            usageStats.putDouble("lastTimeUsed", us.getLastTimeUsed());
+//            usageStats.putInt("describeContents", us.describeContents());
+            if (getIsSystemApp(us.getPackageName()) == false) {
+                result.putMap(us.getPackageName(), usageStats);
+            }
+        }
+        promise.resolve(result);
     }
 
     @ReactMethod
