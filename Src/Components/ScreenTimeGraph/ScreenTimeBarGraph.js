@@ -41,16 +41,11 @@ export default function ScreenTimeBarGraph({
   const _dataSet = useMemo(() => {
     let d = [];
     if (Array.isArray(data) && data.length === 7) {
-      d.push(
-        {
-          data: data.map((e) => {
-            return !isNaN(e?.y) && e?.y > 6 ? 6 : e?.y;
-          }),
-        },
-        {
-          data: [500],
-        },
-      );
+      d.push({
+        data: data.map((e) => {
+          return !isNaN(e?.y) ? Number(e?.y) : 0;
+        }),
+      });
     }
     if (d.length === 0) {
       d.push({
@@ -100,7 +95,7 @@ export default function ScreenTimeBarGraph({
           barPercentage: 0.4,
           barRadius: 8,
         }}
-        segments={5}
+        segments={3}
         // style={{
         //   marginVertical: 15,
         // }}

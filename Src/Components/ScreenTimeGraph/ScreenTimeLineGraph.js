@@ -35,16 +35,11 @@ export default function ScreenTimeLineGraph({yAxisLabel, yAxisSuffix, data}) {
   const _dataSet = useMemo(() => {
     let d = [];
     if (Array.isArray(data) && data.length === 7) {
-      d.push(
-        {
-          data: data.map((e) => {
-            return !isNaN(e?.y) && e?.y > 6 ? 6 : e?.y;
-          }),
-        },
-        {
-          data: [6],
-        },
-      );
+      d.push({
+        data: data.map((e) => {
+          return !isNaN(e?.y) ? e.y : 0;
+        }),
+      });
     }
     if (d.length === 0) {
       d.push({
