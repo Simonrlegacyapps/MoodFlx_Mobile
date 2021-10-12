@@ -461,7 +461,7 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getUsageStats(double start, double end, Promise promise) {
         long phoneUsageToday = 0;
-        Log.d("getUsageStats", String.valueOf(start) + " = " + String.valueOf(end));
+//        Log.d("getUsageStats", String.valueOf(start) + " = " + String.valueOf(end));
         List<AppUsageInfo> smallInfoList;
         UsageEvents.Event currentEvent;
         List<UsageEvents.Event> allEvents = new ArrayList<>();
@@ -470,7 +470,7 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
         long currTime = (long) end;
         ZonedDateTime startDate = LocalDate.now().atStartOfDay(defaultZone);
         long startTime = (long) start;
-        Log.d("getUsageStats", String.valueOf(startTime) + " = " + String.valueOf(currTime));
+//        Log.d("getUsageStats", String.valueOf(startTime) + " = " + String.valueOf(currTime));
 
         UsageStatsManager mUsageStatsManager =  (UsageStatsManager)
                 reactContext.getSystemService(Context.USAGE_STATS_SERVICE);

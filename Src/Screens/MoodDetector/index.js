@@ -1330,7 +1330,10 @@ export default function MoodDetector({ navigation }) {
                 navigation.navigate('HomeScreen', { screen: 'MicScreen' });
               } else {
                 if (showNegativeMoodModal === true) {
-                  setShowNegativeMoodModal(true)();
+                  let negativeModalTimeoutId = setTimeout(() => {
+                    setShowNegativeMoodModal(true)();
+                    clearTimeout(negativeModalTimeoutId);
+                  }, 400);
                 } else {
                   showMoodSaveConfirmModal(() => {
                     setSwiperIndexHome(0, dispatch);

@@ -407,6 +407,7 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     return false;
   }
   if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 13) {
+  // if (moment().startOf('day').diff(moment().startOf('day').subtract(13, 'days'), 'days') < 13) {
     return false;
   }
   const params = {
@@ -432,14 +433,18 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     return false;
   }
   let values = Object.values(response?.data?.moodList);
-  if (!(Array.isArray(values) && values.length >= 7)) {
+  if (!(Array.isArray(values) && values.length > 0)) {
     return false;
   }
+
   values.forEach((e) => {
     if (Array.isArray(e) && e.length > 0) {
       moodInputIdData = [...moodInputIdData, ...e];
     }
   });
+  if (!(Array.isArray(moodInputIdData) && moodInputIdData.length >= 7)) {
+    return false;
+  }
   //console.log('moodInputIdData ->', moodInputIdData);
   if (moodInputIdData.length > 0) {
     negativeMoodInputIdData = moodInputIdData.filter(e => allNegativeMoods.indexOf(e?.mood_id) !== -1);
