@@ -10,17 +10,20 @@ export default class NotifService {
     one: {
       id: 1,
       title: 'Flx would love to know how you feel',
-      timeInHour: 10,
+      timeInHour: 9,
+      timeInMin: 50,
     },
     two: {
       id: 2,
       title: 'Time to check in with Flx',
-      timeInHour: 13,
+      timeInHour: 12,
+      timeInMin: 50,
     },
     three: {
       id: 3,
       title: "It's Flx time",
-      timeInHour: 16,
+      timeInHour: 15,
+      timeInMin: 50,
     },
   };
 
@@ -257,7 +260,12 @@ export default class NotifService {
     let time = null;
 
     let first = new Date(
-      new Date().setHours(NotifService.notifData.one.timeInHour, 0, 0, 0),
+      new Date().setHours(
+        NotifService.notifData.one.timeInHour,
+        NotifService.notifData.one.timeInMin,
+        0,
+        0,
+      ),
     );
     const firstTime = moment(first.getTime());
     let firstDuration = Math.ceil(
@@ -265,7 +273,12 @@ export default class NotifService {
     );
 
     let second = new Date(
-      new Date().setHours(NotifService.notifData.two.timeInHour, 0, 0, 0),
+      new Date().setHours(
+        NotifService.notifData.two.timeInHour,
+        NotifService.notifData.two.timeInMin,
+        0,
+        0,
+      ),
     );
     const secondTime = moment(second.getTime());
     let secondDuration = Math.ceil(
@@ -273,7 +286,12 @@ export default class NotifService {
     );
 
     let third = new Date(
-      new Date().setHours(NotifService.notifData.three.timeInHour, 0, 0, 0),
+      new Date().setHours(
+        NotifService.notifData.three.timeInHour,
+        NotifService.notifData.three.timeInMin,
+        0,
+        0,
+      ),
     );
     // let third = new Date(new Date().setHours(15, 19, 0, 0));
     const thirdTime = moment(third.getTime());
@@ -318,7 +336,12 @@ export default class NotifService {
     if (id === NotifService.notifData.one.id) {
       // let first = new Date(new Date().setHours(12, 41, 0, 0));
       let first = new Date(
-        new Date().setHours(NotifService.notifData.one.timeInHour, 0, 0, 0),
+        new Date().setHours(
+          NotifService.notifData.one.timeInHour,
+          NotifService.notifData.one.timeInMin,
+          0,
+          0,
+        ),
         // new Date().setHours(21, 19, 0, 0),
       );
       if (moment().isAfter(first.getTime(), 'second')) {
@@ -331,7 +354,12 @@ export default class NotifService {
       });
     } else if (id === NotifService.notifData.two.id) {
       let second = new Date(
-        new Date().setHours(NotifService.notifData.two.timeInHour, 0, 0, 0),
+        new Date().setHours(
+          NotifService.notifData.two.timeInHour,
+          NotifService.notifData.two.timeInMin,
+          0,
+          0,
+        ),
         // new Date().setHours(21, 19, 30, 0),
       );
       // let second = new Date(new Date().setHours(12, 41, 30, 0));
@@ -345,7 +373,12 @@ export default class NotifService {
       });
     } else if (id === NotifService.notifData.three.id) {
       let third = new Date(
-        new Date().setHours(NotifService.notifData.three.timeInHour, 0, 0, 0),
+        new Date().setHours(
+          NotifService.notifData.three.timeInHour,
+          NotifService.notifData.three.timeInMin,
+          0,
+          0,
+        ),
       );
       // let third = new Date(new Date().setHours(12, 41, 40, 0));
       if (moment().isAfter(third.getTime(), 'second')) {
