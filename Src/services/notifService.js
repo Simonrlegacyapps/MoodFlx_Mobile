@@ -219,22 +219,37 @@ export default class NotifService {
           if (
             e.id === NotifService.notifData.one.id &&
             e.title === NotifService.notifData.one.title &&
-            e.date
+            e.date &&
+            moment(e.date).isSame(
+              moment(e.date)
+                .hour(NotifService.notifData.one.timeInHour)
+                .minute(NotifService.notifData.one.timeInMin),
+            )
           ) {
             isOne = true;
           } else if (
-            e.id === NotifService.notifData.three.id &&
-            e.title === NotifService.notifData.three.title &&
-            e.date
+            e.id === NotifService.notifData.two.id &&
+            e.title === NotifService.notifData.two.title &&
+            e.date &&
+            moment(e.date).isSame(
+              moment(e.date)
+                .hour(NotifService.notifData.two.timeInHour)
+                .minute(NotifService.notifData.two.timeInMin),
+            )
           ) {
             isTwo = true;
           } else if (
             e.id === NotifService.notifData.three.id &&
             e.title === NotifService.notifData.three.title &&
-            e.date
+            e.date &&
+            moment(e.date).isSame(
+              moment(e.date)
+                .hour(NotifService.notifData.three.timeInHour)
+                .minute(NotifService.notifData.three.timeInMin),
+            )
           ) {
             isThree = true;
-          } 
+          }
           // this.cancelNotif(e?.id);
         });
       if (!isOne) {
