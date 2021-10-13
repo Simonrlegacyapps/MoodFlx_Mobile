@@ -160,7 +160,7 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
             animateToNumber={isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins}
             fontStyle={styles.floCoinsTextOne}
           />
-          <Text style={styles.floCoinsTextTwo}>Flo Coins</Text>
+          <Text style={styles.floCoinsTextTwo}>Flx Coins</Text>
         </View>
         <View style={styles.verifcalBarView} />
         <View

@@ -211,7 +211,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
       />
       <View style={{ padding: 40 }} />
       <ProfileCoinModal
-        permission={"Hang in there you'll be able to cash in your Flo soon!"}
+        permission={"Hang in there you'll be able to cash in your Flx soon!"}
         // image={Constants.Images.FitnessPopUp}
         dataType={'fitness'}
         modalVisible={openActionSheet}

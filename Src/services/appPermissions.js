@@ -144,7 +144,7 @@ class MoodFloPermission {
     if (Platform.OS === 'ios') {
       Alert.alert(
         '',
-        'Tap OK bellow and allow notifications. Remember, Flo will only send you notifications to remind you to input your mood and earn Flo Coins',
+        'Tap OK bellow and allow notifications. Remember, Flx will only send you notifications to remind you to input your mood and earn Flx Coins',
         [
           {
             text: 'OK',
@@ -156,7 +156,7 @@ class MoodFloPermission {
     } else {
       Alert.alert(
         '',
-        'Tap OK bellow and allow notifications. Remember, Flo will only send you notifications to remind you to input your mood and earn Flo Coins',
+        'Tap OK bellow and allow notifications. Remember, Flx will only send you notifications to remind you to input your mood and earn Flx Coins',
         [
           {
             text: 'OK',
@@ -172,7 +172,7 @@ class MoodFloPermission {
     if (Platform.OS === 'ios') {
       Alert.alert(
         '',
-        'Tap OK bellow and allow location access in settings. Remember, Flo only uses your rough location to try get more accurate weather data',
+        'Tap OK bellow and allow location access in settings. Remember, Flx only uses your rough location to try get more accurate weather data',
         [
           {
             text: 'OK',
@@ -184,7 +184,7 @@ class MoodFloPermission {
     } else {
       Alert.alert(
         '',
-        'Tap OK bellow and allow location access in settings. Remember, Flo only uses your rough location to try get more accurate weather data',
+        'Tap OK bellow and allow location access in settings. Remember, Flx only uses your rough location to try get more accurate weather data',
         [
           {
             text: 'OK',

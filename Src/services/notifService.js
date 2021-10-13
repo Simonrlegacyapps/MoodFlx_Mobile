@@ -9,17 +9,17 @@ export default class NotifService {
   static notifData = {
     one: {
       id: 1,
-      title: 'Flo would love to know how you feel',
+      title: 'Flx would love to know how you feel',
       timeInHour: 10,
     },
     two: {
       id: 2,
-      title: 'Time to check in with Flo',
+      title: 'Time to check in with Flx',
       timeInHour: 13,
     },
     three: {
       id: 3,
-      title: "It's Flo time",
+      title: "It's Flx time",
       timeInHour: 16,
     },
   };

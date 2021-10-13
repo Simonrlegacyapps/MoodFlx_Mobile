@@ -54,7 +54,7 @@ const Screen1 = ({onDone}) => {
     {
       img1: <Lock />,
       label:"Anonymity",
-      t1: 'Flo creates a unified voice for you & your team ',
+      t1: 'Flx creates a unified voice for you & your team ',
       t2: 'via Team Pulses.',
       t3: '',
       t4: 'This is what the boss sees',
@@ -64,10 +64,10 @@ const Screen1 = ({onDone}) => {
     {
       img1: <ScienceG />,
       label:"The Science",
-      t1: 'Flo can use your data. ',
+      t1: 'Flx can use your data. ',
       t2: 'The more data, the more smarter!',
       t3: '',
-      t4: 'Let Flo undestand your environment and how it impacts your mood',
+      t4: 'Let Flx undestand your environment and how it impacts your mood',
       button: "Next"
     },
     {
@@ -76,7 +76,7 @@ const Screen1 = ({onDone}) => {
       t1: 'More data = more accurate insights + ',
       t2: 'more rewards.',
       t3: 'Get Rewarded!',
-      t4: 'Spend your Flo coins on things that make you feel good',
+      t4: 'Spend your Flx coins on things that make you feel good',
       button: "Done"
     },
   ];
@@ -97,7 +97,7 @@ const Screen1 = ({onDone}) => {
                   It’s time to unleash your untapped!
                 </Text>
                 <Text allowFontScaling={false} style={styles.smallText0}>
-                  Let’s take you through Flo’s features
+                  Let’s take you through Flx’s features
                 </Text>
               </View>
               <View style={styles.bottomButtons}>

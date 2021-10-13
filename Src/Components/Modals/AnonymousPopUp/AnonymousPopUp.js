@@ -94,7 +94,7 @@ const AnonymousPopUp = ({
               textAlign: 'center',
               marginTop: 20,
             }}>
-            MoodFlo
+            MoodFlx
           </Text>
           <Text
             numberOfLines={10}

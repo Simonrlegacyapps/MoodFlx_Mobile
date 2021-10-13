@@ -132,7 +132,7 @@ const UnlinkConfirmModal = ({
               ? UserData?.NameCompany?.full_name
               : CompanyName
               ? CompanyName
-              : 'MoodFlo'}
+              : 'MoodFlx'}
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
             <TouchableOpacity

@@ -685,7 +685,7 @@ const ProfileTab = ({ navigation }) => {
                       styles.anonymousTextStyle,
                       { marginLeft: dynamicSize(16) },
                     ]}>
-                    How MoodFlo Works
+                    How MoodFlx Works
                   </Text>
                   {isHowMoodFloWorksPtsGiven === false && (
                     <ImageBackground

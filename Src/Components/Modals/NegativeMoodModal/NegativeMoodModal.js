@@ -217,7 +217,7 @@ const NegativeMoodModal = ({
           onStartShouldSetResponder={Keyboard.dismiss}
           style={[styles.upperContainer]}>
           <Text style={styles.textOne}>{moodText?.confirmation_text}</Text>
-          {/* <Text style={styles.textTwo}>Flo feels you</Text> */}
+          {/* <Text style={styles.textTwo}>Flx feels you</Text> */}
           {/* <Text style={styles.textTwo}>{moodText?.confirmation_text}</Text> */}
           <Text style={styles.textThree}>
             Feeling{' '}

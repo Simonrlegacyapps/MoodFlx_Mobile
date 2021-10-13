@@ -348,7 +348,7 @@ const MicScreen = ({navigation}) => {
 
   function getRewardsCoins(day, hour) {
     if (day != 0) {
-      return 'Missed out on flo coins';
+      return 'Missed out on flx coins';
     } else {
       if (hour <= 2) {
         return 8;
@@ -489,8 +489,8 @@ const MicScreen = ({navigation}) => {
                     style={[styles.Text, {fontSize: getFontSize(13), marginVertical: 0}]}>
                     {' '}
                     {rewardPts === 0
-                      ? 'Missed out on flo coins'
-                      : `Earn ${rewardPts} flo coins`
+                      ? 'Missed out on flx coins'
+                      : `Earn ${rewardPts} flx coins`
                     }
                   </Text>
                 </View>
@@ -541,7 +541,7 @@ const MicScreen = ({navigation}) => {
                   styles.Text,
                   {textAlign: 'right', fontSize: getFontSize(13), color: '#FB8D09'},
                 ]}>
-                Earned {i.reward_point} flo coins
+                Earned {i.reward_point} flx coins
               </Text>
             </View>
             <View style={{width: '90%'}}>

@@ -74,7 +74,7 @@ const ProfileHeader = ({navigation}) => {
           <Text style={styles.floCoinsTextOne}>
             {getFloCoins(UserData.floCoins)}
           </Text>
-          <Text style={styles.floCoinsTextTwo}>Flo Coins</Text>
+          <Text style={styles.floCoinsTextTwo}>Flx Coins</Text>
         </View>
       </View>
     </View>
