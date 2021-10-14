@@ -11,12 +11,13 @@
 		03EB866C11DCA924018E93DE /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		13010DA679A64031A88DAE34 /* Rubik-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E082F660C0344539046D5DC /* Rubik-SemiBoldItalic.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		16B7472354AF498A989EBC24 /* Rubik-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D1809BF6DD824C91BBAA3583 /* Rubik-Bold.ttf */; };
 		17EE349F80E94A9F9E81582E /* Rubik-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B122875F7C8F437D8DE83DC1 /* Rubik-ExtraBold.ttf */; };
 		18217A31F5B245DBBD6882EC /* Rubik-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 61B67AA48684412AB9063198 /* Rubik-BlackItalic.ttf */; };
 		1922D4ED2642730A00CBD43A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */; };
+		193C07082718394D001BA9A5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		19A6BB56271733EC00AF40D0 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 19A6BB55271733EC00AF40D0 /* Launch Screen.storyboard */; };
 		19DCB896267B1B19009C4DC1 /* RCTMoodDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 19DCB895267B1B19009C4DC1 /* RCTMoodDataModule.m */; };
 		2C10DEE89E1EFCF9426961F7 /* libPods-MoodFlo-MoodFloTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20882D955B333096F3B6DF18 /* libPods-MoodFlo-MoodFloTests.a */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
@@ -28,7 +29,6 @@
 		6222F7D571C24B368A31F1C2 /* Rubik-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CF0E358314B0428FA1143D9C /* Rubik-ExtraBoldItalic.ttf */; };
 		814CF568EA0BA6F99861D33B /* libPods-MoodFlo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 764090E074593472C3F11609 /* libPods-MoodFlo.a */; };
 		B072706AD2FF429F880D0FC9 /* Rubik-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 603118161DEB423AB458B5A4 /* Rubik-MediumItalic.ttf */; };
-		CF7CE0F025F9E8FE00E73988 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */; };
 		CF7CE0FF25FB70DB00E73988 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF7CE0FE25FB70DB00E73988 /* HealthKit.framework */; };
 		CF833650A679E25538DFA8F8 /* libPods-MoodFlo-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E732DFCE058C22DAA295CD3 /* libPods-MoodFlo-tvOS.a */; };
 		D5B5CB973A4043099C3111D3 /* Rubik-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1E2AAE695526452EAEE414C0 /* Rubik-Medium.ttf */; };
@@ -73,6 +73,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = MoodFlo/main.m; sourceTree = "<group>"; };
 		145FFD024E29D2E69DD6A0E8 /* Pods-MoodFlo-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-tvOS.release.xcconfig"; path = "Target Support Files/Pods-MoodFlo-tvOS/Pods-MoodFlo-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		19A6BB55271733EC00AF40D0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		19C805F22678A3CA006C1FA2 /* RCTMoodDataModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTMoodDataModule.h; sourceTree = "<group>"; };
 		19DCB895267B1B19009C4DC1 /* RCTMoodDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTMoodDataModule.m; sourceTree = "<group>"; };
 		1E2AAE695526452EAEE414C0 /* Rubik-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Medium.ttf"; path = "../assets/fonts/Rubik-Medium.ttf"; sourceTree = "<group>"; };
@@ -109,7 +110,6 @@
 		BAD1852DEA9E42BF8F408C24 /* Rubik-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-SemiBold.ttf"; path = "../assets/fonts/Rubik-SemiBold.ttf"; sourceTree = "<group>"; };
 		C59CF3739FF64CE49FDFCFA1 /* Rubik-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Regular.ttf"; path = "../assets/fonts/Rubik-Regular.ttf"; sourceTree = "<group>"; };
 		CF0E358314B0428FA1143D9C /* Rubik-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-ExtraBoldItalic.ttf"; path = "../assets/fonts/Rubik-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
-		CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		CF7CE0FD25FB70DA00E73988 /* MoodFlo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MoodFlo.entitlements; path = MoodFlo/MoodFlo.entitlements; sourceTree = "<group>"; };
 		CF7CE0FE25FB70DB00E73988 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		D1809BF6DD824C91BBAA3583 /* Rubik-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Rubik-Bold.ttf"; path = "../assets/fonts/Rubik-Bold.ttf"; sourceTree = "<group>"; };
@@ -180,6 +180,7 @@
 		13B07FAE1A68108700A75B9A /* MoodFlo */ = {
 			isa = PBXGroup;
 			children = (
+				19A6BB55271733EC00AF40D0 /* Launch Screen.storyboard */,
 				19C805F22678A3CA006C1FA2 /* RCTMoodDataModule.h */,
 				1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */,
 				CF7CE0FD25FB70DA00E73988 /* MoodFlo.entitlements */,
@@ -189,7 +190,6 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				CF7CE0EF25F9E8FE00E73988 /* Launch Screen.storyboard */,
 				19DCB895267B1B19009C4DC1 /* RCTMoodDataModule.m */,
 			);
 			name = MoodFlo;
@@ -440,8 +440,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF7CE0F025F9E8FE00E73988 /* Launch Screen.storyboard in Resources */,
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				193C07082718394D001BA9A5 /* Images.xcassets in Resources */,
+				19A6BB56271733EC00AF40D0 /* Launch Screen.storyboard in Resources */,
 				FD7D68DF5AE34949A4B40559 /* Rubik-Black.ttf in Resources */,
 				18217A31F5B245DBBD6882EC /* Rubik-BlackItalic.ttf in Resources */,
 				16B7472354AF498A989EBC24 /* Rubik-Bold.ttf in Resources */,
@@ -875,7 +875,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
@@ -903,7 +903,7 @@
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
