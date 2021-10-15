@@ -470,7 +470,7 @@ public class UsageStatsModule extends ReactContextBaseJavaModule {
         long currTime = (long) end;
         ZonedDateTime startDate = LocalDate.now().atStartOfDay(defaultZone);
         long startTime = (long) start;
-//        Log.d("getUsageStats", String.valueOf(startTime) + " = " + String.valueOf(currTime));
+        Log.d("getUsageStats", String.valueOf(startTime) + " = " + String.valueOf(currTime));
 
         UsageStatsManager mUsageStatsManager =  (UsageStatsManager)
                 reactContext.getSystemService(Context.USAGE_STATS_SERVICE);
