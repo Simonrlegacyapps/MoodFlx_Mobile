@@ -30,31 +30,26 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
 import {useDispatch, useSelector} from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
-import DeviceInfo from 'react-native-device-info';
-import {
-  NotificationPerm,
-  SetSleepDataSyncStatus,
-  UserDetail,
-} from '../../redux/actions/actions';
-import PostRequestApi, {
-  GetStaffUserData,
-  getUpdateRewardPoint,
-} from '../../apirequest/PostRequestApi';
-import {
-  AppPermissions,
-  activityHealthKitOptions,
-} from '../../services/appPermissions';
+import {NotificationPerm, UserDetail} from '../../redux/actions/actions';
+import {GetStaffUserData} from '../../apirequest/PostRequestApi';
+import {AppPermissions} from '../../services/appPermissions';
 import {useFocusEffect} from '@react-navigation/native';
 import {getSleepDataAfterPermissionIOS} from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
-import {getIsMoodLvlUp, openHealthApp} from '../../services/commonService';
+import {getMyDeviceId, openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
-import AsyncStorage from '@react-native-community/async-storage';
-import getStore from '../../redux';
-import { FAQ_URL, getApiBaseUrl, PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
+import {
+  BASE_URL_PRODUCTION_API,
+  FAQ_URL,
+  getApiBaseUrl,
+  getPhotoUrl,
+  PRIVACY_POLICY_URL,
+  TERMS_OF_USE_URL,
+} from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const listData = [
   { name: 'Name', value: 'Annonymous' },
@@ -121,7 +116,7 @@ const ProfileTab = ({ navigation }) => {
 
   const getProfileUserData = () => {
     // console.log('called called called called called called');
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -247,7 +242,7 @@ const ProfileTab = ({ navigation }) => {
 
   const imagePostFunction = (imageData) => {
     setImageLoading(true);
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     const imageResponse = imageData
       ? {
           ...imageData,
@@ -347,11 +342,10 @@ const ProfileTab = ({ navigation }) => {
       console.log('images', images);
     });
   };
-  console.log('ProfileTab Pronoun: ', Pronoun);
 
   const ProfileApiCallHere = async ({ _name, _gender, _pronoun }) => {
     const name_ = _name ? _name : name;
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Content-Type', 'application/json');
@@ -465,7 +459,7 @@ const ProfileTab = ({ navigation }) => {
                   <Image
                     style={styles.profileImage}
                     source={{
-                      uri: `https://admin.moodflo.com/${UserData?.UserDetails?.profile_image}`,
+                      uri: `${getPhotoUrl()}${UserData?.UserDetails?.profile_image}`,
                     }}
                   />
                 </View>
@@ -490,7 +484,29 @@ const ProfileTab = ({ navigation }) => {
               <View
                 style={[styles.borderStyle, { marginRight: dynamicSize(17) }]}
               />
-              <Text>PERSONAL DETAILS</Text>
+              <Text
+                // onPress={() => Alert.alert('Personal Details', JSON.stringify({
+                //   device_id: getMyDeviceId(),
+                //   email: UserData.UserEmail,
+                //   user_id: UserData.UserId,
+                //   division: UserData.UserDivision,
+                //   server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                // }), [
+                //   {
+                //     text: "Cancel",
+                //     onPress: () => console.log("Cancel Pressed"),
+                //     style: "cancel"
+                //   },
+                //   { text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
+                //     device_id: getMyDeviceId(),
+                //     email: UserData.UserEmail,
+                //     user_id: UserData.UserId,
+                //     division: UserData.UserDivision,
+                //     server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                //   }))
+                //   }
+                // ])}
+              >PERSONAL DETAILS</Text>
               <View
                 style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}
               />
@@ -669,7 +685,7 @@ const ProfileTab = ({ navigation }) => {
                       styles.anonymousTextStyle,
                       { marginLeft: dynamicSize(16) },
                     ]}>
-                    How MoodFlo Works
+                    How MoodFlx Works
                   </Text>
                   {isHowMoodFloWorksPtsGiven === false && (
                     <ImageBackground

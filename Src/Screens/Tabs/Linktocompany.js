@@ -41,10 +41,9 @@ import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
 import {useRoute, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
-import { getApiBaseUrl, PHOTO_URL } from '../../Constants/constants';
-import DeviceInfo from 'react-native-device-info';
+import { getApiBaseUrl } from '../../Constants/constants';
 import axios from 'axios';
-import {onUnlinkUpdate, setDivisionSetFlag} from '../../services/commonService';
+import {getMyDeviceId, onUnlinkUpdate, setDivisionSetFlag} from '../../services/commonService';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import FeedBackModal from '../../Components/Modals/FeedBackModal/FeedBackModal';
 import {NoteIcon} from '../../../assets/svg/noteIcon';
@@ -116,7 +115,7 @@ const Linktocompany = ({ navigation }) => {
     if (UserData.UserEmail && UserData.UserId) {
       var myHeaders = new Headers();
       myHeaders.append('Content-Type', 'application/json');
-      const deviceId = DeviceInfo.getUniqueId();
+      const deviceId = getMyDeviceId();
       const params = {
         device_id: deviceId,
         user_id: UserData.UserId,
@@ -155,7 +154,7 @@ const Linktocompany = ({ navigation }) => {
   }, [UserData.UserId, UserData.UserEmail, labelShow]);
 
   useEffect(() => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -239,7 +238,7 @@ const Linktocompany = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       if (UserData.UserEmail && UserData.UserId) {
-        const deviceId = DeviceInfo.getUniqueId();
+        const deviceId = getMyDeviceId();
         const params = {
           device_id: deviceId,
           user_id: UserData.UserId,
@@ -264,7 +263,7 @@ const Linktocompany = ({ navigation }) => {
   );
 
   const giveFeedback = ()=>{
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     const params = {
       "device_id": deviceId ,
       "email": UserData.UserEmail,
@@ -319,6 +318,7 @@ const Linktocompany = ({ navigation }) => {
         } else {
           setLoading(false);
         }
+        navigation?.replace?.('MoodEmotionDetector');
       })
       .catch((err) => {
         console.log('err', err), setLoading(false), setAPIfail(true);

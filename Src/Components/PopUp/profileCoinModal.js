@@ -92,17 +92,17 @@ const ProfileCoinModal = ({
                     {title &&<Text style={styles.titleText}>
                         {title
                             ? title
-                            : "Hang in there you'll be able to cash in your Flo soon!"}
+                            : "Hang in there you'll be able to cash in your Flx soon!"}
                     </Text>}
                     <Text style={styles.bigText}>
                         {permission
                             ? permission
-                            : "Hang in there you'll be able to cash in your Flo soon!"}
+                            : "Hang in there you'll be able to cash in your Flx soon!"}
                     </Text>
                     {smallText && <Text style={styles.smallText}>
                         {smallText
                             ? smallText
-                            : "Hang in there you'll be able to cash in your Flo soon!"}
+                            : "Hang in there you'll be able to cash in your Flx soon!"}
                     </Text>}
                     <TouchableOpacity style={{ alignSelf: 'center' }} onPress={verifyDone}>
                         <View

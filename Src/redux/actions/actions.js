@@ -41,6 +41,7 @@ import {
   SET_WEATHER_INSIGHTS,
   SET_SCROLLING,
   RESET_LINK_TO_COMPANY_PARAMS,
+  GET_SCREENTIME_PERM,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -130,6 +131,12 @@ export const WeatherPerm = (data) => {
 export const SleepPerm = (data) => {
   return {
     type: GET_SLEEP_PERM,
+    payload: data,
+  };
+};
+export const ScreenTimePerm = (data) => {
+  return {
+    type: GET_SCREENTIME_PERM,
     payload: data,
   };
 };

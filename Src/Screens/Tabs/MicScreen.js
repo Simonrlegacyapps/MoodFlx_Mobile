@@ -23,7 +23,6 @@ import {
 import Svg, {Path, SvgUri} from 'react-native-svg';
 import {dynamicSize, getFontSize, horizontalScale, isTablet} from '../../Constants/sizeChoose';
 import axios from 'axios';
-import DeviceInfo from 'react-native-device-info';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
@@ -35,7 +34,7 @@ import {getApiBaseUrl, moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import Clock from '../../../assets/svg/clock';
 import FloCoin from '../../../assets/svg/floCoins';
-import {getDivisionSetFlag, getUpdateAnswerRewardPoints} from '../../services/commonService';
+import {getDivisionSetFlag, getMyDeviceId, getUpdateAnswerRewardPoints} from '../../services/commonService';
 import getStore from '../../redux';
 import {
   PulseConnect,
@@ -83,7 +82,7 @@ const MicScreen = ({navigation}) => {
       setquestions(null);
       return false;
     }
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var data = JSON.stringify({
       device_id: deviceId,
       email: e,
@@ -349,7 +348,7 @@ const MicScreen = ({navigation}) => {
 
   function getRewardsCoins(day, hour) {
     if (day != 0) {
-      return 'Missed out on flo coins';
+      return 'Missed out on flx coins';
     } else {
       if (hour <= 2) {
         return 8;
@@ -490,8 +489,8 @@ const MicScreen = ({navigation}) => {
                     style={[styles.Text, {fontSize: getFontSize(13), marginVertical: 0}]}>
                     {' '}
                     {rewardPts === 0
-                      ? 'Missed out on flo coins'
-                      : `Earn ${rewardPts} flo coins`
+                      ? 'Missed out on flx coins'
+                      : `Earn ${rewardPts} flx coins`
                     }
                   </Text>
                 </View>
@@ -542,7 +541,7 @@ const MicScreen = ({navigation}) => {
                   styles.Text,
                   {textAlign: 'right', fontSize: getFontSize(13), color: '#FB8D09'},
                 ]}>
-                Earned {i.reward_point} flo coins
+                Earned {i.reward_point} flx coins
               </Text>
             </View>
             <View style={{width: '90%'}}>

@@ -7,7 +7,6 @@ import {
   getFontSize,
   horizontalScale,
 } from '../../Constants/sizeChoose';
-import DeviceInfo from 'react-native-device-info';
 import {GetStaffUserData} from '../../apirequest/PostRequestApi';
 import {UserDetail} from '../../redux/actions/actions';
 import PickImageIcon from '../../../assets/profileicons/PickImageIcon';
@@ -17,6 +16,7 @@ import EditProfile from '../../../assets/svg/editProfile';
 import {getFloCoins} from '../../services/commonService';
 import {FloCoinIcon} from '../../../assets/svg/floCoinIcon';
 import Edit from '../../../assets/svg/Edit';
+import { getPhotoUrl } from '../../Constants/constants';
 
 const ProfileHeader = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
@@ -40,7 +40,7 @@ const ProfileHeader = ({navigation}) => {
           ) : (
             <Image
               source={{
-                uri: `https://admin.moodflo.com/${UserData?.UserDetails?.profile_image}`,
+                uri: `${getPhotoUrl()}${UserData?.UserDetails?.profile_image}`,
               }}
               style={styles.image}
             />
@@ -74,7 +74,7 @@ const ProfileHeader = ({navigation}) => {
           <Text style={styles.floCoinsTextOne}>
             {getFloCoins(UserData.floCoins)}
           </Text>
-          <Text style={styles.floCoinsTextTwo}>Flo Coins</Text>
+          <Text style={styles.floCoinsTextTwo}>Flx Coins</Text>
         </View>
       </View>
     </View>

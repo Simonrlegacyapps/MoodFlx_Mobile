@@ -33,7 +33,7 @@ const History = ({setIsLevelsHide, islevelsHide}) => {
                 <HisotyImage />
             </View>
             <Text style={styles.BigText}>You're Getting There! </Text>
-            <Text style={styles.SmallText}>You haven't redeemed {`\n`}any rewards yet. Keep bringing {`\n`}in the Flo coins!</Text>
+            <Text style={styles.SmallText}>You haven't redeemed {`\n`}any rewards yet. Keep bringing {`\n`}in the Flx coins!</Text>
             </View>
             <View style={{marginBottom: 120}} />
         </ScrollView>

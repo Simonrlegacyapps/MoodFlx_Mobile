@@ -27,7 +27,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import PopUp from '../../Components/PopUp/PopUp';
 import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
-import DeviceInfo from 'react-native-device-info';
 import { IsAnonymous, UserDetail } from '../../redux/actions/actions';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import { dynamicSize, horizontalScale } from '../../Constants/sizeChoose';
@@ -40,7 +39,7 @@ import moment from 'moment';
 import { dataTypes, getApiBaseUrl, getWeeklyInsightsAvailable } from '../../Constants/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
-import { getFloCoins, openHealthApp } from '../../services/commonService';
+import { getFloCoins, getMyDeviceId, openHealthApp } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 import { activityHealthKitOptions } from '../../services/appPermissions';
@@ -216,7 +215,7 @@ const FitnessData = ({
   };
 
   const callGetHealthDataApi = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     const store = getStore?.()?.getState?.();
     const params = {
       device_id: deviceId,
@@ -237,7 +236,7 @@ const FitnessData = ({
 
   const getInsights = () => {
     setskeleton(true)
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     const store = getStore?.()?.getState?.();
     const params = {
       device_id: deviceId,
@@ -329,7 +328,7 @@ const FitnessData = ({
   }, [healthUpdateApiCount, UserData.UserEmail, UserData.UserId]);
 
   const ProfileApiCallHere = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Content-Type', 'application/json');
@@ -392,7 +391,7 @@ const FitnessData = ({
 
   const getProfileUserData = () => {
     console.log(`called called called called called called getProfileUserData`);
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 

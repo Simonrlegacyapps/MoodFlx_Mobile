@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Platform,
+  AppState,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -36,6 +38,11 @@ import DataInsights from '../../../Components/DataInsights/DataInsights';
 import ScreenTimeBarGraph from '../../../Components/ScreenTimeGraph/ScreenTimeBarGraph';
 import ScreenTimeLineGraph from '../../../Components/ScreenTimeGraph/ScreenTimeLineGraph';
 import { horizontalScale } from '../../../Constants/sizeChoose';
+import isEmpty from 'lodash.isempty';
+import getStore from '../../../redux';
+import {ScreenTimePerm} from '../../../redux/actions/actions';
+import PostRequestApi from '../../../apirequest/PostRequestApi';
+import {getMyDeviceId} from '../../../services/commonService';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -59,102 +66,115 @@ const ScreenData = ({
   index,
 }) => {
   const [ScreenTimeDuration, setScreenTimeDuration] = useState(false);
-  const [ScreenDuration, setScreenDuration] = useState('Weekly');
-  const [Graph, setGraph] = useState(null);
+  const [screenDuration, setScreenDuration] = useState('Weekly');
+  const [graphData, setGraphData] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
+  const [currentDayScreenTime, setCurrentDayScreenTime] = useState(0);
+  const [yesterdayScreenTime, setYesterdayScreenTime] = useState(0);
+  const [morningTime, setMorningTime] = useState(0);
+  const [afternoonTime, setAfternoonTime] = useState(0);
+  const [eveningTime, setEveningTime] = useState(0);
+  const requestingPermission = useRef(false);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
-  const data = [
-    {
-      x: 1,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 3 : 0) : 3,
-    },
-    {
-      x: 2,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 5 : 0) : 5,
-    },
-    {
-      x: 3,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 4 : 0) : 4,
-    },
-    {
-      x: 4,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 2 : 0) : 2,
-    },
-    {
-      x: 5,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 1 : 0) : 1,
-    },
-    {
-      x: 6,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 5 : 0) : 5,
-    },
-    {
-      x: 7,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 3 : 0) : 3,
-    },
-  ];
 
-  const dataLow = [
-    {
-      x: 1,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 4 : 0) : 4,
-    },
-    {
-      x: 2,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 7 : 0) : 7,
-    },
-    {
-      x: 3,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 4 : 0) : 4,
-    },
-    {
-      x: 4,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 6 : 0) : 6,
-    },
-    {
-      x: 5,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 2 : 0) : 2,
-    },
-    {
-      x: 6,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 0 : 0) : 0,
-    },
-    {
-      x: 7,
-      y: Graph && WeatherDuration === 'Week' ? (true ? 6 : 0) : 6,
-    },
-  ];
+  const fetchScreenTimeData = () => {
+    if (Platform.OS === 'android') {
+      getDailyStats();
+    }
+  };
 
-  let heightProp = SIZE / 4.3;
-  let widthProp = Math.round(SIZE - 138);
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        console.log("Screen Data App has come to the foreground!");
+        if (requestingPermission.current === true) {
+          fetchScreenTimeData();
+          requestingPermission.current = false;
+        }
+      }
 
-  const max =
-    data &&
-    Math.max.apply(
-      Math,
-      data.map(function (o) {
-        return 5;
-        // return o.y;
-      }),
-    );
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      // console.log("AppState", appState.current);
+    });
 
-  const Lowmax =
-    dataLow &&
-    Math.max.apply(
-      Math,
-      dataLow.map(function (o) {
-        return 7;
-        // return o.y;
-      }),
-    );
+    return () => {
+      subscription?.remove?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (UserData.ScreenTimePermission === true) {
+      fetchScreenTimeData();
+    }
+  }, []);
+
+  const getScreenGraphData = (dataArray) => {
+    let screenTimeGraphData = [];
+    let weekDates = [];
+    let dates = [6, 5, 4, 3, 2, 1, 0];
+    dates.forEach((e, idx) => {
+      const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+      weekDates.push(d);
+    });
+    weekDates.forEach((e, idx) => {
+      const eData = moment(e);
+      let data = null;
+      let day = '';
+      day = eData.format('dd');
+      // INBED
+      dataArray.forEach((d) => {
+        const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
+        let value = 0;
+        if (!isNaN(d?.duration)) {
+          value = Number.parseInt(Number(d.duration), 10);
+          value = value > 0 ? Math.floor(value / 60) : 0;
+          let x = Number(d.duration) % 60;
+          x = Math.floor((100 * x) / 60);
+          value = value + (x / 100);
+        }
+        if (
+          startDateMillis !== null &&
+          moment(startDateMillis).startOf('days').isSame(eData)
+        ) {
+          data = {
+            x: idx + 1,
+            y: value,
+            day,
+          };
+        }
+      });
+      if (data === null) {
+        data = {
+          x: idx + 1,
+          y: 0,
+          day,
+        };
+      }
+      screenTimeGraphData.push(data);
+    });
+    // console.log('screenTimeGraphData ------>', screenTimeGraphData);
+    return screenTimeGraphData;
+  };
 
   const VerifyDone = async () => {
     // await AsyncStorage.setItem('GiveSleepPerm', 'true');
 
     setopenActionSheet(false);
+    if (Platform.OS === 'android') {
+      const timeoutId = setTimeout(() => {
+        requestUsageStatsPermission();
+        clearTimeout(timeoutId);
+      }, 400);
+    }
     //   let Sp = await AsyncStorage.getItem('GiveSleepPerm');
     //   let SleepP = await JSON.parse(Sp);
     //   console.log(`SleepPerm`, SleepP);
@@ -162,16 +182,58 @@ const ScreenData = ({
   };
 
   const requestUsageStatsPermission = () => {
-    if (!UsageStats.showUsageAccessSettings) {
+    // if (UsageStats.checkForPermission()) {
+    //   console.log('UsageStats.checkForPermission() ->', UsageStats?.checkForPermission?.());
+    //   return;
+    // }
+    if (Platform.OS !== 'android') {
+      return;
+    }
+    const s = moment().startOf('day').toDate();
+    if (!UsageStats) {
       Toast.show({
         type: 'error',
-        text2: 'Usage Stats showUsageAccessSettings not available',
+        text2: 'Usage Stats not available',
         visibilityTime: 4000,
         autoHide: true,
       });
       return;
     }
-    UsageStats.showUsageAccessSettings('com.moodflo');
+    if (!UsageStats?.queryUsageStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats queryUsageStats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    UsageStats.queryUsageStats(
+      UsageStats.INTERVAL_BEST,
+      s.getTime(),
+      new Date().getTime(),
+    )
+      .then((data) => {
+        console.log('requestUsageStatsPermission SCREEN TIME DATA: ', data);
+        if (isEmpty(data)) {
+          if (!UsageStats?.showUsageAccessSettings) {
+            Toast.show({
+              type: 'error',
+              text2: 'Usage Stats showUsageAccessSettings not available',
+              visibilityTime: 4000,
+              autoHide: true,
+            });
+          } else {
+            UsageStats.showUsageAccessSettings('com.moodflo');
+            requestingPermission.current = true;
+          }
+        } else {
+          fetchScreenTimeData();
+        }
+      })
+      .catch((error) => {
+        console.log('Error in getting SCREEN TIME DATA: ', error);
+      });
   };
 
   const getUsageStats = () => {
@@ -193,25 +255,217 @@ const ScreenData = ({
       });
       return;
     }
-    const s = moment().startOf('day').subtract(1, 'day').toDate();
+    const s = moment().startOf('day').toDate();
     UsageStats.queryUsageStats(
-      UsageStats.INTERVAL_DAILY,
+      UsageStats.INTERVAL_BEST,
       s.getTime(),
       new Date().getTime(),
     )
       .then((data) => {
-        console.log('SCREEN TIME DATA: ', data);
+        // console.log('SCREEN TIME DATA: ', data);
       })
       .catch((error) => {
         console.log('Error in getting SCREEN TIME DATA: ', error);
       });
   };
 
+  const getTotalTimeInForeground = (screenTimeData) => {
+    let totalScreenTime = 0;
+    if (!screenTimeData) {
+      return totalScreenTime;
+    }
+    const keys = Object.keys(screenTimeData);
+    if (Array.isArray(keys) && keys.length > 0) {
+      keys.forEach((e) => {
+        let screenTime = screenTimeData?.[e]?.totalTimeInForeground ?? 0;
+        if (!isNaN(screenTime)) {
+          totalScreenTime += Number(screenTime);
+        }
+      });
+    }
+    // console.log('screen time in milli --->', totalScreenTime);
+    totalScreenTime = totalScreenTime > 0 ? Math.ceil((totalScreenTime / 1000) / 60) : 0;
+    // console.log('screen time in minutes --->', totalScreenTime);
+    // if (totalScreenTime === 0) {
+    //   console.log('screen time in hours --->', 0);
+    // } else {
+    //   console.log('screen time in hours --->', `${Math.floor(totalScreenTime / 60)} hours - ${totalScreenTime % 60} minutes`);
+    // }
+    return totalScreenTime;
+  };
+
+  const getDailyStats = () => {
+    let currentDayTime = 0;
+    if (!UsageStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    if (!UsageStats?.getDailyStats) {
+      Toast.show({
+        type: 'error',
+        text2: 'Usage Stats queryUsageStats not available',
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+      return;
+    }
+    let sTime = moment().startOf('day').add(6, 'hours').toDate().getTime();
+    let sixHoursInMillis = 21600000;
+    let eTime = sTime + sixHoursInMillis;
+    UsageStats?.getUsageStats?.(sTime, eTime)
+      .then((data) => {
+        console.log('MORNING SCREEN TIME DATA: ', data);
+        currentDayTime = getTotalTimeInForeground(data);
+        setMorningTime(currentDayTime);
+        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+        if (screenTimePermission === false && !isEmpty(data)) {
+          dispatch(ScreenTimePerm(true));
+        }
+        sTime = eTime;
+        eTime = sTime + sixHoursInMillis;
+        return UsageStats.getUsageStats(sTime, eTime);
+      })
+      .then((data) => {
+        console.log('AFTERNOON SCREEN TIME DATA: ', data);
+        currentDayTime = getTotalTimeInForeground(data);
+        setAfternoonTime(currentDayTime);
+        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+        if (screenTimePermission === false && !isEmpty(data)) {
+          dispatch(ScreenTimePerm(true));
+        }
+        sTime = eTime;
+        eTime = sTime + sixHoursInMillis;
+        return UsageStats.getUsageStats(sTime, eTime);
+      })
+      .then((data) => {
+        console.log('EVENING SCREEN TIME DATA: ', data);
+        currentDayTime = getTotalTimeInForeground(data);
+        setEveningTime(currentDayTime);
+        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+        if (screenTimePermission === false && !isEmpty(data)) {
+          dispatch(ScreenTimePerm(true));
+        }
+        return UsageStats.getTodayStats();
+      })
+      .then((data) => {
+        // console.log('CURRENT DAY SCREEN TIME DATA: ', data);
+        currentDayTime = getTotalTimeInForeground(data);
+        setCurrentDayScreenTime(currentDayTime);
+        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+        if (screenTimePermission === false && !isEmpty(data)) {
+          dispatch(ScreenTimePerm(true));
+        }
+        return UsageStats.getYesterdayStats();
+      })
+      .then((data) => {
+        // console.log('PREVIOUS DAY SCREEN TIME DATA: ', data);
+        let prevDayTime = getTotalTimeInForeground(data);
+        setYesterdayScreenTime(prevDayTime);
+        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+        if (screenTimePermission === false && !isEmpty(data)) {
+          dispatch(ScreenTimePerm(true));
+        }
+        const params = {
+          device_id: getMyDeviceId(),
+          email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
+          screen_data: [
+            {
+              date: moment().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss'),
+              value: String(prevDayTime),
+            },
+            {
+              date: moment().format('YYYY-MM-DD HH:mm:ss'),
+              value: String(currentDayTime),
+            },
+          ],
+          user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
+        };
+        console.log('updateScreenTime params --->', params);
+        return PostRequestApi('updateScreenTime', params);
+      })
+      .then((data) => {
+        console.log('✅ ✅ ✅ ✅ updateScreenTime api success✅ ✅ ✅ ✅ -data---->', data?.data);
+        const params = {
+          device_id: getMyDeviceId(),
+          email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
+          user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
+        };
+        console.log('getScreenTimeReport params --->', params);
+        return PostRequestApi('getScreenTimeReport', params);
+      })
+      .then((data) => {
+        console.log('✅ ✅ ✅ ✅ getScreenTimeReport api success✅ ✅ ✅ ✅ -data---->', data?.data);
+        let screenDataArray = Object.values(data?.data?.screenData);
+        if (Array.isArray(screenDataArray) && screenDataArray.length > 0) {
+          setGraphData(getScreenGraphData(screenDataArray));
+        }
+      })
+      .catch((error) => {
+        console.log('❌ ❌ ❌ ❌ Error in getting SCREEN TIME DATA❌ ❌ ❌ ❌ : ', error);
+      });
+  };
+
+  // const getPreviousDayStats = () => {
+  //   if (!UsageStats) {
+  //     Toast.show({
+  //       type: 'error',
+  //       text2: 'Usage Stats not available',
+  //       visibilityTime: 4000,
+  //       autoHide: true,
+  //     });
+  //     return;
+  //   }
+  //   if (!UsageStats?.getPreviousDayStats) {
+  //     Toast.show({
+  //       type: 'error',
+  //       text2: 'Usage Stats queryUsageStats not available',
+  //       visibilityTime: 4000,
+  //       autoHide: true,
+  //     });
+  //     return;
+  //   }
+  //   UsageStats.getPreviousDayStats()
+  //     .then((data) => {
+  //       // console.log('PREVIOUS DAY SCREEN TIME DATA: ', data);
+  //       setYesterdayScreenTime(getTotalTimeInForeground(data));
+  //       const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+  //       if (screenTimePermission === false && !isEmpty(data)) {
+  //         dispatch(ScreenTimePerm(true));
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log('Error in getting SCREEN TIME DATA: ', error);
+  //     });
+  // };
+
   const ScreenDurations = [{ label: 'Day' }, { label: 'Week' }, { label: 'Month' }];
 
   const AnonymousPopUpcancelled = () => {
     setAnonymousClick(false);
   };
+
+  const getProgress = (e) => {
+    if (!isNaN(e)) {
+      return Math.ceil((Number(e) * 120) / 360);
+    }
+    return 0;
+  };
+
+  const getTimeInHoursMin = (e) => {
+    if (!isNaN(e)) {
+      let i = Number(e);
+      let hr = Math.floor(i / 60);
+      let min = i % 60;
+      return i > 0 ? `${hr > 0 ? `${hr}hr ` : ''}${min > 0 ? `${min}min` : ''}` : '0min';
+    }
+    return '0min';
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -274,6 +528,36 @@ const ScreenData = ({
             </Text>
           </View>
         </View>
+        {/* <TouchableOpacity
+          style={{
+            marginTop: 30,
+            alignSelf: 'center',
+            borderWidth: 1.5,
+            borderColor: '#000000',
+          }}
+          onPress={requestUsageStatsPermission}>
+              <Text>Check Usage Permission</Text>
+          </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            marginTop: 30,
+            alignSelf: 'center',
+            borderWidth: 1.5,
+            borderColor: '#000000',
+          }}
+          onPress={getDailyStats}>
+              <Text>Get Current Day Statistics</Text>
+          </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            marginTop: 30,
+            alignSelf: 'center',
+            borderWidth: 1.5,
+            borderColor: '#000000',
+          }}
+          onPress={getPreviousDayStats}>
+              <Text>Get Yesterday Statistics</Text>
+          </TouchableOpacity> */}
         <View>
           <DataInsights
             dailyInsights={'You became more tired and anxious as your screen time went over 5hrs per day'}
@@ -283,6 +567,7 @@ const ScreenData = ({
             weeklySuggestion={'Try to get less than 5 hrs per day'}
             weeklySuggestionType={'warning'}
             timeLeft={UserData?.weeklyInsightsTimeLeft}
+            // isPermissionGiven={UserData.ScreenTimePermission}
             isPermissionGiven={false}
             dispatch={dispatch}
           />
@@ -308,44 +593,62 @@ const ScreenData = ({
 
           {/* <ProgressBarCustom /> */}
           <HomeHeader
-            click={() => setScreenTimeDuration(false)}
-            value={ScreenDuration}
+            // click={() => setScreenTimeDuration(false)}
+            value={screenDuration}
           />
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
             {/* {swiperIndex == index && ( */}
             {true && (
               // <BarGraph color={'#16B7C7'} ShowPollen={false} RightBar={false} />
-              <ScreenTimeBarGraph graphWidth={SIZE} />
+              <ScreenTimeBarGraph graphWidth={SIZE} data={graphData} />
             )}
           </View>
 
-          <View style={{ marginBottom: horizontalScale(40) }}>
+          <View style={styles.bottomView}>
+            {/* <ScreenCircleBar
+              DarkColor="#0DDE79"
+              lightColor="#CFF9ED"
+              Label="Today"
+              // Time="1hr 34min"
+              Time={getTimeInHoursMin(currentDayScreenTime)}
+              value={getProgress(currentDayScreenTime)}
+              border={true}
+            />
+            <ScreenCircleBar
+              DarkColor="#F992BE"
+              lightColor="#FEE9F2"
+              Label="Yesterday"
+              Time={getTimeInHoursMin(yesterdayScreenTime)}
+              // Time="1hr 34min"
+              value={getProgress(yesterdayScreenTime)}
+              border={true}
+            /> */}
             <ScreenCircleBar
               DarkColor="#0DDE79"
               lightColor="#CFF9ED"
               Label="Morning"
-              Time="1hr 34min"
-              value={54}
+              Time={getTimeInHoursMin(UserData.ScreenTimePermission ? morningTime : 94)}
+              value={getProgress(UserData.ScreenTimePermission ? morningTime : 94)}
               border={true}
             />
             <ScreenCircleBar
               DarkColor="#F992BE"
               lightColor="#FEE9F2"
               Label="Afternoon"
-              Time="1hr 34min"
-              value={32}
+              Time={getTimeInHoursMin(UserData.ScreenTimePermission ? afternoonTime : 94)}
+              value={getProgress(UserData.ScreenTimePermission ? afternoonTime : 94)}
               border={true}
             />
             <ScreenCircleBar
               DarkColor="#21CDDE"
               lightColor="#E5F9FC"
               Label="Evening"
-              Time="1hr 34min"
-              value={92}
+              Time={getTimeInHoursMin(UserData.ScreenTimePermission ? eveningTime : 94)}
+              value={getProgress(UserData.ScreenTimePermission ? eveningTime : 94)}
             />
           </View>
           {/* <GraphicChart /> */}
-          <ScreenTimeLineGraph />
+          {/* <ScreenTimeLineGraph /> */}
           {/* {!PermScreenTime && (
             <View
               style={{
@@ -370,7 +673,7 @@ const ScreenData = ({
               </Text>
             </View>
           )} */}
-          {true && (
+          {!UserData.ScreenTimePermission && (
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {
@@ -390,8 +693,8 @@ const ScreenData = ({
       </ScrollView>
 
       <PopUp
-        permission={false}
-        ComingUp
+        ComingUp={false}
+        permission={UserData.ScreenTimePermission}
         image={Constants.Images.ScreenPopUpImg}
         dataType={'screen'}
         modalVisible={openActionSheet}
@@ -549,6 +852,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     color: '#4C5980',
     fontFamily: RubikRegular,
+  },
+  bottomView: {
+    marginBottom: horizontalScale(100),
   },
 });
 

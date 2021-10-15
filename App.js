@@ -27,7 +27,6 @@ import {
   UserEmail,
   WeatherPerm,
 } from './Src/redux/actions/actions';
-import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import moment from 'moment';
 // import LightSensor from 'react-native-light-sensor';
@@ -46,9 +45,11 @@ import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
 import {
   getIsInitialVideoVisible,
+  getMyDeviceId,
   getUpdateAnswerRewardPoints,
   onDynamicLinkUpdate,
   onUnlinkUpdate,
+  setDeviceId,
   setFitnessDataSync,
   setIsInitialVideoVisible,
   setMoodsArray,
@@ -157,6 +158,7 @@ const App: () => React$Node = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    setDeviceId();
     Analytics.init();
     crashlytics().setCrashlyticsCollectionEnabled(true);
     return () => {
@@ -166,7 +168,7 @@ const App: () => React$Node = () => {
 
   const linkCompany = useCallback(
     async (org) => {
-      const deviceId = DeviceInfo.getUniqueId();
+      const deviceId = getMyDeviceId();
       let fcm = '';
       try {
         fcm = await messaging().getToken();
@@ -588,7 +590,7 @@ const App: () => React$Node = () => {
     dispatch(IsAnonymous(a == null ? true : a));
 
     // ---> calling api for get user details
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -728,7 +730,7 @@ const App: () => React$Node = () => {
       const userEmail = getStore?.()?.getState?.()?.First?.UserEmail ?? "";
       const userId = getStore?.()?.getState?.()?.First?.UserId ?? "";
       getUpdateRewardPoint({
-        "device_id": DeviceInfo?.getUniqueId?.() ?? "",
+        "device_id": getMyDeviceId?.() ?? "",
         "email": userEmail,
         "user_id": userId,
         "section_index": "",

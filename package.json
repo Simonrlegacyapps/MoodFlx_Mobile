@@ -1,5 +1,5 @@
 {
-  "name": "MoodFlo",
+  "name": "MoodFlx",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@rainbow-me/animated-charts": "^1.0.0-alpha.5",
+    "@react-native-clipboard/clipboard": "^1.8.4",
     "@react-native-community/async-storage": "^1.12.1",
-    "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/push-notification-ios": "^1.8.0",
     "@react-native-firebase/analytics": "^12.1.0",
     "@react-native-firebase/app": "^12.1.0",
@@ -73,6 +73,7 @@
     "react-native-tab-view": "^2.16.0",
     "react-native-toast-message": "^1.4.9",
     "react-native-usage-stats": "file:./react-native-usage-stats",
+    "react-native-uuid": "^2.0.1",
     "react-native-vector-icons": "^8.1.0",
     "react-native-video": "^5.1.1",
     "react-redux": "^7.2.2",

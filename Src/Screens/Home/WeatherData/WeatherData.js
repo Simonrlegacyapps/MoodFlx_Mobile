@@ -29,7 +29,6 @@ import Geocoder from 'react-native-geocoding';
 import AsyncStorage from '@react-native-community/async-storage';
 import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
 import PopUp from '../../../Components/PopUp/PopUp';
-import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import {
   dynamicSize,
@@ -57,6 +56,7 @@ import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox'
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
+import { getMyDeviceId } from '../../../services/commonService';
 
 let weatherData = null;
 
@@ -387,7 +387,7 @@ const WeatherData = ({
   // console.log('UserData?.DayTemperature?.weather', UserData?.DayTemperature)
 
   // const callInsightsApi = () => {
-  //   const deviceId = DeviceInfo.getUniqueId();
+  //   const deviceId = getMyDeviceId();
   //   var myHeaders = new Headers();
   //   myHeaders.append('Content-Type', 'application/json');
 
@@ -527,7 +527,7 @@ const WeatherData = ({
       })
       .catch((err) => console.log(`weather api location err`, err));
     const isIndia = isCountryIndia();
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     const data = JSON.stringify({
       user_id: UserData.UserId,
       email: UserData.UserEmail,
@@ -678,7 +678,7 @@ const WeatherData = ({
   };
 
   const getWeather = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -1109,17 +1109,18 @@ const WeatherData = ({
           </View>
         </View>
         <View>
-        <DataInsights
-              dailyInsights={!UserData.WeatherPermission? "Today you were more energetic when it was below 20°C and it rained for 2hrs" :insights?.dailyInsights}
-              weeklyInsights={insights?.weeklyInsights}
-              dailySuggestion={insights?.dailySuggestion}
-              dailySuggestionType={insights?.dailySuggestionType}
-              weeklySuggestion={insights?.weeklySuggestion}
-              weeklySuggestionType={insights?.weeklySuggestionType}
-              timeLeft={UserData?.weeklyInsightsTimeLeft}
-              isPermissionGiven={UserData.WeatherPermission}
-              dispatch={dispatch}
-            />
+          <DataInsights
+            dataType={dataTypes.weather}
+            dailyInsights={!UserData.WeatherPermission ? "Today you were more energetic when it was below 20°C and it rained for 2hrs" : insights?.dailyInsights}
+            weeklyInsights={insights?.weeklyInsights}
+            dailySuggestion={insights?.dailySuggestion}
+            dailySuggestionType={insights?.dailySuggestionType}
+            weeklySuggestion={insights?.weeklySuggestion}
+            weeklySuggestionType={insights?.weeklySuggestionType}
+            timeLeft={UserData?.weeklyInsightsTimeLeft}
+            isPermissionGiven={UserData.WeatherPermission}
+            dispatch={dispatch}
+          />
           {/* {!UserData.WeatherPermission ? (
             <View
               style={{

@@ -13,7 +13,6 @@ import {
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
-import {PHOTO_URL} from '../../../Constants/constants';
 import {
   RubikBlack,
   RubikBold,
@@ -133,7 +132,7 @@ const UnlinkConfirmModal = ({
               ? UserData?.NameCompany?.full_name
               : CompanyName
               ? CompanyName
-              : 'MoodFlo'}
+              : 'MoodFlx'}
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
             <TouchableOpacity

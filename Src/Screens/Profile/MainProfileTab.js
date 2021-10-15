@@ -141,10 +141,10 @@ const MainProfileTab = ({navigation}) => {
   };
 
   const Medals = ({min, max, type, LevelName}) => {
-    console.log(
-      `floCoins - min === 0 ? 1 : floCoins- min / max - min`,
-      (floCoins - min === 0 ? 1 : floCoins - min) / (max - min),
-    );
+    // console.log(
+    //   `floCoins - min === 0 ? 1 : floCoins- min / max - min`,
+    //   (floCoins - min === 0 ? 1 : floCoins - min) / (max - min),
+    // );
     return (
       <TouchableOpacity
         onPress={() => onClickMedalIcon({min, max, type, LevelName: `Mood ${LevelName}`})}
@@ -297,7 +297,7 @@ const MainProfileTab = ({navigation}) => {
       {/* </ScrollView> */}
       <ProfileCoinModal
         title={lvlName}
-        permission={`${CoinLevel} Flo coins`}
+        permission={`${CoinLevel} Flx coins`}
         // image={Constants.Images.FitnessPopUp}
         dataType={'fitness'}
         smallText={CoinComment}

@@ -1,3 +1,4 @@
+import isEmpty from 'lodash.isempty';
 import {
   COMPANY_NAME,
   FIRST_ACTION_TYPE,
@@ -40,6 +41,7 @@ import {
   SET_SLEEP_DATA_SYNC_STATUS,
   SET_WEATHER_INSIGHTS,
   RESET_LINK_TO_COMPANY_PARAMS,
+  GET_SCREENTIME_PERM,
   
 } from '../constants/action-types';
 
@@ -58,6 +60,7 @@ const intializedState = {
   NotificationPermission: false,
   WeatherPermission: false,
   SleepPermission: false,
+  ScreenTimePermission: false,
   AllMoods: null,
   lat: null,
   lon: null,
@@ -147,6 +150,10 @@ export const First = (state = intializedState, action) => {
     case GET_SLEEP_PERM:
       return Object.assign({}, state, {
         SleepPermission: action.payload,
+      });
+    case GET_SCREENTIME_PERM:
+      return Object.assign({}, state, {
+        ScreenTimePermission: action.payload,
       });
     case GET_ALL_MOODS:
       return Object.assign({}, state, {
@@ -250,14 +257,12 @@ export const First = (state = intializedState, action) => {
       return Object.assign({}, state, {
         sleepDataSyncStatus: action.payload,
       });
-      case SET_WEATHER_INSIGHTS:
-        let weatherInsights = state.weatherInsights ? state.weatherInsights : {};
-        weatherInsights = action.payload
-        ? {...weatherInsights, ...action.payload}
-        : action.payload;
-        return Object.assign({}, state, {
-          weatherInsights: weatherInsights,
-        });
+    case SET_WEATHER_INSIGHTS:
+      return Object.assign({}, state, {
+        weatherInsights: !isEmpty(action.payload)
+          ? Object.assign({}, state?.weatherInsights ? state.weatherInsights : {}, action.payload)
+          : state.weatherInsights,
+      });
     case RESET_LINK_TO_COMPANY_PARAMS:
       return Object.assign({}, state, {
         isLinkToCompanyRouteParamsReset: action.payload,

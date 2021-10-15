@@ -18,7 +18,6 @@ import {
 } from '../../../Constants/fonts/Fonts';
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
-import DeviceInfo from 'react-native-device-info';
 import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
 import BarGraph from '../../../Components/BarChart/BarGraph';
 import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
@@ -49,6 +48,7 @@ import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousP
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import Skeleton from '../../../Components/Skeleton/Skeleton';
 import getStore from '../../../redux';
+import { getMyDeviceId } from '../../../services/commonService';
 
 const sleepInsightsInitialState = {
   dailyInsights: '',
@@ -253,7 +253,7 @@ const SleepData = ({
 
   const callInsightsApi = () => {
     setskeleton(true)
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -333,7 +333,7 @@ const SleepData = ({
   };
 
   const callGetSleepDataApi = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -393,7 +393,7 @@ const SleepData = ({
     }
     console.log('api sleep data: ', sleepData);
     // return;
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     let data = {
       device_id: deviceId,
       email: UserData.UserEmail ?? '',

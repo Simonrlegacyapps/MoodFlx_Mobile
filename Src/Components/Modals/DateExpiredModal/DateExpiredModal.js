@@ -13,7 +13,6 @@ import {
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
-import {PHOTO_URL} from '../../../Constants/constants';
 import {
   RubikBlack,
   RubikBold,
@@ -121,11 +120,11 @@ const DateExpiredModal = ({
               lineHeight: dynamicSize(26),
             }}>
             {FitnessPopUp
-              ? "We hope you like the demo insights into the relationship between your mood and activity. Once you've used MoodFlo long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
+              ? "We hope you like the demo insights into the relationship between your mood and activity. Once you've used MoodFlx long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
               : WeatherPopUp
-              ? "We hope you like the demo insights into the relationship between your mood and weather. Once you've used MoodFlo long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
+              ? "We hope you like the demo insights into the relationship between your mood and weather. Once you've used MoodFlx long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
               : SleepPopUp
-              ? "We hope you like the demo insights into the relationship between your mood and sleep. Once you've used MoodFlo long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
+              ? "We hope you like the demo insights into the relationship between your mood and sleep. Once you've used MoodFlx long enough, we'll be able to start giving you personalised insights - hang in there and keep inputting your mood"
               : 'Too late! Sorry you missed this Team Pulse, watch out for a notification for the next one'}
           </Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>

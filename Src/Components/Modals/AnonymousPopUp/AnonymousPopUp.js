@@ -13,7 +13,6 @@ import {
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
-import {PHOTO_URL} from '../../../Constants/constants';
 import {
   RubikBlack,
   RubikBold,
@@ -95,7 +94,7 @@ const AnonymousPopUp = ({
               textAlign: 'center',
               marginTop: 20,
             }}>
-            MoodFlo
+            MoodFlx
           </Text>
           <Text
             numberOfLines={10}
