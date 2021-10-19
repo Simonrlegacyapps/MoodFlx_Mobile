@@ -225,16 +225,16 @@ const StarProgress = ({ sleepMinutes }) => {
         />
         <View style={styles.qualitiesView}>
           <View style={styles.qualityViewOne}>
-            <Text style={styles.qualitiesText}>That's rough</Text>
+            <Text style={styles.qualitiesText} allowFontScaling={false}>That's rough</Text>
           </View>
           <View style={styles.qualityViewTwo}>
-            <Text style={styles.qualitiesText}>Almost</Text>
+            <Text style={styles.qualitiesText} allowFontScaling={false}>Almost</Text>
           </View>
           <View style={styles.qualityViewThree}>
-            <Text style={[styles.qualitiesText, { color: '#000000' }]}>Perfect!</Text>
+            <Text style={[styles.qualitiesText, { color: '#000000' }]} allowFontScaling={false}>Perfect!</Text>
           </View>
           <View style={styles.qualityViewFour}>
-            <Text style={styles.qualitiesText}>Bit too much</Text>
+            <Text style={styles.qualitiesText} allowFontScaling={false}>Bit too much</Text>
           </View>
         </View>
       </View>
