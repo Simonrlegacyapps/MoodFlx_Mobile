@@ -42,6 +42,7 @@ import {
   SET_SCROLLING,
   RESET_LINK_TO_COMPANY_PARAMS,
   GET_SCREENTIME_PERM,
+  GET_STANDTIME_PERM,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -137,6 +138,12 @@ export const SleepPerm = (data) => {
 export const ScreenTimePerm = (data) => {
   return {
     type: GET_SCREENTIME_PERM,
+    payload: data,
+  };
+};
+export const StandTimePerm = (data) => {
+  return {
+    type: GET_STANDTIME_PERM,
     payload: data,
   };
 };

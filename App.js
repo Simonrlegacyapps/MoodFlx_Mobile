@@ -23,6 +23,7 @@ import {
   SetShowWeeklyInsightsModal,
   SetWeeklyInsightsTimeLeft,
   SleepPerm,
+  StandTimePerm,
   UserDetail,
   UserEmail,
   WeatherPerm,
@@ -574,6 +575,16 @@ const App: () => React$Node = () => {
     let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
     let SleepP = await JSON.parse(SleepPer); 
     dispatch(SleepPerm(SleepP));
+    //Syncing Sleep Data
+    if (Platform.OS === 'ios') {
+      setSleepDataSync(dispatch, false);
+    } else if (Platform.OS === 'android') {
+      setSleepDataSync(dispatch);
+    }
+    //StandTime Permission
+    let StandTimePer = await AsyncStorage.getItem('GiveStandTimePerm');
+    let StandTimeP = await JSON.parse(StandTimePer);
+    dispatch(StandTimePerm(StandTimeP));
     //Syncing Sleep Data
     if (Platform.OS === 'ios') {
       setSleepDataSync(dispatch, false);

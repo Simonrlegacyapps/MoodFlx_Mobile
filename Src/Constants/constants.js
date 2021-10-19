@@ -3,6 +3,7 @@ export const PHOTO_URL_DEV = 'https://dev.moodflo.com/';
 export const BASE_URL_DEV_API = 'https://dev.moodflo.com/api/';
 export const BASE_URL_PRODUCTION_API = 'https://admin.moodflo.com/api/';
 import moment from 'moment';
+import {Platform} from 'react-native';
 
 export const PRIVACY_POLICY_URL = 'https://moodflo.com/privacy-policy';
 export const TERMS_OF_USE_URL = 'https://moodflo.com/terms-of-use';
@@ -49,6 +50,7 @@ export const dataTypes = {
   light: 'light',
   activity: 'activity',
   screenTime: 'screenTime',
+  standTime: 'standTime',
 };
 
 export const durationTypes = {
@@ -117,7 +119,7 @@ export const getLinkModalText = (existingOrg, newOrg) => {
 
 export const getScreensPriority = (data) => {
   // activity, screentime, LIGHT, WEATHER, sleep
-  return [
+  let x = [
     {
       name: dataTypes.activity,
       permission: data?.HealthPermission,
@@ -140,10 +142,18 @@ export const getScreensPriority = (data) => {
     },
     {
       name: dataTypes.screenTime,
-      permission: false,
+      permission: data?.ScreenTimePermission,
       priority: 5,
     },
   ];
+  if (Platform.OS === 'ios') {
+    x.push({
+      name: dataTypes.standTime,
+      permission: data?.StandTimePermission,
+      priority: 6,
+    });
+  }
+  return x;
 };
 
 export const getWeeklyInsightsAvailable = () => {
