@@ -173,7 +173,7 @@ const App: () => React$Node = () => {
 
   useEffect(() => {
     console.log("Is connected?", netInfo?.isConnected);
-    setIsConnected((netInfo.isConnected !== true));
+    setIsConnected((netInfo.isConnected === true));
   }, [netInfo]);
 
   const checkInternet = useCallback(() => {
