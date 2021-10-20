@@ -1671,6 +1671,7 @@ export default function MoodDetector({ navigation }) {
 
   const renderBottomBar = (color) => (
     <View
+      pointerEvents={isHapticsEnabled ? 'none' : 'auto'}
       style={{
         backgroundColor: color,
         width: '100%',
