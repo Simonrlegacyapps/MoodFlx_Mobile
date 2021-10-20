@@ -73,6 +73,9 @@ import Screen1 from './Src/Screens/WalkThrough/Screen1';
 import BoardingNavigation from './Src/navigator/BoardingNavigation';
 import getStore from './Src/redux';
 import {useDispatch, useSelector} from 'react-redux';
+import NoInternetModal from './Src/Components/Modals/NoInternetModal/NoInternetModal';
+import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
+
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
@@ -154,7 +157,8 @@ const App: () => React$Node = () => {
   const [linkModalText, setLinkModalText] = useState('');
   const newOrg = useRef(null);
   const isHandleDynamicLinkCalled = useRef(false);
-
+  const [isConnected, setIsConnected] = useState(true);
+  const netInfo = useNetInfo();
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
@@ -165,6 +169,19 @@ const App: () => React$Node = () => {
     return () => {
       RootNavigation.isReadyRef.current = false;
     };
+  }, []);
+
+  useEffect(() => {
+    console.log("Is connected?", netInfo?.isConnected);
+    setIsConnected((netInfo.isConnected !== true));
+  }, [netInfo]);
+
+  const checkInternet = useCallback(() => {
+    NetInfo.fetch().then(state => {
+      console.log("Connection type", state?.type);
+      console.log("Is connected?", state?.isConnected);
+      setIsConnected((state.isConnected === true));
+    });
   }, []);
 
   const linkCompany = useCallback(
@@ -833,6 +850,10 @@ const App: () => React$Node = () => {
         buttonOneText="Unlink"
         onClickButtonTwo={onLinkCancel}
         buttonTwoText="Cancel"
+      />
+      <NoInternetModal
+        modalVisible={(isConnected === false)}
+        onButtonOnePress={checkInternet}
       />
       <WeeklyInsightsProgress
         modalVisible={UserData.showWeeklyInsightsModal}
