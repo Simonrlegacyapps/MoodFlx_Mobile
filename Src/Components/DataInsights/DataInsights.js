@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect, useRef} from 'react';
+import React, {useState, useCallback, useEffect, useRef, memo} from 'react';
 import {
   View,
   Text,
@@ -77,7 +77,7 @@ const getInsightsArray = (text) => {
   return insights;
 };
 
-export default function DataInsights({
+function DataInsights({
   dailyInsights,
   weeklyInsights,
   dailySuggestion,
@@ -523,3 +523,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   }
 });
+
+export default memo(DataInsights);
