@@ -8,6 +8,7 @@
 #import "RNFBMessagingModule.h"
 #import <FirebaseMessaging.h>
 #import "RNSplashScreen.h"
+#import <GoogleMaps/GoogleMaps.h>
 // #import "FIRApp.h"
 #import <Firebase.h>
 
@@ -34,6 +35,7 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [GMSServices provideAPIKey:@"AIzaSyBe9vohgGZAmhDk65uIeyRJ1ac_j4tVfmY"];
   if ([FIRApp defaultApp] == nil) {
       [FIRApp configure];
     }

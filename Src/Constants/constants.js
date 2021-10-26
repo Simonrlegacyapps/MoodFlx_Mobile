@@ -51,6 +51,7 @@ export const dataTypes = {
   activity: 'activity',
   screenTime: 'screenTime',
   standTime: 'standTime',
+  location: 'location',
 };
 
 export const durationTypes = {
@@ -145,12 +146,17 @@ export const getScreensPriority = (data) => {
       permission: data?.ScreenTimePermission,
       priority: 5,
     },
+    {
+      name: dataTypes.location,
+      permission: data?.WeatherPermission,
+      priority: 6,
+    },
   ];
   if (Platform.OS === 'ios') {
     x.push({
       name: dataTypes.standTime,
       permission: data?.StandTimePermission,
-      priority: 6,
+      priority: 7,
     });
   }
   return x;

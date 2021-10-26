@@ -81,6 +81,7 @@ import getStore from '../../redux';
 import Constants from '../../Constants';
 import { horizontalScale } from '../../Constants/sizeChoose';
 import StandingData from '../Home/StandingData/StandingData';
+import LocationData from '../Home/LocationData/LocationData';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
@@ -1427,6 +1428,16 @@ const App = (props) => {
     } else if (type === dataTypes.standTime) {
       return (
         <StandingData
+          // key={type}
+          index={idx}
+          swiperIndex={scrollNo}
+          isMoodUpdate={isMoodUpdate}
+          MoodCount={MoodCount}
+        />
+      );
+    } else if (type === dataTypes.location) {
+      return (
+        <LocationData
           // key={type}
           index={idx}
           swiperIndex={scrollNo}

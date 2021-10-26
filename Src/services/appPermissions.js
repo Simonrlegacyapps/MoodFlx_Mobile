@@ -333,7 +333,7 @@ class MoodFloPermission {
     console.log('Location permission isGiven: ', isGiven);
     if (isGiven) {
       try {
-        await AsyncStorage.setItem('GiveWeatherPerm', 'true')
+        await AsyncStorage.setItem('GiveWeatherPerm', 'true');
         dispatch(WeatherPerm(true));
         returnFlag = true;
       } catch (error) {
