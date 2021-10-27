@@ -50,7 +50,7 @@ import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
 import { getBulbColorFromLux, getMyDeviceId } from '../../../services/commonService';
-import { getApiBaseUrl, getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import { getApiBaseUrl, getIsWeeklyPrevious, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
@@ -249,7 +249,11 @@ const LightData = ({
         Friday @ 12pm until Saturday 6pm
         */
         if (getWeeklyInsightsAvailable() === true) {
-          return PostRequestApi('getLightInsights', { ...params, "status": "weekly" });
+          return PostRequestApi('getLightInsights', {
+            ...params,
+            status: 'weekly',
+            flag: getIsWeeklyPrevious() === true ? 'previous' : 'current',
+          });
         } else {
           return new Promise((resolve, reject) => resolve(null));
         }

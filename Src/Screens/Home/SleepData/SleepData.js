@@ -40,7 +40,7 @@ import {
   fetchSleepDataForLastThirtyDays,
   getSleepDataForUpdateApi,
 } from './sleepDataService';
-import { dataTypes, getApiBaseUrl, getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getIsWeeklyPrevious, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox';
@@ -296,6 +296,7 @@ const SleepData = ({
           return PostRequestApi('getSleepInsights', {
             ...params,
             status: 'weekly',
+            flag: getIsWeeklyPrevious() === true ? 'previous' : 'current',
           });
         } else {
           return new Promise((resolve, reject) => resolve(null));

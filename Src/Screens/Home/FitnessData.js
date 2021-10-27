@@ -36,7 +36,7 @@ import PostRequestApi, {
 } from '../../apirequest/PostRequestApi';
 import DataInsights from '../../Components/DataInsights/DataInsights';
 import moment from 'moment';
-import { dataTypes, getApiBaseUrl, getWeeklyInsightsAvailable } from '../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getIsWeeklyPrevious, getWeeklyInsightsAvailable } from '../../Constants/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
 import { getFloCoins, getMyDeviceId, openHealthApp } from '../../services/commonService';
@@ -279,6 +279,7 @@ const FitnessData = ({
           return PostRequestApi('getActivityInsights', {
             ...params,
             status: 'weekly',
+            flag: getIsWeeklyPrevious() === true ? 'previous' : 'current',
           });
         } else {
           return new Promise((resolve, reject) => resolve(null));

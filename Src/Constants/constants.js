@@ -163,43 +163,42 @@ export const getScreensPriority = (data) => {
 };
 
 export const getWeeklyInsightsAvailable = () => {
-  const day = moment().day();
+  const day = moment().day() === 0 ? 7 : moment().day();
   let startTime = moment().set({
-    hour: 12,
+    hour: 2,
     minute: 0,
     second: 0,
     millisecond: 0,
   });
-  let endTime = moment().set({
-    hour: 18,
-    minute: 0,
-    second: 0,
-    millisecond: 0,
-  });
-  if (day === 5) {
-    endTime = moment().add(1, 'day').set({
-      hour: 18,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-    });
-  } else if (day === 6) {
-    startTime = moment().subtract(1, 'day').set({
-      hour: 12,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-    });
+  let endTime = moment().endOf('day');
+  if (day >= 5 || day <= 1) {
+    if (day !== 5 && (day - 5) > 0) {
+      startTime.subtract((day - 5), 'days');
+    } else if (day === 1) {
+      startTime.subtract(3, 'days');
+    }
+    if (day >= 5) {
+      endTime.add((8 - day), 'days');
+    }
+  } else {
+    return false;
   }
   if (
     !isNaN(day) &&
-    (Number(day) === 5 || Number(day) === 6) &&
     moment().isSameOrAfter(startTime) &&
     moment().isSameOrBefore(endTime)
   ) {
     return true;
   } else {
     return false;
+  }
+};
+
+export const getIsWeeklyPrevious = () => {
+  if (getWeeklyInsightsAvailable() === true && moment().day() === 1) {
+    return true;
+  } else {
+    false;
   }
 };
 
