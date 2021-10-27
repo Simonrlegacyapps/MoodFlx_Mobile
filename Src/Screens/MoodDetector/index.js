@@ -1832,7 +1832,8 @@ export default function MoodDetector({ navigation }) {
         // modalVisible={true}
         dismissModalHandler={setShowNegativeMoodModal(false)}
         emotionText={moodName}
-        onClickButtonOne={openUrl('https://findahelpline.com/')}
+        description={UserData?.negativeMoodModalData?.eap_link}
+        onClickButtonOne={openUrl(UserData?.negativeMoodModalData?.eap_text)}
         onClickButtonTwo={setShowNegativeMoodModal(false)}
       />
 

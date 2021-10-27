@@ -1,4 +1,5 @@
 import isEmpty from 'lodash.isempty';
+import {defaultNegativeMoodModalData} from '../../Constants/constants';
 import {
   COMPANY_NAME,
   FIRST_ACTION_TYPE,
@@ -43,7 +44,7 @@ import {
   RESET_LINK_TO_COMPANY_PARAMS,
   GET_SCREENTIME_PERM,
   GET_STANDTIME_PERM,
-  
+  NEGATIVE_MOOD_MODAL_DATA,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -95,6 +96,7 @@ const intializedState = {
     weeklySuggestionType: '',
   },
   isLinkToCompanyRouteParamsReset: false,
+  negativeMoodModalData: defaultNegativeMoodModalData,
 };
 
 export const First = (state = intializedState, action) => {
@@ -272,6 +274,13 @@ export const First = (state = intializedState, action) => {
     case RESET_LINK_TO_COMPANY_PARAMS:
       return Object.assign({}, state, {
         isLinkToCompanyRouteParamsReset: action.payload,
+      });
+    case NEGATIVE_MOOD_MODAL_DATA:
+      return Object.assign({}, state, {
+        negativeMoodModalData: {
+          ...state.negativeMoodModalData,
+          ...action.payload,
+        },
       });
     default:
       return state;

@@ -258,3 +258,8 @@ export const getWeeklyInsightsDaysLeft = () => {
     return Math.ceil(Number(duration));
   }
 };
+
+export const defaultNegativeMoodModalData = {
+  eap_text: 'Would you like to talk to someone?',
+  eap_link: 'https://findahelpline.com/',
+};

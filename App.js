@@ -19,6 +19,7 @@ import {
   Lat,
   Long,
   Moods,
+  SetNegativeMoodModalData,
   SetNotification,
   SetShowWeeklyInsightsModal,
   SetWeeklyInsightsTimeLeft,
@@ -61,6 +62,7 @@ import Constants from './Src/Constants';
 import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
 import {
   defaultLocation,
+  defaultNegativeMoodModalData,
   getApiBaseUrl,
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
@@ -75,6 +77,7 @@ import getStore from './Src/redux';
 import {useDispatch, useSelector} from 'react-redux';
 import NoInternetModal from './Src/Components/Modals/NoInternetModal/NoInternetModal';
 import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
+import isEmpty from 'lodash.isempty';
 
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -175,6 +178,38 @@ const App: () => React$Node = () => {
     console.log("Is connected?", netInfo?.isConnected);
     setIsConnected((netInfo.isConnected === true || netInfo.isConnected === null));
   }, [netInfo?.isConnected]);
+
+  useEffect(() => {
+    if (UserData.UserEmail && UserData.UserId) {
+      const params = {
+        // division_id: 'b13e784b-f4c5-4da4-a001-9de798eb556c',
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      };
+      console.log('eapMessageData params ----->', params);
+      PostRequestApi('eapMessageData', params)
+        .then((resp) => {
+          console.log('✅ ✅ ✅ ✅ Success eapMessageData ✅ ✅ ✅ ✅', resp?.data?.data);
+          if (resp?.data?.data) {
+            let data = {};
+            if (resp?.data?.data?.eap_text) {
+              data.eap_text = resp.data.data.eap_text;
+            }
+            if (resp?.data?.data?.eap_link) {
+              data.eap_link = resp.data.data.eap_link;
+            }
+            if (!isEmpty(data)) {
+              dispatch(SetNegativeMoodModalData(data));
+            }
+          }
+        })
+        .catch((err) => {
+          console.log('error eapMessageData', err);
+        });
+    } else if (!(UserData.UserEmail && UserData.UserId)) {
+      dispatch(SetNegativeMoodModalData(defaultNegativeMoodModalData));
+    }
+  }, [UserData.UserEmail, UserData.UserId, dispatch]);
 
   const checkInternet = useCallback(() => {
     NetInfo.fetch().then(state => {

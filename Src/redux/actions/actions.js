@@ -43,6 +43,7 @@ import {
   RESET_LINK_TO_COMPANY_PARAMS,
   GET_SCREENTIME_PERM,
   GET_STANDTIME_PERM,
+  NEGATIVE_MOOD_MODAL_DATA,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -310,6 +311,13 @@ export const SetWeatherInsights = (data) => {
 export const ResetLinkToCompanyParams = (data) => {
   return {
     type: RESET_LINK_TO_COMPANY_PARAMS,
+    payload: data,
+  };
+};
+
+export const SetNegativeMoodModalData = (data) => {
+  return {
+    type: NEGATIVE_MOOD_MODAL_DATA,
     payload: data,
   };
 };
