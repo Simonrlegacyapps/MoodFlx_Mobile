@@ -64,8 +64,6 @@ const LocationData = ({
   isMoodUpdate,
   MoodCount,
 }) => {
-  const [standTimeDuration, setStandTimeDuration] = useState(false);
-  const [graphData, setGraphData] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
   const [region, setRegion] = useState(defaultLoc);
@@ -75,63 +73,59 @@ const LocationData = ({
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
-  const fetchLocationData = useCallback(async () => {
-    GetLocation.getCurrentPosition({
-      enableHighAccuracy: false,
-      timeout: 15000,
-    })
-      .then((location) => {
-        const isIndia = isCountryIndia();
-        if (isIndia) {
-          location = {
-            latitude: Number.parseFloat(defaultLocation.latitude),
-            longitude: Number.parseFloat(defaultLocation.longitude),
-          };
-        }
-        console.log('Success', location);
-        // setlat(location.latitude);
-        dispatch(
-          SetLocation({
-            lat: location.latitude,
-            lon: location.longitude,
-          }),
-        );
-        console.log('fetchLocationData location---->', location);
-        console.log('fetchLocationData isMoodUpdate---->', isMoodUpdate);
-        if (isMoodUpdate === true) {
-          setMarkers([
-            ...markers,
-            {
-              location,
-              icon: 'anxious',
-            },
-          ]);
-        }
-        // if (UserData.lat == null || UserData.lon == null) {
-        // }
-      })
-      .catch(async (error) => {
-        let flag;
-        try {
-          flag = await AppPermissions.requestLocationPermission(dispatch);
-        } catch (e) {
-          console.log('Request Location Permission error: ', e);
-          flag = false;
-        }
-        console.log('error', error);
-      });
-  }, [dispatch]);
-
   // useEffect(() => {
   //   if (UserData.lat && UserData.lon) {
   //     console.log('LocationData lat ----', UserData?.lat);
   //     console.log('LocationData lon ----', UserData?.lon);
   //   }
   // }, [UserData.lat, UserData.lon]);
+  const getLocationDataApi = () => {
+    const params = {
+      device_id: getMyDeviceId(),
+      email: getStore?.()?.getState?.()?.First?.UserEmail,
+      user_id: getStore?.()?.getState?.()?.First?.UserId,
+      from_date: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+      to_date: moment().format('YYYY-MM-DD'),
+    };
+    PostRequestApi('getLocationContextData', params)
+      .then((data) => {
+        console.log('✅ ✅ ✅ ✅ getLocationContextData api success✅ ✅ ✅ ✅ -data---->', data?.data?.location_data);
+        if (
+          Array.isArray(data?.data?.location_data) &&
+          data.data.location_data.length > 0
+        ) {
+          let m = data.data.location_data.map((e) => {
+            return {
+              location: {
+                latitude: e?.latitude,
+                longitude: e?.longitude,
+              },
+              icon: e?.name?.toLowerCase?.(),
+            };
+          });
+          const isPropValuesEqual = (subject, target, propNames) => {
+            return propNames.every(
+              (propName) =>
+                subject?.location?.[propName] !== undefined && subject?.location?.[propName] === target?.location?.[propName]
+            );
+          };
+          const getUniqueItemsByProperties = (items) => {
+            const propNamesArray = ['latitude', 'longitude'];
+            return items.filter((item, idx, array) => {
+              return idx === array.findIndex(foundItem => isPropValuesEqual(foundItem, item, propNamesArray))
+            });
+          };
+          setMarkers([...getUniqueItemsByProperties(m)]);
+        }
+      })
+      .catch((error) => {
+        console.log('❌ ❌ ❌ ❌ Error in getLocationContextData api❌ ❌ ❌ ❌ : ', error);
+      });
+  };
 
   useEffect(() => {
     if (UserData.WeatherPermission === true) {
-      fetchLocationData();
+      getLocationDataApi();
     }
   }, [UserData.WeatherPermission]);
 
@@ -147,36 +141,13 @@ const LocationData = ({
       }
       clearTimeout(timeoutId);
     }, 400);
-    //   let Sp = await AsyncStorage.getItem('GiveSleepPerm');
-    //   let SleepP = await JSON.parse(Sp);
-    //   console.log(`SleepPerm`, SleepP);
-    //   dispatch(SleepPerm(SleepP));
   };
-
-  const ScreenDurations = [{ label: 'Day' }, { label: 'Week' }, { label: 'Month' }];
 
   const AnonymousPopUpcancelled = () => {
     setAnonymousClick(false);
   };
 
-  const getProgress = (e, totalTime = 360) => {
-    if (!isNaN(e)) {
-      return Math.ceil((Number(e) * 120) / totalTime);
-    }
-    return 0;
-  };
-
-  const getTimeInHoursMin = (e) => {
-    if (!isNaN(e)) {
-      let i = Number(e);
-      let hr = Math.floor(i / 60);
-      let min = i % 60;
-      return i > 0 ? `${hr > 0 ? `${hr}hr ` : ''}${min > 0 ? `${min}min` : ''}` : '0min';
-    }
-    return '0min';
-  };
-
-  console.log('markers --->', markers);
+  // console.log('markers --->', markers);
   return (
     <View style={styles.container}>
       <ScrollView
