@@ -58,11 +58,49 @@ const StandingData = ({
   const [graphData, setGraphData] = useState(null);
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
-  const [currentDayStandTime, setCurrentDayStandTime] = useState(0);
-  const [yesterdayStandTime, setYesterdayStandTime] = useState(0);
+  const [currentDayStandTime, setCurrentDayStandTime] = useState(-1);
+  const [yesterdayStandTime, setYesterdayStandTime] = useState(-1);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
+
+  const updateStandTimeApi = (today, yesterday) => {
+    let prevDay = moment().subtract(1, 'days');
+    const params = {
+      device_id: getMyDeviceId(),
+      email: getStore?.()?.getState?.()?.First?.UserEmail,
+      user_id: getStore?.()?.getState?.()?.First?.UserId,
+    };
+    PostRequestApi('updateStandingTime', {
+      ...params,
+      standing_data: [
+        {
+          start_date: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+          end_date: moment().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+          value: 480,
+        },
+        {
+          start_date: prevDay.startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+          end_date: prevDay.endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+          value: 600,
+        },
+      ],
+    })
+      .then((data) => {
+        console.log('✅ ✅ ✅ ✅ updateStandingTime api success✅ ✅ ✅ ✅ -data---->', data?.data);
+        return PostRequestApi('getStandingTimeReport', params);
+      })
+      .then((data) => {
+        console.log('✅ ✅ ✅ ✅ getStandingTimeReport api success✅ ✅ ✅ ✅ -data---->', data?.data?.standingData);
+        let standDataArray = Object.values(data?.data?.standingData);
+        if (Array.isArray(standDataArray) && standDataArray.length > 0) {
+          setGraphData(getStandGraphData(standDataArray));
+        }
+      })
+      .catch((error) => {
+        console.log('❌ ❌ ❌ ❌ Error in get set Standing Time DATA❌ ❌ ❌ ❌ : ', error);
+      });
+  };
 
   const fetchStandTimeData = useCallback(() => {
     if (Platform.OS !== 'ios') {
@@ -77,6 +115,8 @@ const StandingData = ({
       endDate: new Date().toISOString(), // optional; default now
     };
     AppleHealthKit.getAppleStandTime(standTimeOptions, (err, results) => {
+      let todayTime = 0;
+      let yesterdayTime = 0;
       if (err) {
         console.log('getAppleStandTime error: ', err);
       }
@@ -85,8 +125,6 @@ const StandingData = ({
         // calculateStandTimeData(results);
         if (Array.isArray(results) && results.length > 0) {
           let standTimeData = [];
-          let todayTime = 0;
-          let yesterdayTime = 0;
           results.forEach((e, idx) => {
             let formattedData = [];
             let diff = 0;
@@ -147,6 +185,7 @@ const StandingData = ({
           setYesterdayStandTime(yesterdayTime);
         }
       }
+      updateStandTimeApi(todayTime, yesterdayTime);
     });
   }, []);
 
@@ -218,210 +257,6 @@ const StandingData = ({
     //   let SleepP = await JSON.parse(Sp);
     //   console.log(`SleepPerm`, SleepP);
     //   dispatch(SleepPerm(SleepP));
-  };
-
-  const getTotalTimeInForeground = (screenTimeData) => {
-    let totalScreenTime = 0;
-    if (!screenTimeData) {
-      return totalScreenTime;
-    }
-    const keys = Object.keys(screenTimeData);
-    if (Array.isArray(keys) && keys.length > 0) {
-      totalScreenTime = screenTimeData?.[keys[0]]?.totalTime ?? 0;
-      // keys.forEach((e) => {
-      //   let screenTime = screenTimeData?.[e]?.totalTimeInForeground ?? 0;
-      //   if (!isNaN(screenTime)) {
-      //     totalScreenTime += Number(screenTime);
-      //   }
-      // });
-    }
-    // console.log('screen time in milli --->', totalScreenTime);
-    totalScreenTime = totalScreenTime > 0 ? Math.ceil((totalScreenTime / 1000) / 60) : 0;
-    // console.log('screen time in minutes --->', totalScreenTime);
-    // if (totalScreenTime === 0) {
-    //   console.log('screen time in hours --->', 0);
-    // } else {
-    //   console.log('screen time in hours --->', `${Math.floor(totalScreenTime / 60)} hours - ${totalScreenTime % 60} minutes`);
-    // }
-    return totalScreenTime;
-  };
-
-  const getDailyStats = () => {
-    let currentDayTime = 0;
-    let morning = 0;
-    let noon = 0;
-    let afternoon = 0;
-    let evening = 0;
-    let night = 0;
-    let morningSTime = moment().startOf('day').add(7, 'hours').valueOf();
-    let noonSTime = moment().startOf('day').add(11, 'hours').valueOf();
-    let afternoonSTime = moment().startOf('day').add(13, 'hours').valueOf();
-    let eveningSTime = moment().startOf('day').add(16, 'hours').valueOf();
-    let nightSTime = moment().startOf('day').add(19, 'hours').valueOf();
-    let nightETime = moment().startOf('day').add(1, 'day').add(7, 'hours').valueOf();
-    if (!UsageStats) {
-      Toast.show({
-        type: 'error',
-        text2: 'Usage Stats not available',
-        visibilityTime: 4000,
-        autoHide: true,
-      });
-      return;
-    }
-    if (!UsageStats?.getDailyStats) {
-      Toast.show({
-        type: 'error',
-        text2: 'Usage Stats queryUsageStats not available',
-        visibilityTime: 4000,
-        autoHide: true,
-      });
-      return;
-    }
-    UsageStats?.getUsageStats?.(morningSTime, noonSTime)
-      .then((data) => {
-        console.log('MORNING SCREEN TIME DATA: ', data);
-        morning = getTotalTimeInForeground(data);
-        setMorningTime(morning);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
-        }
-        return UsageStats.getUsageStats(noonSTime, afternoonSTime);
-      })
-      .then((data) => {
-        console.log('NOON SCREEN TIME DATA: ', data);
-        noon = getTotalTimeInForeground(data);
-        setNoonTime(noon);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
-        }
-        return UsageStats.getUsageStats(afternoonSTime, eveningSTime);
-      })
-      .then((data) => {
-        console.log('AFTERNOON SCREEN TIME DATA: ', data);
-        afternoon = getTotalTimeInForeground(data);
-        setAfternoonTime(afternoon);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
-        }
-        return UsageStats.getUsageStats(eveningSTime, nightSTime);
-      })
-      .then((data) => {
-        console.log('EVENING SCREEN TIME DATA: ', data);
-        evening = getTotalTimeInForeground(data);
-        setEveningTime(evening);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
-        }
-        return UsageStats.getUsageStats(nightSTime, nightETime);
-      })
-      .then((data) => {
-        console.log('NIGHT SCREEN TIME DATA: ', data);
-        night = getTotalTimeInForeground(data);
-        setNightTime(night);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
-        }
-        return UsageStats.getUsageStats(
-          moment().startOf('day').valueOf(),
-          moment().valueOf(),
-        );
-      })
-      .then((data) => {
-        console.log('CURRENT DAY SCREEN TIME DATA: ', data);
-        currentDayTime = getTotalTimeInForeground(data);
-        setCurrentDayStandTime(currentDayTime);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
-        }
-        return UsageStats.getYesterdayStats();
-      })
-      .then((data) => {
-        console.log('YESTERDAY SCREEN TIME DATA: ', data);
-        let prevDayTime = getTotalTimeInForeground(data);
-        setYesterdayStandTime(prevDayTime);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
-        }
-        let prevDay = moment().subtract(1, 'days');
-        const params = {
-          device_id: getMyDeviceId(),
-          email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
-          screen_data: [
-            {
-              time_interval: 'yesterday',
-              start_date: prevDay.clone().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
-              end_date: prevDay.clone().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
-              value: prevDayTime,
-            },
-            {
-              time_interval: 'morning',
-              start_date: moment(morningSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(noonSTime).format('YYYY-MM-DD HH:mm:ss'),
-              value: morning,
-            },
-            {
-              time_interval: 'noon',
-              start_date: moment(noonSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(afternoonSTime).format('YYYY-MM-DD HH:mm:ss'),
-              value: noon,
-            },
-            {
-              time_interval: 'afternoon',
-              start_date: moment(afternoonSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(eveningSTime).format('YYYY-MM-DD HH:mm:ss'),
-              value: afternoon,
-            },
-            {
-              time_interval: 'evening',
-              start_date: moment(eveningSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(nightSTime).format('YYYY-MM-DD HH:mm:ss'),
-              value: evening,
-            },
-            {
-              time_interval: 'night',
-              start_date: moment(nightSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(nightETime).format('YYYY-MM-DD HH:mm:ss'),
-              value: night,
-            },
-            {
-              time_interval: 'today',
-              start_date: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
-              value: currentDayTime,
-            },
-          ],
-          user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
-        };
-        console.log('updateScreenTime params --->', params);
-        return PostRequestApi('updateStandingTime', params);
-      })
-      .then((data) => {
-        console.log('✅ ✅ ✅ ✅ updateStandingTime api success✅ ✅ ✅ ✅ -data---->', data?.data);
-        const params = {
-          device_id: getMyDeviceId(),
-          email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
-          user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
-        };
-        console.log('getScreenTimeReport params --->', params);
-        return PostRequestApi('getStandingTimeReport', params);
-      })
-      .then((data) => {
-        console.log('✅ ✅ ✅ ✅ getStandingTimeReport api success✅ ✅ ✅ ✅ -data---->', data?.data);
-        let standDataArray = Object.values(data?.data?.screenData);
-        if (Array.isArray(standDataArray) && standDataArray.length > 0) {
-          setGraphData(getStandGraphData(standDataArray));
-        }
-      })
-      .catch((error) => {
-        console.log('❌ ❌ ❌ ❌ Error in getting STAND TIME DATA❌ ❌ ❌ ❌ : ', error);
-      });
   };
 
   const ScreenDurations = [{ label: 'Day' }, { label: 'Week' }, { label: 'Month' }];
@@ -514,16 +349,42 @@ const StandingData = ({
               DarkColor="#0DDE79"
               lightColor="#CFF9ED"
               Label="Today"
-              Time={getTimeInHoursMin(UserData.StandTimePermission ? currentDayStandTime : 94)}
-              value={getProgress((UserData.StandTimePermission ? currentDayStandTime : 94), 1500)}
+              Time={getTimeInHoursMin(
+                UserData.StandTimePermission
+                  ? currentDayStandTime === -1
+                    ? 0
+                    : currentDayStandTime
+                  : 94,
+              )}
+              value={getProgress(
+                UserData.StandTimePermission
+                  ? currentDayStandTime === -1
+                    ? 0
+                    : currentDayStandTime
+                  : 94,
+                1500,
+              )}
               border={true}
             />
             <ScreenCircleBar
               DarkColor="#F992BE"
               lightColor="#FEE9F2"
               Label="Yesterday"
-              Time={getTimeInHoursMin(UserData.StandTimePermission ? yesterdayStandTime : 94)}
-              value={getProgress((UserData.StandTimePermission ? yesterdayStandTime : 94), 1500)}
+              Time={getTimeInHoursMin(
+                UserData.StandTimePermission
+                  ? yesterdayStandTime === -1
+                    ? 0
+                    : yesterdayStandTime
+                  : 94,
+              )}
+              value={getProgress(
+                UserData.StandTimePermission
+                  ? yesterdayStandTime === -1
+                    ? 0
+                    : yesterdayStandTime
+                  : 94,
+                1500,
+              )}
               border={true}
             />
           </View>
