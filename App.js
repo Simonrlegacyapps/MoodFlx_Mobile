@@ -78,6 +78,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import NoInternetModal from './Src/Components/Modals/NoInternetModal/NoInternetModal';
 import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
 import isEmpty from 'lodash.isempty';
+import RNRestart from 'react-native-restart';
 
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -176,7 +177,14 @@ const App: () => React$Node = () => {
 
   useEffect(() => {
     console.log("Is connected?", netInfo?.isConnected);
-    setIsConnected((netInfo.isConnected === true || netInfo.isConnected === null));
+    setIsConnected((e) => {
+      let i = (netInfo.isConnected === true || netInfo.isConnected === null)
+      if (e === false && i === true) {
+        // Reload app to after internet comes back
+        RNRestart?.Restart?.();
+      }
+      return i;
+    });
   }, [netInfo?.isConnected]);
 
   useEffect(() => {
