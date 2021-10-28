@@ -113,7 +113,16 @@ const LocationData = ({
             const propNamesArray = ['latitude', 'longitude'];
             return items.filter((item, idx, array) => {
               return idx === array.findIndex(foundItem => isPropValuesEqual(foundItem, item, propNamesArray))
-            });
+            })?.map?.((e) => {
+                  let l = {};
+                  if (!isNaN(e?.location?.latitude)) {
+                    l.latitude = Number.parseFloat(e.location.latitude);
+                  }
+                  if (!isNaN(e?.location?.longitude)) {
+                    l.longitude = Number.parseFloat(e.location.longitude);
+                  }
+                  return {...e, location: l};
+                }) ?? [];
           };
           setMarkers([...getUniqueItemsByProperties(m)]);
         }
