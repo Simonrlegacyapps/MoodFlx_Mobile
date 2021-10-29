@@ -406,7 +406,7 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
   if (typeof negativeMoodPopupTimeStamp !== 'number') {
     return false;
   }
-  if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') >= 13) {
+  if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 13) {
   // if (moment().startOf('day').diff(moment().startOf('day').subtract(13, 'days'), 'days') < 13) {
     return false;
   }
