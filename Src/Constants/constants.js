@@ -164,12 +164,7 @@ export const getScreensPriority = (data) => {
 
 export const getWeeklyInsightsAvailable = () => {
   const day = moment().day() === 0 ? 7 : moment().day();
-  let startTime = moment().set({
-    hour: 2,
-    minute: 0,
-    second: 0,
-    millisecond: 0,
-  });
+  let startTime = moment().startOf('day');
   let endTime = moment().endOf('day');
   if (day >= 5 || day <= 1) {
     if (day !== 5 && (day - 5) > 0) {

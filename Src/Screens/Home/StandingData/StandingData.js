@@ -77,12 +77,12 @@ const StandingData = ({
         {
           start_date: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
           end_date: moment().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
-          value: 480,
+          value: today,
         },
         {
           start_date: prevDay.startOf('day').format('YYYY-MM-DD HH:mm:ss'),
           end_date: prevDay.endOf('day').format('YYYY-MM-DD HH:mm:ss'),
-          value: 600,
+          value: yesterday,
         },
       ],
     })
