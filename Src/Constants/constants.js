@@ -253,6 +253,31 @@ export const getWeeklyInsightsDaysLeft = () => {
   }
 };
 
+export const getMonthlyInsightsStartEndTime = () => {
+  let startTime = moment().endOf('month').startOf('day').subtract(4, 'days');
+  let endTime = moment().endOf('month');
+  return {startTime, endTime};
+};
+
+export const getMonthlyInsightsAvailable = () => {
+  let startTime = getMonthlyInsightsStartEndTime().startTime;
+  let endTime = getMonthlyInsightsStartEndTime().endTime;
+  if (moment().isSameOrAfter(startTime) && moment().isSameOrBefore(endTime)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const getMonthlyInsightsDaysLeft = () => {
+  if (getMonthlyInsightsAvailable() === true) {
+    return 0;
+  }
+  let startTime = getMonthlyInsightsStartEndTime().startTime;
+  const duration = moment.duration(startTime.diff(moment())).as('days');
+  return Math.ceil(Number(duration));
+};
+
 export const defaultNegativeMoodModalData = {
   eap_text: 'Would you like to talk to someone?',
   eap_link: 'https://findahelpline.com/',

@@ -21,6 +21,7 @@ import {
   Moods,
   SetNegativeMoodModalData,
   SetNotification,
+  SetShowMonthlyInsightsModal,
   SetShowWeeklyInsightsModal,
   SetWeeklyInsightsTimeLeft,
   SleepPerm,
@@ -79,6 +80,7 @@ import NoInternetModal from './Src/Components/Modals/NoInternetModal/NoInternetM
 import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
 import isEmpty from 'lodash.isempty';
 import RNRestart from 'react-native-restart';
+import MonthlyInsightsProgress from './Src/Components/Modals/MonthlyInsightsProgressModal/MonthlyInsightsProgressModal';
 
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -854,6 +856,10 @@ const App: () => React$Node = () => {
     dispatch(SetShowWeeklyInsightsModal(false));
   };
 
+  const dismissMonthlyInsightsModal = () => {
+    dispatch(SetShowMonthlyInsightsModal(false));
+  };
+
   return (
     <>
       {ShowWelcome === false ? (
@@ -902,6 +908,11 @@ const App: () => React$Node = () => {
         modalVisible={UserData.showWeeklyInsightsModal}
         verifyDone={dismissWeeklyInsightsModal}
         dismissModalHandler={dismissWeeklyInsightsModal}
+      />
+      <MonthlyInsightsProgress
+        modalVisible={UserData.showMonthlyInsightsModal}
+        verifyDone={dismissMonthlyInsightsModal}
+        dismissModalHandler={dismissMonthlyInsightsModal}
       />
     </>
   );

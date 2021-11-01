@@ -45,6 +45,7 @@ import {
   GET_SCREENTIME_PERM,
   GET_STANDTIME_PERM,
   NEGATIVE_MOOD_MODAL_DATA,
+  SHOW_MONTHLY_INSIGHTS_MODAL,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -83,6 +84,7 @@ const intializedState = {
   notification: null,
   weeklyInsightsTimeLeft: -1,
   showWeeklyInsightsModal: false,
+  showMonthlyInsightsModal: false,
   swiperIndex: 0,
   floCoins: 0,
   fitnessSyncText: '',
@@ -248,6 +250,10 @@ export const First = (state = intializedState, action) => {
     case SHOW_WEEKLY_INSIGHTS_MODAL:
       return Object.assign({}, state, {
         showWeeklyInsightsModal: action.payload,
+      });
+    case SHOW_MONTHLY_INSIGHTS_MODAL:
+      return Object.assign({}, state, {
+        showMonthlyInsightsModal: action.payload,
       });
     case SET_SWIPER_INDEX:
       return Object.assign({}, state, {

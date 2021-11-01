@@ -18,8 +18,8 @@ import {
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import {SetShowWeeklyInsightsModal} from '../../redux/actions/actions';
-import {getWeeklyInsightsAvailable} from '../../Constants/constants';
+import {SetShowMonthlyInsightsModal, SetShowWeeklyInsightsModal} from '../../redux/actions/actions';
+import {getMonthlyInsightsAvailable, getMonthlyInsightsDaysLeft, getWeeklyInsightsAvailable} from '../../Constants/constants';
 import {getMoodsArray, getMyDeviceId} from '../../services/commonService';
 import NotEnoughMoodsModal from '../Modals/NotEnoughtMoodsModal/NotEnoughMoodsModal';
 import Images from '../../Constants/Images/Images';
@@ -29,6 +29,13 @@ import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import { useSelector } from 'react-redux';
 import PostRequestApi from '../../apirequest/PostRequestApi'
 import isFunction from 'lodash.isfunction';
+import ProgressDay from './ProgressDay';
+
+const insightsDurationFlags = {
+  daily: 'daily',
+  weekly: 'weekly',
+  monthly: 'monthly',
+};
 
 const getInsightsArray = (text) => {
   let insights = [];
@@ -80,42 +87,64 @@ const getInsightsArray = (text) => {
 function DataInsights({
   dailyInsights,
   weeklyInsights,
+  monthlyInsights,
   dailySuggestion,
   dailySuggestionType,
   weeklySuggestion,
   weeklySuggestionType,
+  monthlySuggestion,
+  monthlySuggestionType,
   timeLeft,
   isPermissionGiven,
   dispatch,
   onPressInsights,
   onSync,
 }) {
-  const getIsWeeklyInsightsAvailable = (weekInsights, isPermGiven) => {
-    return (
+  const getInsightsDuration = (weekInsights, monthInsights, isPermGiven) => {
+    if (!!isPermGiven === false) {
+      return insightsDurationFlags.daily;
+    }
+    if (
+      getMonthlyInsightsAvailable() === true &&
+      !!monthlyInsights &&
+      typeof monthInsights === 'string'
+    ) {
+      return insightsDurationFlags.monthly;
+    } else if (
       getWeeklyInsightsAvailable() === true &&
       !!weekInsights &&
-      typeof weekInsights === 'string' &&
-      !!isPermGiven
-    );
+      typeof weekInsights === 'string'
+    ) {
+      return insightsDurationFlags.weekly;
+    } else {
+      return insightsDurationFlags.daily;
+    }
   };
   const [isDailyInsights, setIsDailyInsights] = useState(
     !getIsWeeklyInsightsAvailable(weeklyInsights, isPermissionGiven),
+  );
+  const [insightsDuration, setInsightsDuration] = useState(
+    getInsightsDuration(weeklyInsights, monthlyInsights, isPermissionGiven),
   );
   const [showNotEnoughMoodsModal, setShowNotEnoughMoodsModal] = useState(false);
   const [showNotEnoughData, setShowNotEnoughData] = useState(false);
   const [ShowTarget, setShowTarget] = useState(false);
   const [MoodCountData, setMoodCountData] = useState(null);
-  const prevWeeklyInsights = useRef(getIsWeeklyInsightsAvailable(weeklyInsights, isPermissionGiven));
+  const prevWeeklyInsights = useRef(
+    getInsightsDuration(weeklyInsights, monthlyInsights, isPermissionGiven),
+  );
 
   useEffect(() => {
-    const currentFlag = getIsWeeklyInsightsAvailable(weeklyInsights, isPermissionGiven);
+    const currentFlag = getInsightsDuration(
+      weeklyInsights,
+      monthlyInsights,
+      isPermissionGiven,
+    );
     if (prevWeeklyInsights.current !== currentFlag) {
-      if (prevWeeklyInsights.current === false && currentFlag === true) {
-        prevWeeklyInsights.current = true;
-        setIsDailyInsights(false);
-      }
+      prevWeeklyInsights.current = currentFlag;
+      setInsightsDuration(currentFlag);
     }
-  }, [weeklyInsights, isPermissionGiven]);
+  }, [weeklyInsights, monthlyInsights, isPermissionGiven]);
 
   const openCloseShowNotEnoughMoodsModal = useCallback((flag) => {
     const fn = () => setShowNotEnoughMoodsModal(flag);
@@ -138,7 +167,7 @@ function DataInsights({
   }, [onSync]);
 
   useEffect(() => {
-    console.log('isDailyInsights', isDailyInsights);
+    console.log('insightsDuration', insightsDuration);
     getWeekMoodData();
   }, []);
 
@@ -146,8 +175,8 @@ function DataInsights({
 
   const onPressWeeklyTab = () => {
     if (getWeeklyInsightsAvailable() === true) {
-      if (weeklyInsights) {
-        setIsDailyInsights(false);
+      if (!!weeklyInsights) {
+        setInsightsDuration(insightsDurationFlags.weekly);
       } else if (getTotalMood() < 4 || !isFunction(onSync)) {
         setShowNotEnoughMoodsModal(true);
       } else {
@@ -156,9 +185,23 @@ function DataInsights({
     } else {
       /*
        Weekly api should be called between
-       Friday @ 12pm until Saturday 6pm
+       Friday @ 12am until end of Monday
        */
       dispatch?.(SetShowWeeklyInsightsModal(true));
+    }
+  };
+
+  const onPressMonthlyTab = () => {
+    if (getMonthlyInsightsAvailable() === true) {
+      if (!!monthlyInsights) {
+        setInsightsDuration(insightsDurationFlags.monthly);
+      } else if (getTotalMood() < 16 || !isFunction(onSync)) {
+        setShowNotEnoughMoodsModal(true);
+      } else {
+        setShowNotEnoughData(true);
+      }
+    } else {
+      dispatch?.(SetShowMonthlyInsightsModal(true));
     }
   };
 
@@ -183,29 +226,22 @@ function DataInsights({
   
   }
 
-  let insightsDetails = isDailyInsights
-    ? dailyInsights
-      ? dailyInsights
-      : 'Not enough high quality data yet'
-    : weeklyInsights
-    ? weeklyInsights
-    : 'Not enough high quality data yet';
-
-  let suggestion = isDailyInsights
-    ? dailySuggestion
-      ? dailySuggestion
-      : ''
-    : weeklySuggestion
-    ? weeklySuggestion
-    : '';
-
-  let suggestionType = isDailyInsights
-    ? dailySuggestionType
-      ? dailySuggestionType
-      : ''
-    : weeklySuggestionType
-    ? weeklySuggestionType
-    : '';
+  let insightsDetails = dailyInsights;
+  let suggestion = dailySuggestion;
+  let suggestionType = dailySuggestionType;
+  if (insightsDuration === insightsDurationFlags.daily) {
+    insightsDetails = !!dailyInsights === true ? dailyInsights : 'Not enough high quality data yet';
+    suggestion = !!dailySuggestion === true ? dailySuggestion : '';
+    suggestionType = !!dailySuggestionType === true ? dailySuggestionType : '';
+  } else if (insightsDuration === insightsDurationFlags.weekly) {
+    insightsDetails = !!weeklyInsights === true ? weeklyInsights : 'Not enough high quality data yet';
+    suggestion = !!weeklySuggestion === true ? weeklySuggestion : '';
+    suggestionType = !!weeklySuggestionType === true ? weeklySuggestionType : '';
+  } else if (insightsDuration === insightsDurationFlags.monthly) {
+    insightsDetails = !!monthlyInsights === true ? monthlyInsights : 'Not enough high quality data yet';
+    suggestion = !!monthlySuggestion === true ? monthlySuggestion : '';
+    suggestionType = !!monthlySuggestionType === true ? monthlySuggestionType : '';
+  }
 
   let insightsArray = getInsightsArray(insightsDetails);
 
@@ -213,41 +249,19 @@ function DataInsights({
     return null;
   }
 
-  const ProgressDay=({label, color, label2})=>{
-    return(
-      <View
-          style={styles.progressView}>
-          <Text style={{fontSize: 16, position: 'absolute', left: -30}}>{label}</Text>
-          <ProgressBar
-            dot1={true}
-            dot2={true}
-            dot3={true}
-            dot4={true}
-            progress={((label2 > 3 ? 3 : label2)/3)*100}
-            MoodCount={2}
-            height={8}
-            backgroundColor={color}
-          />
-          <Text style={{fontSize: 16, position: 'absolute', right: -40}}>
-            {label2}/3
-          </Text>
-        </View>
-    )
-  }
-
-  const getTotalMood = ()=>{
+  const getTotalMood = () => {
     let total = 0;
     let moodCountData = MoodCountData;
     // setMoodCountData((e) => {
     //   moodCountData = e;
     //   return e;
     // });
-    for(let i in moodCountData){
-      total = total + moodCountData[i].mood_count
-      console.log(`total`, total)
+    for (let i in moodCountData) {
+      total = total + moodCountData[i].mood_count;
+      console.log(`total`, total);
     }
-    return total
-  }
+    return total;
+  };
 
   // console.log(`MoodCountData`, MoodCountData)
 
@@ -257,14 +271,14 @@ function DataInsights({
         <View style={styles.tabHeader}>
           <TouchableOpacity
             style={
-              isDailyInsights
+              insightsDuration === insightsDurationFlags.daily
                 ? styles.activeTabHeader
                 : styles.inactiveTabHeader
             }
             onPress={() => setIsDailyInsights(true)}>
             <Text
               style={
-                isDailyInsights
+                insightsDuration === insightsDurationFlags.daily
                   ? styles.activeTabHeaderText
                   : styles.inactiveTabHeaderText
               }>
@@ -274,7 +288,7 @@ function DataInsights({
           <TouchableOpacity
             // disabled={weeklyInsights ? false : true}
             style={[
-              !isDailyInsights
+              insightsDuration === insightsDurationFlags.weekly
                 ? styles.activeTabHeader
                 : styles.inactiveTabHeader,
               { marginLeft: horizontalScale(10) },
@@ -282,11 +296,11 @@ function DataInsights({
             onPress={onPressWeeklyTab}>
             <Text
               style={
-                !isDailyInsights
+                insightsDuration === insightsDurationFlags.weekly
                   ? styles.activeTabHeaderText
                   : styles.inactiveTabHeaderText
               }>
-              THIS WEEK
+              WEEKLY
             </Text>
           </TouchableOpacity>
           {getWeeklyInsightsAvailable() !== true &&
@@ -300,6 +314,46 @@ function DataInsights({
                   padding={1}
                   width={2.5}
                   fill={(timeLeft / 5) * 100}
+                  rotation={0}
+                  tintColor="#7265E3"
+                  lineCap={'round'}
+                  backgroundColor="#CFF9ED">
+                  {(fill) => (
+                    <Text allowFontScaling={false} style={styles.progressText}>
+                      {timeLeft}
+                    </Text>
+                  )}
+                </AnimatedCircularProgress>
+              </Pressable>
+            )}
+          <TouchableOpacity
+            // disabled={weeklyInsights ? false : true}
+            style={[
+              insightsDuration === insightsDurationFlags.monthly
+                ? styles.activeTabHeader
+                : styles.inactiveTabHeader,
+              { marginLeft: horizontalScale(10) },
+            ]}
+            onPress={onPressMonthlyTab}>
+            <Text
+              style={
+                insightsDuration === insightsDurationFlags.monthly
+                  ? styles.activeTabHeaderText
+                  : styles.inactiveTabHeaderText
+              }>
+              MONTHLY
+            </Text>
+          </TouchableOpacity>
+          {getMonthlyInsightsAvailable() !== true &&
+            getMonthlyInsightsDaysLeft() !== 0 && (
+              <Pressable onPress={onPressMonthlyTab}>
+                <AnimatedCircularProgress
+                  duration={900}
+                  arcSweepAngle={360}
+                  size={horizontalScale(28)}
+                  padding={1}
+                  width={2.5}
+                  fill={(getMonthlyInsightsDaysLeft() / 5) * 100}
                   rotation={0}
                   tintColor="#7265E3"
                   lineCap={'round'}
@@ -361,18 +415,20 @@ function DataInsights({
             2/3
           </Text>
         </View> */}
-        {ShowTarget && <>
-        <ProgressDay color={'#6FD691'} label={"M"} label2={MoodCountData[1].mood_count}  progress={MoodCountData[0].mood_count}/>
-        <View style={styles.borderLine} />
-        <ProgressDay color={'#B88DCC'} label={"T"} label2={MoodCountData[2].mood_count} progress={MoodCountData[1].mood_count}/>
-        <View style={styles.borderLine} />
-        <ProgressDay color={'#4C5F79'} label={"W"} label2={MoodCountData[3].mood_count} progress={MoodCountData[2].mood_count}/>
-        <View style={styles.borderLine} />
-        <ProgressDay color={'#7265E3'} label={"T"} label2={MoodCountData[4].mood_count} progress={MoodCountData[3].mood_count}/>
-        <View style={styles.borderLine} />
-        <ProgressDay color={'#7FE3F0'} label={"F"} label2={MoodCountData[5].mood_count} progress={MoodCountData[4].mood_count}/>
-        {/* <View style={styles.borderLine} /> */}
-        </>}
+        {ShowTarget && (
+          <>
+            <ProgressDay color={'#6FD691'} label={"M"} label2={MoodCountData[1].mood_count} progress={MoodCountData[0].mood_count} />
+            <View style={styles.borderLine} />
+            <ProgressDay color={'#B88DCC'} label={"T"} label2={MoodCountData[2].mood_count} progress={MoodCountData[1].mood_count} />
+            <View style={styles.borderLine} />
+            <ProgressDay color={'#4C5F79'} label={"W"} label2={MoodCountData[3].mood_count} progress={MoodCountData[2].mood_count} />
+            <View style={styles.borderLine} />
+            <ProgressDay color={'#7265E3'} label={"T"} label2={MoodCountData[4].mood_count} progress={MoodCountData[3].mood_count} />
+            <View style={styles.borderLine} />
+            <ProgressDay color={'#7FE3F0'} label={"F"} label2={MoodCountData[5].mood_count} progress={MoodCountData[4].mood_count} />
+            {/* <View style={styles.borderLine} /> */}
+          </>
+        )}
 
         {suggestion ? (
           <View style={styles.suggestionView}>
@@ -395,15 +451,27 @@ function DataInsights({
         dismissModalHandler={openCloseShowNotEnoughMoodsModal(false)}
         image={Images.SadButRelievedFaceImg}
         textOne="Damn... not enough moods"
-        textTwo="Try input your mood at least 3 times per week to unlock this"
-        buttonOneText="Next Week!"
+        textTwo={
+          insightsDuration === insightsDurationFlags.weekly
+            ? 'Try input your mood at least 3 times per week to unlock this'
+            : 'Try input your mood at least 16 times per month to unlock this'
+        }
+        buttonOneText={
+          insightsDuration === insightsDurationFlags.weekly
+            ? 'Next Week!'
+            : 'Next Month!'
+        }
         onButtonOnePress={openCloseShowNotEnoughMoodsModal(false)}
       />
       <NotEnoughMoodsModal
         modalVisible={showNotEnoughData}
         dismissModalHandler={openCloseShowNotEnoughDataModal(false)}
         image={Images.SadButRelievedFaceImg}
-        textOne="Want to see your weekly insights?"
+        textOne={
+          insightsDuration === insightsDurationFlags.weekly
+            ? 'Want to see your weekly insights?'
+            : 'Want to see your monthly insights?'
+        }
         textTwo="Sync your data to find out"
         buttonOneText="Sync"
         onButtonOnePress={onSyncButtonClick}
@@ -498,13 +566,12 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#7265E3',
   } ,
-  progressView:{
+  progressView: {
     width: '50%',
     justifyContent: 'center',
     alignSelf: 'center',
     marginVertical: 5,
     height: 40,
-
   },
   borderLine:{height: 1, width: '75%', backgroundColor: '#D6D6D6'},
   TargetView:{

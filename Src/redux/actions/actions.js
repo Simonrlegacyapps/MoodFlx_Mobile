@@ -44,6 +44,7 @@ import {
   GET_SCREENTIME_PERM,
   GET_STANDTIME_PERM,
   NEGATIVE_MOOD_MODAL_DATA,
+  SHOW_MONTHLY_INSIGHTS_MODAL,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -269,6 +270,13 @@ export const SetWeeklyInsightsTimeLeft = (data) => {
 export const SetShowWeeklyInsightsModal = (data) => {
   return {
     type: SHOW_WEEKLY_INSIGHTS_MODAL,
+    payload: data,
+  };
+};
+
+export const SetShowMonthlyInsightsModal = (data) => {
+  return {
+    type: SHOW_MONTHLY_INSIGHTS_MODAL,
     payload: data,
   };
 };
