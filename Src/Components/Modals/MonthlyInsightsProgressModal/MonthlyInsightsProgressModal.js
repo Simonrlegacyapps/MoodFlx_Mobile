@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { MonthlyInsightsProgressImage } from '../../../../assets/svg/weeklyInsightsProgress';
+import { MonthlyInsightsProgressImage } from '../../../../assets/svg/monthlyInsightsProgress';
 import { getMonthlyInsightsDaysLeft, getMonthlyInsightsStartEndTime } from '../../../Constants/constants';
 import {RubikMedium, RubikRegular} from '../../../Constants/fonts/Fonts';
 import { getFontSize, horizontalScale } from '../../../Constants/sizeChoose';

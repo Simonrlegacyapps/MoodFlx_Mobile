@@ -164,25 +164,7 @@ export const getScreensPriority = (data) => {
 
 export const getWeeklyInsightsAvailable = () => {
   const day = moment().day() === 0 ? 7 : moment().day();
-  let startTime = moment().startOf('day');
-  let endTime = moment().endOf('day');
   if (day >= 5 || day <= 1) {
-    if (day !== 5 && (day - 5) > 0) {
-      startTime.subtract((day - 5), 'days');
-    } else if (day === 1) {
-      startTime.subtract(3, 'days');
-    }
-    if (day >= 5) {
-      endTime.add((8 - day), 'days');
-    }
-  } else {
-    return false;
-  }
-  if (
-    !isNaN(day) &&
-    moment().isSameOrAfter(startTime) &&
-    moment().isSameOrBefore(endTime)
-  ) {
     return true;
   } else {
     return false;
@@ -198,58 +180,11 @@ export const getIsWeeklyPrevious = () => {
 };
 
 export const getWeeklyInsightsDaysLeft = () => {
-  const day = moment().day();
-  let startTime = moment().set({
-    hour: 12,
-    minute: 0,
-    second: 0,
-    millisecond: 0,
-  });
-  let endTime = moment().set({
-    hour: 18,
-    minute: 0,
-    second: 0,
-    millisecond: 0,
-  });
-  if (day === 5) {
-    endTime = moment().add(1, 'day').set({
-      hour: 18,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-    });
-  } else if (day === 6) {
-    startTime = moment().subtract(1, 'day').set({
-      hour: 12,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-    });
-  }
-  if (getWeeklyInsightsAvailable() === true) {
+  const day = moment().day() === 0 ? 7 : moment().day();
+  if (day >= 5 || day <= 1) {
     return 0;
   } else {
-    if (day <= 5) {
-      startTime = moment()
-        .add(5 - day, 'day')
-        .set({
-          hour: 12,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-    } else {
-      startTime = moment()
-        .add(7 - day + 5, 'day')
-        .set({
-          hour: 12,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-        });
-    }
-    const duration = moment.duration(startTime.diff(moment())).as('days');
-    return Math.ceil(Number(duration));
+    return (5 - day);
   }
 };
 
@@ -274,8 +209,7 @@ export const getMonthlyInsightsDaysLeft = () => {
     return 0;
   }
   let startTime = getMonthlyInsightsStartEndTime().startTime;
-  const duration = moment.duration(startTime.diff(moment())).as('days');
-  return Math.ceil(Number(duration));
+  return (startTime.date() - moment().date());
 };
 
 export const defaultNegativeMoodModalData = {

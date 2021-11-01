@@ -19,7 +19,7 @@ const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {SetShowMonthlyInsightsModal, SetShowWeeklyInsightsModal} from '../../redux/actions/actions';
-import {getMonthlyInsightsAvailable, getMonthlyInsightsDaysLeft, getWeeklyInsightsAvailable} from '../../Constants/constants';
+import {getMonthlyInsightsAvailable, getMonthlyInsightsDaysLeft, getMonthlyInsightsStartEndTime, getWeeklyInsightsAvailable} from '../../Constants/constants';
 import {getMoodsArray, getMyDeviceId} from '../../services/commonService';
 import NotEnoughMoodsModal from '../Modals/NotEnoughtMoodsModal/NotEnoughMoodsModal';
 import Images from '../../Constants/Images/Images';
@@ -120,9 +120,6 @@ function DataInsights({
       return insightsDurationFlags.daily;
     }
   };
-  const [isDailyInsights, setIsDailyInsights] = useState(
-    !getIsWeeklyInsightsAvailable(weeklyInsights, isPermissionGiven),
-  );
   const [insightsDuration, setInsightsDuration] = useState(
     getInsightsDuration(weeklyInsights, monthlyInsights, isPermissionGiven),
   );
@@ -130,6 +127,7 @@ function DataInsights({
   const [showNotEnoughData, setShowNotEnoughData] = useState(false);
   const [ShowTarget, setShowTarget] = useState(false);
   const [MoodCountData, setMoodCountData] = useState(null);
+  const [modalDuration, setModalDuration] = useState(insightsDurationFlags.weekly);
   const prevWeeklyInsights = useRef(
     getInsightsDuration(weeklyInsights, monthlyInsights, isPermissionGiven),
   );
@@ -175,6 +173,7 @@ function DataInsights({
 
   const onPressWeeklyTab = () => {
     if (getWeeklyInsightsAvailable() === true) {
+      setModalDuration(insightsDurationFlags.weekly);
       if (!!weeklyInsights) {
         setInsightsDuration(insightsDurationFlags.weekly);
       } else if (getTotalMood() < 4 || !isFunction(onSync)) {
@@ -193,6 +192,7 @@ function DataInsights({
 
   const onPressMonthlyTab = () => {
     if (getMonthlyInsightsAvailable() === true) {
+      setModalDuration(insightsDurationFlags.monthly);
       if (!!monthlyInsights) {
         setInsightsDuration(insightsDurationFlags.monthly);
       } else if (getTotalMood() < 16 || !isFunction(onSync)) {
@@ -353,14 +353,14 @@ function DataInsights({
                   size={horizontalScale(28)}
                   padding={1}
                   width={2.5}
-                  fill={(getMonthlyInsightsDaysLeft() / 5) * 100}
+                  fill={(getMonthlyInsightsDaysLeft() / getMonthlyInsightsStartEndTime().startTime.date()) * 100}
                   rotation={0}
                   tintColor="#7265E3"
                   lineCap={'round'}
                   backgroundColor="#CFF9ED">
                   {(fill) => (
-                    <Text allowFontScaling={false} style={styles.progressText}>
-                      {timeLeft}
+                    <Text allowFontScaling={false} style={styles.monthlyProgressText}>
+                      {getMonthlyInsightsDaysLeft()}
                     </Text>
                   )}
                 </AnimatedCircularProgress>
@@ -386,8 +386,10 @@ function DataInsights({
             })}
           </Text>
         </Pressable>
-         {!isDailyInsights &&  
-        <TouchableOpacity activeOpacity={0.7} onPress={() => setShowTarget((e) => !e)}
+        {insightsDuration === insightsDurationFlags.weekly && (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => setShowTarget((e) => !e)}
           style={styles.TargetView}>
           <View
             style={styles.targetSubView}>
@@ -399,7 +401,8 @@ function DataInsights({
               {getTotalMood()}/15 Mood Targets
             </Text>
           </View>
-        </TouchableOpacity>}
+        </TouchableOpacity>
+        )}
 
         {/* <View
           style={styles.progressView}>
@@ -457,7 +460,7 @@ function DataInsights({
             : 'Try input your mood at least 16 times per month to unlock this'
         }
         buttonOneText={
-          insightsDuration === insightsDurationFlags.weekly
+          modalDuration === insightsDurationFlags.weekly
             ? 'Next Week!'
             : 'Next Month!'
         }
@@ -468,7 +471,7 @@ function DataInsights({
         dismissModalHandler={openCloseShowNotEnoughDataModal(false)}
         image={Images.SadButRelievedFaceImg}
         textOne={
-          insightsDuration === insightsDurationFlags.weekly
+          modalDuration === insightsDurationFlags.weekly
             ? 'Want to see your weekly insights?'
             : 'Want to see your monthly insights?'
         }
@@ -565,7 +568,12 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(18),
     fontFamily: RubikMedium,
     color: '#7265E3',
-  } ,
+  },
+  monthlyProgressText: {
+    fontSize: getFontSize(13),
+    fontFamily: RubikMedium,
+    color: '#7265E3',
+  },
   progressView: {
     width: '50%',
     justifyContent: 'center',
