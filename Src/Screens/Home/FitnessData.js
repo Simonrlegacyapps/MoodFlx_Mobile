@@ -220,7 +220,7 @@ const FitnessData = ({
   };
 
   const getInsights = () => {
-    setskeleton(true)
+    setskeleton(true);
     const deviceId = getMyDeviceId();
     const store = getStore?.()?.getState?.();
     const params = {
@@ -271,7 +271,6 @@ const FitnessData = ({
         }
       })
       .then((res) => {
-        setskeleton(false)
         console.log('getActivityInsights weekly res: ', res?.data);
         let weeklyInsightsPayload = {};
         // console.log('getActivityInsights weeklyInsights: ', res?.data?.insights);
@@ -329,7 +328,7 @@ const FitnessData = ({
         });
       })
       .catch(function (error) {
-        setskeleton(false)
+        setskeleton(false);
         console.log('❌ ❌ ❌ ❌ Error Get Activity Insights ❌ ❌ ❌ ❌', error);
       });
   };
@@ -535,23 +534,25 @@ const FitnessData = ({
 
         <View style={styles.subViewTwo}>
           {(Loading || skeleton) && <View style={styles.activityIndicator}><ActivityIndicator color='#9889F9' size='large' /></View>}
-          {(Loading || skeleton) && <Skeleton/>}
-          <DataInsights
-            dailyInsights={!UserData.HealthPermission ? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
-            onPressInsights={insights?.dailyInsights.includes('permissions') ? openHealthApp : undefined}
-            weeklyInsights={!UserData.HealthPermission ? "Your weekly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.weeklyInsights}
-            dailySuggestion={!UserData.HealthPermission ? "Try take a 20 min walk during lunch - 1,800 steps" : insights?.dailySuggestion}
-            dailySuggestionType={!UserData.HealthPermission ? "warning" : insights?.dailySuggestionType}
-            weeklySuggestion={!UserData.HealthPermission ? "The more steps you take the more energy you have" : insights?.weeklySuggestion}
-            weeklySuggestionType={!UserData.HealthPermission ? "warning" : insights?.weeklySuggestionType}
-            monthlyInsights={!UserData.HealthPermission ? "Your monthly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.monthlyInsights}
-            monthlySuggestion={!UserData.HealthPermission ? "The more steps you take the more energy you have" : insights?.monthlySuggestion}
-            monthlySuggestionType={!UserData.HealthPermission ? "warning" : insights?.monthlySuggestionType}
-            timeLeft={UserData?.weeklyInsightsTimeLeft}
-            isPermissionGiven={UserData.HealthPermission}
-            dispatch={dispatch}
-            onSync={onSync}
-          />
+          {(skeleton) && <Skeleton/>}
+          {skeleton === false && (
+            <DataInsights
+              dailyInsights={!UserData.HealthPermission ? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
+              onPressInsights={insights?.dailyInsights.includes('permissions') ? openHealthApp : undefined}
+              weeklyInsights={!UserData.HealthPermission ? "Your weekly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.weeklyInsights}
+              dailySuggestion={!UserData.HealthPermission ? "Try take a 20 min walk during lunch - 1,800 steps" : insights?.dailySuggestion}
+              dailySuggestionType={!UserData.HealthPermission ? "warning" : insights?.dailySuggestionType}
+              weeklySuggestion={!UserData.HealthPermission ? "The more steps you take the more energy you have" : insights?.weeklySuggestion}
+              weeklySuggestionType={!UserData.HealthPermission ? "warning" : insights?.weeklySuggestionType}
+              monthlyInsights={!UserData.HealthPermission ? "Your monthly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.monthlyInsights}
+              monthlySuggestion={!UserData.HealthPermission ? "The more steps you take the more energy you have" : insights?.monthlySuggestion}
+              monthlySuggestionType={!UserData.HealthPermission ? "warning" : insights?.monthlySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={UserData.HealthPermission}
+              dispatch={dispatch}
+              onSync={onSync}
+            />
+          )}
           {/* {!UserData.HealthPermission ? (
             <View
               style={{

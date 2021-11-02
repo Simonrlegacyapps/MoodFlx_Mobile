@@ -245,7 +245,6 @@ const LightData = ({
         }
       })
       .then((res) => {
-        setskeleton(false);
         console.log('✅ ✅ ✅ ✅  getLightInsights weekly res ✅ ✅ ✅ ✅ : ', res?.data);
         let weeklyInsightsPayload = {};
         console.log('weeklyInsights: ', res?.data?.insights);
@@ -466,20 +465,22 @@ const LightData = ({
         </View> */}
         {skeleton && <Skeleton />}
         <View style={styles.subViewTwo}>
-          <DataInsights
-            dailyInsights={insights?.dailyInsights}
-            weeklyInsights={insights?.weeklyInsights}
-            dailySuggestion={insights?.dailySuggestion}
-            dailySuggestionType={insights?.dailySuggestionType}
-            weeklySuggestion={insights?.weeklySuggestion}
-            weeklySuggestionType={insights?.weeklySuggestionType}
-            monthlyInsights={insights?.monthlyInsights}
-            monthlySuggestion={insights?.monthlySuggestion}
-            monthlySuggestionType={insights?.monthlySuggestionType}
-            timeLeft={UserData?.weeklyInsightsTimeLeft}
-            isPermissionGiven={true}
-            dispatch={dispatch}
-          />
+          {skeleton === false && (
+            <DataInsights
+              dailyInsights={insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={insights?.dailySuggestion}
+              dailySuggestionType={insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+              monthlyInsights={insights?.monthlyInsights}
+              monthlySuggestion={insights?.monthlySuggestion}
+              monthlySuggestionType={insights?.monthlySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={true}
+              dispatch={dispatch}
+            />
+          )}
           {/* <View
             style={{
               flex: 1,
