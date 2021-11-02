@@ -43,6 +43,7 @@ import getStore from '../../../redux';
 import {ScreenTimePerm} from '../../../redux/actions/actions';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import {getMyDeviceId} from '../../../services/commonService';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -181,6 +182,18 @@ const ScreenData = ({
     //   let SleepP = await JSON.parse(Sp);
     //   console.log(`SleepPerm`, SleepP);
     //   dispatch(SleepPerm(SleepP));
+  };
+
+  const setScreenTimePermission = (v) => {
+    let flag = v === true;
+    AsyncStorage.setItem('GiveScreenTimePerm', JSON.stringify(flag))
+      .then((e) => {
+        console.log('GiveScreenTimePerm dispatch --->', flag);
+        dispatch(ScreenTimePerm(flag));
+      })
+      .catch((e) => {
+        console.log('Error AsyncStorage setItem GiveScreenTimePerm --->', e);
+      });
   };
 
   const requestUsageStatsPermission = () => {
@@ -334,8 +347,9 @@ const ScreenData = ({
         morning = getTotalTimeInForeground(data);
         setMorningTime(morning);
         const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
+        console.log('screenTimePermission --->', screenTimePermission);
+        if (screenTimePermission !== true && !isEmpty(data)) {
+          setScreenTimePermission(true);
         }
         return UsageStats.getUsageStats(noonSTime, afternoonSTime);
       })
@@ -344,8 +358,8 @@ const ScreenData = ({
         noon = getTotalTimeInForeground(data);
         setNoonTime(noon);
         const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
+        if (screenTimePermission !== true && !isEmpty(data)) {
+          setScreenTimePermission(true);
         }
         return UsageStats.getUsageStats(afternoonSTime, eveningSTime);
       })
@@ -354,8 +368,8 @@ const ScreenData = ({
         afternoon = getTotalTimeInForeground(data);
         setAfternoonTime(afternoon);
         const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
+        if (screenTimePermission !== true && !isEmpty(data)) {
+          setScreenTimePermission(true);
         }
         return UsageStats.getUsageStats(eveningSTime, nightSTime);
       })
@@ -364,8 +378,8 @@ const ScreenData = ({
         evening = getTotalTimeInForeground(data);
         setEveningTime(evening);
         const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
+        if (screenTimePermission !== true && !isEmpty(data)) {
+          setScreenTimePermission(true);
         }
         return UsageStats.getUsageStats(nightSTime, nightETime);
       })
@@ -374,8 +388,8 @@ const ScreenData = ({
         night = getTotalTimeInForeground(data);
         setNightTime(night);
         const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
+        if (screenTimePermission !== true && !isEmpty(data)) {
+          setScreenTimePermission(true);
         }
         return UsageStats.getUsageStats(
           moment().startOf('day').valueOf(),
@@ -387,8 +401,8 @@ const ScreenData = ({
         currentDayTime = getTotalTimeInForeground(data);
         setCurrentDayScreenTime(currentDayTime);
         const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
+        if (screenTimePermission !== true && !isEmpty(data)) {
+          setScreenTimePermission(true);
         }
         return UsageStats.getYesterdayStats();
       })
@@ -397,8 +411,8 @@ const ScreenData = ({
         let prevDayTime = getTotalTimeInForeground(data);
         setYesterdayScreenTime(prevDayTime);
         const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission === false && !isEmpty(data)) {
-          dispatch(ScreenTimePerm(true));
+        if (screenTimePermission !== true && !isEmpty(data)) {
+          setScreenTimePermission(true);
         }
         let prevDay = moment().subtract(1, 'days');
         const params = {

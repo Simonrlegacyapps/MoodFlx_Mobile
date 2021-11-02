@@ -71,11 +71,31 @@ const MicScreen = ({navigation}) => {
   }, []);
 
   const getQuestions = async () => {
-    let UserId = await AsyncStorage.getItem('UserId');
-    let Id = await JSON.parse(UserId);
+    let UserId = '';
+    let Id = '';
+    let p = '';
+    let e = '';
+    try {
+      UserId = await AsyncStorage.getItem('UserId');
+    } catch (e) {
+      console.log('Error in AsyncStorage get UserId --->', e);
+    }
+    try {
+      Id = await JSON.parse(UserId);
+    } catch (e) {
+      console.log('Error in Json parse UserId --->', e);
+    }
+    try {
+      p = await AsyncStorage.getItem('Email');
+    } catch (e) {
+      console.log('Error in AsyncStorage get Email --->', e);
+    }
+    try {
+      e = await JSON.parse(p);
+    } catch (e) {
+      console.log('Error in Json parse Email --->', e);
+    }
     dispatch(GetUserId(Id));
-    let p = await AsyncStorage.getItem('Email');
-    let e = await JSON.parse(p);
     console.log(`e`, e);
     dispatch(UserEmail(e));
     if (!(e && Id)) {
@@ -83,11 +103,16 @@ const MicScreen = ({navigation}) => {
       return false;
     }
     const deviceId = getMyDeviceId();
-    var data = JSON.stringify({
+    // var data = JSON.stringify({
+    //   device_id: deviceId,
+    //   email: e,
+    //   user_id: Id,
+    // });
+    let data = {
       device_id: deviceId,
       email: e,
       user_id: Id,
-    });
+    };
     console.log(`data of questions`, data);
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -95,7 +120,7 @@ const MicScreen = ({navigation}) => {
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
-      body: data,
+      body: JSON.stringify(data),
       redirect: 'follow',
     };
     setLoading(true);
@@ -110,32 +135,29 @@ const MicScreen = ({navigation}) => {
     )
       .then(async (result) => {
         // console.log(
-        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   '✅ ✅ ✅ ✅ Mic Screen Success Get Staff User Data ✅ ✅ ✅ ✅',
         //   result?.userData
         // );
-        if (result?.userData?.status !== 2) {
-          return fetch(`${getApiBaseUrl()}getQuestions`, requestOptions);
-        } else {
-          requestOptions.body = JSON.stringify({
-            device_id: deviceId,
+        if (result?.userData?.status === 2) {
+          data = {
+            ...data,
             email: '',
             user_id: '',
-          });
-          return fetch(`${getApiBaseUrl()}getQuestions`, requestOptions);
+          };
         }
+        return axios.post(`${getApiBaseUrl()}getQuestions`, data);
       })
-      .then(async (result) => result.json())
+      // .then(async (result) => result.json())
       .then(async (result) => {
-        if (result) {
-          console.log(' ✅ ✅ ✅ ✅ Success Get Questions✅ ✅ ✅ ✅ ', result);
-          if (result?.questions) {
-            await setquestions(result?.questions);
-          }
-          setLoading(false);
+        console.log(' ✅ ✅ ✅ ✅ Success Get Questions✅ ✅ ✅ ✅ ', result?.data);
+        if (result?.data?.questions) {
+          await setquestions(result.data.questions);
         }
+        setLoading(false);
       })
       .catch(function (error) {
         console.log('❌❌❌❌Fail Get Questions❌❌❌❌', error, data);
+        setLoading(false);
       });
   };
 

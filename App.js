@@ -19,6 +19,7 @@ import {
   Lat,
   Long,
   Moods,
+  ScreenTimePerm,
   SetNegativeMoodModalData,
   SetNotification,
   SetShowMonthlyInsightsModal,
@@ -647,6 +648,11 @@ const App: () => React$Node = () => {
     let StandTimePer = await AsyncStorage.getItem('GiveStandTimePerm');
     let StandTimeP = await JSON.parse(StandTimePer);
     dispatch(StandTimePerm(StandTimeP));
+
+    //ScreenTime Permission
+    let ScreenTimePer = await AsyncStorage.getItem('GiveScreenTimePerm');
+    let screenTimeP = await JSON.parse(ScreenTimePer);
+    dispatch(ScreenTimePerm(screenTimeP));
     //Syncing Sleep Data
     if (Platform.OS === 'ios') {
       setSleepDataSync(dispatch, false);
