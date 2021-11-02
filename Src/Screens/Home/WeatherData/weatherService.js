@@ -4,6 +4,7 @@ import {
   defaultLocation,
   getApiBaseUrl,
   getIsWeeklyPrevious,
+  getMonthlyInsightsAvailable,
   getWeeklyInsightsAvailable,
   isCountryIndia,
   weatherApiDataTypes,
@@ -88,6 +89,36 @@ export function callWeatherInsightsApi(reset) {
           ? res.data.insights.message2Type
           : '';
       store?.dispatch?.(SetWeatherInsights(weeklyInsightsPayload));
+      if (getMonthlyInsightsAvailable() === true) {
+        return PostRequestApi('getWeatherInsights', {
+          ...params,
+          status: 'monthly',
+          flag: 'current',
+        });
+      } else {
+        return new Promise((resolve, reject) => resolve(null));
+      }
+    })
+    .then((res) => {
+      // console.log('getSleepInsights weekly res: ', res);
+      let monthlyInsightsPayload = {};
+      console.log('✅ ✅ ✅ ✅getWeatherInsights monthly success✅ ✅ ✅ ✅: ', res?.data);
+      monthlyInsightsPayload.monthlyInsights =
+        !!res?.data?.insights?.message1 &&
+        typeof res.data.insights.message1 === 'string'
+          ? res.data.insights.message1
+          : '';
+      monthlyInsightsPayload.monthlySuggestion =
+        !!res?.data?.insights?.message2 &&
+        typeof res.data.insights.message2 === 'string'
+          ? res.data.insights.message2
+          : '';
+      monthlyInsightsPayload.monthlySuggestionType =
+        !!res?.data?.insights?.message2Type &&
+        res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+          ? res.data.insights.message2Type
+          : '';
+      store?.dispatch?.(SetWeatherInsights(monthlyInsightsPayload));
     })
     .catch(function (error) {
       console.log(
