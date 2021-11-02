@@ -87,11 +87,11 @@ const getInsightsArray = (text) => {
 function DataInsights({
   dailyInsights,
   weeklyInsights,
-  monthlyInsights,
   dailySuggestion,
   dailySuggestionType,
   weeklySuggestion,
   weeklySuggestionType,
+  monthlyInsights,
   monthlySuggestion,
   monthlySuggestionType,
   timeLeft,

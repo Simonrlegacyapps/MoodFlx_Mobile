@@ -3,7 +3,6 @@ import Geocoder from 'react-native-geocoding';
 import {
   defaultLocation,
   getApiBaseUrl,
-  getIsWeeklyPrevious,
   getMonthlyInsightsAvailable,
   getWeeklyInsightsAvailable,
   isCountryIndia,
@@ -63,7 +62,7 @@ export function callWeatherInsightsApi(reset) {
         return PostRequestApi('getWeatherInsights', {
           ...params,
           status: 'weekly',
-          flag: getIsWeeklyPrevious() === true ? 'previous' : 'current',
+          flag: 'current',
         });
       } else {
         return new Promise((resolve, reject) => resolve(null));
@@ -93,7 +92,6 @@ export function callWeatherInsightsApi(reset) {
         return PostRequestApi('getWeatherInsights', {
           ...params,
           status: 'monthly',
-          flag: 'current',
         });
       } else {
         return new Promise((resolve, reject) => resolve(null));

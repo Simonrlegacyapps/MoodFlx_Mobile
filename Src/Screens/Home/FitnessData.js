@@ -36,7 +36,7 @@ import PostRequestApi, {
 } from '../../apirequest/PostRequestApi';
 import DataInsights from '../../Components/DataInsights/DataInsights';
 import moment from 'moment';
-import { dataTypes, getApiBaseUrl, getIsWeeklyPrevious, getWeeklyInsightsAvailable } from '../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../Constants/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
 import { getFloCoins, getMyDeviceId, openHealthApp } from '../../services/commonService';
@@ -53,32 +53,17 @@ const fitnessInsightsInitialState = {
   dailySuggestionType: '',
   weeklySuggestion: '',
   weeklySuggestionType: '',
+  monthlyInsights: '',
+  monthlySuggestion: '',
+  monthlySuggestionType: '',
 };
 
 const fitnessInsightsTypes = {
-  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
-  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
-  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
-  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
-  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
-  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
   SET_INSIGHTS: 'SET_INSIGHTS',
 };
 
 function fitnessInsightsReducer(state, action) {
   switch (action.type) {
-    case fitnessInsightsTypes.SET_DALIY_INSIGHTS:
-      return { ...state, dailyInsights: action.payload };
-    case fitnessInsightsTypes.SET_WEEKLY_INSIGHTS:
-      return { ...state, weeklyInsights: action.payload };
-    case fitnessInsightsTypes.SET_DAILY_SUGGESTION:
-      return { ...state, dailySuggestion: action.payload };
-    case fitnessInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
-      return { ...state, dailySuggestionType: action.payload };
-    case fitnessInsightsTypes.SET_WEEKLY_SUGGESTION:
-      return { ...state, weeklySuggestion: action.payload };
-    case fitnessInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
-      return { ...state, weeklySuggestionType: action.payload };
     case fitnessInsightsTypes.SET_INSIGHTS:
       return action?.payload && typeof action?.payload === 'object'
         ? { ...state, ...action.payload }
@@ -279,7 +264,7 @@ const FitnessData = ({
           return PostRequestApi('getActivityInsights', {
             ...params,
             status: 'weekly',
-            flag: getIsWeeklyPrevious() === true ? 'previous' : 'current',
+            flag: 'current',
           });
         } else {
           return new Promise((resolve, reject) => resolve(null));
@@ -308,6 +293,39 @@ const FitnessData = ({
         setInsights({
           type: fitnessInsightsTypes.SET_INSIGHTS,
           payload: weeklyInsightsPayload,
+        });
+        if (getMonthlyInsightsAvailable() === true) {
+          return PostRequestApi('getActivityInsights', {
+            ...params,
+            status: 'monthly',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        setskeleton(false);
+        console.log('✅ ✅ ✅ ✅  getActivityInsights monthly res ✅ ✅ ✅ ✅ : ', res?.data);
+        let monthlyInsightsPayload = {};
+        console.log('monthlyInsights: ', res?.data?.insights);
+        monthlyInsightsPayload.monthlyInsights =
+          res?.data?.insights?.message1 &&
+            typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        monthlyInsightsPayload.monthlySuggestion =
+          res?.data?.insights?.message2 &&
+            typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        monthlyInsightsPayload.monthlySuggestionType =
+          res?.data?.insights?.message2Type &&
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: fitnessInsightsTypes.SET_INSIGHTS,
+          payload: monthlyInsightsPayload,
         });
       })
       .catch(function (error) {
@@ -526,6 +544,9 @@ const FitnessData = ({
             dailySuggestionType={!UserData.HealthPermission ? "warning" : insights?.dailySuggestionType}
             weeklySuggestion={!UserData.HealthPermission ? "The more steps you take the more energy you have" : insights?.weeklySuggestion}
             weeklySuggestionType={!UserData.HealthPermission ? "warning" : insights?.weeklySuggestionType}
+            monthlyInsights={!UserData.HealthPermission ? "Your monthly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.monthlyInsights}
+            monthlySuggestion={!UserData.HealthPermission ? "The more steps you take the more energy you have" : insights?.monthlySuggestion}
+            monthlySuggestionType={!UserData.HealthPermission ? "warning" : insights?.monthlySuggestionType}
             timeLeft={UserData?.weeklyInsightsTimeLeft}
             isPermissionGiven={UserData.HealthPermission}
             dispatch={dispatch}
