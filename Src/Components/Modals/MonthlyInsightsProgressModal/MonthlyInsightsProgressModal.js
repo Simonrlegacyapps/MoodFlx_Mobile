@@ -54,14 +54,14 @@ const MonthlyInsightsProgress = ({
           <Text style={styles.bigText}>
             {`Monthly insight will be ready on ${getMonthlyInsightsStartEndTime().startTime.format('Do MMM YYYY')}`}
           </Text>
-          <View style={styles.imageContainer}>
+          {/* <View style={styles.imageContainer}>
             <MonthlyInsightsProgressImage
             // width={220}
             // height={220}
             // stroke={getBulbColorFromLux(lux)}
             timeLeft={getProgressWidth()}
             />
-          </View>
+          </View> */}
           <TouchableOpacity style={styles.buttonView} onPress={verifyDone}>
             <Text style={styles.buttonText}>Got it!</Text>
           </TouchableOpacity>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   buttonView: {
-    // marginTop: horizontalScale(24),
+    marginTop: horizontalScale(24),
     // height: horizontalScale(56),
     // width: 250,
     backgroundColor: '#7265E3',
