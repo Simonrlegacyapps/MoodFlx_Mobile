@@ -164,27 +164,19 @@ export const getScreensPriority = (data) => {
 
 export const getWeeklyInsightsAvailable = () => {
   const day = moment().day() === 0 ? 7 : moment().day();
-  if (day >= 5 || day <= 1) {
+  if (day >= 4) {
     return true;
   } else {
     return false;
   }
 };
 
-export const getIsWeeklyPrevious = () => {
-  if (getWeeklyInsightsAvailable() === true && moment().day() === 1) {
-    return true;
-  } else {
-    false;
-  }
-};
-
 export const getWeeklyInsightsDaysLeft = () => {
   const day = moment().day() === 0 ? 7 : moment().day();
-  if (day >= 5 || day <= 1) {
+  if (getWeeklyInsightsAvailable() === true) {
     return 0;
   } else {
-    return (5 - day);
+    return (4 - day);
   }
 };
 
