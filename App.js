@@ -155,7 +155,7 @@ const toastConfig = {
 
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
-  const [ShowWelcome, setShowWelcome] = useState('');
+  const [ShowWelcome, setShowWelcome] = useState(false);
   const notifService = useRef(new NotifService()).current;
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -447,51 +447,60 @@ const App: () => React$Node = () => {
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
     let welcome = await JSON.parse(p);
-    await setShowWelcome(welcome);
+    await setShowWelcome((welcome === null || welcome === true));
+    return Promise.resolve(welcome);
     // console.log('welcome', welcome);
   };
 
   useEffect(() => {
-    const getWelcomeScreen = async () => {
-      try {
-        let p = await AsyncStorage.getItem('ShowWelcomeScreen');
-        let welcome = await JSON.parse(p);
-        // console.log('Async storage welcome ===', welcome);
-        if (getIsInitialVideoVisible() === false && welcome == null) {
-          setIsInitialVideoVisible(true);
+    async function myFunc() {
+      const getWelcomeScreen = async () => {
+        try {
+          let p = await AsyncStorage.getItem('ShowWelcomeScreen');
+          let welcome = await JSON.parse(p);
+          // console.log('Async storage welcome ===', welcome);
+          if (getIsInitialVideoVisible() === false && welcome == null) {
+            setIsInitialVideoVisible(true);
+          }
+        } catch (error) {
+          console.log('Error in get AsyncStorage ShowWelcomeScreen');
         }
-      } catch (error) {
-        console.log('Error in get AsyncStorage ShowWelcomeScreen');
+      };
+      getWelcomeScreen();
+      let isShowWelcome = false;
+      try {
+        isShowWelcome = await CheckScreen();
+      } catch (e) {
+        console.log('checkScreen error -->', e);
       }
-    };
-    getWelcomeScreen();
-    const timeoutId = setTimeout(() => {
-      SplashScreen.hide();
-      clearTimeout(timeoutId);
-    }, 2500);
-    CheckScreen();
-    if (ShowWelcome == null) {
-      AsyncStorage.setItem('ShowWelcomeScreen', 'true');
-      CheckScreen();
-    } else {
-      setShowWelcome(false);
+      if (isShowWelcome === null || isShowWelcome === true) {
+        try {
+          await AsyncStorage.setItem('ShowWelcomeScreen', 'true');
+        } catch (e) {
+          console.log('ShowWelcomeScreen set ShowWelcomeScreen error -->', e);
+        }
+        try {
+          await CheckScreen();
+        } catch (e) {
+          console.log('checkScreen error -->', e);
+        }
+        const timeoutId = setTimeout(() => {
+          SplashScreen.hide();
+          clearTimeout(timeoutId);
+        }, 2500);
+      } else {
+        setShowWelcome(false);
+        const timeoutId = setTimeout(() => {
+          SplashScreen.hide();
+          clearTimeout(timeoutId);
+        }, 2500);
+      }
+      PushNotification.popInitialNotification((notification) => {
+        // console.log('popInitialNotification Notification: ', notification);
+        dispatch(SetNotification(notification));
+      });
     }
-    PushNotification.popInitialNotification((notification) => {
-      // console.log('popInitialNotification Notification: ', notification);
-      dispatch(SetNotification(notification));
-    });
-    // CheckScreen();
-
-    // try {
-    //   let data = AsyncStorage.getItem('WelcomeScreen');
-    //   if (data !== null) {
-    //     setScreenName(true);
-    //   } else {
-    //     setScreenName(false);
-    //   }
-    // } catch (e) {
-    //   console.warn(e);
-    // }
+    myFunc();
   }, []);
 
   useEffect(() => {
@@ -840,7 +849,7 @@ const App: () => React$Node = () => {
     await AsyncStorage.setItem('ShowWelcomeScreen', 'false');
     CheckScreen();
     try {
-      await AsyncStorage.setItem('WelcomeScreen', 'false');
+      await AsyncStorage.setItem('ShowWelcomeScreen', 'false');
       setScreenName(true);
     } catch (e) {
       console.warn(e);
