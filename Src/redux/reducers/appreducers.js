@@ -1,4 +1,5 @@
 import isEmpty from 'lodash.isempty';
+import {defaultNegativeMoodModalData} from '../../Constants/constants';
 import {
   COMPANY_NAME,
   FIRST_ACTION_TYPE,
@@ -42,7 +43,9 @@ import {
   SET_WEATHER_INSIGHTS,
   RESET_LINK_TO_COMPANY_PARAMS,
   GET_SCREENTIME_PERM,
-  
+  GET_STANDTIME_PERM,
+  NEGATIVE_MOOD_MODAL_DATA,
+  SHOW_MONTHLY_INSIGHTS_MODAL,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -61,6 +64,7 @@ const intializedState = {
   WeatherPermission: false,
   SleepPermission: false,
   ScreenTimePermission: false,
+  StandTimePermission: false,
   AllMoods: null,
   lat: null,
   lon: null,
@@ -80,6 +84,7 @@ const intializedState = {
   notification: null,
   weeklyInsightsTimeLeft: -1,
   showWeeklyInsightsModal: false,
+  showMonthlyInsightsModal: false,
   swiperIndex: 0,
   floCoins: 0,
   fitnessSyncText: '',
@@ -91,8 +96,12 @@ const intializedState = {
     dailySuggestionType: '',
     weeklySuggestion: '',
     weeklySuggestionType: '',
+    monthlyInsights: '',
+    monthlySuggestion: '',
+    monthlySuggestionType: '',
   },
   isLinkToCompanyRouteParamsReset: false,
+  negativeMoodModalData: defaultNegativeMoodModalData,
 };
 
 export const First = (state = intializedState, action) => {
@@ -154,6 +163,10 @@ export const First = (state = intializedState, action) => {
     case GET_SCREENTIME_PERM:
       return Object.assign({}, state, {
         ScreenTimePermission: action.payload,
+      });
+    case GET_STANDTIME_PERM:
+      return Object.assign({}, state, {
+        StandTimePermission: action.payload,
       });
     case GET_ALL_MOODS:
       return Object.assign({}, state, {
@@ -241,6 +254,10 @@ export const First = (state = intializedState, action) => {
       return Object.assign({}, state, {
         showWeeklyInsightsModal: action.payload,
       });
+    case SHOW_MONTHLY_INSIGHTS_MODAL:
+      return Object.assign({}, state, {
+        showMonthlyInsightsModal: action.payload,
+      });
     case SET_SWIPER_INDEX:
       return Object.assign({}, state, {
         swiperIndex: action.payload,
@@ -266,6 +283,13 @@ export const First = (state = intializedState, action) => {
     case RESET_LINK_TO_COMPANY_PARAMS:
       return Object.assign({}, state, {
         isLinkToCompanyRouteParamsReset: action.payload,
+      });
+    case NEGATIVE_MOOD_MODAL_DATA:
+      return Object.assign({}, state, {
+        negativeMoodModalData: {
+          ...state.negativeMoodModalData,
+          ...action.payload,
+        },
       });
     default:
       return state;

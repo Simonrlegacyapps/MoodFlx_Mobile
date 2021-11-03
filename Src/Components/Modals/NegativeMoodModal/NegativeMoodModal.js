@@ -52,6 +52,7 @@ const NegativeMoodModal = ({
   modalVisible,
   dismissModalHandler,
   emotionText,
+  description,
   onClickButtonOne,
   onClickButtonTwo,
 }: props) => {
@@ -263,9 +264,7 @@ const NegativeMoodModal = ({
             )}
           </TouchableOpacity>
           <View style={styles.descriptionView}>
-            <Text style={styles.descriptionText}>
-              Would you like to talk to someone?
-            </Text>
+            <Text style={styles.descriptionText}>{description}</Text>
           </View>
           <TouchableOpacity
             style={[

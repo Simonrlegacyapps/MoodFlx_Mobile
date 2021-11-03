@@ -19,10 +19,14 @@ import {
   Lat,
   Long,
   Moods,
+  ScreenTimePerm,
+  SetNegativeMoodModalData,
   SetNotification,
+  SetShowMonthlyInsightsModal,
   SetShowWeeklyInsightsModal,
   SetWeeklyInsightsTimeLeft,
   SleepPerm,
+  StandTimePerm,
   UserDetail,
   UserEmail,
   WeatherPerm,
@@ -60,6 +64,7 @@ import Constants from './Src/Constants';
 import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
 import {
   defaultLocation,
+  defaultNegativeMoodModalData,
   getApiBaseUrl,
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
@@ -72,6 +77,12 @@ import Screen1 from './Src/Screens/WalkThrough/Screen1';
 import BoardingNavigation from './Src/navigator/BoardingNavigation';
 import getStore from './Src/redux';
 import {useDispatch, useSelector} from 'react-redux';
+import NoInternetModal from './Src/Components/Modals/NoInternetModal/NoInternetModal';
+import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
+import isEmpty from 'lodash.isempty';
+import RNRestart from 'react-native-restart';
+import MonthlyInsightsProgress from './Src/Components/Modals/MonthlyInsightsProgressModal/MonthlyInsightsProgressModal';
+
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
@@ -144,7 +155,7 @@ const toastConfig = {
 
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
-  const [ShowWelcome, setShowWelcome] = useState('');
+  const [ShowWelcome, setShowWelcome] = useState(false);
   const notifService = useRef(new NotifService()).current;
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -153,7 +164,8 @@ const App: () => React$Node = () => {
   const [linkModalText, setLinkModalText] = useState('');
   const newOrg = useRef(null);
   const isHandleDynamicLinkCalled = useRef(false);
-
+  const [isConnected, setIsConnected] = useState(true);
+  const netInfo = useNetInfo();
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
@@ -164,6 +176,58 @@ const App: () => React$Node = () => {
     return () => {
       RootNavigation.isReadyRef.current = false;
     };
+  }, []);
+
+  useEffect(() => {
+    console.log("Is connected?", netInfo?.isConnected);
+    setIsConnected((e) => {
+      let i = (netInfo.isConnected === true || netInfo.isConnected === null)
+      if (e === false && i === true) {
+        // Reload app to after internet comes back
+        RNRestart?.Restart?.();
+      }
+      return i;
+    });
+  }, [netInfo?.isConnected]);
+
+  useEffect(() => {
+    if (UserData.UserEmail && UserData.UserId) {
+      const params = {
+        // division_id: 'b13e784b-f4c5-4da4-a001-9de798eb556c',
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      };
+      console.log('eapMessageData params ----->', params);
+      PostRequestApi('eapMessageData', params)
+        .then((resp) => {
+          console.log('✅ ✅ ✅ ✅ Success eapMessageData ✅ ✅ ✅ ✅', resp?.data?.data);
+          if (resp?.data?.data) {
+            let data = {};
+            if (resp?.data?.data?.eap_text) {
+              data.eap_text = resp.data.data.eap_text;
+            }
+            if (resp?.data?.data?.eap_link) {
+              data.eap_link = resp.data.data.eap_link;
+            }
+            if (!isEmpty(data)) {
+              dispatch(SetNegativeMoodModalData(data));
+            }
+          }
+        })
+        .catch((err) => {
+          console.log('error eapMessageData', err);
+        });
+    } else if (!(UserData.UserEmail && UserData.UserId)) {
+      dispatch(SetNegativeMoodModalData(defaultNegativeMoodModalData));
+    }
+  }, [UserData.UserEmail, UserData.UserId, dispatch]);
+
+  const checkInternet = useCallback(() => {
+    NetInfo.fetch().then(state => {
+      console.log("Connection type", state?.type);
+      console.log("Is connected?", state?.isConnected);
+      setIsConnected((state.isConnected === true));
+    });
   }, []);
 
   const linkCompany = useCallback(
@@ -383,51 +447,60 @@ const App: () => React$Node = () => {
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
     let welcome = await JSON.parse(p);
-    await setShowWelcome(welcome);
+    await setShowWelcome((welcome === null || welcome === true));
+    return Promise.resolve(welcome);
     // console.log('welcome', welcome);
   };
 
   useEffect(() => {
-    const getWelcomeScreen = async () => {
-      try {
-        let p = await AsyncStorage.getItem('ShowWelcomeScreen');
-        let welcome = await JSON.parse(p);
-        // console.log('Async storage welcome ===', welcome);
-        if (getIsInitialVideoVisible() === false && welcome == null) {
-          setIsInitialVideoVisible(true);
+    async function myFunc() {
+      const getWelcomeScreen = async () => {
+        try {
+          let p = await AsyncStorage.getItem('ShowWelcomeScreen');
+          let welcome = await JSON.parse(p);
+          // console.log('Async storage welcome ===', welcome);
+          if (getIsInitialVideoVisible() === false && welcome == null) {
+            setIsInitialVideoVisible(true);
+          }
+        } catch (error) {
+          console.log('Error in get AsyncStorage ShowWelcomeScreen');
         }
-      } catch (error) {
-        console.log('Error in get AsyncStorage ShowWelcomeScreen');
+      };
+      getWelcomeScreen();
+      let isShowWelcome = false;
+      try {
+        isShowWelcome = await CheckScreen();
+      } catch (e) {
+        console.log('checkScreen error -->', e);
       }
-    };
-    getWelcomeScreen();
-    const timeoutId = setTimeout(() => {
-      SplashScreen.hide();
-      clearTimeout(timeoutId);
-    }, 2500);
-    CheckScreen();
-    if (ShowWelcome == null) {
-      AsyncStorage.setItem('ShowWelcomeScreen', 'true');
-      CheckScreen();
-    } else {
-      setShowWelcome(false);
+      if (isShowWelcome === null || isShowWelcome === true) {
+        try {
+          await AsyncStorage.setItem('ShowWelcomeScreen', 'true');
+        } catch (e) {
+          console.log('ShowWelcomeScreen set ShowWelcomeScreen error -->', e);
+        }
+        try {
+          await CheckScreen();
+        } catch (e) {
+          console.log('checkScreen error -->', e);
+        }
+        const timeoutId = setTimeout(() => {
+          SplashScreen.hide();
+          clearTimeout(timeoutId);
+        }, 2500);
+      } else {
+        setShowWelcome(false);
+        const timeoutId = setTimeout(() => {
+          SplashScreen.hide();
+          clearTimeout(timeoutId);
+        }, 2500);
+      }
+      PushNotification.popInitialNotification((notification) => {
+        // console.log('popInitialNotification Notification: ', notification);
+        dispatch(SetNotification(notification));
+      });
     }
-    PushNotification.popInitialNotification((notification) => {
-      // console.log('popInitialNotification Notification: ', notification);
-      dispatch(SetNotification(notification));
-    });
-    // CheckScreen();
-
-    // try {
-    //   let data = AsyncStorage.getItem('WelcomeScreen');
-    //   if (data !== null) {
-    //     setScreenName(true);
-    //   } else {
-    //     setScreenName(false);
-    //   }
-    // } catch (e) {
-    //   console.warn(e);
-    // }
+    myFunc();
   }, []);
 
   useEffect(() => {
@@ -574,6 +647,21 @@ const App: () => React$Node = () => {
     let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
     let SleepP = await JSON.parse(SleepPer); 
     dispatch(SleepPerm(SleepP));
+    //Syncing Sleep Data
+    if (Platform.OS === 'ios') {
+      setSleepDataSync(dispatch, false);
+    } else if (Platform.OS === 'android') {
+      setSleepDataSync(dispatch);
+    }
+    //StandTime Permission
+    let StandTimePer = await AsyncStorage.getItem('GiveStandTimePerm');
+    let StandTimeP = await JSON.parse(StandTimePer);
+    dispatch(StandTimePerm(StandTimeP));
+
+    //ScreenTime Permission
+    let ScreenTimePer = await AsyncStorage.getItem('GiveScreenTimePerm');
+    let screenTimeP = await JSON.parse(ScreenTimePer);
+    dispatch(ScreenTimePerm(screenTimeP));
     //Syncing Sleep Data
     if (Platform.OS === 'ios') {
       setSleepDataSync(dispatch, false);
@@ -761,7 +849,7 @@ const App: () => React$Node = () => {
     await AsyncStorage.setItem('ShowWelcomeScreen', 'false');
     CheckScreen();
     try {
-      await AsyncStorage.setItem('WelcomeScreen', 'false');
+      await AsyncStorage.setItem('ShowWelcomeScreen', 'false');
       setScreenName(true);
     } catch (e) {
       console.warn(e);
@@ -781,6 +869,10 @@ const App: () => React$Node = () => {
 
   const dismissWeeklyInsightsModal = () => {
     dispatch(SetShowWeeklyInsightsModal(false));
+  };
+
+  const dismissMonthlyInsightsModal = () => {
+    dispatch(SetShowMonthlyInsightsModal(false));
   };
 
   return (
@@ -823,10 +915,19 @@ const App: () => React$Node = () => {
         onClickButtonTwo={onLinkCancel}
         buttonTwoText="Cancel"
       />
+      <NoInternetModal
+        modalVisible={(isConnected === false)}
+        onButtonOnePress={checkInternet}
+      />
       <WeeklyInsightsProgress
         modalVisible={UserData.showWeeklyInsightsModal}
         verifyDone={dismissWeeklyInsightsModal}
         dismissModalHandler={dismissWeeklyInsightsModal}
+      />
+      <MonthlyInsightsProgress
+        modalVisible={UserData.showMonthlyInsightsModal}
+        verifyDone={dismissMonthlyInsightsModal}
+        dismissModalHandler={dismissMonthlyInsightsModal}
       />
     </>
   );

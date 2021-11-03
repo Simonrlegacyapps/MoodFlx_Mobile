@@ -50,7 +50,7 @@ import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
 import { getBulbColorFromLux, getMyDeviceId } from '../../../services/commonService';
-import { getApiBaseUrl, getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import { getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
@@ -70,35 +70,21 @@ const lightInsightsInitialState = {
   dailySuggestionType: '',
   weeklySuggestion: '',
   weeklySuggestionType: '',
+  monthlyInsights: '',
+  monthlySuggestion: '',
+  monthlySuggestionType: '',
   demoDailyInsights: 'Today your Saddest mood input was when there was 180 lux in the room',
   demoWeeklyInsights: 'This week your Saddest mood input was when there was 180 lux in the room',
+  demoMonthlyInsights: 'This month your Saddest mood input was when there was 180 lux in the room',
   demoSuggestion: 'Try turning up the lights and aim for around 300 lux',
 };
 
 const lightInsightsTypes = {
-  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
-  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
-  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
-  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
-  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
-  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
   SET_INSIGHTS: 'SET_INSIGHTS',
 };
 
 function lightInsightsReducer(state, action) {
   switch (action.type) {
-    case lightInsightsTypes.SET_DALIY_INSIGHTS:
-      return { ...state, dailyInsights: action.payload };
-    case lightInsightsTypes.SET_WEEKLY_INSIGHTS:
-      return { ...state, weeklyInsights: action.payload };
-    case lightInsightsTypes.SET_DAILY_SUGGESTION:
-      return { ...state, dailySuggestion: action.payload };
-    case lightInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
-      return { ...state, dailySuggestionType: action.payload };
-    case lightInsightsTypes.SET_WEEKLY_SUGGESTION:
-      return { ...state, weeklySuggestion: action.payload };
-    case lightInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
-      return { ...state, weeklySuggestionType: action.payload };
     case lightInsightsTypes.SET_INSIGHTS:
       return action?.payload && typeof action?.payload === 'object'
         ? { ...state, ...action.payload }
@@ -249,13 +235,16 @@ const LightData = ({
         Friday @ 12pm until Saturday 6pm
         */
         if (getWeeklyInsightsAvailable() === true) {
-          return PostRequestApi('getLightInsights', { ...params, "status": "weekly" });
+          return PostRequestApi('getLightInsights', {
+            ...params,
+            status: 'weekly',
+            flag: 'current',
+          });
         } else {
           return new Promise((resolve, reject) => resolve(null));
         }
       })
       .then((res) => {
-        setskeleton(false);
         console.log('✅ ✅ ✅ ✅  getLightInsights weekly res ✅ ✅ ✅ ✅ : ', res?.data);
         let weeklyInsightsPayload = {};
         console.log('weeklyInsights: ', res?.data?.insights);
@@ -278,12 +267,45 @@ const LightData = ({
           type: lightInsightsTypes.SET_INSIGHTS,
           payload: weeklyInsightsPayload,
         });
+        if (getMonthlyInsightsAvailable() === true) {
+          return PostRequestApi('getLightInsights', {
+            ...params,
+            status: 'monthly',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        setskeleton(false);
+        console.log('✅ ✅ ✅ ✅  getLightInsights monthly res ✅ ✅ ✅ ✅ : ', res?.data);
+        let monthlyInsightsPayload = {};
+        console.log('monthlyInsights: ', res?.data?.insights);
+        monthlyInsightsPayload.monthlyInsights =
+          res?.data?.insights?.message1 &&
+            typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        monthlyInsightsPayload.monthlySuggestion =
+          res?.data?.insights?.message2 &&
+            typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        monthlyInsightsPayload.monthlySuggestionType =
+          res?.data?.insights?.message2Type &&
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: lightInsightsTypes.SET_INSIGHTS,
+          payload: monthlyInsightsPayload,
+        });
       })
       .catch(function (error) {
         setskeleton(false);
         console.log('❌ ❌ ❌ ❌ Error Get Light Data Insights ❌ ❌ ❌ ❌', error, 'params', params);
       });
-  }
+  };
 
   const getCalculatedLightIOS = (v) => {
     const m = v * 100;
@@ -443,17 +465,22 @@ const LightData = ({
         </View> */}
         {skeleton && <Skeleton />}
         <View style={styles.subViewTwo}>
-          <DataInsights
-            dailyInsights={insights?.dailyInsights}
-            weeklyInsights={insights?.weeklyInsights}
-            dailySuggestion={insights?.dailySuggestion}
-            dailySuggestionType={insights?.dailySuggestionType}
-            weeklySuggestion={insights?.weeklySuggestion}
-            weeklySuggestionType={insights?.weeklySuggestionType}
-            timeLeft={UserData?.weeklyInsightsTimeLeft}
-            isPermissionGiven={true}
-            dispatch={dispatch}
-          />
+          {skeleton === false && (
+            <DataInsights
+              dailyInsights={insights?.dailyInsights}
+              weeklyInsights={insights?.weeklyInsights}
+              dailySuggestion={insights?.dailySuggestion}
+              dailySuggestionType={insights?.dailySuggestionType}
+              weeklySuggestion={insights?.weeklySuggestion}
+              weeklySuggestionType={insights?.weeklySuggestionType}
+              monthlyInsights={insights?.monthlyInsights}
+              monthlySuggestion={insights?.monthlySuggestion}
+              monthlySuggestionType={insights?.monthlySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={true}
+              dispatch={dispatch}
+            />
+          )}
           {/* <View
             style={{
               flex: 1,

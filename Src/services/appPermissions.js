@@ -18,6 +18,7 @@ import {
   NotificationPerm,
   SetLocation,
   SleepPerm,
+  StandTimePerm,
   WeatherPerm,
 } from '../redux/actions/actions';
 import {defaultLocation, isCountryIndia} from '../Constants/constants';
@@ -332,7 +333,7 @@ class MoodFloPermission {
     console.log('Location permission isGiven: ', isGiven);
     if (isGiven) {
       try {
-        await AsyncStorage.setItem('GiveWeatherPerm', 'true')
+        await AsyncStorage.setItem('GiveWeatherPerm', 'true');
         dispatch(WeatherPerm(true));
         returnFlag = true;
       } catch (error) {
@@ -426,6 +427,54 @@ class MoodFloPermission {
       } catch (error) {
         console.log('Google Fit checkAuthorization error: ', error);
       }
+    }
+  };
+
+  requestStandingPermission = async (dispatch) => {
+    if (!dispatch) {
+      return false;
+    }
+
+    const standingHealthKitOptions = {
+      permissions: {
+        read: [AppleHealthKit.Constants.Permissions.AppleStandTime],
+        write: [],
+      },
+    };
+
+    if (Platform.OS === 'ios') {
+      AppleHealthKit.initHealthKit(standingHealthKitOptions, (err, results) => {
+        // {"permissions": {"read": [0], "write": []}}
+        if (err) {
+          console.log(
+            'Standing HealtKit Permissions getAuthStatus error: ',
+            err,
+          );
+        }
+        // console.log('Sleep Analysis getAuthStatus +++++++++======>>>>', result);
+        console.log(
+          'requestStandingIOSPermission',
+          ' activityHealthKitOptions.permissions.read: ',
+          standingHealthKitOptions.permissions.read,
+          ' results: ',
+          results,
+          ' Object.keys(activityHealthKitOptions.permissions.read).length: ',
+          Object.keys(standingHealthKitOptions.permissions.read).length,
+        );
+        if (results === 1) {
+          console.log('Activity Permission given');
+          AsyncStorage.setItem('GiveStandTimePerm', 'true')
+            .then(() => {
+              dispatch(StandTimePerm(true));
+              // setFitnessDataSync(dispatch);
+            })
+            .catch((error) => {
+              console.log('Async storage set GiveStandTimePerm Error', error);
+            });
+        } else {
+          console.log('Stand Time Permission not given');
+        }
+      });
     }
   };
 }

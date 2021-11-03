@@ -40,7 +40,7 @@ import {
   fetchSleepDataForLastThirtyDays,
   getSleepDataForUpdateApi,
 } from './sleepDataService';
-import { dataTypes, getApiBaseUrl, getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox';
@@ -57,32 +57,17 @@ const sleepInsightsInitialState = {
   dailySuggestionType: '',
   weeklySuggestion: '',
   weeklySuggestionType: '',
+  monthlyInsights: '',
+  monthlySuggestion: '',
+  monthlySuggestionType: '',
 };
 
 const sleepInsightsTypes = {
-  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
-  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
-  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
-  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
-  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
-  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
   SET_INSIGHTS: 'SET_INSIGHTS',
 };
 
 function sleepInsightsReducer(state, action) {
   switch (action.type) {
-    case sleepInsightsTypes.SET_DALIY_INSIGHTS:
-      return { ...state, dailyInsights: action.payload };
-    case sleepInsightsTypes.SET_WEEKLY_INSIGHTS:
-      return { ...state, weeklyInsights: action.payload };
-    case sleepInsightsTypes.SET_DAILY_SUGGESTION:
-      return { ...state, dailySuggestion: action.payload };
-    case sleepInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
-      return { ...state, dailySuggestionType: action.payload };
-    case sleepInsightsTypes.SET_WEEKLY_SUGGESTION:
-      return { ...state, weeklySuggestion: action.payload };
-    case sleepInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
-      return { ...state, weeklySuggestionType: action.payload };
     case sleepInsightsTypes.SET_INSIGHTS:
       return action?.payload && typeof action?.payload === 'object'
         ? { ...state, ...action.payload }
@@ -121,7 +106,7 @@ const SleepData = ({
   const [monthlySleepData, setMonthlySleepData] = useState(null);
   const [sleepGraphData, setSleepGraphData] = useState(null);
   const [AnonymousClick, setAnonymousClick] = useState(false);
-  const [skeleton, setskeleton] = useState(false)
+  const [skeleton, setskeleton] = useState(false);
   const [insights, setInsights] = useReducer(
     sleepInsightsReducer,
     sleepInsightsInitialState,
@@ -252,7 +237,7 @@ const SleepData = ({
   }, [lastThirtyDaySleepData]);
 
   const callInsightsApi = () => {
-    setskeleton(true)
+    setskeleton(true);
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -266,7 +251,7 @@ const SleepData = ({
     console.log(`Sleep Insights Api Params`, params);
     PostRequestApi('getSleepInsights', {...params, status: 'daily'})
       .then((res) => {
-        console.log('getSleepInsights daily: ', res?.data);
+        console.log('✅ ✅ ✅ ✅ getSleepInsights daily: ✅ ✅ ✅ ✅ ', res?.data);
         // console.log('getSleepInsights daily res: ', res);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
@@ -296,16 +281,16 @@ const SleepData = ({
           return PostRequestApi('getSleepInsights', {
             ...params,
             status: 'weekly',
+            flag: 'current',
           });
         } else {
           return new Promise((resolve, reject) => resolve(null));
         }
       })
       .then((res) => {
-        setskeleton(false)
         // console.log('getSleepInsights weekly res: ', res);
         let weeklyInsightsPayload = {};
-        console.log('getSleepInsights weekly: ', res?.data);
+        console.log('✅ ✅ ✅ ✅ getSleepInsights weekly: ✅ ✅ ✅ ✅ ', res?.data);
         weeklyInsightsPayload.weeklyInsights =
           res?.data?.insights?.message1 &&
             typeof res.data.insights.message1 === 'string'
@@ -325,9 +310,42 @@ const SleepData = ({
           type: sleepInsightsTypes.SET_INSIGHTS,
           payload: weeklyInsightsPayload,
         });
+        if (getMonthlyInsightsAvailable() === true) {
+          return PostRequestApi('getSleepInsights', {
+            ...params,
+            status: 'monthly',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        setskeleton(false);
+        // console.log('getSleepInsights weekly res: ', res);
+        let monthlyInsightsPayload = {};
+        console.log('✅ ✅ ✅ ✅  getSleepInsights monthly: ✅ ✅ ✅ ✅ ', res?.data);
+        monthlyInsightsPayload.weeklyInsights =
+          res?.data?.insights?.message1 &&
+            typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        monthlyInsightsPayload.weeklySuggestion =
+          res?.data?.insights?.message2 &&
+            typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        monthlyInsightsPayload.weeklySuggestionType =
+          res?.data?.insights?.message2Type &&
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: sleepInsightsTypes.SET_INSIGHTS,
+          payload: monthlyInsightsPayload,
+        });
       })
       .catch(function (error) {
-        setskeleton(false)
+        setskeleton(false);
         console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, params);
       });
   };
@@ -521,18 +539,23 @@ const SleepData = ({
         </View>
         {skeleton && <Skeleton/>}
         <View style={styles.subViewTwo}>
-          <DataInsights
-            dailyInsights={!UserData.SleepPermission ? "Today you were more likely to be excited and happy when you got more than 7hrs sleep" : insights?.dailyInsights}
-            weeklyInsights={!UserData.SleepPermission ? "This week your Saddest mood input was when you got less than 6 hrs of sleep" : insights?.weeklyInsights}
-            dailySuggestion={!UserData.SleepPermission ? "Nice! Just the right amount of sleep" : insights?.dailySuggestion}
-            dailySuggestionType={!UserData.SleepPermission ? "" : insights?.dailySuggestionType}
-            weeklySuggestion={!UserData.SleepPermission ? "7-9 hrs of sleep per night is best for your mood. Try a warm bath or reading a book before bed" : insights?.weeklySuggestion}
-            weeklySuggestionType={!UserData.SleepPermission ? "warning" : insights?.weeklySuggestionType}
-            timeLeft={UserData?.weeklyInsightsTimeLeft}
-            isPermissionGiven={UserData.SleepPermission}
-            dispatch={dispatch}
-            onSync={onSync}
-          />
+          {skeleton === false && (
+            <DataInsights
+              dailyInsights={!UserData.SleepPermission ? "Today you were more likely to be excited and happy when you got more than 7hrs sleep" : insights?.dailyInsights}
+              weeklyInsights={!UserData.SleepPermission ? "This week your Saddest mood input was when you got less than 6 hrs of sleep" : insights?.weeklyInsights}
+              dailySuggestion={!UserData.SleepPermission ? "Nice! Just the right amount of sleep" : insights?.dailySuggestion}
+              dailySuggestionType={!UserData.SleepPermission ? "" : insights?.dailySuggestionType}
+              weeklySuggestion={!UserData.SleepPermission ? "7-9 hrs of sleep per night is best for your mood. Try a warm bath or reading a book before bed" : insights?.weeklySuggestion}
+              weeklySuggestionType={!UserData.SleepPermission ? "warning" : insights?.weeklySuggestionType}
+              monthlyInsights={!UserData.SleepPermission ? "This month your Saddest mood input was when you got less than 6 hrs of sleep" : insights?.monthlyInsights}
+              monthlySuggestion={!UserData.SleepPermission ? "7-9 hrs of sleep per night is best for your mood. Try a warm bath or reading a book before bed" : insights?.monthlySuggestion}
+              monthlySuggestionType={!UserData.SleepPermission ? "warning" : insights?.monthlySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={UserData.SleepPermission}
+              dispatch={dispatch}
+              onSync={onSync}
+            />
+          )}
           {/* {!UserData.SleepPermission ? (
             <View
               style={{

@@ -27,8 +27,10 @@ const getProgressWidth = () => {
     return 275;
   } else if (day === 6) {
     return 300;
+  } else {
+    return 0;
   }
-}
+};
 
 const {width} = Dimensions.get('window');
 const WeeklyInsightsProgress = ({
