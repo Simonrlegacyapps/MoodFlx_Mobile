@@ -73,8 +73,8 @@ let mapStyle = [
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 const defaultLoc = {
-  latitude: -24.145056,
-  longitude: 133.726748,
+  latitude: Number.parseFloat(defaultLocation.latitude),
+  longitude: Number.parseFloat(defaultLocation.longitude),
   latitudeDelta: 0.015,
   longitudeDelta: 0.0121,
 };
@@ -87,7 +87,7 @@ const LocationData = ({
 }) => {
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
-  const [region, setRegion] = useState(defaultLoc);
+  const [region, setRegion] = useState({...defaultLoc});
   const [markers, setMarkers] = useState([]);
   const mapRef = useRef(null);
 
