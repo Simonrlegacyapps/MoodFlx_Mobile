@@ -44,23 +44,68 @@ let mapStyle = [
     stylers: [{ visibility: 'off' }],
   },
   {
-    featureType: 'road',
-    elementType: 'geometry.stroke',
+    featureType: 'poi.park',
+    elementType: 'geometry',
     stylers: [
       {
-        color: '#C0C0C0',
+        color: '#e5e5e5',
+      },
+    ],
+  },
+  // {
+  //   featureType: 'road',
+  //   elementType: 'geometry',
+  //   stylers: [
+  //     {
+  //       color: '#e5e5e5',
+  //     },
+  //   ],
+  // },
+  // {
+  //   featureType: 'road.highway',
+  //   elementType: 'geometry',
+  //   stylers: [
+  //     {
+  //       color: '#e5e5e5',
+  //     },
+  //   ],
+  // },
+  {
+    featureType: 'transit',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#c9c9c9',
       },
     ],
   },
   {
-    featureType: 'road.highway',
-    elementType: 'geometry.stroke',
+    featureType: 'water',
+    elementType: 'geometry',
     stylers: [
       {
-        color: '#C0C0C0',
+        color: '#c9c9c9',
       },
     ],
   },
+  // {
+  //   featureType: 'road',
+  //   elementType: 'geometry.stroke',
+  //   stylers: [
+  //     {
+  //       color: '#C0C0C0',
+  //     },
+  //   ],
+  // },
+  // {
+  //   featureType: 'road.highway',
+  //   elementType: 'geometry.stroke',
+  //   stylers: [
+  //     {
+  //       color: '#C0C0C0',
+  //     },
+  //   ],
+  // },
   {
     elementType: 'labels.text.fill',
     stylers: [
@@ -145,8 +190,8 @@ const LocationData = ({
           let m = data.data.location_data.map((e) => {
             return {
               location: {
-                latitude: e?.latitude,
-                longitude: e?.longitude,
+                latitude: e?.latitude ?? e?.lat,
+                longitude: e?.longitude ?? e?.long,
               },
               icon: e?.name?.toLowerCase?.(),
             };
