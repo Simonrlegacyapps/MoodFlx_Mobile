@@ -275,7 +275,7 @@ function DataInsights({
                 ? styles.activeTabHeader
                 : styles.inactiveTabHeader
             }
-            onPress={() => setIsDailyInsights(true)}>
+            onPress={() => setModalDuration(insightsDurationFlags.daily)}>
             <Text
               style={
                 insightsDuration === insightsDurationFlags.daily
