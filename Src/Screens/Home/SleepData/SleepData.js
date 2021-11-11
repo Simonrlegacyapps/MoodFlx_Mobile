@@ -324,17 +324,17 @@ const SleepData = ({
         // console.log('getSleepInsights weekly res: ', res);
         let monthlyInsightsPayload = {};
         console.log('✅ ✅ ✅ ✅  getSleepInsights monthly: ✅ ✅ ✅ ✅ ', res?.data);
-        monthlyInsightsPayload.weeklyInsights =
+        monthlyInsightsPayload.monthlyInsights =
           res?.data?.insights?.message1 &&
             typeof res.data.insights.message1 === 'string'
             ? res.data.insights.message1
             : '';
-        monthlyInsightsPayload.weeklySuggestion =
+        monthlyInsightsPayload.monthlySuggestion =
           res?.data?.insights?.message2 &&
             typeof res.data.insights.message2 === 'string'
             ? res.data.insights.message2
             : '';
-        monthlyInsightsPayload.weeklySuggestionType =
+        monthlyInsightsPayload.monthlySuggestionType =
           res?.data?.insights?.message2Type &&
             res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
