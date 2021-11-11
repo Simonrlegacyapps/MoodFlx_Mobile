@@ -178,7 +178,7 @@ const LocationData = ({
       email: getStore?.()?.getState?.()?.First?.UserEmail,
       user_id: getStore?.()?.getState?.()?.First?.UserId,
       from_date: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-      to_date: moment().format('YYYY-MM-DD'),
+      to_date: moment().utcOffset(600).format('YYYY-MM-DD'),
     };
     PostRequestApi('getLocationContextData', params)
       .then((data) => {
