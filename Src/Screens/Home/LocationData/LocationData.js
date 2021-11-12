@@ -205,7 +205,7 @@ const LocationData = ({
           const getUniqueItemsByProperties = (items) => {
             const propNamesArray = ['latitude', 'longitude'];
             return items.filter((item, idx, array) => {
-              return idx === array.findIndex(foundItem => isPropValuesEqual(foundItem, item, propNamesArray))
+              return idx === array.findIndex(foundItem => isPropValuesEqual(foundItem, item, propNamesArray));
             })?.map?.((e) => {
               let l = {};
               if (!isNaN(e?.location?.latitude)) {
@@ -217,7 +217,11 @@ const LocationData = ({
               return { ...e, location: l };
             }) ?? [];
           };
-          setMarkers([...getUniqueItemsByProperties(m)]);
+          let _markers = [...getUniqueItemsByProperties(m)];
+          setMarkers(_markers);
+          if (!isNaN(_markers?.[0]?.location?.latitude)) {
+            setRegion({...defaultLoc, ..._markers[0].location});
+          }
         }
       })
       .catch((error) => {
