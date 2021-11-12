@@ -407,14 +407,15 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     return false;
   }
   if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 13) {
-  // if (moment().startOf('day').diff(moment().startOf('day').subtract(13, 'days'), 'days') < 13) {
+  // if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 1) {
     return false;
   }
   const params = {
     "device_id": getMyDeviceId?.() ?? '',
     "email": getStore?.()?.getState?.()?.First?.UserEmail ?? '',
     "user_id": getStore?.()?.getState?.()?.First?.UserId ?? '',
-    "start_date": moment().subtract(13, 'days').format('YYYY-MM-DD'),
+    "start_date": moment().utcOffset(600).subtract(13, 'days').format('YYYY-MM-DD'),
+    // "start_date": moment().utcOffset(600).subtract(1, 'days').format('YYYY-MM-DD'),
   };
   let response;
   try {
