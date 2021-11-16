@@ -191,9 +191,13 @@ const App: () => React$Node = () => {
   }, [netInfo?.isConnected]);
 
   useEffect(() => {
-    if (UserData.UserEmail && UserData.UserId) {
+    if (
+      UserData.UserEmail &&
+      UserData.UserId &&
+      UserData?.UserDetails?.division_id
+    ) {
       const params = {
-        // division_id: 'b13e784b-f4c5-4da4-a001-9de798eb556c',
+        division_id: UserData?.UserDetails?.division_id,
         email: UserData.UserEmail,
         user_id: UserData.UserId,
       };
@@ -215,12 +219,17 @@ const App: () => React$Node = () => {
           }
         })
         .catch((err) => {
-          console.log('error eapMessageData', err);
+          console.log('❌ ❌ ❌ ❌ error eapMessageData❌ ❌ ❌ ❌ ', err);
         });
     } else if (!(UserData.UserEmail && UserData.UserId)) {
       dispatch(SetNegativeMoodModalData(defaultNegativeMoodModalData));
     }
-  }, [UserData.UserEmail, UserData.UserId, dispatch]);
+  }, [
+    UserData.UserEmail,
+    UserData.UserId,
+    UserData?.UserDetails?.division_id,
+    dispatch,
+  ]);
 
   const checkInternet = useCallback(() => {
     NetInfo.fetch().then(state => {

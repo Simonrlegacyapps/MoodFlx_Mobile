@@ -13,17 +13,16 @@ export const metrics = {
   screenWidth: width < height ? width : height,
   screenHeight: width < height ? height : width,
   navBarHeight: (Platform.OS === 'ios') ? 64 : 54,
-}
+};
 
 export const PLATFORM = {
   ANDROID: 'android',
   IOS: 'ios',
   MATERIAL: 'material',
-  WEB: 'web'
+  WEB: 'web',
 };
 
 export const isTablet = DeviceInfo.isTablet();
-
 
 export const isIphoneX =
   Platform.OS === PLATFORM.IOS &&
@@ -45,9 +44,8 @@ export const iPhoneXPadding = {
     paddingRight: 44,
     paddingBottom: 24,
     paddingTop: 0,
-  }
-}
-
+  },
+};
 
 //Guideline sizes are based on standard ~5" screen mobile device
 const guidelineBaseWidth = 375;
@@ -59,9 +57,9 @@ const moderateScale = (size, factor = 0.5) => size + (horizontalScale(size) - si
 export function getFontSize(size) {
   let newSize = horizontalScale(size);
   if (Platform.OS === 'ios') {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize))
+    return Math.round(PixelRatio.roundToNearestPixel(newSize));
   } else {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2
+    return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
   }
 }
 

@@ -1729,6 +1729,7 @@ export default function MoodDetector({ navigation }) {
         <TouchableOpacity
           onPress={() => {
             setModalVisible(true);
+            // navigation.navigate('Dashboard');
           }}>
           <View
             style={styles.questionIconView}
@@ -1832,8 +1833,8 @@ export default function MoodDetector({ navigation }) {
         // modalVisible={true}
         dismissModalHandler={setShowNegativeMoodModal(false)}
         emotionText={moodName}
-        description={UserData?.negativeMoodModalData?.eap_link}
-        onClickButtonOne={openUrl(UserData?.negativeMoodModalData?.eap_text)}
+        description={UserData?.negativeMoodModalData?.eap_text}
+        onClickButtonOne={openUrl(UserData?.negativeMoodModalData?.eap_link)}
         onClickButtonTwo={setShowNegativeMoodModal(false)}
       />
 
