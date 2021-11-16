@@ -471,13 +471,23 @@ export const openUrl = (url) => async () => {
   if (typeof url !== 'string') {
     return;
   }
-  const supported = await Linking.canOpenURL(url);
+  let supported = true;
+  try {
+    supported = await Linking.canOpenURL(url);
+  } catch (error) {
+    console.log('Error in canOpenURL --->', url, error);
+  }
 
   if (supported) {
     // Opening the link with some app, if the URL scheme is "http" the web link should be opened
     // by some browser in the mobile
-    await Linking.openURL(url);
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.log('Error in openURL --->', url, error);
+    }
   } else {
+    console.log('openUrl supported --->', supported, url);
     Alert.alert(`Can't open this URL: ${url}`);
   }
 };
@@ -552,3 +562,43 @@ export const getUpdateAnswerRewardPoints = (startDate) => {
   }
   return 0;
 };
+
+export function getLightGraphData(dataArray) {
+  let lightGraphData = [];
+  let weekDates = [];
+  let dates = [6, 5, 4, 3, 2, 1, 0];
+  dates.forEach((e, idx) => {
+    const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+    weekDates.push(d);
+  });
+  weekDates.forEach((e, idx) => {
+    const eData = moment(e);
+    let data = null;
+    let day = '';
+    day = eData.format('dd')?.charAt?.(0);
+    // INBED
+    dataArray.forEach((d) => {
+      const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
+      let value = 0;
+      if (d?.value && !isNaN(d?.value)) {
+        value = Number.parseInt(Number(d.value), 10);
+      }
+      if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
+        data = {
+          x: idx + 1,
+          y: value,
+          day,
+        };
+      }
+    });
+    if (data === null) {
+      data = {
+        x: idx + 1,
+        y: 0,
+        day,
+      };
+    }
+    lightGraphData.push(data);
+  });
+  return lightGraphData;
+}

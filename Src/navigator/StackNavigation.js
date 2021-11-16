@@ -1,19 +1,22 @@
 import React from 'react';
 import HomeScreen from '../Screens/HomeScreen';
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import MoodEmotionDetector from '../Screens/MoodDetector';
 import EmailConfirmation from '../Screens/EmailConfirmation/EmailConfirmation';
 import VerifyEmail from '../Screens/VerifyEmail/VerifyEmail';
-import { Animated, Easing } from 'react-native';
+import {Platform} from 'react-native';
 import ButtonCheck from '../Screens/ButtonCheck/ButtonCheck';
 import ProfileTab from '../Screens/Tabs/ProfileTab';
 import ProgressScreens from '../Screens/WalkThrough/ProgressScreens';
+import Dashboard from '../Screens/Dashboard/Dashboard';
+import BackIcon from '../../assets/svg/backIcon';
+import {horizontalScale} from '../Constants/sizeChoose';
 
 const Stack = createStackNavigator();
 
 const StackNavigation = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="MoodEmotionDetector">
       <Stack.Screen
         name="MoodEmotionDetector"
         component={MoodEmotionDetector}
@@ -27,6 +30,31 @@ const StackNavigation = () => {
         name="HomeScreen"
         component={HomeScreen}
         options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="Dashboard"
+        component={Dashboard}
+        options={{
+          title: 'Dashboard',
+          headerBackImage: () => (
+            <BackIcon
+              width={horizontalScale(24)}
+              height={horizontalScale(22)}
+            />
+          ),
+          headerTransparent: true,
+          headerLeftContainerStyle:
+            Platform.OS === 'ios'
+              ? {
+                  paddingLeft: horizontalScale(10),
+                }
+              : undefined,
+          headerTitleContainerStyle: {
+            left: horizontalScale(42),
+          },
+          headerTitleAlign: 'left',
+          headerBackTitleVisible: false,
+        }}
       />
       <Stack.Screen
         name="EmailConfirmation"

@@ -18,6 +18,9 @@ const ScreenCircleBar = ({
   Time,
   value,
   border,
+  size,
+  width,
+  fontSize,
 }) => {
   return (
     <View
@@ -37,8 +40,8 @@ const ScreenCircleBar = ({
           duration={900}
           style={styles.CircularProgressStyle}
           arcSweepAngle={360}
-          size={60}
-          width={8}
+          size={size ?? 60}
+          width={width ?? 8}
           fill={(value / 120) * 100}
           rotation={0}
           tintColor={DarkColor}
@@ -47,12 +50,12 @@ const ScreenCircleBar = ({
         />
       </View>
       <View style={{flex: 1}}>
-        <Text style={{fontFamily: RubikLight, fontSize: 19, marginLeft: 15}}>
+        <Text style={{fontFamily: RubikLight, fontSize: (fontSize ?? 19), marginLeft: 15}}>
           {Label}
         </Text>
       </View>
       <View>
-        <Text style={{fontFamily: RubikMedium, fontSize: 19}}>{Time}</Text>
+        <Text style={{fontFamily: RubikMedium, fontSize: (fontSize ?? 19)}}>{Time}</Text>
       </View>
     </View>
   );
