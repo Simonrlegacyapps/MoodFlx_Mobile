@@ -135,9 +135,9 @@ const EmailConfirmation = ({navigation}) => {
           }}>
           This is just to make sure we connect you with the right company
         </Text>
-        <TouchableWithoutFeedback
+        {/* <TouchableWithoutFeedback
           pointerEvents="auto"
-          onPress={openCloseLinkingComingSoonModal(true)}>
+          onPress={openCloseLinkingComingSoonModal(true)}> */}
           <View
             style={{
               flexDirection: 'row',
@@ -153,13 +153,13 @@ const EmailConfirmation = ({navigation}) => {
               source={Constants.Images.mail}
             />
             <TextInput
-              pointerEvents='none'
+              // pointerEvents='none'
               keyboardType={'email-address'}
               returnKeyType={'done'}
               autoCorrect={false}
               autoCapitalize={'none'}
               autoCompleteType={'off'}
-              editable={false}
+              // editable={false}
               placeholder={'example@work-mail.com'}
               placeholderTextColor={'#8A8BAB'}
               onSubmitEditing={() => submit()}
@@ -181,7 +181,7 @@ const EmailConfirmation = ({navigation}) => {
               value={value}
             />
           </View>
-        </TouchableWithoutFeedback>
+        {/* </TouchableWithoutFeedback> */}
         <Text
           numberOfLines={3}
           style={{

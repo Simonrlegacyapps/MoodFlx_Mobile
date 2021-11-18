@@ -1728,8 +1728,8 @@ export default function MoodDetector({ navigation }) {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            setModalVisible(true);
-            // navigation.navigate('Dashboard');
+            // setModalVisible(true);
+            navigation.navigate('Dashboard');
           }}>
           <View
             style={styles.questionIconView}

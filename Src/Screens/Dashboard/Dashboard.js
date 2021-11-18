@@ -9,8 +9,8 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
-import { horizontalScale, metrics } from '../../Constants/sizeChoose';
-import DashboardGraph, { LightTab } from './DashboardGraph';
+import { getFontSize, horizontalScale, metrics } from '../../Constants/sizeChoose';
+import DashboardGraph, { FitnessTab, LightTab, ScreenTimeTab, SleepQualityTab, StandTimeTab, WeatherTab } from './DashboardGraph';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 const Tab = createMaterialTopTabNavigator();
@@ -62,9 +62,18 @@ function Dashboard(props) {
           <DashboardGraph data={characterData} />
 
           <View style={styles.tabContainer}>
-            <Tab.Navigator>
-              <Tab.Screen name="Light" component={LightTab} />
-              <Tab.Screen name="Activity" component={() => (<View><Text>Activity</Text></View>)} />
+            <Tab.Navigator
+              tabBarOptions={{
+                labelStyle: styles.tabLabelStyle,
+                tabStyle: styles.tabStyle,
+                scrollEnabled: true,
+              }}>
+              <Tab.Screen name="Light" options={{ tabBarLabel: 'Light' }} component={LightTab} />
+              <Tab.Screen name="Standing" options={{ tabBarLabel: 'Standing' }} component={StandTimeTab} />
+              <Tab.Screen name="Screen Time" options={{ tabBarLabel: 'Screen Time' }} component={ScreenTimeTab} />
+              <Tab.Screen name="Activity" options={{ tabBarLabel: 'Activity' }} component={FitnessTab} />
+              <Tab.Screen name="Weather" options={{ tabBarLabel: 'Weather' }} component={WeatherTab} />
+              <Tab.Screen name="Sleep Quality" options={{ tabBarLabel: 'Sleep Quality' }} component={SleepQualityTab} />
             </Tab.Navigator>
           </View>
         </View>
@@ -92,5 +101,12 @@ const styles = StyleSheet.create({
     flex: 1,
     width: metrics.screenWidth,
     backgroundColor: '#FFFFFF',
+  },
+  tabLabelStyle: {
+    fontSize: getFontSize(12),
+    textTransform: 'none',
+  },
+  tabStyle: {
+    width: horizontalScale(100),
   },
 });

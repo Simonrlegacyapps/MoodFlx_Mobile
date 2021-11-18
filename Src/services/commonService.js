@@ -602,3 +602,131 @@ export function getLightGraphData(dataArray) {
   });
   return lightGraphData;
 }
+
+export function getStandGraphData(dataArray) {
+  let screenTimeGraphData = [];
+  let weekDates = [];
+  let dates = [6, 5, 4, 3, 2, 1, 0];
+  dates.forEach((e, idx) => {
+    const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+    weekDates.push(d);
+  });
+  weekDates.forEach((e, idx) => {
+    const eData = moment(e);
+    let data = null;
+    let day = '';
+    day = eData.format('dd');
+    // INBED
+    dataArray.forEach((d) => {
+      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      let value = 0;
+      if (!isNaN(d?.duration)) {
+        value = Number.parseInt(Number(d.duration), 10);
+        value = value > 0 ? Math.floor(value / 60) : 0;
+        let x = Number(d.duration) % 60;
+        x = Math.floor((100 * x) / 60);
+        value = value + (x / 100);
+      }
+      if (
+        startDateMillis !== null &&
+        moment(startDateMillis).startOf('days').isSame(eData)
+      ) {
+        data = {
+          x: idx + 1,
+          y: value,
+          day,
+        };
+      }
+    });
+    if (data === null) {
+      data = {
+        x: idx + 1,
+        y: 0,
+        day,
+      };
+    }
+    screenTimeGraphData.push(data);
+  });
+  // console.log('screenTimeGraphData ------>', screenTimeGraphData);
+  return screenTimeGraphData;
+}
+
+export function getScreenGraphData(dataArray) {
+  let screenTimeGraphData = [];
+  let weekDates = [];
+  let dates = [6, 5, 4, 3, 2, 1, 0];
+  dates.forEach((e, idx) => {
+    const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+    weekDates.push(d);
+  });
+  weekDates.forEach((e, idx) => {
+    const eData = moment(e);
+    let data = null;
+    let day = '';
+    day = eData.format('dd');
+    // INBED
+    dataArray.forEach((d) => {
+      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      let value = 0;
+      if (!isNaN(d?.duration)) {
+        value = Number.parseInt(Number(d.duration), 10);
+        value = value > 0 ? Math.floor(value / 60) : 0;
+        let x = Number(d.duration) % 60;
+        x = Math.floor((100 * x) / 60);
+        value = value + (x / 100);
+      }
+      if (
+        startDateMillis !== null &&
+        moment(startDateMillis).startOf('days').isSame(eData)
+      ) {
+        data = {
+          x: idx + 1,
+          y: value,
+          day,
+        };
+      }
+    });
+    if (data === null) {
+      data = {
+        x: idx + 1,
+        y: 0,
+        day,
+      };
+    }
+    screenTimeGraphData.push(data);
+  });
+  // console.log('screenTimeGraphData ------>', screenTimeGraphData);
+  return screenTimeGraphData;
+}
+
+export function getWeeklyHealthGraphData(dataArray) {
+  let weekDates = [];
+  let dates = [6, 5, 4, 3, 2, 1, 0];
+  let todaySteps = getStore?.().getState?.()?.First?.UserSteps ?? '0';
+  let apiDataArray = [];
+  dates.forEach((e, idx) => {
+    const d = moment().startOf('day').subtract(e, 'days');
+    weekDates.push({ date: d.format('YYYY-MM-DD'), day: d.format('dd'), y: e === 0 ? todaySteps : "0" });
+  });
+  console.log('dates ->', weekDates);
+  if (!(Array.isArray(dataArray) && dataArray.length > 0)) {
+    return weekDates;
+  }
+  let flag = false;
+  weekDates.forEach((e, idx) => {
+    dataArray.forEach((x) => {
+      if (!flag && x?.date === (e?.date ?? '-1')) {
+        apiDataArray.push({ ...e, y: x?.steps ?? "0" });
+        flag = true;
+      }
+    });
+    if (!flag) {
+      apiDataArray.push({...e});
+    }
+    flag = false;
+  });
+  apiDataArray = apiDataArray.map((e) => {
+    return { ...e, y: typeof e?.y === 'number' ? String(e.y) : (e?.y ?? '0') };
+  })
+  return apiDataArray;
+}

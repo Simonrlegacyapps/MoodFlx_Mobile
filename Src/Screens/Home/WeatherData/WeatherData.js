@@ -57,6 +57,7 @@ import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox'
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import { getMyDeviceId } from '../../../services/commonService';
+import { IndicatorHelper } from '../../../Components/CommonComponents/CommonComponents';
 
 let weatherData = null;
 
@@ -104,14 +105,6 @@ const {width: SIZE} = Dimensions.get('window');
 //   }
 // }
 
-const IndicatorHelper = ({color, text}) => {
-  return (
-    <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, {backgroundColor: color}]} />
-      <Text style={styles.indicatorText}>{text}</Text>
-    </View>
-  );
-};
 
 const WeatherData = ({
   // CheckForWeather,
