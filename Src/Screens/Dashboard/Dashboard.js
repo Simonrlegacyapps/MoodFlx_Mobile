@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -6,12 +6,28 @@ import {
   ScrollView,
   Platform,
   StatusBar,
+  FlatList,
   Image,
   StyleSheet,
 } from 'react-native';
 import { getFontSize, horizontalScale, metrics } from '../../Constants/sizeChoose';
-import DashboardGraph, { FitnessTab, LightTab, ScreenTimeTab, SleepQualityTab, StandTimeTab, WeatherTab } from './DashboardGraph';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Images from '../../Constants/Images/Images';
+import DashboardGraph, {
+  FitnessTab,
+  LightTab,
+  ScreenTimeTab,
+  SleepQualityTab,
+  StandTimeTab,
+  WeatherTab,
+} from './DashboardGraph';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {getMyDeviceId} from '../../services/commonService';
+import {useDispatch, useSelector} from 'react-redux';
+import PostRequestApi from '../../apirequest/PostRequestApi';
+import moment from 'moment';
+import getStore from '../../redux';
+import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
+import { ViewIcon } from '../../../assets/svg/ViewIcon';
 
 const Tab = createMaterialTopTabNavigator();
 const characterData = [
@@ -48,7 +64,106 @@ function processData(data) {
 function Dashboard(props) {
   // const [data, setData] = useState(processData(characterData));
   const [data, setData] = useState(characterData);
+  const [moods, setMoods] = useState(null);
+  const [moodId, setMoodId] = useState(null);
   // const [maxima, setMaxima] = useState(getMaxima(characterData));
+  const UserData = useSelector((state) => state.First);
+  const dispatch = useDispatch();
+
+  const getMoodsApi = useCallback((id) => {
+    const deviceId = getMyDeviceId();
+    const params = {
+      device_id: deviceId,
+      email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
+      user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
+      start_date: moment()
+        .subtract(7, 'days')
+        .utcOffset(600)
+        .format('YYYY-MM-DD'),
+      end_date: moment().utcOffset(600).format('YYYY-MM-DD'),
+      mood_id: id ?? '',
+    };
+    console.log('getRadarGraphMoodPercent api params --->', params);
+    PostRequestApi('getRadarGraphMoodPercent', params)
+      .then((res) => {
+        console.log('✅ ✅ ✅ getRadarGraphMoodPercent api success✅ ✅ ✅', res?.data?.staffMoods);
+        if (Array.isArray(res?.data?.staffMoods)) {
+          setMoods(res.data.staffMoods);
+        }
+      })
+      .catch((error) => {
+        console.log('❌❌❌❌getRadarGraphMoodPercent error:❌❌❌❌', error);
+      });
+  }, []);
+
+  const onPressMoodItem = useCallback((item) => () => {
+    setMoodId((e) => {
+      if (item.id === e) {
+        return null;
+      }
+      return item.id;
+    });
+  }, []);
+
+  useEffect(() => {
+    getMoodsApi();
+  }, []);
+
+  const moodItem = (item, index) => {
+    let id = moodId;
+    // let id = null;
+    // setMoodId((e) => {
+    //   id = e;
+    //   return e;
+    // });
+    if (id !== null && id !== item.id) {
+      return null;
+    }
+    const isActive = id === item.id;
+    return (
+      <View style={styles.itemContainer} key={item?.id ?? String(index)}>
+        <Image source={Images[item?.moodName?.toLowerCase?.() ?? 'happy']} />
+        <View style={styles.itemSubView}>
+          <View style={styles.itemMoodTextContainer}>
+            <Text style={styles.itemMoodName}>{item.moodName}</Text>
+            <Text style={styles.itemMoodValue}>{`${item.percentage}%`}</Text>
+          </View>
+          <View style={styles.progressBarContainer}>
+            <View
+              style={[
+                styles.itemMoodProgress,
+                {
+                  backgroundColor: item?.color ?? '#648DE7',
+                  width: `${item?.percentage ?? 0}%`,
+                },
+              ]}
+            />
+          </View>
+        </View>
+        <TouchableOpacity
+          style={
+            isActive === true
+              ? styles.viewActiveButton
+              : styles.viewInactiveButton
+          }
+          onPress={onPressMoodItem(item, index)}>
+          <ViewIcon
+            width={horizontalScale(18)}
+            height={horizontalScale(14)}
+            color={isActive === true ? '#FFFFFF' : '#7265E3'}
+          />
+          <Text
+            style={
+              isActive === true
+                ? styles.viewActiveText
+                : styles.viewInactiveText
+            }>
+            View
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -60,7 +175,15 @@ function Dashboard(props) {
         )}
         <View style={styles.graphContainer}>
           <DashboardGraph data={characterData} />
-
+          {
+            (Array.isArray(moods)) && moods.length > 0 && (
+              <View style={styles.moodsContainer}>
+                {
+                  moods.map((item, index) => <>{moodItem(item, index)}</>)
+                }
+              </View>
+            )
+          }
           <View style={styles.tabContainer}>
             <Tab.Navigator
               tabBarOptions={{
@@ -93,9 +216,12 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(24),
   },
   graphContainer: {
-    flex: 1,
     marginTop: horizontalScale(50),
     backgroundColor: '#FFFFFF',
+  },
+  moodsContainer: {
+    width: '100%',
+    marginTop: horizontalScale(55),
   },
   tabContainer: {
     flex: 1,
@@ -108,5 +234,72 @@ const styles = StyleSheet.create({
   },
   tabStyle: {
     width: horizontalScale(100),
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    width: metrics.screenWidth,
+    alignItems: 'center',
+    paddingHorizontal: horizontalScale(15),
+    marginBottom: horizontalScale(43),
+  },
+  itemSubView: {
+    flex: 1,
+    marginLeft: horizontalScale(18),
+  },
+  itemMoodTextContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  itemMoodName: {
+    fontSize: getFontSize(14),
+    fontFamily: RubikRegular,
+    color: '#4C5F79',
+  },
+  itemMoodValue: {
+    fontSize: getFontSize(14),
+    fontFamily: RubikMedium,
+    color: '#4C5F79',
+  },
+  progressBarContainer: {
+    marginTop: horizontalScale(7),
+    height: horizontalScale(7),
+    borderRadius: horizontalScale(7),
+    width: '100%',
+    backgroundColor: '#F1F1F1',
+  },
+  itemMoodProgress: {
+    height: horizontalScale(7),
+    borderRadius: horizontalScale(7),
+    // width: '0%',
+    backgroundColor: '#F1F1F1',
+  },
+  viewInactiveButton: {
+    flexDirection: 'row',
+    padding: horizontalScale(8),
+    borderWidth: 1,
+    borderColor: '#7265E3',
+    borderRadius: 2,
+    backgroundColor: '#FFFFFF',
+    marginLeft: horizontalScale(28),
+  },
+  viewActiveButton: {
+    flexDirection: 'row',
+    padding: horizontalScale(8),
+    backgroundColor: '#7265E3',
+    borderRadius: 2,
+    marginLeft: horizontalScale(28),
+  },
+  viewInactiveText: {
+    marginLeft: horizontalScale(8),
+    fontSize: getFontSize(12),
+    fontFamily: RubikMedium,
+    color: '#7265E3',
+  },
+  viewActiveText: {
+    marginLeft: horizontalScale(8),
+    fontSize: getFontSize(12),
+    fontFamily: RubikMedium,
+    color: '#FFFFFF',
   },
 });
