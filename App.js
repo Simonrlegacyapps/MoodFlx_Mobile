@@ -54,6 +54,7 @@ import {
   onDynamicLinkUpdate,
   onUnlinkUpdate,
   setDeviceId,
+  setDivisionSetFlag,
   setFitnessDataSync,
   setIsInitialVideoVisible,
   setMoodsArray,
@@ -717,6 +718,12 @@ const App: () => React$Node = () => {
         // );
         if (result?.userData?.status !== 2) {
           await dispatch(UserDetail(result?.userData));
+        }
+        if (
+          result?.userData?.division_id &&
+          typeof result.userData.division_id === 'string'
+        ) {
+          setDivisionSetFlag(true);
         }
       })
       .catch((error) => {
