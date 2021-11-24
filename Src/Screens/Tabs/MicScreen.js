@@ -34,7 +34,7 @@ import {getApiBaseUrl, moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import Clock from '../../../assets/svg/clock';
 import FloCoin from '../../../assets/svg/floCoins';
-import {getDivisionSetFlag, getMyDeviceId, getUpdateAnswerRewardPoints} from '../../services/commonService';
+import {getDivisionSetFlag, getMyDeviceId, getUpdateAnswerRewardPoints, setDivisionSetFlag} from '../../services/commonService';
 import getStore from '../../redux';
 import {
   PulseConnect,
@@ -46,6 +46,7 @@ const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
+  const [isSelectDivisionLoading, setIsSelectDivisionLoading] = useState(false);
   const [count, setCount] = useState(0);
   // const [DateExpired, setDateExpired] = useState(false);
 
@@ -163,10 +164,31 @@ const MicScreen = ({navigation}) => {
 
   useFocusEffect(
     useCallback(() => {
+      AsyncStorage.getItem('Division')
+        .then((e) => {
+          if (!(e && typeof e === 'string')) {
+            setDivisionSetFlag(false);
+          } else {
+            setDivisionSetFlag(true);
+          }
+        })
+        .catch((error) => {
+          console.log('AsyncStorage get division error', error);
+        });
       const userEmail = getStore?.()?.getState?.()?.First?.UserEmail;
       const userDivision = getStore?.()?.getState?.()?.First?.UserDivision;
       if (userEmail && typeof userEmail === 'string' && !userDivision) {
-        getDivisionName();
+        const deviceId = getMyDeviceId();
+        const userId = getStore?.()?.getState?.()?.First?.UserId;
+        const params = {
+          device_id: deviceId,
+          user_id: userId,
+          email: userEmail,
+        };
+        setIsSelectDivisionLoading(true);
+        getDivisionName(params, dispatch, false, function (isFinish) {
+          setIsSelectDivisionLoading(false);
+        });
       }
       getQuestions();
       return () => {
@@ -667,12 +689,28 @@ const MicScreen = ({navigation}) => {
     UserData.getDivision.length > 0
   ) {
     return (
-      <PulseSelectDivision
-        divisions={UserData.getDivision}
-        userEmail={UserData.UserEmail}
-        userDivisionName={UserData.UserDivision}
-        setCount={setCount}
-      />
+      <>
+        <PulseSelectDivision
+          divisions={UserData.getDivision}
+          userEmail={UserData.UserEmail}
+          userDivisionName={UserData.UserDivision}
+          setCount={setCount}
+        />
+        {isSelectDivisionLoading && (
+          <View
+            style={{
+              position: 'absolute',
+              height: '100%',
+              width: '100%',
+              backgroundColor: 'rgba(0,0,0,0.2)',
+              // opacity: 0.2,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <ActivityIndicator color="#9889F9" size="large" />
+          </View>
+        )}
+      </>
     );
   }
 

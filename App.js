@@ -301,16 +301,16 @@ const App: () => React$Node = () => {
               // data = {...data, division_id: null};
               if (data?.email) {
                 if (RootNavigation?.navigationRef?.current?.navigate) {
-                  RootNavigation?.navigationRef?.current?.navigate(
-                    'HomeScreen',
-                    {
-                      screen: 'LinkCompanyStackNavigation',
-                      params: {
-                        screen: 'Linktocompany',
-                        params: {email: data.email},
-                      },
-                    },
-                  );
+                  // RootNavigation?.navigationRef?.current?.navigate(
+                  //   'HomeScreen',
+                  //   {
+                  //     screen: 'LinkCompanyStackNavigation',
+                  //     params: {
+                  //       screen: 'Linktocompany',
+                  //       params: {email: data.email},
+                  //     },
+                  //   },
+                  // );
                 } else {
                   setEmail(data.email);
                 }
@@ -445,13 +445,13 @@ const App: () => React$Node = () => {
 
   const goToSelectDivision = useCallback(() => {
     console.log('goToSelectDivision email: ', email);
-    RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
-      screen: 'LinkCompanyStackNavigation',
-      params: {
-        screen: 'Linktocompany',
-        params: { email: email },
-      },
-    });
+    // RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
+    //   screen: 'LinkCompanyStackNavigation',
+    //   params: {
+    //     screen: 'Linktocompany',
+    //     params: { email: email },
+    //   },
+    // });
   }, [email]);
 
   const CheckScreen = async () => {
@@ -461,6 +461,12 @@ const App: () => React$Node = () => {
     return Promise.resolve(welcome);
     // console.log('welcome', welcome);
   };
+
+  useEffect(() => {
+    if (isHandleDynamicLinkCalled.current === true && UserData.UserDivision === null) {
+      isHandleDynamicLinkCalled.current = false;
+    }
+  }, [UserData.UserDivision]);
 
   useEffect(() => {
     async function myFunc() {
@@ -719,12 +725,12 @@ const App: () => React$Node = () => {
         if (result?.userData?.status !== 2) {
           await dispatch(UserDetail(result?.userData));
         }
-        if (
-          result?.userData?.division_id &&
-          typeof result.userData.division_id === 'string'
-        ) {
-          setDivisionSetFlag(true);
-        }
+        // if (
+        //   result?.userData?.division_id &&
+        //   typeof result.userData.division_id === 'string'
+        // ) {
+        //   setDivisionSetFlag(true);
+        // }
       })
       .catch((error) => {
         console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error);
@@ -811,10 +817,10 @@ const App: () => React$Node = () => {
   }, [UserData.WeatherPermission]);
 
   useEffect(() => {
-    // const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     dynamicLinks().getInitialLink().then(handleDynamicLink);
     // handleDynamicLink();
-    // return () => unsubscribe();
+    return () => unsubscribe();
     // return null;
   }, []);
 

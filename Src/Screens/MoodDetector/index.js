@@ -94,6 +94,7 @@ import {
   getMyDeviceId,
   getUpdateAnswerRewardPoints,
   openUrl,
+  setDivisionSetFlag,
   setIsInitialVideoVisible,
   setMoodInputTimeStamps,
   setPrevFloCoins,
@@ -851,12 +852,10 @@ export default function MoodDetector({ navigation }) {
       await AsyncStorage.setItem('Anonymous', 'true');
       // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
       let p = await AsyncStorage.getItem('Email');
-      let d = await AsyncStorage.getItem('Division');
       let Hp = await AsyncStorage.getItem('GiveHealthPerm');
       let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
       // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
       let e = await JSON.parse(p);
-      let division = await JSON.parse(d);
       let HealthP = await JSON.parse(Hp);
       let WeatherP = await JSON.parse(Wp);
       console.log(`e`, e);
@@ -870,6 +869,14 @@ export default function MoodDetector({ navigation }) {
     } catch (error) {
       console.log('error getting AsyncStorage values', error);
     }
+    let division = null;
+    try {
+      let d = await AsyncStorage.getItem('Division');
+      division = await JSON.parse(d);
+    } catch (error) {
+      console.log('AsyncStorage get division error', error);
+    }
+    setDivisionSetFlag((typeof division === 'string' && division !== ''));
   };
 
   const getProfileUserData = () => {
