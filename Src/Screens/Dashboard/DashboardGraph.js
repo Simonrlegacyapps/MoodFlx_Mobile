@@ -643,7 +643,7 @@ function DashboardGraph({data}) {
       theme={VictoryTheme.material}
       startAngle={90}
       endAngle={450}
-      domain={{ y: [0, 100] }}
+      // domain={{ y: [0, 100] }}
     >
       <VictoryGroup colorScale={["#648DE7", "orange", "tomato"]}
         style={{ data: { fillOpacity: 0.2, strokeWidth: 2 } }}
@@ -670,7 +670,7 @@ function DashboardGraph({data}) {
               labelPlacement="perpendicular"
               axisValue={i + 1}
               label={e.x}
-              tickFormat={(t) => e.x === 'Monday' ? t : ""}
+              tickFormat={(t) => e.x === data?.[0]?.x ? t : ""}
             // tickValues={[0.25, 0.5, 0.75]}
             />
           );

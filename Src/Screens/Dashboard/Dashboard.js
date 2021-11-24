@@ -30,15 +30,15 @@ import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 import { ViewIcon } from '../../../assets/svg/ViewIcon';
 
 const Tab = createMaterialTopTabNavigator();
-const characterData = [
-  { x: 'Monday', y: 18, fill: '#E74C3C' },
-  { x: 'Tuesday', y: 24, fill: '#CDE73C' },
-  { x: 'Wednesday', y: 8, fill: '#3FE73C' },
-  { x: 'Thursday', y: 32, fill: '#3CE7E4' },
-  { x: 'Friday', y: 45, fill: '#3C5EE7' },
-  { x: 'Saturday', y: 80, fill: '#9C3CE7' },
-  { x: 'Sunday', y: 62, fill: '#E73CB8' },
-];
+// const characterData = [
+//   { x: 'Monday', y: 18, fill: '#E74C3C' },
+//   { x: 'Tuesday', y: 24, fill: '#CDE73C' },
+//   { x: 'Wednesday', y: 8, fill: '#3FE73C' },
+//   { x: 'Thursday', y: 32, fill: '#3CE7E4' },
+//   { x: 'Friday', y: 45, fill: '#3C5EE7' },
+//   { x: 'Saturday', y: 80, fill: '#9C3CE7' },
+//   { x: 'Sunday', y: 62, fill: '#E73CB8' },
+// ];
 
 function getMaxima(data) {
   const groupedData = Object.keys(data[0]).reduce((memo, key) => {
@@ -66,6 +66,7 @@ function Dashboard(props) {
   const [data, setData] = useState(characterData);
   const [moods, setMoods] = useState(null);
   const [moodId, setMoodId] = useState(null);
+  const [characterData, setCharacterData] = useState(null);
   // const [maxima, setMaxima] = useState(getMaxima(characterData));
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -86,9 +87,28 @@ function Dashboard(props) {
     console.log('getRadarGraphMoodPercent api params --->', params);
     PostRequestApi('getRadarGraphMoodPercent', params)
       .then((res) => {
-        console.log('✅ ✅ ✅ getRadarGraphMoodPercent api success✅ ✅ ✅', res?.data?.staffMoods);
+        console.log('✅ ✅ ✅ getRadarGraphMoodPercent api success✅ ✅ ✅', res?.data?.staffMoods, res?.data?.mood_data);
         if (Array.isArray(res?.data?.staffMoods)) {
           setMoods(res.data.staffMoods);
+          setCharacterData(res.data.staffMoods?.map((e, idx) => ({
+            x: e?.moodName ?? '',
+            y: !isNaN(e?.percentage) ? Number(e.percentage) : 0,
+            fill: e?.color ?? '#648DE7',
+          })));
+        } else if (res?.data?.mood_data) {
+          let c = '';
+          res.data.mood_data.forEach((e) => {
+            if (c === '') {
+              c = e?.color;
+            }
+          });
+          setCharacterData(res.data.mood_data?.map((e, idx) => ({
+            x: e?.day ?? '',
+            y: !isNaN(e?.percentage) ? Number(e.percentage) : 0,
+            fill: c,
+          })));
+        } else {
+          setCharacterData(null);
         }
       })
       .catch((error) => {
@@ -99,7 +119,10 @@ function Dashboard(props) {
   const onPressMoodItem = useCallback((item) => () => {
     setMoodId((e) => {
       if (item.id === e) {
+        getMoodsApi();
         return null;
+      } else {
+        getMoodsApi(item.id);
       }
       return item.id;
     });
@@ -165,6 +188,8 @@ function Dashboard(props) {
     );
   };
 
+  console.log('characterData --->', characterData);
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.container}>
@@ -174,7 +199,9 @@ function Dashboard(props) {
           <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
         )}
         <View style={styles.graphContainer}>
-          <DashboardGraph data={characterData} />
+          {Array.isArray(characterData) && characterData.length > 0 && (
+            <DashboardGraph data={characterData} />
+          )}
           {
             (Array.isArray(moods)) && moods.length > 0 && (
               <View style={styles.moodsContainer}>
