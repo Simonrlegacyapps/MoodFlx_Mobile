@@ -859,11 +859,9 @@ export default function MoodDetector({ navigation }) {
       let HealthP = await JSON.parse(Hp);
       let WeatherP = await JSON.parse(Wp);
       console.log(`e`, e);
-      console.log(`division`, division);
       console.log(`HealthPerm`, HealthP);
       console.log(`WeatherPerm`, WeatherP);
       dispatch(UserEmail(e));
-      dispatch(UserDivision(division));
       dispatch(HealthPerm(HealthP));
       dispatch(WeatherPerm(WeatherP));
     } catch (error) {
@@ -876,6 +874,8 @@ export default function MoodDetector({ navigation }) {
     } catch (error) {
       console.log('AsyncStorage get division error', error);
     }
+    // console.log(`division`, division);
+    dispatch(UserDivision(division));
     setDivisionSetFlag((typeof division === 'string' && division !== ''));
   };
 

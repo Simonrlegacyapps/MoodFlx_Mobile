@@ -89,6 +89,9 @@ export function getPrevFloCoins() {
 }
 
 export function setMoodsArray(moods) {
+  const onlyUnique = (value, index, self) => {
+    return self.indexOf(value) === index;
+  };
   // console.log('setMoodsArray ----', moods);
   if (Array.isArray(moods) && moods.length > 0) {
     moodsArray = moods
@@ -101,7 +104,7 @@ export function setMoodsArray(moods) {
         }
         return '';
       })
-      .filter((e) => e !== '');
+      .filter((e, idx, arr) => (e !== '' && onlyUnique(e, idx, arr)));
   }
 }
 

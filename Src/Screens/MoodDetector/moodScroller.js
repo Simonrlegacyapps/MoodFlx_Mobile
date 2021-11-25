@@ -143,11 +143,14 @@ export default function MoodScroller({
                 fill={t === 'content' ? '#000000' : undefined}
                 stroke="#000000"
                 source={{
-                  uri: `https://super.moodflo.com/${toolTipData?.icon
-                      ? toolTipData.icon
-                      : 'mood_icons/161616176321272238406054abe3bb450.svg'
-                    }`,
+                  uri: `https://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg`,
                 }}
+                // source={{
+                //   uri: `https://super.moodflo.com/${!toolTipData?.icon
+                //       ? toolTipData.icon
+                //       : 'mood_icons/161616176321272238406054abe3bb450.svg'
+                //     }`,
+                // }}
               // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
               />
             )}

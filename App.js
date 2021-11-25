@@ -804,13 +804,14 @@ const App: () => React$Node = () => {
       fetch(`${getApiBaseUrl()}getMood`)
         .then((data) => data.json())
         .then(async (res) => {
+          // console.log('✅ ✅ ✅ ✅ getMood Api success ✅ ✅ ✅ ✅', res);
           // await setGetMoods(res.data);
           setMoodsArray(res?.data);
           await dispatch(Moods(res.data));
         })
         .catch((error) => {
           // const {code, message} = error;
-          console.log('error', error);
+          console.log('getMood Api error', error);
         });
     checkStorage();
     getProfileUserData();

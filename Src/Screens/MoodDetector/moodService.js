@@ -235,66 +235,178 @@ export const setEmotionsTextData = (top, left, height, width, allMoods) => {
     // );
     return;
   }
-  const blockWidth = width / 4;
-  const blockHeight = height / 4;
-  // console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' blockWidth: ', blockWidth, 'blockHeight: ', blockHeight, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
-  const [h1, h2, h3, h4, h5] = [
-    top,
-    top + blockHeight,
-    top + blockHeight * 2,
-    top + blockHeight * 3,
-    top + height,
-  ];
-  const [w1, w2, w3, w4, w5] = [
-    left,
-    left + blockWidth,
-    left + blockWidth * 2,
-    left + blockWidth * 3,
-    left + width,
-  ];
-  function getTopForIndex(idx) {
-    if (idx === 0 || idx === 4 || idx === 8 || idx === 12) {
-      return [h1, h2];
-    } else if (idx === 1 || idx === 5 || idx === 9 || idx === 13) {
-      return [h2, h3];
-    } else if (idx === 2 || idx === 6 || idx === 10 || idx === 14) {
-      return [h3, h4];
-    } else if (idx === 3 || idx === 7 || idx === 11 || idx === 15) {
-      return [h4, h5];
-    }
-  }
-  function getLeftForIndex(idx) {
-    if (idx === 0 || idx === 1 || idx === 2 || idx === 3) {
-      return [w1, w2];
-    } else if (idx === 4 || idx === 5 || idx === 6 || idx === 7) {
-      return [w2, w3];
-    } else if (idx === 8 || idx === 9 || idx === 10 || idx === 11) {
-      return [w3, w4];
-    } else if (idx === 12 || idx === 13 || idx === 14 || idx === 15) {
-      return [w4, w5];
-    }
-  }
   let data = {};
   let flag = true;
-  allMoods.forEach((e, idx) => {
-    if (typeof e?.name !== 'string') {
-      flag = false;
-    } else {
-      data[e.name] = e;
+  if (allMoods.length === 16) {
+    const blockWidth = width / 4;
+    const blockHeight = height / 4;
+    // console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' blockWidth: ', blockWidth, 'blockHeight: ', blockHeight, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
+    const [h1, h2, h3, h4, h5] = [
+      top,
+      top + blockHeight,
+      top + blockHeight * 2,
+      top + blockHeight * 3,
+      top + height,
+    ];
+    const [w1, w2, w3, w4, w5] = [
+      left,
+      left + blockWidth,
+      left + blockWidth * 2,
+      left + blockWidth * 3,
+      left + width,
+    ];
+    const getTopForIndex = (idx) => {
+      if (idx === 0 || idx === 4 || idx === 8 || idx === 12) {
+        return [h1, h2];
+      } else if (idx === 1 || idx === 5 || idx === 9 || idx === 13) {
+        return [h2, h3];
+      } else if (idx === 2 || idx === 6 || idx === 10 || idx === 14) {
+        return [h3, h4];
+      } else if (idx === 3 || idx === 7 || idx === 11 || idx === 15) {
+        return [h4, h5];
+      }
+    };
+    const getLeftForIndex = (idx) => {
+      if (idx === 0 || idx === 1 || idx === 2 || idx === 3) {
+        return [w1, w2];
+      } else if (idx === 4 || idx === 5 || idx === 6 || idx === 7) {
+        return [w2, w3];
+      } else if (idx === 8 || idx === 9 || idx === 10 || idx === 11) {
+        return [w3, w4];
+      } else if (idx === 12 || idx === 13 || idx === 14 || idx === 15) {
+        return [w4, w5];
+      }
+    };
+    allMoods.forEach((e, idx) => {
+      if (typeof e?.name !== 'string') {
+        flag = false;
+      } else {
+        data[e.name] = e;
+      }
+    });
+    if (flag === true) {
+      emotionsTextData = null;
+      emotionsTextData = {...data};
     }
-  });
-  if (flag === true) {
-    emotionsTextData = null;
-    emotionsTextData = {...data};
+    Object.keys(emotionsTextData).forEach((e, idx) => {
+      let [y1, y2] = getTopForIndex(idx);
+      let [x1, x2] = getLeftForIndex(idx);
+      emotionsTextData[e].top = [Math.round(y1), Math.round(y2)];
+      emotionsTextData[e].left = [Math.round(x1), Math.round(x2)];
+    });
+  } else if (allMoods.length === 96) {
+    const blockWidth = width / 8;
+    const blockHeight = height / 12;
+    // console.log('top: ', top, ' left: ', left, ' height: ', height, ' width: ', width, ' blockWidth: ', blockWidth, 'blockHeight: ', blockHeight, ' screenHeight: ', screenHeight, ' screenWidth: ', screenWidth);
+    const [h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11, h12, h13] = [
+      top,
+      top + blockHeight,
+      top + blockHeight * 2,
+      top + blockHeight * 3,
+      top + blockHeight * 4,
+      top + blockHeight * 5,
+      top + blockHeight * 6,
+      top + blockHeight * 7,
+      top + blockHeight * 8,
+      top + blockHeight * 9,
+      top + blockHeight * 10,
+      top + blockHeight * 11,
+      top + height,
+    ];
+    const [w1, w2, w3, w4, w5, w6, w7, w8, w9] = [
+      left,
+      left + blockWidth,
+      left + blockWidth * 2,
+      left + blockWidth * 3,
+      left + blockWidth * 4,
+      left + blockWidth * 5,
+      left + blockWidth * 6,
+      left + blockWidth * 7,
+      left + width,
+    ];
+    const getTopForIndex = (idx) => {
+      if (idx === 0 || idx === 12 || idx === 24 || idx === 36 || idx === 48 || idx === 60 || idx === 72 || idx === 84) {
+        return [h1, h2];
+      } else if (idx === 1 || idx === 13 || idx === 25 || idx === 37 || idx === 49 || idx === 61 || idx === 73 || idx === 85) {
+        return [h2, h3];
+      } else if (idx === 2 || idx === 14 || idx === 26 || idx === 38 || idx === 50 || idx === 62 || idx === 74 || idx === 86) {
+        return [h3, h4];
+      } else if (idx === 3 || idx === 15 || idx === 27 || idx === 39 || idx === 51 || idx === 63 || idx === 75 || idx === 87) {
+        return [h4, h5];
+      } else if (idx === 4 || idx === 16 || idx === 28 || idx === 40 || idx === 52 || idx === 64 || idx === 76 || idx === 88) {
+        return [h5, h6];
+      } else if (idx === 5 || idx === 17 || idx === 29 || idx === 41 || idx === 53 || idx === 65 || idx === 77 || idx === 89) {
+        return [h6, h7];
+      } else if (idx === 6 || idx === 18 || idx === 30 || idx === 42 || idx === 54 || idx === 66 || idx === 78 || idx === 90) {
+        return [h7, h8];
+      } else if (idx === 7 || idx === 19 || idx === 31 || idx === 43 || idx === 55 || idx === 67 || idx === 79 || idx === 91) {
+        return [h8, h9];
+      } else if (idx === 8 || idx === 20 || idx === 32 || idx === 44 || idx === 56 || idx === 68 || idx === 80 || idx === 92) {
+        return [h9, h10];
+      } else if (idx === 9 || idx === 21 || idx === 33 || idx === 45 || idx === 57 || idx === 69 || idx === 81 || idx === 93) {
+        return [h10, h11];
+      } else if (idx === 10 || idx === 22 || idx === 34 || idx === 46 || idx === 58 || idx === 70 || idx === 82 || idx === 94) {
+        return [h11, h12];
+      } else if (idx === 11 || idx === 23 || idx === 35 || idx === 47 || idx === 59 || idx === 71 || idx === 83 || idx === 95) {
+        return [h12, h13];
+      }
+    };
+    const getLeftForIndex = (idx) => {
+      if (idx === 0 || idx === 1 || idx === 2 || idx === 3 || idx === 4 || idx === 5 || idx === 6 || idx === 7 || idx === 8 || idx === 9 || idx === 10 || idx === 11) {
+        return [w1, w2];
+      } else if (idx === 12 || idx === 13 || idx === 14 || idx === 15 || idx === 16 || idx === 17 || idx === 18 || idx === 19 || idx === 20 || idx === 21 || idx === 22 || idx === 23) {
+        return [w2, w3];
+      } else if (idx === 24 || idx === 25 || idx === 26 || idx === 27 || idx === 28 || idx === 29 || idx === 30 || idx === 31 || idx === 32 || idx === 33 || idx === 34 || idx === 35) {
+        return [w3, w4];
+      } else if (idx === 36 || idx === 37 || idx === 38 || idx === 39 || idx === 40 || idx === 41 || idx === 42 || idx === 43 || idx === 44 || idx === 45 || idx === 46 || idx === 47) {
+        return [w4, w5];
+      } else if (idx === 48 || idx === 49 || idx === 50 || idx === 51 || idx === 52 || idx === 53 || idx === 54 || idx === 55 || idx === 56 || idx === 57 || idx === 58 || idx === 59) {
+        return [w5, w6];
+      } else if (idx === 60 || idx === 61 || idx === 62 || idx === 63 || idx === 64 || idx === 65 || idx === 66 || idx === 67 || idx === 68 || idx === 69 || idx === 70 || idx === 71) {
+        return [w6, w7];
+      } else if (idx === 72 || idx === 73 || idx === 74 || idx === 75 || idx === 76 || idx === 77 || idx === 78 || idx === 79 || idx === 80 || idx === 81 || idx === 82 || idx === 83) {
+        return [w7, w8];
+      } else if (idx === 84 || idx === 85 || idx === 86 || idx === 87 || idx === 88 || idx === 89 || idx === 90 || idx === 91 || idx === 92 || idx === 93 || idx === 94 || idx === 95) {
+        return [w8, w9];
+      }
+    };
+    allMoods.forEach((e, idx) => {
+      if (typeof e?.name !== 'string') {
+        flag = false;
+      } else {
+        data[e.position_at] = e;
+      }
+    });
+    if (flag === true) {
+      emotionsTextData = null;
+      emotionsTextData = {...data};
+    }
+    Object.keys(emotionsTextData).forEach((e, idx) => {
+      let [y1, y2] = getTopForIndex(idx);
+      let [x1, x2] = getLeftForIndex(idx);
+      emotionsTextData[e].top = [Math.round(y1), Math.round(y2)];
+      emotionsTextData[e].left = [Math.round(x1), Math.round(x2)];
+    });
   }
-  Object.keys(emotionsTextData).forEach((e, idx) => {
-    let [y1, y2] = getTopForIndex(idx);
-    let [x1, x2] = getLeftForIndex(idx);
-    emotionsTextData[e].top = [Math.round(y1), Math.round(y2)];
-    emotionsTextData[e].left = [Math.round(x1), Math.round(x2)];
-    // emotionsTextData[e].top = [parseFloat(y1.toFixed(2)), parseFloat(y2.toFixed(2))];
-    // emotionsTextData[e].left = [parseFloat(x1.toFixed(2)), parseFloat(x2.toFixed(2))];
-  });
+  // let data = {};
+  // let flag = true;
+  // allMoods.forEach((e, idx) => {
+  //   if (typeof e?.name !== 'string') {
+  //     flag = false;
+  //   } else {
+  //     data[e.name] = e;
+  //   }
+  // });
+  // if (flag === true) {
+  //   emotionsTextData = null;
+  //   emotionsTextData = {...data};
+  // }
+  // Object.keys(emotionsTextData).forEach((e, idx) => {
+  //   let [y1, y2] = getTopForIndex(idx);
+  //   let [x1, x2] = getLeftForIndex(idx);
+  //   emotionsTextData[e].top = [Math.round(y1), Math.round(y2)];
+  //   emotionsTextData[e].left = [Math.round(x1), Math.round(x2)];
+  // });
   // console.log('emotionTextData', emotionsTextData);
 };
 
@@ -302,6 +414,28 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
   let top = Math.round(y);
   let left = Math.round(x);
   // console.log('top: ', top, 'left: ', left,)
+  let d = null;
+
+  if (Array.isArray(userData?.AllMoods) && userData.AllMoods.length > 0) {
+    for (let i = 0; i < userData.AllMoods.length && d === null; i++) {
+      if (
+        typeof userData?.AllMoods?.[i]?.name === 'string' &&
+        top > emotionsTextData[userData.AllMoods[i].position_at]?.top?.[0] &&
+        top < emotionsTextData[userData.AllMoods[i].position_at]?.top?.[1] &&
+        left > emotionsTextData[userData.AllMoods[i].position_at]?.left?.[0] &&
+        left < emotionsTextData[userData.AllMoods[i].position_at]?.left?.[1]
+      ) {
+        d = emotionsTextData?.[userData.AllMoods[i].position_at]
+          ? {...emotionsTextData[userData.AllMoods[i].position_at]}
+          : emotionData;
+      }
+    }
+  }
+  if (d !== null) {
+    return d;
+  } else {
+    return emotionData;
+  }
   if (
     typeof userData?.AllMoods?.[0]?.name === 'string' &&
     top > emotionsTextData[userData.AllMoods[0].name]?.top?.[0] &&
