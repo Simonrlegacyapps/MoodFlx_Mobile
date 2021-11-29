@@ -8,7 +8,12 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
-import { getFontSize, horizontalScale, isTablet, metrics } from '../../Constants/sizeChoose';
+import {
+  getFontSize,
+  horizontalScale,
+  isTablet,
+  metrics,
+} from '../../Constants/sizeChoose';
 import {
   VictoryBar,
   VictoryChart,
@@ -20,20 +25,27 @@ import {
   VictoryScatter,
 } from 'victory-native';
 import LightGraph from '../../Components/LightGraph/LightGraph';
-import { getLightGraphData, getMyDeviceId, getScreenGraphData, getStandGraphData, getWeeklyHealthGraphData } from '../../services/commonService';
+import {
+  getLightGraphData,
+  getMyDeviceId,
+  getScreenGraphData,
+  getStandGraphData,
+  getWeeklyHealthGraphData,
+} from '../../services/commonService';
 import getStore from '../../redux';
 import axios from 'axios';
 import moment from 'moment';
 import PostRequestApi from '../../apirequest/PostRequestApi';
-import { dataTypes, getApiBaseUrl } from '../../Constants/constants';
+import {dataTypes, getApiBaseUrl} from '../../Constants/constants';
 import ScreenCircleBar from '../../Components/ScreenCircleBar/ScreenCircleBar';
 import ScreenTimeBarGraph from '../../Components/ScreenTimeGraph/ScreenTimeBarGraph';
 import {useSelector, useDispatch} from 'react-redux';
 import GraphicChart from '../../Components/GraphicChart/GraphicChart';
 import GraphBezierCustom from '../../Components/GraphBezierCustom/GraphBezierCustom';
 import BarGraph from '../../Components/BarChart/BarGraph';
-import { IndicatorHelper } from '../../Components/CommonComponents/CommonComponents';
-import { getSleepGraphData } from '../Home/SleepData/sleepDataService';
+import {IndicatorHelper} from '../../Components/CommonComponents/CommonComponents';
+import {getSleepGraphData} from '../Home/SleepData/sleepDataService';
+import {RubikRegular} from '../../Constants/fonts/Fonts';
 // const characterData = [
 //   { x: 'Monday', y: 18, fill: '#E74C3C' },
 //   { x: 'Tuesday', y: 24, fill: '#CDE73C' },
@@ -43,6 +55,29 @@ import { getSleepGraphData } from '../Home/SleepData/sleepDataService';
 //   { x: 'Saturday', y: 80, fill: '#9C3CE7' },
 //   { x: 'Sunday', y: 62, fill: '#E73CB8' },
 // ];
+const noDataStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    paddingTop: horizontalScale(38),
+  },
+  message: {
+    width: '70%',
+    fontSize: getFontSize(16),
+    fontFamily: RubikRegular,
+    alignSelf: 'center',
+    textAlign: 'center',
+  },
+});
+
+function NoDataScreen(props) {
+  return (
+    <View style={noDataStyles.container}>
+      <Text style={noDataStyles.message}>No Data Avaliable</Text>
+    </View>
+  );
+}
+
 const lightStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -56,28 +91,75 @@ const lightStyles = StyleSheet.create({
 
 export function LightTab(props) {
   const [lightGraphData, setLightGraphData] = useState(null);
+  const [averageValues, setAverageValues] = useState({
+    avgHigh: 0,
+    avgIdeal: 0,
+    avgLow: 0,
+  });
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
-  
-  const callGetLightApi = () => {
+
+  const getProgress = (e, total = 100) => {
+    if (!isNaN(e)) {
+      return Math.ceil((Number(e) * 120) / total);
+    }
+    return 0;
+  };
+
+  const calculateAvgValues = (data) => {
+    if (!(Array.isArray(data) && data.length > 0)) {
+      return;
+    }
+    let avgHighCount = 0;
+    let avgIdealCount = 0;
+    let avgLowCount = 0;
+    data.forEach(e => {
+      if (!isNaN(e?.value)) {
+        let val = Number(e.value)
+        if (val > 300) {
+          avgHighCount++;
+        } else if (val < 200 && val > 0) {
+          avgLowCount++;
+        } else if (val >= 200 && val <= 300) {
+          avgIdealCount++;
+        }
+      }
+    });
+    let total = avgHighCount + avgIdealCount + avgLowCount;
+    if (total > 0) {
+      setAverageValues((e) => ({
+        ...e,
+        avgHigh: (100 * avgHighCount) / total,
+        avgIdeal: (100 * avgIdealCount) / total,
+        avgLow: (100 * avgLowCount) / total,
+      }));
+    }
+  };
+
+  const callGetLightApi = (moodId) => {
     const deviceId = getMyDeviceId();
     const params = {
       "device_id": deviceId,
       "email": getStore?.()?.getState?.().First.UserEmail ?? "",
-      "user_id": getStore?.()?.getState?.().First.UserId ?? ""
+      "user_id": getStore?.()?.getState?.().First.UserId ?? "",
+      "mood_id": moodId,
     };
     console.log('callGetLightApi params ==> ', params);
     axios.post(`${getApiBaseUrl()}getLightReport`, params)
       .then(function (response) {
         console.log('✅ ✅ ✅ ✅ Success Get Light Data ✅ ✅ ✅ ✅');
+        console.log('Get Light Data response: ', response?.data);
         console.log('Get Light Data response: ', response?.data?.lightData);
         console.log('Get Light Data response: ', Object.values(response?.data?.lightData));
         if (response?.data?.lightData) {
           const lightArray = Object.values(response?.data?.lightData);
           if (Array.isArray(lightArray) && lightArray.length > 0) {
             const lightGraphData = getLightGraphData(lightArray);
+            calculateAvgValues(lightArray);
             console.log('lightGraphData: ', lightGraphData);
             setLightGraphData(lightGraphData);
+          } else {
+            setLightGraphData([]);
           }
         }
       })
@@ -87,8 +169,12 @@ export function LightTab(props) {
   };
 
   useEffect(() => {
-    callGetLightApi();
-  }, []);
+    callGetLightApi(UserData.dashboardMoodId);
+  }, [UserData.dashboardMoodId]);
+
+  if (!(Array.isArray(lightGraphData) && lightGraphData.length > 0)) {
+    return <NoDataScreen dataType={dataTypes.light} />;
+  }
 
   return (
     <View style={lightStyles.container}>
@@ -98,8 +184,8 @@ export function LightTab(props) {
           DarkColor="#FDB007"
           lightColor="#E5F9FC"
           Label="Av. High"
-          Time="24%"
-          value={15}
+          Time={`${averageValues?.avgHigh ?? 0}%`}
+          value={getProgress(averageValues?.avgHigh)}
           size={horizontalScale(36)}
           width={horizontalScale(5)}
           fontSize={getFontSize(15)}
@@ -108,8 +194,8 @@ export function LightTab(props) {
           DarkColor="#FDB007"
           lightColor="#E5F9FC"
           Label="Av. Ideal"
-          Time="42%"
-          value={15}
+          Time={`${averageValues?.avgIdeal ?? 0}%`}
+          value={getProgress(averageValues?.avgIdeal)}
           size={horizontalScale(36)}
           width={horizontalScale(5)}
           fontSize={getFontSize(15)}
@@ -118,8 +204,8 @@ export function LightTab(props) {
           DarkColor="#FDB007"
           lightColor="#E5F9FC"
           Label="Av. Low"
-          Time="34%"
-          value={15}
+          Time={`${averageValues?.avgLow ?? 0}%`}
+          value={getProgress(averageValues?.avgLow)}
           size={horizontalScale(36)}
           width={horizontalScale(5)}
           fontSize={getFontSize(15)}

@@ -28,6 +28,7 @@ import moment from 'moment';
 import getStore from '../../redux';
 import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 import { ViewIcon } from '../../../assets/svg/ViewIcon';
+import {SetDashboardMoodId} from '../../redux/actions/actions';
 
 const Tab = createMaterialTopTabNavigator();
 // const characterData = [
@@ -89,7 +90,7 @@ function Dashboard(props) {
       .then((res) => {
         console.log('✅ ✅ ✅ getRadarGraphMoodPercent api success✅ ✅ ✅', res?.data?.staffMoods, res?.data?.mood_data);
         if (Array.isArray(res?.data?.staffMoods)) {
-          setMoods(res.data.staffMoods);
+          setMoods([...res.data.staffMoods]);
           setCharacterData(res.data.staffMoods?.map((e, idx) => ({
             x: e?.moodName ?? '',
             y: !isNaN(e?.percentage) ? Number(e.percentage) : 0,
@@ -117,29 +118,29 @@ function Dashboard(props) {
   }, []);
 
   const onPressMoodItem = useCallback((item) => () => {
-    setMoodId((e) => {
-      if (item.id === e) {
+      let m = getStore?.().getState?.()?.First?.dashboardMoodId ?? null;
+      if (item.id === m) {
+        m = '';
         getMoodsApi();
-        return null;
       } else {
+        m = item.id;
         getMoodsApi(item.id);
       }
-      return item.id;
-    });
-  }, []);
+      dispatch(SetDashboardMoodId(m));
+    }, []);
 
   useEffect(() => {
     getMoodsApi();
   }, []);
 
   const moodItem = (item, index) => {
-    let id = moodId;
+    let id = getStore?.()?.getState?.()?.First?.dashboardMoodId ?? '';
     // let id = null;
     // setMoodId((e) => {
     //   id = e;
     //   return e;
     // });
-    if (id !== null && id !== item.id) {
+    if (id !== '' && id !== item.id) {
       return null;
     }
     const isActive = id === item.id;
@@ -187,8 +188,6 @@ function Dashboard(props) {
       </View>
     );
   };
-
-  console.log('characterData --->', characterData);
 
   return (
     <View style={styles.container}>
