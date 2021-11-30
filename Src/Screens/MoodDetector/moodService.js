@@ -2103,7 +2103,7 @@ export const setEmotionsTextData = (top, left, height, width, allMoods) => {
   //   emotionsTextData[e].top = [Math.round(y1), Math.round(y2)];
   //   emotionsTextData[e].left = [Math.round(x1), Math.round(x2)];
   // });
-  // console.log('emotionTextData', emotionsTextData);
+  console.log('emotionTextData', emotionsTextData);
 };
 
 export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
@@ -2113,16 +2113,17 @@ export const getEmotionsTextData = (y, x, emotionData = null, userData) => {
   let d = null;
 
   if (Array.isArray(userData?.AllMoods) && userData.AllMoods.length > 0) {
+    let checkField = userData.AllMoods?.[0]?.position_at !== undefined ? 'position_at' : 'name'
     for (let i = 0; i < userData.AllMoods.length && d === null; i++) {
       if (
-        typeof userData?.AllMoods?.[i]?.name === 'string' &&
-        top > emotionsTextData[userData.AllMoods[i].position_at]?.top?.[0] &&
-        top < emotionsTextData[userData.AllMoods[i].position_at]?.top?.[1] &&
-        left > emotionsTextData[userData.AllMoods[i].position_at]?.left?.[0] &&
-        left < emotionsTextData[userData.AllMoods[i].position_at]?.left?.[1]
+        typeof userData?.AllMoods?.[i]?.[checkField] !== undefined &&
+        top > emotionsTextData[userData.AllMoods[i][checkField]]?.top?.[0] &&
+        top < emotionsTextData[userData.AllMoods[i][checkField]]?.top?.[1] &&
+        left > emotionsTextData[userData.AllMoods[i][checkField]]?.left?.[0] &&
+        left < emotionsTextData[userData.AllMoods[i][checkField]]?.left?.[1]
       ) {
-        d = emotionsTextData?.[userData.AllMoods[i].position_at]
-          ? {...emotionsTextData[userData.AllMoods[i].position_at]}
+        d = emotionsTextData?.[userData.AllMoods[i][checkField]]
+          ? {...emotionsTextData[userData.AllMoods[i][checkField]]}
           : emotionData;
       }
     }

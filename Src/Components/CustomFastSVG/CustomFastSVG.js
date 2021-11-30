@@ -148,7 +148,8 @@ class CustomFastSVG extends Component {
         : xmlData;
     return (
       <View style={this.props.style}>
-        <SvgXml xml={xmlData} override={this.props} />
+        {/* <SvgXml xml={xmlData} override={this.props} /> */}
+        <SvgXml xml={this.state.svgXmlData} override={this.props} />
       </View>
     );
   }
