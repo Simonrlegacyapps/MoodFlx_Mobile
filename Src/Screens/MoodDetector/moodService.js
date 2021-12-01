@@ -2103,7 +2103,7 @@ export const setEmotionsTextData = (top, left, height, width, allMoods) => {
   //   emotionsTextData[e].top = [Math.round(y1), Math.round(y2)];
   //   emotionsTextData[e].left = [Math.round(x1), Math.round(x2)];
   // });
-  console.log('emotionTextData', emotionsTextData);
+  // console.log('emotionTextData', emotionsTextData);
 };
 
 export const getEmotionsTextData = (y, x, emotionData = null, userData) => {

@@ -467,7 +467,7 @@ const FitnessData = ({
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
           setOpenActionSheet={
-            isCallSync || Platform.OS === 'android'
+            isCallSync || Platform.OS === 'android' || !UserData.HealthPermission
               ? setOpenActionSheet
               : openHealthApp
           }
