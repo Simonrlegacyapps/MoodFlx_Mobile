@@ -218,8 +218,8 @@ function Dashboard(props) {
                 scrollEnabled: true,
               }}>
               <Tab.Screen name="Light" options={{ tabBarLabel: 'Light' }} component={LightTab} />
-              <Tab.Screen name="Standing" options={{ tabBarLabel: 'Standing' }} component={StandTimeTab} />
-              <Tab.Screen name="Screen Time" options={{ tabBarLabel: 'Screen Time' }} component={ScreenTimeTab} />
+              {Platform.OS === 'ios' && <Tab.Screen name="Standing" options={{ tabBarLabel: 'Standing' }} component={StandTimeTab} />}
+              {Platform.OS === 'android' && <Tab.Screen name="Screen Time" options={{ tabBarLabel: 'Screen Time' }} component={ScreenTimeTab} />}
               <Tab.Screen name="Activity" options={{ tabBarLabel: 'Activity' }} component={FitnessTab} />
               <Tab.Screen name="Weather" options={{ tabBarLabel: 'Weather' }} component={WeatherTab} />
               <Tab.Screen name="Sleep Quality" options={{ tabBarLabel: 'Sleep Quality' }} component={SleepQualityTab} />

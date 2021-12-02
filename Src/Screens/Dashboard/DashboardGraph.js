@@ -72,7 +72,7 @@ const noDataStyles = StyleSheet.create({
 
 function NoDataScreen(props) {
   return (
-    <View style={noDataStyles.container}>
+    <View style={noDataStyles.container} key={props?.dataType}>
       <Text style={noDataStyles.message}>No Data Avaliable</Text>
     </View>
   );
@@ -139,10 +139,10 @@ export function LightTab(props) {
   const callGetLightApi = (moodId) => {
     const deviceId = getMyDeviceId();
     const params = {
-      "device_id": deviceId,
-      "email": getStore?.()?.getState?.().First.UserEmail ?? "",
-      "user_id": getStore?.()?.getState?.().First.UserId ?? "",
-      "mood_id": moodId,
+      device_id: deviceId,
+      email: getStore?.()?.getState?.().First.UserEmail ?? '',
+      user_id: getStore?.()?.getState?.().First.UserId ?? '',
+      mood_id: moodId,
     };
     console.log('callGetLightApi params ==> ', params);
     axios.post(`${getApiBaseUrl()}getLightReport`, params)
@@ -157,9 +157,13 @@ export function LightTab(props) {
             const lightGraphData = getLightGraphData(lightArray);
             calculateAvgValues(lightArray);
             console.log('lightGraphData: ', lightGraphData);
-            setLightGraphData(lightGraphData);
+            if (Array.isArray(lightGraphData) && lightGraphData.length > 0) {
+              setLightGraphData(lightGraphData);
+            } else {
+              setLightGraphData(null);
+            }
           } else {
-            setLightGraphData([]);
+            setLightGraphData(null);
           }
         }
       })
@@ -172,12 +176,12 @@ export function LightTab(props) {
     callGetLightApi(UserData.dashboardMoodId);
   }, [UserData.dashboardMoodId]);
 
-  if (!(Array.isArray(lightGraphData) && lightGraphData.length > 0)) {
+  if (lightGraphData === null) {
     return <NoDataScreen dataType={dataTypes.light} />;
   }
 
   return (
-    <View style={lightStyles.container}>
+    <View style={lightStyles.container} key={dataTypes.light}>
       <LightGraph data={lightGraphData} graphWidth={metrics.screenWidth} />
       <View style={lightStyles.progressContainer}>
         <ScreenCircleBar
@@ -228,18 +232,26 @@ export function StandTimeTab(props) {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   
-  const getStandTimeApi = () => {
+  const getStandTimeApi = (moodId) => {
     const params = {
       device_id: getMyDeviceId(),
       email: getStore?.()?.getState?.()?.First?.UserEmail,
       user_id: getStore?.()?.getState?.()?.First?.UserId,
+      mood_id: moodId,
     };
     PostRequestApi('getStandingTimeReport', params)
       .then((data) => {
         console.log('✅ ✅ ✅ ✅ getStandingTimeReport api success✅ ✅ ✅ ✅ -data---->', data?.data?.standingData);
         let standDataArray = Object.values(data?.data?.standingData);
         if (Array.isArray(standDataArray) && standDataArray.length > 0) {
-          setGraphData(getStandGraphData(standDataArray));
+          let arr = getStandGraphData(standDataArray);
+          if (Array.isArray(arr) && arr.length > 0) {
+            setGraphData(arr);
+          } else {
+            setGraphData(null);
+          }
+        } else {
+          setGraphData(null);
         }
       })
       .catch((error) => {
@@ -249,12 +261,16 @@ export function StandTimeTab(props) {
 
   useEffect(() => {
     if (UserData.StandTimePermission === true) {
-      getStandTimeApi();
+      getStandTimeApi(UserData.dashboardMoodId);
     }
-  }, [UserData.StandTimePermission]);
+  }, [UserData.StandTimePermission, UserData.dashboardMoodId]);
+
+  if (UserData.StandTimePermission === true && graphData === null) {
+    return <NoDataScreen dataType={dataTypes.standTime} />;
+  }
 
   return (
-    <View style={standTimeStyles.container}>
+    <View style={standTimeStyles.container} key={dataTypes.standTime}>
       <ScreenTimeBarGraph graphWidth={metrics.screenWidth} data={graphData} />
     </View>
   );
@@ -273,11 +289,12 @@ export function ScreenTimeTab(props) {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   
-  const getScreenTimeApi = () => {
+  const getScreenTimeApi = (moodId) => {
     const params = {
       device_id: getMyDeviceId(),
       email: getStore?.()?.getState?.()?.First?.UserEmail,
       user_id: getStore?.()?.getState?.()?.First?.UserId,
+      mood_id: moodId,
     };
     PostRequestApi('getScreenTimeReport', params)
       .then((data) => {
@@ -285,21 +302,27 @@ export function ScreenTimeTab(props) {
         let screenDataArray = Object.values(data?.data?.screenData);
         if (Array.isArray(screenDataArray) && screenDataArray.length > 0) {
           setGraphData(getScreenGraphData(screenDataArray));
+        } else {
+          setGraphData(null);
         }
       })
       .catch((error) => {
-        console.log('❌ ❌ ❌ ❌ Error in get set Standing Time DATA❌ ❌ ❌ ❌ : ', error);
+        console.log('❌ ❌ ❌ ❌ Error in get set Screen Time DATA❌ ❌ ❌ ❌ : ', error);
       });
   };
 
   useEffect(() => {
     if (UserData.ScreenTimePermission === true) {
-      getScreenTimeApi();
+      getScreenTimeApi(UserData.dashboardMoodId);
     }
-  }, [UserData.ScreenTimePermission]);
+  }, [UserData.ScreenTimePermission, UserData.dashboardMoodId]);
+
+  if (UserData.ScreenTimePermission === true && graphData === null) {
+    return <NoDataScreen dataType={dataTypes.screenTime} />;
+  }
 
   return (
-    <View style={screenTimeStyles.container}>
+    <View style={screenTimeStyles.container} key={dataTypes.screenTime}>
       <ScreenTimeBarGraph graphWidth={metrics.screenWidth} data={graphData} />
     </View>
   );
@@ -318,19 +341,30 @@ export function FitnessTab(props) {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   
-  const callGetHealthDataApi = () => {
+  const callGetHealthDataApi = (moodId) => {
     const deviceId = getMyDeviceId();
     const store = getStore?.()?.getState?.();
     const params = {
       device_id: deviceId,
       email: store?.First?.UserEmail ?? '',
       user_id: store?.First?.UserId ?? '',
+      mood_id: moodId,
     };
     console.log('getHealthData params --->', params);
     PostRequestApi('getHealthData', params)
       .then((res) => {
         console.log('✅ ✅ ✅ ✅ Success getHealthData ✅ ✅ ✅ ✅', res?.data);
-        setWeeklyHealthGraphData(getWeeklyHealthGraphData(res?.data?.healthData));
+        if (Array.isArray(res?.data?.healthData) && res.data.healthData.length > 0) {
+          let dataArray = res.data.healthData.filter((e) => (!isNaN(e?.steps) && Number(e.steps) > 0));
+          let arr = getWeeklyHealthGraphData(res.data.healthData);
+          if (dataArray.length > 0 && Array.isArray(arr) && arr.length > 0) {
+            setWeeklyHealthGraphData(arr);
+          } else {
+            setWeeklyHealthGraphData(null);
+          }
+        } else {
+          setWeeklyHealthGraphData(null);
+        }
       })
       .catch(function (error) {
         console.log('❌ ❌ ❌ ❌ Error getHealthData ❌ ❌ ❌ ❌', error);
@@ -339,12 +373,16 @@ export function FitnessTab(props) {
 
   useEffect(() => {
     if (UserData.HealthPermission === true) {
-      callGetHealthDataApi();
+      callGetHealthDataApi(UserData.dashboardMoodId);
     }
-  }, [UserData.HealthPermission]);
+  }, [UserData.HealthPermission, UserData.dashboardMoodId]);
+
+  if (UserData.HealthPermission === true && weeklyHealthGraphData === null) {
+    return <NoDataScreen dataType={dataTypes.activity} />;
+  }
 
   return (
-    <View style={fitnessStyles.container}>
+    <View style={fitnessStyles.container} key={dataTypes.activity}>
       <GraphicChart
         fitness={true}
         graphType={dataTypes.activity}
@@ -401,7 +439,7 @@ export function WeatherTab(props) {
     isMinMaxHeightSet.current = true;
   };
 
-  const getWeather = () => {
+  const getWeather = (moodId) => {
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -409,7 +447,8 @@ export function WeatherTab(props) {
     var raw = JSON.stringify({
       device_id: deviceId,
       email: getStore?.()?.getState?.().First.UserEmail ?? "",
-      user_id: getStore?.()?.getState?.().First.UserId ?? ""
+      user_id: getStore?.()?.getState?.().First.UserId ?? "",
+      mood_id: moodId,
     });
 
     // console.log(`raw of weather graph data`, raw);
@@ -426,7 +465,11 @@ export function WeatherTab(props) {
       .then(async (result) => {
         console.log('Get weather Graph data', result);
         console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
-        setGraph(result.weatherData);
+        if(Array.isArray(result.weatherData) && result.weatherData.length > 0) {
+          setGraph(result.weatherData);
+        } else {
+          setGraph(null);
+        }
         // data.push({});
         // await syncWeatherData();
       })
@@ -435,9 +478,9 @@ export function WeatherTab(props) {
 
   useEffect(() => {
     if (UserData.WeatherPermission === true) {
-      getWeather();
+      getWeather(UserData.dashboardMoodId);
     }
-  }, [UserData.WeatherPermission]);
+  }, [UserData.WeatherPermission, UserData.dashboardMoodId]);
 
   const data = [
     {
@@ -598,8 +641,12 @@ export function WeatherTab(props) {
       }),
     );
 
+  if (UserData.WeatherPermission === true && Graph === null) {
+    return <NoDataScreen dataType={dataTypes.weather} />;
+  }
+
   return (
-    <View style={standTimeStyles.container}>
+    <View style={standTimeStyles.container} key={dataTypes.weather}>
       <View style={weatherStyles.subContainer}>
         {/* {swiperIndex == index && ( */}
         {true && (
@@ -667,7 +714,7 @@ export function SleepQualityTab(props) {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   
-  const callGetSleepDataApi = () => {
+  const callGetSleepDataApi = (moodId) => {
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -675,7 +722,8 @@ export function SleepQualityTab(props) {
     var params = {
       device_id: deviceId,
       email: getStore?.()?.getState?.().First.UserEmail ?? "",
-      user_id: getStore?.()?.getState?.().First.UserId ?? ""
+      user_id: getStore?.()?.getState?.().First.UserId ?? "",
+      mood_id: moodId,
     };
     // var raw = JSON.stringify({
     //   device_id: deviceId,
@@ -699,7 +747,11 @@ export function SleepQualityTab(props) {
         const asleepArray = result?.sleepData?.ASLEEP ? Object.values(result.sleepData.ASLEEP) : [];
         const graphData = getSleepGraphData({ weeklyData: { ASLEEP: asleepArray, INBED: inBedArray } });
         console.log('graphData: ', graphData);
-        setGraphData(graphData);
+        if (graphData !== null) {
+          setGraphData(graphData);
+        } else {
+          setGraphData(null);
+        }
       })
       .catch(function (error) {
         console.log('❌❌❌❌Fail Get Sleep Data❌❌❌❌', error, params);
@@ -708,12 +760,16 @@ export function SleepQualityTab(props) {
 
   useEffect(() => {
     if (UserData.SleepPermission === true) {
-      callGetSleepDataApi();
+      callGetSleepDataApi(UserData.dashboardMoodId);
     }
-  }, [UserData.SleepPermission]);
+  }, [UserData.SleepPermission, UserData.dashboardMoodId]);
+
+  if (UserData.SleepPermission === true && graphData === null) {
+    return <NoDataScreen dataType={dataTypes.sleep} />;
+  }
 
   return (
-    <View style={sleepQualityStyles.container}>
+    <View style={sleepQualityStyles.container} key={dataTypes.sleep}>
       <GraphicChart
         isDailyDisabled={true}
         sleepGraphData={graphData}

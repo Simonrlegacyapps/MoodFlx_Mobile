@@ -387,12 +387,12 @@ const App: () => React$Node = () => {
   }, []);
 
   const handleDynamicLink = async (link) => {
-    if (isHandleDynamicLinkCalled.current === true) {
-      return;
-    }
-    if (link) {
-      isHandleDynamicLinkCalled.current = true;
-    }
+    // if (isHandleDynamicLinkCalled.current === true) {
+    //   return;
+    // }
+    // if (link) {
+    //   isHandleDynamicLinkCalled.current = true;
+    // }
     let userEmail;
     let existingOrgName;
     try {
@@ -434,9 +434,18 @@ const App: () => React$Node = () => {
         newOrgName.toUpperCase(),
       );
       newOrg.current = org;
+      if (link) {
+        isHandleDynamicLinkCalled.current = true;
+      }
       setLinkModalText(modalText);
       setIsLinkModalVisible(true);
     } else if (!userEmail) {
+      if (isHandleDynamicLinkCalled.current === true) {
+        return;
+      }
+      if (link) {
+        isHandleDynamicLinkCalled.current = true;
+      }
       console.log('handleDynamicLink org: ', org);
       linkCompany(org);
     }
@@ -825,11 +834,11 @@ const App: () => React$Node = () => {
     // return null;
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-    // When the component is unmounted, remove the listener
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+  //   // When the component is unmounted, remove the listener
+  //   return () => unsubscribe();
+  // }, []);
 
 
   useEffect(() => {

@@ -485,27 +485,27 @@ const ProfileTab = ({ navigation }) => {
                 style={[styles.borderStyle, { marginRight: dynamicSize(17) }]}
               />
               <Text
-                onPress={() => Alert.alert('Personal Details', JSON.stringify({
-                  device_id: getMyDeviceId(),
-                  email: UserData.UserEmail,
-                  user_id: UserData.UserId,
-                  division: UserData.UserDivision,
-                  server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
-                }), [
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel"
-                  },
-                  { text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
-                    device_id: getMyDeviceId(),
-                    email: UserData.UserEmail,
-                    user_id: UserData.UserId,
-                    division: UserData.UserDivision,
-                    server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
-                  }))
-                  }
-                ])}
+                // onPress={() => Alert.alert('Personal Details', JSON.stringify({
+                //   device_id: getMyDeviceId(),
+                //   email: UserData.UserEmail,
+                //   user_id: UserData.UserId,
+                //   division: UserData.UserDivision,
+                //   server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                // }), [
+                //   {
+                //     text: "Cancel",
+                //     onPress: () => console.log("Cancel Pressed"),
+                //     style: "cancel"
+                //   },
+                //   { text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
+                //     device_id: getMyDeviceId(),
+                //     email: UserData.UserEmail,
+                //     user_id: UserData.UserId,
+                //     division: UserData.UserDivision,
+                //     server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                //   }))
+                //   }
+                // ])}
               >PERSONAL DETAILS</Text>
               <View
                 style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}
