@@ -98,11 +98,11 @@ const Linktocompany = ({ navigation }) => {
   //   UserData.UserDivision,
   // );
 
-  useEffect(() => {
-    if (route?.params?.email) {
-      setDivisionSetFlag(false);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (route?.params?.email) {
+  //     setDivisionSetFlag(false);
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (UserData.isLinkToCompanyRouteParamsReset === true) {
@@ -237,6 +237,19 @@ const Linktocompany = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
+      const check = async () => {
+        let div = null;
+        try {
+          const d = await AsyncStorage.getItem('Division');
+          div = await JSON.parse(d);
+        } catch (error) {
+          console.log('AsyncStorage get division error', error);
+        }
+        if (!(!!div)) {
+          navigation?.setParams?.({ email: UserData.UserEmail });
+          setDivisionSetFlag(false);
+        }
+      };
       if (UserData.UserEmail && UserData.UserId) {
         const deviceId = getMyDeviceId();
         const params = {
@@ -244,7 +257,7 @@ const Linktocompany = ({ navigation }) => {
           user_id: UserData.UserId,
           email: UserData.UserEmail,
         };
-
+        check();
         console.log('===useFocusEffect getDivision params ===', params);
         const isUnlinkAllowed = route?.params?.email ? false : true;
         setDivisions(null);

@@ -39,7 +39,7 @@ import moment from 'moment';
 import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../Constants/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
-import { getFloCoins, getMyDeviceId, openHealthApp } from '../../services/commonService';
+import { getFloCoins, getMyDeviceId, getWeeklyHealthGraphData, openHealthApp } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 import { activityHealthKitOptions } from '../../services/appPermissions';
@@ -71,38 +71,6 @@ function fitnessInsightsReducer(state, action) {
     default:
       return state;
   }
-}
-
-function getWeeklyHealthGraphData(dataArray) {
-  let weekDates = [];
-  let dates = [6, 5, 4, 3, 2, 1, 0];
-  let todaySteps = getStore?.().getState?.()?.First?.UserSteps ?? '0';
-  let apiDataArray = [];
-  dates.forEach((e, idx) => {
-    const d = moment().startOf('day').subtract(e, 'days');
-    weekDates.push({ date: d.format('YYYY-MM-DD'), day: d.format('dd'), y: e === 0 ? todaySteps : "0" });
-  });
-  console.log('dates ->', weekDates);
-  if (!(Array.isArray(dataArray) && dataArray.length > 0)) {
-    return weekDates;
-  }
-  let flag = false;
-  weekDates.forEach((e, idx) => {
-    dataArray.forEach((x) => {
-      if (!flag && x?.date === (e?.date ?? '-1')) {
-        apiDataArray.push({ ...e, y: x?.steps ?? "0" });
-        flag = true;
-      }
-    });
-    if (!flag) {
-      apiDataArray.push({...e});
-    }
-    flag = false;
-  });
-  apiDataArray = apiDataArray.map((e) => {
-    return { ...e, y: typeof e?.y === 'number' ? String(e.y) : (e?.y ?? '0') };
-  })
-  return apiDataArray;
 }
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
@@ -499,7 +467,7 @@ const FitnessData = ({
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
           setOpenActionSheet={
-            isCallSync || Platform.OS === 'android'
+            isCallSync || Platform.OS === 'android' || !UserData.HealthPermission
               ? setOpenActionSheet
               : openHealthApp
           }

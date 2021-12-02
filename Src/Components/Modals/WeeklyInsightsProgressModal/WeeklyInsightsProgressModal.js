@@ -63,7 +63,7 @@ const WeeklyInsightsProgress = ({
         />
         <View style={styles.upperContainer}>
           <Text style={styles.bigText}>
-            Weekly insight will be ready on Friday
+            Weekly insight will be ready on Thursday
           </Text>
           <View style={styles.imageContainer}>
             <WeeklyInsightsProgressImage

@@ -54,6 +54,7 @@ import {
   onDynamicLinkUpdate,
   onUnlinkUpdate,
   setDeviceId,
+  setDivisionSetFlag,
   setFitnessDataSync,
   setIsInitialVideoVisible,
   setMoodsArray,
@@ -191,9 +192,13 @@ const App: () => React$Node = () => {
   }, [netInfo?.isConnected]);
 
   useEffect(() => {
-    if (UserData.UserEmail && UserData.UserId) {
+    if (
+      UserData.UserEmail &&
+      UserData.UserId &&
+      UserData?.UserDetails?.division_id
+    ) {
       const params = {
-        // division_id: 'b13e784b-f4c5-4da4-a001-9de798eb556c',
+        division_id: UserData?.UserDetails?.division_id,
         email: UserData.UserEmail,
         user_id: UserData.UserId,
       };
@@ -215,12 +220,17 @@ const App: () => React$Node = () => {
           }
         })
         .catch((err) => {
-          console.log('error eapMessageData', err);
+          console.log('❌ ❌ ❌ ❌ error eapMessageData❌ ❌ ❌ ❌ ', err);
         });
     } else if (!(UserData.UserEmail && UserData.UserId)) {
       dispatch(SetNegativeMoodModalData(defaultNegativeMoodModalData));
     }
-  }, [UserData.UserEmail, UserData.UserId, dispatch]);
+  }, [
+    UserData.UserEmail,
+    UserData.UserId,
+    UserData?.UserDetails?.division_id,
+    dispatch,
+  ]);
 
   const checkInternet = useCallback(() => {
     NetInfo.fetch().then(state => {
@@ -291,16 +301,16 @@ const App: () => React$Node = () => {
               // data = {...data, division_id: null};
               if (data?.email) {
                 if (RootNavigation?.navigationRef?.current?.navigate) {
-                  RootNavigation?.navigationRef?.current?.navigate(
-                    'HomeScreen',
-                    {
-                      screen: 'LinkCompanyStackNavigation',
-                      params: {
-                        screen: 'Linktocompany',
-                        params: {email: data.email},
-                      },
-                    },
-                  );
+                  // RootNavigation?.navigationRef?.current?.navigate(
+                  //   'HomeScreen',
+                  //   {
+                  //     screen: 'LinkCompanyStackNavigation',
+                  //     params: {
+                  //       screen: 'Linktocompany',
+                  //       params: {email: data.email},
+                  //     },
+                  //   },
+                  // );
                 } else {
                   setEmail(data.email);
                 }
@@ -377,12 +387,12 @@ const App: () => React$Node = () => {
   }, []);
 
   const handleDynamicLink = async (link) => {
-    if (isHandleDynamicLinkCalled.current === true) {
-      return;
-    }
-    if (link) {
-      isHandleDynamicLinkCalled.current = true;
-    }
+    // if (isHandleDynamicLinkCalled.current === true) {
+    //   return;
+    // }
+    // if (link) {
+    //   isHandleDynamicLinkCalled.current = true;
+    // }
     let userEmail;
     let existingOrgName;
     try {
@@ -424,9 +434,18 @@ const App: () => React$Node = () => {
         newOrgName.toUpperCase(),
       );
       newOrg.current = org;
+      if (link) {
+        isHandleDynamicLinkCalled.current = true;
+      }
       setLinkModalText(modalText);
       setIsLinkModalVisible(true);
     } else if (!userEmail) {
+      if (isHandleDynamicLinkCalled.current === true) {
+        return;
+      }
+      if (link) {
+        isHandleDynamicLinkCalled.current = true;
+      }
       console.log('handleDynamicLink org: ', org);
       linkCompany(org);
     }
@@ -435,13 +454,13 @@ const App: () => React$Node = () => {
 
   const goToSelectDivision = useCallback(() => {
     console.log('goToSelectDivision email: ', email);
-    RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
-      screen: 'LinkCompanyStackNavigation',
-      params: {
-        screen: 'Linktocompany',
-        params: { email: email },
-      },
-    });
+    // RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
+    //   screen: 'LinkCompanyStackNavigation',
+    //   params: {
+    //     screen: 'Linktocompany',
+    //     params: { email: email },
+    //   },
+    // });
   }, [email]);
 
   const CheckScreen = async () => {
@@ -451,6 +470,12 @@ const App: () => React$Node = () => {
     return Promise.resolve(welcome);
     // console.log('welcome', welcome);
   };
+
+  useEffect(() => {
+    if (isHandleDynamicLinkCalled.current === true && UserData.UserDivision === null) {
+      isHandleDynamicLinkCalled.current = false;
+    }
+  }, [UserData.UserDivision]);
 
   useEffect(() => {
     async function myFunc() {
@@ -709,6 +734,12 @@ const App: () => React$Node = () => {
         if (result?.userData?.status !== 2) {
           await dispatch(UserDetail(result?.userData));
         }
+        // if (
+        //   result?.userData?.division_id &&
+        //   typeof result.userData.division_id === 'string'
+        // ) {
+        //   setDivisionSetFlag(true);
+        // }
       })
       .catch((error) => {
         console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error);
@@ -782,31 +813,32 @@ const App: () => React$Node = () => {
       fetch(`${getApiBaseUrl()}getMood`)
         .then((data) => data.json())
         .then(async (res) => {
+          // console.log('✅ ✅ ✅ ✅ getMood Api success ✅ ✅ ✅ ✅', res);
           // await setGetMoods(res.data);
           setMoodsArray(res?.data);
           await dispatch(Moods(res.data));
         })
         .catch((error) => {
           // const {code, message} = error;
-          console.log('error', error);
+          console.log('getMood Api error', error);
         });
     checkStorage();
     getProfileUserData();
   }, [UserData.WeatherPermission]);
 
   useEffect(() => {
-    // const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     dynamicLinks().getInitialLink().then(handleDynamicLink);
     // handleDynamicLink();
-    // return () => unsubscribe();
+    return () => unsubscribe();
     // return null;
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-    // When the component is unmounted, remove the listener
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+  //   // When the component is unmounted, remove the listener
+  //   return () => unsubscribe();
+  // }, []);
 
 
   useEffect(() => {

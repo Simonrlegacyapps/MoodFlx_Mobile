@@ -1,5 +1,7 @@
 export const PHOTO_URL = 'https://admin.moodflo.com/';
 export const PHOTO_URL_DEV = 'https://dev.moodflo.com/';
+export const MOOD_ICONS = 'https://super.moodflo.com/';
+export const MOOD_ICONS_DEV = 'https://staging.moodflo.com/';
 export const BASE_URL_DEV_API = 'https://dev.moodflo.com/api/';
 export const BASE_URL_PRODUCTION_API = 'https://admin.moodflo.com/api/';
 import moment from 'moment';
@@ -22,6 +24,14 @@ export const getPhotoUrl = () => {
     return PHOTO_URL_DEV;
   } else {
     return PHOTO_URL;
+  }
+};
+
+export const getMoodIconsUrl = () => {
+  if (__DEV__) {
+    return MOOD_ICONS_DEV;
+  } else {
+    return MOOD_ICONS;
   }
 };
 

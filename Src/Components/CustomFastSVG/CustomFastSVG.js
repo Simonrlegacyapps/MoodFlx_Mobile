@@ -59,12 +59,12 @@ class CustomFastSVG extends Component {
         responseXML = value;
       } else {
         const response = await fetch(uri);
-        responseXML = await response.text();
-        if (!this.props.noCache) AsyncStorage.setItem(uri, responseXML);
+        responseXML = await response?.text?.();
+        if (!this.props.noCache && responseXML) AsyncStorage.setItem(uri, responseXML);
       }
     } catch (e) {
       error = e;
-      console.error("ERROR SVG", e);
+      console.log("ERROR SVG", e);
     } finally {
       if (this.isComponentMounted) {
         this.setState({ svgXmlData: responseXML }, () => {
@@ -148,7 +148,8 @@ class CustomFastSVG extends Component {
         : xmlData;
     return (
       <View style={this.props.style}>
-        <SvgXml xml={xmlData} override={this.props} />
+        {/* <SvgXml xml={xmlData} override={this.props} /> */}
+        <SvgXml xml={this.state.svgXmlData} override={this.props} />
       </View>
     );
   }

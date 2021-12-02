@@ -1187,7 +1187,7 @@ const App = (props) => {
       ) {
         Fsteps.push({
           date: dates[i],
-          steps: totalSteps,
+          steps: !isNaN(totalSteps) ? Math.floor(totalSteps) : totalSteps,
           distance: totalDistance,
           calories: userCalories,
           heart_rate: totalHeartRate,

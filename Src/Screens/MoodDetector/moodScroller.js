@@ -27,6 +27,7 @@ import {
   regularWheelSizeArray,
 } from './moodService';
 import CustomFastSVG from '../../Components/CustomFastSVG/CustomFastSVG';
+import {getMoodIconsUrl, MOOD_ICONS} from '../../Constants/constants';
 // import { Easing } from 'react-native-reanimated';
 const {height, width} = Dimensions.get('window');
 
@@ -140,13 +141,13 @@ export default function MoodScroller({
                 width={getFontSize(20)}
                 height={getFontSize(20)}
                 // viewBox="0 0 24 24"
-                fill={t === 'content' ? '#000000' : undefined}
-                stroke="#000000"
+                // fill={t === 'content' ? '#000000' : undefined}
+                // stroke="#000000"
                 source={{
-                  uri: `https://super.moodflo.com/${toolTipData?.icon
-                      ? toolTipData.icon
-                      : 'mood_icons/161616176321272238406054abe3bb450.svg'
-                    }`,
+                  uri:
+                    typeof toolTipData?.icon === 'string'
+                      ? `${getMoodIconsUrl()}${toolTipData.icon}`
+                      : `${MOOD_ICONS}mood_icons/161616176321272238406054abe3bb450.svg`,
                 }}
               // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
               />

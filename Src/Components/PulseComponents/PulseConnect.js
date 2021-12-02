@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -135,6 +135,17 @@ export function PulseSelectDivision({divisions, userEmail, userDivisionName, set
       });
   }, [dispatch, userDivision?.id, userEmail]);
 
+  useEffect(() => {
+    let userDivisionData = userDivision;
+    setUserDivision(e => {
+      userDivisionData = e;
+      return e;
+    });
+    if (!userDivisionData && Array.isArray(divisions) && divisions.length > 0 && userDivisionName) {
+      setUserDivision(getDivisionData(divisions, userDivisionName));
+    }
+  }, [userDivisionName, divisions]);
+
   return (
     <>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -152,6 +163,8 @@ export function PulseSelectDivision({divisions, userEmail, userDivisionName, set
             <Text style={styles.divisionName}>
               {userDivision?.name && typeof userDivision.name === 'string'
                 ? userDivision.name
+                : (typeof userDivisionName === 'string' && userDivisionName !== '')
+                ? userDivisionName
                 : 'Select division'}
             </Text>
           </TouchableOpacity>

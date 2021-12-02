@@ -49,7 +49,7 @@ import { getLightDataIOS } from '../../../services/moodDataModuleService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
-import { getBulbColorFromLux, getMyDeviceId } from '../../../services/commonService';
+import { getBulbColorFromLux, getLightGraphData, getMyDeviceId } from '../../../services/commonService';
 import { getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
@@ -113,46 +113,6 @@ const LightData = ({
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
-
-  function getLightGraphData(dataArray) {
-    let lightGraphData = [];
-    let weekDates = [];
-    let dates = [6, 5, 4, 3, 2, 1, 0];
-    dates.forEach((e, idx) => {
-      const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
-      weekDates.push(d);
-    });
-    weekDates.forEach((e, idx) => {
-      const eData = moment(e);
-      let data = null;
-      let day = '';
-      day = eData.format('dd')?.charAt?.(0);
-      // INBED
-      dataArray.forEach((d) => {
-        const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
-        let value = 0;
-        if (d?.value && !isNaN(d?.value)) {
-          value = Number.parseInt(Number(d.value), 10);
-        }
-        if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
-          data = {
-            x: idx + 1,
-            y: value,
-            day,
-          }
-        }
-      });
-      if (data === null) {
-        data = {
-          x: idx + 1,
-          y: 0,
-          day
-        }
-      }
-      lightGraphData.push(data);
-    });
-    return lightGraphData;
-  }
 
   const VerifyDone = async () => {
     callUpdateLightApi(light);

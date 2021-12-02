@@ -89,6 +89,9 @@ export function getPrevFloCoins() {
 }
 
 export function setMoodsArray(moods) {
+  const onlyUnique = (value, index, self) => {
+    return self.indexOf(value) === index;
+  };
   // console.log('setMoodsArray ----', moods);
   if (Array.isArray(moods) && moods.length > 0) {
     moodsArray = moods
@@ -101,7 +104,7 @@ export function setMoodsArray(moods) {
         }
         return '';
       })
-      .filter((e) => e !== '');
+      .filter((e, idx, arr) => (e !== '' && onlyUnique(e, idx, arr)));
   }
 }
 
@@ -407,14 +410,15 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     return false;
   }
   if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 13) {
-  // if (moment().startOf('day').diff(moment().startOf('day').subtract(13, 'days'), 'days') < 13) {
+  // if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 1) {
     return false;
   }
   const params = {
     "device_id": getMyDeviceId?.() ?? '',
     "email": getStore?.()?.getState?.()?.First?.UserEmail ?? '',
     "user_id": getStore?.()?.getState?.()?.First?.UserId ?? '',
-    "start_date": moment().subtract(13, 'days').format('YYYY-MM-DD'),
+    "start_date": moment().utcOffset(600).subtract(13, 'days').format('YYYY-MM-DD'),
+    // "start_date": moment().utcOffset(600).subtract(1, 'days').format('YYYY-MM-DD'),
   };
   let response;
   try {
@@ -470,13 +474,23 @@ export const openUrl = (url) => async () => {
   if (typeof url !== 'string') {
     return;
   }
-  const supported = await Linking.canOpenURL(url);
+  let supported = true;
+  try {
+    supported = await Linking.canOpenURL(url);
+  } catch (error) {
+    console.log('Error in canOpenURL --->', url, error);
+  }
 
   if (supported) {
     // Opening the link with some app, if the URL scheme is "http" the web link should be opened
     // by some browser in the mobile
-    await Linking.openURL(url);
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.log('Error in openURL --->', url, error);
+    }
   } else {
+    console.log('openUrl supported --->', supported, url);
     Alert.alert(`Can't open this URL: ${url}`);
   }
 };
@@ -551,3 +565,171 @@ export const getUpdateAnswerRewardPoints = (startDate) => {
   }
   return 0;
 };
+
+export function getLightGraphData(dataArray) {
+  let lightGraphData = [];
+  let weekDates = [];
+  let dates = [6, 5, 4, 3, 2, 1, 0];
+  dates.forEach((e, idx) => {
+    const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+    weekDates.push(d);
+  });
+  weekDates.forEach((e, idx) => {
+    const eData = moment(e);
+    let data = null;
+    let day = '';
+    day = eData.format('dd')?.charAt?.(0);
+    // INBED
+    dataArray.forEach((d) => {
+      const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
+      let value = 0;
+      if (d?.value && !isNaN(d?.value)) {
+        value = Number.parseInt(Number(d.value), 10);
+      }
+      if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
+        data = {
+          x: idx + 1,
+          y: value,
+          day,
+        };
+      }
+    });
+    if (data === null) {
+      data = {
+        x: idx + 1,
+        y: 0,
+        day,
+      };
+    }
+    lightGraphData.push(data);
+  });
+  return lightGraphData;
+}
+
+export function getStandGraphData(dataArray) {
+  let screenTimeGraphData = [];
+  let weekDates = [];
+  let dates = [6, 5, 4, 3, 2, 1, 0];
+  dates.forEach((e, idx) => {
+    const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+    weekDates.push(d);
+  });
+  weekDates.forEach((e, idx) => {
+    const eData = moment(e);
+    let data = null;
+    let day = '';
+    day = eData.format('dd');
+    // INBED
+    dataArray.forEach((d) => {
+      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      let value = 0;
+      if (!isNaN(d?.duration)) {
+        value = Number.parseInt(Number(d.duration), 10);
+        value = value > 0 ? Math.floor(value / 60) : 0;
+        let x = Number(d.duration) % 60;
+        x = Math.floor((100 * x) / 60);
+        value = value + (x / 100);
+      }
+      if (
+        startDateMillis !== null &&
+        moment(startDateMillis).startOf('days').isSame(eData)
+      ) {
+        data = {
+          x: idx + 1,
+          y: value,
+          day,
+        };
+      }
+    });
+    if (data === null) {
+      data = {
+        x: idx + 1,
+        y: 0,
+        day,
+      };
+    }
+    screenTimeGraphData.push(data);
+  });
+  // console.log('screenTimeGraphData ------>', screenTimeGraphData);
+  return screenTimeGraphData;
+}
+
+export function getScreenGraphData(dataArray) {
+  let screenTimeGraphData = [];
+  let weekDates = [];
+  let dates = [6, 5, 4, 3, 2, 1, 0];
+  dates.forEach((e, idx) => {
+    const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
+    weekDates.push(d);
+  });
+  weekDates.forEach((e, idx) => {
+    const eData = moment(e);
+    let data = null;
+    let day = '';
+    day = eData.format('dd');
+    // INBED
+    dataArray.forEach((d) => {
+      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      let value = 0;
+      if (!isNaN(d?.duration)) {
+        value = Number.parseInt(Number(d.duration), 10);
+        value = value > 0 ? Math.floor(value / 60) : 0;
+        let x = Number(d.duration) % 60;
+        x = Math.floor((100 * x) / 60);
+        value = value + (x / 100);
+      }
+      if (
+        startDateMillis !== null &&
+        moment(startDateMillis).startOf('days').isSame(eData)
+      ) {
+        data = {
+          x: idx + 1,
+          y: value,
+          day,
+        };
+      }
+    });
+    if (data === null) {
+      data = {
+        x: idx + 1,
+        y: 0,
+        day,
+      };
+    }
+    screenTimeGraphData.push(data);
+  });
+  // console.log('screenTimeGraphData ------>', screenTimeGraphData);
+  return screenTimeGraphData;
+}
+
+export function getWeeklyHealthGraphData(dataArray) {
+  let weekDates = [];
+  let dates = [6, 5, 4, 3, 2, 1, 0];
+  let todaySteps = getStore?.().getState?.()?.First?.UserSteps ?? '0';
+  let apiDataArray = [];
+  dates.forEach((e, idx) => {
+    const d = moment().startOf('day').subtract(e, 'days');
+    weekDates.push({ date: d.format('YYYY-MM-DD'), day: d.format('dd'), y: e === 0 ? todaySteps : "0" });
+  });
+  console.log('dates ->', weekDates);
+  if (!(Array.isArray(dataArray) && dataArray.length > 0)) {
+    return weekDates;
+  }
+  let flag = false;
+  weekDates.forEach((e, idx) => {
+    dataArray.forEach((x) => {
+      if (!flag && x?.date === (e?.date ?? '-1')) {
+        apiDataArray.push({ ...e, y: x?.steps ?? "0" });
+        flag = true;
+      }
+    });
+    if (!flag) {
+      apiDataArray.push({...e});
+    }
+    flag = false;
+  });
+  apiDataArray = apiDataArray.map((e) => {
+    return { ...e, y: typeof e?.y === 'number' ? String(e.y) : (e?.y ?? '0') };
+  })
+  return apiDataArray;
+}
