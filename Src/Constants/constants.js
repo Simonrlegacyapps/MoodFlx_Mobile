@@ -152,21 +152,22 @@ export const getScreensPriority = (data) => {
       priority: 4,
     },
     {
-      name: dataTypes.screenTime,
-      permission: data?.ScreenTimePermission,
-      priority: 5,
-    },
-    {
       name: dataTypes.location,
       permission: data?.WeatherPermission,
-      priority: 6,
+      priority: 5,
     },
   ];
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'android') {
+    x.push({
+      name: dataTypes.screenTime,
+      permission: data?.ScreenTimePermission,
+      priority: 6,
+    });
+  } else if (Platform.OS === 'ios') {
     x.push({
       name: dataTypes.standTime,
       permission: data?.StandTimePermission,
-      priority: 7,
+      priority: 6,
     });
   }
   return x;
