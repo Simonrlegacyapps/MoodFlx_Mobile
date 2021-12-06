@@ -31,7 +31,7 @@ import { ViewIcon } from '../../../assets/svg/ViewIcon';
 import {SetDashboardMoodId} from '../../redux/actions/actions';
 
 const Tab = createMaterialTopTabNavigator();
-// const characterData = [
+// const characterDemoData = [
 //   { x: 'Monday', y: 18, fill: '#E74C3C' },
 //   { x: 'Tuesday', y: 24, fill: '#CDE73C' },
 //   { x: 'Wednesday', y: 8, fill: '#3FE73C' },
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     textTransform: 'none',
   },
   tabStyle: {
-    width: horizontalScale(100),
+    width: horizontalScale(120),
   },
   itemContainer: {
     flexDirection: 'row',
