@@ -26,9 +26,12 @@ import {
 } from 'victory-native';
 import LightGraph from '../../Components/LightGraph/LightGraph';
 import {
+  fetchAndUpdateScreenTimeData,
   getLightGraphData,
   getMyDeviceId,
+  getScreenDataTimeInHoursMin,
   getScreenGraphData,
+  getScreenTimeProgress,
   getStandGraphData,
   getWeeklyHealthGraphData,
 } from '../../services/commonService';
@@ -45,7 +48,7 @@ import GraphBezierCustom from '../../Components/GraphBezierCustom/GraphBezierCus
 import BarGraph from '../../Components/BarChart/BarGraph';
 import {IndicatorHelper} from '../../Components/CommonComponents/CommonComponents';
 import {getSleepGraphData} from '../Home/SleepData/sleepDataService';
-import {RubikRegular} from '../../Constants/fonts/Fonts';
+import {RubikExtraBold, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
 // const characterData = [
 //   { x: 'Monday', y: 18, fill: '#E74C3C' },
 //   { x: 'Tuesday', y: 24, fill: '#CDE73C' },
@@ -74,6 +77,33 @@ function NoDataScreen(props) {
   return (
     <View style={noDataStyles.container} key={props?.dataType}>
       <Text style={noDataStyles.message}>No Data Avaliable</Text>
+    </View>
+  );
+}
+
+const demoViewStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    zIndex: 234234,
+    justifyContent: 'center',
+    top: metrics.screenWidth / 3,
+    width: '100%',
+    alignItems: 'center',
+    opacity: 0.7,
+  },
+  demoText: {
+    fontWeight: '700',
+    fontFamily: RubikExtraBold,
+    fontSize: metrics.screenWidth / 5.5,
+    color: '#E0DDED',
+    transform: [{ rotate: '-15deg' }],
+  },
+});
+
+export function DemoView(props) {
+  return (
+    <View style={[demoViewStyles.container, props?.containerStyle]}>
+      <Text style={demoViewStyles.demoText}>Demo</Text>
     </View>
   );
 }
@@ -231,7 +261,7 @@ export function StandTimeTab(props) {
   const [graphData, setGraphData] = useState(null);
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
-  
+
   const getStandTimeApi = (moodId) => {
     const params = {
       device_id: getMyDeviceId(),
@@ -272,6 +302,7 @@ export function StandTimeTab(props) {
   return (
     <View style={standTimeStyles.container} key={dataTypes.standTime}>
       <ScreenTimeBarGraph graphWidth={metrics.screenWidth} data={graphData} />
+      {UserData.StandTimePermission !== true && <DemoView />}
     </View>
   );
 }
@@ -282,10 +313,23 @@ const screenTimeStyles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingTop: horizontalScale(38),
   },
+  headerTextView: {
+    marginVertical: horizontalScale(20),
+    alignSelf: 'center'
+  },
+  headerText: {
+    fontSize: getFontSize(18),
+    fontFamily: RubikMedium,
+  },
 });
 
 export function ScreenTimeTab(props) {
   const [graphData, setGraphData] = useState(null);
+  const [morningTime, setMorningTime] = useState(0);
+  const [noonTime, setNoonTime] = useState(0);
+  const [afternoonTime, setAfternoonTime] = useState(0);
+  const [eveningTime, setEveningTime] = useState(0);
+  const [nightTime, setNightTime] = useState(0);
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   
@@ -313,6 +357,29 @@ export function ScreenTimeTab(props) {
 
   useEffect(() => {
     if (UserData.ScreenTimePermission === true) {
+      fetchAndUpdateScreenTimeData({
+        setMorningTime: function (d) {
+          setMorningTime(d);
+        },
+        setNoonTime: function (d) {
+          setNoonTime(d);
+        },
+        setAfternoonTime: function (d) {
+          setAfternoonTime(d);
+        },
+        setEveningTime: function (d) {
+          setEveningTime(d);
+        },
+        setNightTime: function (d) {
+          setNightTime(d);
+        },
+        shouldCallUpdateApi: false,
+      });
+    }
+  }, [UserData.ScreenTimePermission]);
+
+  useEffect(() => {
+    if (UserData.ScreenTimePermission === true) {
       getScreenTimeApi(UserData.dashboardMoodId);
     }
   }, [UserData.ScreenTimePermission, UserData.dashboardMoodId]);
@@ -324,6 +391,51 @@ export function ScreenTimeTab(props) {
   return (
     <View style={screenTimeStyles.container} key={dataTypes.screenTime}>
       <ScreenTimeBarGraph graphWidth={metrics.screenWidth} data={graphData} />
+      <View style={screenTimeStyles.headerTextView}>
+        <Text style={screenTimeStyles.headerText}>Current Day Data for All moods</Text>
+      </View>
+      <ScreenCircleBar
+        DarkColor="#0DDE79"
+        lightColor="#CFF9ED"
+        Label="Morning"
+        Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? morningTime : 94)}
+        value={getScreenTimeProgress((UserData.ScreenTimePermission ? morningTime : 94), 240)}
+        border={true}
+        // marginTop={horizontalScale(20)}
+      />
+      <ScreenCircleBar
+        DarkColor="#E74C3C"
+        lightColor="#FEE9F2"
+        Label="Noon"
+        Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? noonTime : 94)}
+        value={getScreenTimeProgress((UserData.ScreenTimePermission ? noonTime : 94), 120)}
+        border={true}
+      />
+      <ScreenCircleBar
+        DarkColor="#F992BE"
+        lightColor="#FEE9F2"
+        Label="Afternoon"
+        Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? afternoonTime : 94)}
+        value={getScreenTimeProgress((UserData.ScreenTimePermission ? afternoonTime : 94), 180)}
+        border={true}
+      />
+      <ScreenCircleBar
+        DarkColor="#21CDDE"
+        lightColor="#E5F9FC"
+        Label="Evening"
+        Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? eveningTime : 94)}
+        value={getScreenTimeProgress((UserData.ScreenTimePermission ? eveningTime : 94), 180)}
+        border={true}
+      />
+      <ScreenCircleBar
+        DarkColor="#3498DB"
+        lightColor="#E5F9FC"
+        Label="Night"
+        Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? nightTime : 94)}
+        value={getScreenTimeProgress((UserData.ScreenTimePermission ? nightTime : 94), 720)}
+        marginBottom={horizontalScale(20)}
+      />
+      {UserData.ScreenTimePermission !== true && <DemoView />}
     </View>
   );
 }
@@ -334,13 +446,17 @@ const fitnessStyles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingTop: horizontalScale(38),
   },
+  demoViewContainer: {
+    opacity: 0.5,
+    // top: '25%',
+  },
 });
 
 export function FitnessTab(props) {
   const [weeklyHealthGraphData, setWeeklyHealthGraphData] = useState(null);
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
-  
+
   const callGetHealthDataApi = (moodId) => {
     const deviceId = getMyDeviceId();
     const store = getStore?.()?.getState?.();
@@ -394,6 +510,7 @@ export function FitnessTab(props) {
         // fives={fives}
         weeklyHealthGraphData={weeklyHealthGraphData}
       />
+      {UserData.HealthPermission !== true && <DemoView containerStyle={fitnessStyles.demoViewContainer}/>}
     </View>
   );
 }
@@ -694,6 +811,7 @@ export function WeatherTab(props) {
           <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
         </View>
       </View>
+      {UserData.WeatherPermission !== true && <DemoView />}
     </View>
   );
 }
@@ -706,6 +824,10 @@ const sleepQualityStyles = StyleSheet.create({
   },
   progressContainer: {
     marginTop: horizontalScale(5),
+  },
+  demoViewContainer: {
+    opacity: 0.5,
+    // top: '25%',
   },
 });
 
@@ -775,6 +897,7 @@ export function SleepQualityTab(props) {
         sleepGraphData={graphData}
         graphType={dataTypes.sleep}
       />
+      {UserData.SleepPermission !== true && <DemoView containerStyle={sleepQualityStyles.demoViewContainer} />}
     </View>
   );
 }
