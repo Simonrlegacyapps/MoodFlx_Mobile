@@ -42,7 +42,7 @@ import isEmpty from 'lodash.isempty';
 import getStore from '../../../redux';
 import {ScreenTimePerm} from '../../../redux/actions/actions';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
-import {getMyDeviceId, getScreenGraphData} from '../../../services/commonService';
+import {fetchAndUpdateScreenTimeData, getMyDeviceId, getScreenDataTimeInHoursMin, getScreenGraphData, getScreenTimeProgress} from '../../../services/commonService';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
@@ -263,182 +263,212 @@ const ScreenData = ({
   };
 
   const getDailyStats = () => {
-    let currentDayTime = 0;
-    let morning = 0;
-    let noon = 0;
-    let afternoon = 0;
-    let evening = 0;
-    let night = 0;
-    let morningSTime = moment().startOf('day').add(7, 'hours').valueOf();
-    let noonSTime = moment().startOf('day').add(11, 'hours').valueOf();
-    let afternoonSTime = moment().startOf('day').add(13, 'hours').valueOf();
-    let eveningSTime = moment().startOf('day').add(16, 'hours').valueOf();
-    let nightSTime = moment().startOf('day').add(19, 'hours').valueOf();
-    let nightETime = moment().startOf('day').add(1, 'day').add(7, 'hours').valueOf();
-    if (!UsageStats) {
-      Toast.show({
-        type: 'error',
-        text2: 'Usage Stats not available',
-        visibilityTime: 4000,
-        autoHide: true,
-      });
-      return;
-    }
-    if (!UsageStats?.getDailyStats) {
-      Toast.show({
-        type: 'error',
-        text2: 'Usage Stats queryUsageStats not available',
-        visibilityTime: 4000,
-        autoHide: true,
-      });
-      return;
-    }
-    UsageStats?.getUsageStats?.(morningSTime, noonSTime)
-      .then((data) => {
-        console.log('MORNING SCREEN TIME DATA: ', data);
-        morning = getTotalTimeInForeground(data);
-        setMorningTime(morning);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        console.log('screenTimePermission --->', screenTimePermission);
-        if (screenTimePermission !== true && !isEmpty(data)) {
-          setScreenTimePermission(true);
-        }
-        return UsageStats.getUsageStats(noonSTime, afternoonSTime);
-      })
-      .then((data) => {
-        console.log('NOON SCREEN TIME DATA: ', data);
-        noon = getTotalTimeInForeground(data);
-        setNoonTime(noon);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission !== true && !isEmpty(data)) {
-          setScreenTimePermission(true);
-        }
-        return UsageStats.getUsageStats(afternoonSTime, eveningSTime);
-      })
-      .then((data) => {
-        console.log('AFTERNOON SCREEN TIME DATA: ', data);
-        afternoon = getTotalTimeInForeground(data);
-        setAfternoonTime(afternoon);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission !== true && !isEmpty(data)) {
-          setScreenTimePermission(true);
-        }
-        return UsageStats.getUsageStats(eveningSTime, nightSTime);
-      })
-      .then((data) => {
-        console.log('EVENING SCREEN TIME DATA: ', data);
-        evening = getTotalTimeInForeground(data);
-        setEveningTime(evening);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission !== true && !isEmpty(data)) {
-          setScreenTimePermission(true);
-        }
-        return UsageStats.getUsageStats(nightSTime, nightETime);
-      })
-      .then((data) => {
-        console.log('NIGHT SCREEN TIME DATA: ', data);
-        night = getTotalTimeInForeground(data);
-        setNightTime(night);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission !== true && !isEmpty(data)) {
-          setScreenTimePermission(true);
-        }
-        return UsageStats.getUsageStats(
-          moment().startOf('day').valueOf(),
-          moment().valueOf(),
-        );
-      })
-      .then((data) => {
-        console.log('CURRENT DAY SCREEN TIME DATA: ', data);
-        currentDayTime = getTotalTimeInForeground(data);
-        setCurrentDayScreenTime(currentDayTime);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission !== true && !isEmpty(data)) {
-          setScreenTimePermission(true);
-        }
-        return UsageStats.getYesterdayStats();
-      })
-      .then((data) => {
-        console.log('YESTERDAY SCREEN TIME DATA: ', data);
-        let prevDayTime = getTotalTimeInForeground(data);
-        setYesterdayScreenTime(prevDayTime);
-        const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
-        if (screenTimePermission !== true && !isEmpty(data)) {
-          setScreenTimePermission(true);
-        }
-        let prevDay = moment().subtract(1, 'days');
-        const params = {
-          device_id: getMyDeviceId(),
-          email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
-          screen_data: [
-            {
-              time_interval: 'yesterday',
-              start_date: prevDay.clone().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
-              end_date: prevDay.clone().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
-              value: prevDayTime,
-            },
-            {
-              time_interval: 'morning',
-              start_date: moment(morningSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(noonSTime).format('YYYY-MM-DD HH:mm:ss'),
-              value: morning,
-            },
-            {
-              time_interval: 'noon',
-              start_date: moment(noonSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(afternoonSTime).format('YYYY-MM-DD HH:mm:ss'),
-              value: noon,
-            },
-            {
-              time_interval: 'afternoon',
-              start_date: moment(afternoonSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(eveningSTime).format('YYYY-MM-DD HH:mm:ss'),
-              value: afternoon,
-            },
-            {
-              time_interval: 'evening',
-              start_date: moment(eveningSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(nightSTime).format('YYYY-MM-DD HH:mm:ss'),
-              value: evening,
-            },
-            {
-              time_interval: 'night',
-              start_date: moment(nightSTime).format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment(nightETime).format('YYYY-MM-DD HH:mm:ss'),
-              value: night,
-            },
-            {
-              time_interval: 'today',
-              start_date: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
-              end_date: moment().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
-              value: currentDayTime,
-            },
-          ],
-          user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
-        };
-        console.log('updateScreenTime params --->', params);
-        return PostRequestApi('updateScreenTime', params);
-      })
-      .then((data) => {
-        console.log('✅ ✅ ✅ ✅ updateScreenTime api success✅ ✅ ✅ ✅ -data---->', data?.data);
-        const params = {
-          device_id: getMyDeviceId(),
-          email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
-          user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
-        };
-        console.log('getScreenTimeReport params --->', params);
-        return PostRequestApi('getScreenTimeReport', params);
-      })
-      .then((data) => {
-        console.log('✅ ✅ ✅ ✅ getScreenTimeReport api success✅ ✅ ✅ ✅ -data---->', data?.data);
-        let screenDataArray = Object.values(data?.data?.screenData);
-        if (Array.isArray(screenDataArray) && screenDataArray.length > 0) {
-          setGraphData(getScreenGraphData(screenDataArray));
-        }
-      })
-      .catch((error) => {
-        console.log('❌ ❌ ❌ ❌ Error in getting SCREEN TIME DATA❌ ❌ ❌ ❌ : ', error);
-      });
+    fetchAndUpdateScreenTimeData({
+      setMorningTime: function (d) {
+        setMorningTime(d);
+      },
+      setScreenTimePermission: function (d) {
+        setScreenTimePermission(d);
+      },
+      setNoonTime: function (d) {
+        setNoonTime(d);
+      },
+      setAfternoonTime: function (d) {
+        setAfternoonTime(d);
+      },
+      setEveningTime: function (d) {
+        setEveningTime(d);
+      },
+      setNightTime: function (d) {
+        setNightTime(d);
+      },
+      setCurrentDayScreenTime: function (d) {
+        setCurrentDayScreenTime(d);
+      },
+      setYesterdayScreenTime: function (d) {
+        setYesterdayScreenTime(d);
+      },
+      setGraphData: function (d) {
+        setGraphData(d);
+      },
+      shouldCallUpdateApi: true,
+    });
+    // let currentDayTime = 0;
+    // let morning = 0;
+    // let noon = 0;
+    // let afternoon = 0;
+    // let evening = 0;
+    // let night = 0;
+    // let morningSTime = moment().startOf('day').add(7, 'hours').valueOf();
+    // let noonSTime = moment().startOf('day').add(11, 'hours').valueOf();
+    // let afternoonSTime = moment().startOf('day').add(13, 'hours').valueOf();
+    // let eveningSTime = moment().startOf('day').add(16, 'hours').valueOf();
+    // let nightSTime = moment().startOf('day').add(19, 'hours').valueOf();
+    // let nightETime = moment().startOf('day').add(1, 'day').add(7, 'hours').valueOf();
+    // if (!UsageStats) {
+    //   Toast.show({
+    //     type: 'error',
+    //     text2: 'Usage Stats not available',
+    //     visibilityTime: 4000,
+    //     autoHide: true,
+    //   });
+    //   return;
+    // }
+    // if (!UsageStats?.getDailyStats) {
+    //   Toast.show({
+    //     type: 'error',
+    //     text2: 'Usage Stats queryUsageStats not available',
+    //     visibilityTime: 4000,
+    //     autoHide: true,
+    //   });
+    //   return;
+    // }
+    // UsageStats?.getUsageStats?.(morningSTime, noonSTime)
+    //   .then((data) => {
+    //     console.log('MORNING SCREEN TIME DATA: ', data);
+    //     morning = getTotalTimeInForeground(data);
+    //     setMorningTime(morning);
+    //     const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+    //     console.log('screenTimePermission --->', screenTimePermission);
+    //     if (screenTimePermission !== true && !isEmpty(data)) {
+    //       setScreenTimePermission(true);
+    //     }
+    //     return UsageStats.getUsageStats(noonSTime, afternoonSTime);
+    //   })
+    //   .then((data) => {
+    //     console.log('NOON SCREEN TIME DATA: ', data);
+    //     noon = getTotalTimeInForeground(data);
+    //     setNoonTime(noon);
+    //     const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+    //     if (screenTimePermission !== true && !isEmpty(data)) {
+    //       setScreenTimePermission(true);
+    //     }
+    //     return UsageStats.getUsageStats(afternoonSTime, eveningSTime);
+    //   })
+    //   .then((data) => {
+    //     console.log('AFTERNOON SCREEN TIME DATA: ', data);
+    //     afternoon = getTotalTimeInForeground(data);
+    //     setAfternoonTime(afternoon);
+    //     const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+    //     if (screenTimePermission !== true && !isEmpty(data)) {
+    //       setScreenTimePermission(true);
+    //     }
+    //     return UsageStats.getUsageStats(eveningSTime, nightSTime);
+    //   })
+    //   .then((data) => {
+    //     console.log('EVENING SCREEN TIME DATA: ', data);
+    //     evening = getTotalTimeInForeground(data);
+    //     setEveningTime(evening);
+    //     const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+    //     if (screenTimePermission !== true && !isEmpty(data)) {
+    //       setScreenTimePermission(true);
+    //     }
+    //     return UsageStats.getUsageStats(nightSTime, nightETime);
+    //   })
+    //   .then((data) => {
+    //     console.log('NIGHT SCREEN TIME DATA: ', data);
+    //     night = getTotalTimeInForeground(data);
+    //     setNightTime(night);
+    //     const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+    //     if (screenTimePermission !== true && !isEmpty(data)) {
+    //       setScreenTimePermission(true);
+    //     }
+    //     return UsageStats.getUsageStats(
+    //       moment().startOf('day').valueOf(),
+    //       moment().valueOf(),
+    //     );
+    //   })
+    //   .then((data) => {
+    //     console.log('CURRENT DAY SCREEN TIME DATA: ', data);
+    //     currentDayTime = getTotalTimeInForeground(data);
+    //     setCurrentDayScreenTime(currentDayTime);
+    //     const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+    //     if (screenTimePermission !== true && !isEmpty(data)) {
+    //       setScreenTimePermission(true);
+    //     }
+    //     return UsageStats.getYesterdayStats();
+    //   })
+    //   .then((data) => {
+    //     console.log('YESTERDAY SCREEN TIME DATA: ', data);
+    //     let prevDayTime = getTotalTimeInForeground(data);
+    //     setYesterdayScreenTime(prevDayTime);
+    //     const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+    //     if (screenTimePermission !== true && !isEmpty(data)) {
+    //       setScreenTimePermission(true);
+    //     }
+    //     let prevDay = moment().subtract(1, 'days');
+    //     const params = {
+    //       device_id: getMyDeviceId(),
+    //       email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
+    //       screen_data: [
+    //         {
+    //           time_interval: 'yesterday',
+    //           start_date: prevDay.clone().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+    //           end_date: prevDay.clone().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+    //           value: prevDayTime,
+    //         },
+    //         {
+    //           time_interval: 'morning',
+    //           start_date: moment(morningSTime).format('YYYY-MM-DD HH:mm:ss'),
+    //           end_date: moment(noonSTime).format('YYYY-MM-DD HH:mm:ss'),
+    //           value: morning,
+    //         },
+    //         {
+    //           time_interval: 'noon',
+    //           start_date: moment(noonSTime).format('YYYY-MM-DD HH:mm:ss'),
+    //           end_date: moment(afternoonSTime).format('YYYY-MM-DD HH:mm:ss'),
+    //           value: noon,
+    //         },
+    //         {
+    //           time_interval: 'afternoon',
+    //           start_date: moment(afternoonSTime).format('YYYY-MM-DD HH:mm:ss'),
+    //           end_date: moment(eveningSTime).format('YYYY-MM-DD HH:mm:ss'),
+    //           value: afternoon,
+    //         },
+    //         {
+    //           time_interval: 'evening',
+    //           start_date: moment(eveningSTime).format('YYYY-MM-DD HH:mm:ss'),
+    //           end_date: moment(nightSTime).format('YYYY-MM-DD HH:mm:ss'),
+    //           value: evening,
+    //         },
+    //         {
+    //           time_interval: 'night',
+    //           start_date: moment(nightSTime).format('YYYY-MM-DD HH:mm:ss'),
+    //           end_date: moment(nightETime).format('YYYY-MM-DD HH:mm:ss'),
+    //           value: night,
+    //         },
+    //         {
+    //           time_interval: 'today',
+    //           start_date: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+    //           end_date: moment().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+    //           value: currentDayTime,
+    //         },
+    //       ],
+    //       user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
+    //     };
+    //     console.log('updateScreenTime params --->', params);
+    //     return PostRequestApi('updateScreenTime', params);
+    //   })
+    //   .then((data) => {
+    //     console.log('✅ ✅ ✅ ✅ updateScreenTime api success✅ ✅ ✅ ✅ -data---->', data?.data);
+    //     const params = {
+    //       device_id: getMyDeviceId(),
+    //       email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
+    //       user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
+    //     };
+    //     console.log('getScreenTimeReport params --->', params);
+    //     return PostRequestApi('getScreenTimeReport', params);
+    //   })
+    //   .then((data) => {
+    //     console.log('✅ ✅ ✅ ✅ getScreenTimeReport api success✅ ✅ ✅ ✅ -data---->', data?.data);
+    //     let screenDataArray = Object.values(data?.data?.screenData);
+    //     if (Array.isArray(screenDataArray) && screenDataArray.length > 0) {
+    //       setGraphData(getScreenGraphData(screenDataArray));
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log('❌ ❌ ❌ ❌ Error in getting SCREEN TIME DATA❌ ❌ ❌ ❌ : ', error);
+    //   });
   };
 
   // const getPreviousDayStats = () => {
@@ -478,23 +508,6 @@ const ScreenData = ({
 
   const AnonymousPopUpcancelled = () => {
     setAnonymousClick(false);
-  };
-
-  const getProgress = (e, totalTime = 360) => {
-    if (!isNaN(e)) {
-      return Math.ceil((Number(e) * 120) / totalTime);
-    }
-    return 0;
-  };
-
-  const getTimeInHoursMin = (e) => {
-    if (!isNaN(e)) {
-      let i = Number(e);
-      let hr = Math.floor(i / 60);
-      let min = i % 60;
-      return i > 0 ? `${hr > 0 ? `${hr}hr ` : ''}${min > 0 ? `${min}min` : ''}` : '0min';
-    }
-    return '0min';
   };
 
   return (
@@ -641,56 +654,56 @@ const ScreenData = ({
               lightColor="#CFF9ED"
               Label="Today"
               // Time="1hr 34min"
-              Time={getTimeInHoursMin(currentDayScreenTime)}
-              value={getProgress(currentDayScreenTime)}
+              Time={getScreenDataTimeInHoursMin(currentDayScreenTime)}
+              value={getScreenTimeProgress(currentDayScreenTime)}
               border={true}
             />
             <ScreenCircleBar
               DarkColor="#F992BE"
               lightColor="#FEE9F2"
               Label="Yesterday"
-              Time={getTimeInHoursMin(yesterdayScreenTime)}
+              Time={getScreenDataTimeInHoursMin(yesterdayScreenTime)}
               // Time="1hr 34min"
-              value={getProgress(yesterdayScreenTime)}
+              value={getScreenTimeProgress(yesterdayScreenTime)}
               border={true}
             /> */}
             <ScreenCircleBar
               DarkColor="#0DDE79"
               lightColor="#CFF9ED"
               Label="Morning"
-              Time={getTimeInHoursMin(UserData.ScreenTimePermission ? morningTime : 94)}
-              value={getProgress((UserData.ScreenTimePermission ? morningTime : 94), 240)}
+              Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? morningTime : 94)}
+              value={getScreenTimeProgress((UserData.ScreenTimePermission ? morningTime : 94), 240)}
               border={true}
             />
             <ScreenCircleBar
               DarkColor="#E74C3C"
               lightColor="#FEE9F2"
               Label="Noon"
-              Time={getTimeInHoursMin(UserData.ScreenTimePermission ? noonTime : 94)}
-              value={getProgress((UserData.ScreenTimePermission ? noonTime : 94), 120)}
+              Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? noonTime : 94)}
+              value={getScreenTimeProgress((UserData.ScreenTimePermission ? noonTime : 94), 120)}
               border={true}
             />
             <ScreenCircleBar
               DarkColor="#F992BE"
               lightColor="#FEE9F2"
               Label="Afternoon"
-              Time={getTimeInHoursMin(UserData.ScreenTimePermission ? afternoonTime : 94)}
-              value={getProgress((UserData.ScreenTimePermission ? afternoonTime : 94), 180)}
+              Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? afternoonTime : 94)}
+              value={getScreenTimeProgress((UserData.ScreenTimePermission ? afternoonTime : 94), 180)}
               border={true}
             />
             <ScreenCircleBar
               DarkColor="#21CDDE"
               lightColor="#E5F9FC"
               Label="Evening"
-              Time={getTimeInHoursMin(UserData.ScreenTimePermission ? eveningTime : 94)}
-              value={getProgress((UserData.ScreenTimePermission ? eveningTime : 94), 180)}
+              Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? eveningTime : 94)}
+              value={getScreenTimeProgress((UserData.ScreenTimePermission ? eveningTime : 94), 180)}
             />
             <ScreenCircleBar
               DarkColor="#3498DB"
               lightColor="#E5F9FC"
               Label="Night"
-              Time={getTimeInHoursMin(UserData.ScreenTimePermission ? nightTime : 94)}
-              value={getProgress((UserData.ScreenTimePermission ? nightTime : 94), 720)}
+              Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? nightTime : 94)}
+              value={getScreenTimeProgress((UserData.ScreenTimePermission ? nightTime : 94), 720)}
             />
           </View>
           {/* <GraphicChart /> */}
@@ -748,7 +761,7 @@ const ScreenData = ({
         verifyDone={() => VerifyDone()}
       />
 
-<AnonymousPopUp
+      <AnonymousPopUp
         modalVisible={AnonymousClick}
         dismissModalHandler={() => AnonymousPopUpcancelled()}
         verifyDone={() => AnonymousPopUpcancelled()}
