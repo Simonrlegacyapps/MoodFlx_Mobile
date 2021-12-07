@@ -30,9 +30,8 @@ import getStore from '../../redux';
 import {getUpdateRewardPoint} from '../../apirequest/PostRequestApi';
 import AsyncStorage from '@react-native-community/async-storage';
 import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
-import {getIsMoodLvlUp} from '../../services/commonService';
+import {getIsMoodLvlUp, getMyDeviceId} from '../../services/commonService';
 import {useDispatch} from 'react-redux';
-import DeviceInfo from 'react-native-device-info';
 
 const {height} = Dimensions.get("window")
 
@@ -69,7 +68,7 @@ const ProgressScreen = ({navigation, route}) => {
   const howMoodfloWorks = () => {
     const userData = getStore?.()?.getState?.()?.First;
     const prevRewardPts = userData?.floCoins;
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     let params = {
       "device_id": deviceId,
       "email": userData?.UserEmail ?? null,
@@ -78,7 +77,7 @@ const ProgressScreen = ({navigation, route}) => {
       "reward_point": 50,
       "description": "How moodflo works"
     };
-    console.log(`params of how mood flo works 50 coins`, params);
+    console.log(`params of how mood flx works 50 coins`, params);
     setIsLoading(true);
     function onError() {
       setIsLoading(false);
@@ -132,7 +131,7 @@ const ProgressScreen = ({navigation, route}) => {
     {
       img1: <Lock />,
       label:"Anonymity",
-      t1: 'Flo creates a unified voice for you & your team ',
+      t1: 'Flx creates a unified voice for you & your team ',
       t2: 'via Team Pulses.',
       t3: '',
       t4: 'This is what the boss sees',
@@ -142,10 +141,10 @@ const ProgressScreen = ({navigation, route}) => {
     {
       img1: <ScienceG />,
       label:"The Science",
-      t1: 'Flo can use your data. ',
+      t1: 'Flx can use your data. ',
       t2: 'The more data, the more smarter!',
       t3: '',
-      t4: 'Let Flo undestand your environment and how it impacts your mood',
+      t4: 'Let Flx undestand your environment and how it impacts your mood',
       button: "Next"
     },
     {
@@ -154,7 +153,7 @@ const ProgressScreen = ({navigation, route}) => {
       t1: 'More data = more accurate insights + ',
       t2: 'more rewards.',
       t3: 'Get Rewarded!',
-      t4: 'Spend your Flo coins on things that make you feel good',
+      t4: 'Spend your Flx coins on things that make you feel good',
       button: "Done"
     },
   ];
@@ -176,7 +175,7 @@ const ProgressScreen = ({navigation, route}) => {
                     It’s time to unleash your untapped!
                   </Text>
                   <Text allowFontScaling={false} style={styles.smallText0}>
-                    Let’s take you through Flo’s features
+                    Let’s take you through Flx’s features
                   </Text>
                 </View>
                 <View style={styles.bottomButtons}>

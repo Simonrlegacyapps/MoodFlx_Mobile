@@ -134,8 +134,8 @@ android {
         applicationId "com.moodflo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 60
-        versionName "1.3.7"
+        versionCode 67
+        versionName "1.4.4"
         multiDexEnabled true
     }
     splits {
@@ -200,9 +200,14 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:27.1.0') // for push notifications
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    implementation "com.google.android.gms:play-services-base:17.6.0"
     implementation "com.google.android.gms:play-services-auth:19.0.0"
     implementation "com.google.android.gms:play-services-fitness:20.0.0"
+    implementation(project(':react-native-maps')){
+        exclude group: 'com.google.android.gms', module: 'play-services-base'
+        exclude group: 'com.google.android.gms', module: 'play-services-maps'
+    }
+    implementation "com.google.android.gms:play-services-base:17.6.0"
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

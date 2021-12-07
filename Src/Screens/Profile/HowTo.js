@@ -85,7 +85,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
             marginVertical: 10,
             fontSize: 21,
           }}>
-          Earn Flo Coins
+          Earn Flx Coins
         </Text>
         <Text
           style={{
@@ -96,7 +96,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
             paddingHorizontal:10,
             color:"#4C5980"
           }}>
-          Advance your Mood Status, unlock more rewards and cash in your Flo Coins!
+          Advance your Mood Status, unlock more rewards and cash in your Flx Coins!
         </Text>
 <View>
         <BoldHeader label={'Mood Inputs'} />
@@ -144,7 +144,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
         <BoldHeader label={'Mood Status'} />
         <View style={styles.levelRowView}>
         <Text style={{fontSize: getFontSize(12), fontFamily:RubikLight, color:'#9C9EB9', }}>Level</Text>
-        <Text style={{fontSize: getFontSize(12), fontFamily:RubikLight, color:'#9C9EB9', }}>Flo coins</Text>
+        <Text style={{fontSize: getFontSize(12), fontFamily:RubikLight, color:'#9C9EB9', }}>Flx coins</Text>
         </View>
         <SimpleText label={'Mood Activator'} text={' 0 - 100'} />
         <SimpleText label={'Mood Navigator'} text={' 100 - 1,000'} />

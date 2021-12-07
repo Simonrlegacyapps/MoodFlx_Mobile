@@ -14,7 +14,7 @@ import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
 import Constants from '../../../Constants';
-import {PHOTO_URL} from '../../../Constants/constants';
+import {getPhotoUrl} from '../../../Constants/constants';
 import {
   RubikBlack,
   RubikBold,
@@ -110,7 +110,7 @@ const SaveConfirmModal = ({
                 <Image
                   style={{height: '100%', width: '100%', resizeMode: 'cover'}}
                   source={{
-                    uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
+                    uri: `${getPhotoUrl()}${UserData?.UserDetails?.profile_image}`,
                   }}
                 />
               ) : !UserData?.UserDetails?.profile_image &&

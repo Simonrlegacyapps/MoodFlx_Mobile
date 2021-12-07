@@ -50,7 +50,6 @@ import QuestionMarkIcon from '../../../assets/commonicons/QuestionMarkIcon';
 import moment from 'moment';
 import GetLocation from 'react-native-get-location';
 import PostRequestApi from '../../apirequest/PostRequestApi';
-import DeviceInfo from 'react-native-device-info';
 import VideoModal from '../../Components/VideoModal/VideoModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
@@ -92,8 +91,10 @@ import {
   getIsMoodLvlUp,
   getIsShowNegativeMoodInputPopup,
   getMoodInputRewardPoints,
+  getMyDeviceId,
   getUpdateAnswerRewardPoints,
   openUrl,
+  setDivisionSetFlag,
   setIsInitialVideoVisible,
   setMoodInputTimeStamps,
   setPrevFloCoins,
@@ -686,7 +687,7 @@ export default function MoodDetector({ navigation }) {
     } catch (error) {
       console.log('error in getNotesInputRewardPoints ', error);
     }
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     let notesText = '';
     setTextForMood((t) => {
       notesText = t;
@@ -851,29 +852,35 @@ export default function MoodDetector({ navigation }) {
       await AsyncStorage.setItem('Anonymous', 'true');
       // console.log(`UserData.AllMoods`, await UserData?.AllMoods[0]);
       let p = await AsyncStorage.getItem('Email');
-      let d = await AsyncStorage.getItem('Division');
       let Hp = await AsyncStorage.getItem('GiveHealthPerm');
       let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
       // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
       let e = await JSON.parse(p);
-      let division = await JSON.parse(d);
       let HealthP = await JSON.parse(Hp);
       let WeatherP = await JSON.parse(Wp);
       console.log(`e`, e);
-      console.log(`division`, division);
       console.log(`HealthPerm`, HealthP);
       console.log(`WeatherPerm`, WeatherP);
       dispatch(UserEmail(e));
-      dispatch(UserDivision(division));
       dispatch(HealthPerm(HealthP));
       dispatch(WeatherPerm(WeatherP));
     } catch (error) {
       console.log('error getting AsyncStorage values', error);
     }
+    let division = null;
+    try {
+      let d = await AsyncStorage.getItem('Division');
+      division = await JSON.parse(d);
+    } catch (error) {
+      console.log('AsyncStorage get division error', error);
+    }
+    // console.log(`division`, division);
+    dispatch(UserDivision(division));
+    setDivisionSetFlag((typeof division === 'string' && division !== ''));
   };
 
   const getProfileUserData = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -1197,7 +1204,7 @@ export default function MoodDetector({ navigation }) {
     setCurrentMood(Id)
 
     // console.log(`lat, lng`, UserData.lat, UserData.lon);
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     if (Id === undefined) {
       // console.log(`fail`);
       setLoading(false);
@@ -1330,7 +1337,10 @@ export default function MoodDetector({ navigation }) {
                 navigation.navigate('HomeScreen', { screen: 'MicScreen' });
               } else {
                 if (showNegativeMoodModal === true) {
-                  setShowNegativeMoodModal(true)();
+                  let negativeModalTimeoutId = setTimeout(() => {
+                    setShowNegativeMoodModal(true)();
+                    clearTimeout(negativeModalTimeoutId);
+                  }, 400);
                 } else {
                   showMoodSaveConfirmModal(() => {
                     setSwiperIndexHome(0, dispatch);
@@ -1668,6 +1678,7 @@ export default function MoodDetector({ navigation }) {
 
   const renderBottomBar = (color) => (
     <View
+      pointerEvents={isHapticsEnabled ? 'none' : 'auto'}
       style={{
         backgroundColor: color,
         width: '100%',
@@ -1725,6 +1736,7 @@ export default function MoodDetector({ navigation }) {
         <TouchableOpacity
           onPress={() => {
             setModalVisible(true);
+            // navigation.navigate('Dashboard');
           }}>
           <View
             style={styles.questionIconView}
@@ -1828,7 +1840,8 @@ export default function MoodDetector({ navigation }) {
         // modalVisible={true}
         dismissModalHandler={setShowNegativeMoodModal(false)}
         emotionText={moodName}
-        onClickButtonOne={openUrl('https://findahelpline.com/')}
+        description={UserData?.negativeMoodModalData?.eap_text}
+        onClickButtonOne={openUrl(UserData?.negativeMoodModalData?.eap_link)}
         onClickButtonTwo={setShowNegativeMoodModal(false)}
       />
 

@@ -30,12 +30,12 @@ import {
 } from '../../../Constants/sizeChoose';
 import {IsAnonymous, UserDetail} from '../../../redux/actions/actions';
 import AddNameModal from '../AddNameModal/AddNameModal';
-import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-community/async-storage';
 import {GetStaffUserData} from '../../../apirequest/PostRequestApi';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
-import {getApiBaseUrl, PHOTO_URL} from '../../../Constants/constants';
+import {getApiBaseUrl, getPhotoUrl} from '../../../Constants/constants';
 import Constants from '../../../Constants';
+import { getMyDeviceId } from '../../../services/commonService';
 
 type props = {
   modalVisible: Boolean,
@@ -95,7 +95,7 @@ const FeedBackModal = ({
   };
 
   const ProfileApiCallHere = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Content-Type', 'application/json');
@@ -166,7 +166,7 @@ const FeedBackModal = ({
 
   const getProfileUserData = () => {
     console.log(`called called called called called called`);
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -219,7 +219,7 @@ const FeedBackModal = ({
           onStartShouldSetResponder={Keyboard.dismiss}
           style={[styles.upperContainer]}>
           <Text style={styles.textOne}>We value your opinion!</Text>
-          {/* <Text style={styles.textTwo}>Flo feels you</Text> */}
+          {/* <Text style={styles.textTwo}>Flx feels you</Text> */}
           {/* <Text style={styles.textTwo}>{moodText?.confirmation_text}</Text> */}
           {/* <Text style={styles.textThree}>
             Feeling{' '}
@@ -240,7 +240,7 @@ const FeedBackModal = ({
                       <Image
                         style={styles.profileImage}
                         source={{
-                          uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
+                          uri: `${getPhotoUrl()}${UserData?.UserDetails?.profile_image}`,
                         }}
                       />
                     ) : (

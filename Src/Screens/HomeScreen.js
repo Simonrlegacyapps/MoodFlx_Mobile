@@ -35,30 +35,13 @@ const HomeScreen = ({ navigation, route }) => {
             } else if (route.name === 'MicScreen') {
               iconName = focused ? <MicActiveIcon /> : <MicIcon />;
             } else if (route.name === 'LogoTab') {
-              iconName = focused ? (
+              iconName = (
                 <TouchableOpacity
                   onPress={() => navigation.replace('MoodEmotionDetector')}>
                   <Image
                     resizeMode={'contain'}
+                    // activeOpacity={1}
                     style={{ marginBottom: 75, width: 65, height: 65 }}
-                    source={require('../../assets/tabicons/logo.png')}
-                  />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.replace('MoodEmotionDetector', {
-                      question: undefined,
-                    })
-                  }
-                  activeOpacity={1}>
-                  <Image
-                    style={{
-                      marginBottom: 75,
-                      width: 65,
-                      height: 65,
-                      resizeMode: 'contain',
-                    }}
                     source={require('../../assets/tabicons/logo.png')}
                   />
                 </TouchableOpacity>

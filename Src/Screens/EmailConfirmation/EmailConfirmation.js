@@ -14,9 +14,9 @@ import {
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import Constants from '../../Constants';
-import DeviceInfo from 'react-native-device-info';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
+import { getMyDeviceId } from '../../services/commonService';
 
 const {width: width} = Dimensions.get('window');
 
@@ -31,7 +31,7 @@ const EmailConfirmation = ({navigation}) => {
 
   const onLink = () => {
     Keyboard.dismiss;
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     const params = {
       email: value,
       device_id: deviceId,
@@ -113,7 +113,7 @@ const EmailConfirmation = ({navigation}) => {
             textAlign: 'center',
             color: 'red',
           }}>
-          Sorry, your company hasn't joined MoodFlo yet
+          Sorry, your company hasn't joined MoodFlx yet
         </Text>
       )}
       <View style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(40)}}>

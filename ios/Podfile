@@ -5,7 +5,9 @@ platform :ios, '10.0'
 
 target 'MoodFlo' do
   config = use_native_modules!
-
+  # React Native Maps dependencies
+  rn_maps_path = '../node_modules/react-native-maps'
+  pod 'react-native-google-maps', :path => rn_maps_path
   use_react_native!(:path => config["reactNativePath"])
   permissions_path = '../node_modules/react-native-permissions/ios'
 
@@ -13,8 +15,6 @@ target 'MoodFlo' do
   pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 #  pod 'RCTAppleHealthKit', :path => '../node_modules/rn-apple-healthkit'
-
-  pod 'RNCClipboard', :path => '../node_modules/@react-native-community/clipboard'
 
   target 'MoodFloTests' do
     inherit! :complete

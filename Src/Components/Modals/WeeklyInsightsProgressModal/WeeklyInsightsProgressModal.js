@@ -27,8 +27,10 @@ const getProgressWidth = () => {
     return 275;
   } else if (day === 6) {
     return 300;
+  } else {
+    return 0;
   }
-}
+};
 
 const {width} = Dimensions.get('window');
 const WeeklyInsightsProgress = ({
@@ -61,7 +63,7 @@ const WeeklyInsightsProgress = ({
         />
         <View style={styles.upperContainer}>
           <Text style={styles.bigText}>
-            Weekly insight will be ready on Friday
+            Weekly insight will be ready on Thursday
           </Text>
           <View style={styles.imageContainer}>
             <WeeklyInsightsProgressImage

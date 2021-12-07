@@ -41,6 +41,11 @@ import {
   SET_WEATHER_INSIGHTS,
   SET_SCROLLING,
   RESET_LINK_TO_COMPANY_PARAMS,
+  GET_SCREENTIME_PERM,
+  GET_STANDTIME_PERM,
+  NEGATIVE_MOOD_MODAL_DATA,
+  SHOW_MONTHLY_INSIGHTS_MODAL,
+  DASHBOARD_MOOD_ID,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -130,6 +135,18 @@ export const WeatherPerm = (data) => {
 export const SleepPerm = (data) => {
   return {
     type: GET_SLEEP_PERM,
+    payload: data,
+  };
+};
+export const ScreenTimePerm = (data) => {
+  return {
+    type: GET_SCREENTIME_PERM,
+    payload: data,
+  };
+};
+export const StandTimePerm = (data) => {
+  return {
+    type: GET_STANDTIME_PERM,
     payload: data,
   };
 };
@@ -258,6 +275,13 @@ export const SetShowWeeklyInsightsModal = (data) => {
   };
 };
 
+export const SetShowMonthlyInsightsModal = (data) => {
+  return {
+    type: SHOW_MONTHLY_INSIGHTS_MODAL,
+    payload: data,
+  };
+};
+
 export const SetSwiperIndex = (data) => {
   return {
     type: SET_SWIPER_INDEX,
@@ -296,6 +320,20 @@ export const SetWeatherInsights = (data) => {
 export const ResetLinkToCompanyParams = (data) => {
   return {
     type: RESET_LINK_TO_COMPANY_PARAMS,
+    payload: data,
+  };
+};
+
+export const SetNegativeMoodModalData = (data) => {
+  return {
+    type: NEGATIVE_MOOD_MODAL_DATA,
+    payload: data,
+  };
+};
+
+export const SetDashboardMoodId = (data) => {
+  return {
+    type: DASHBOARD_MOOD_ID,
     payload: data,
   };
 };

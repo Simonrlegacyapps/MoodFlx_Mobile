@@ -11,7 +11,6 @@ import {
 import Svg, {Path, Defs, LinearGradient, Stop} from 'react-native-svg';
 // import * as path from 'svg-path-properties';
 import * as shape from 'd3-shape';
-import DeviceInfo from 'react-native-device-info';
 import {scaleTime, scaleLinear, scaleQuantile} from 'd3-scale';
 import {dynamicSize, horizontalScale, verticalScale, isTablet} from '../../Constants/sizeChoose';
 // const {Path, Defs, LinearGradient, Stop} = Svg;

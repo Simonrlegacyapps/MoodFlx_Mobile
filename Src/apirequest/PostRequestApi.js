@@ -99,13 +99,13 @@ export async function getDivisionName(
                 if (typeof divisionName === 'string' && divisionName) {
                   // console.log('dispatch UserDivision: ', divisionName);
                   dispatch?.(UserDivision(divisionName));
-                  AsyncStorage.setItem('Division', divisionName)
-                    .then((r) => {
-                      // console.log('AsyncStorate set division success', r);
-                    })
-                    .catch((e) =>
-                      console.log('AsyncStorage set division error', e),
-                    );
+                  // AsyncStorage.setItem('Division', divisionName)
+                  //   .then((r) => {
+                  //     // console.log('AsyncStorate set division success', r);
+                  //   })
+                  //   .catch((e) =>
+                  //     console.log('AsyncStorage set division error', e),
+                  //   );
                 }
               } else if (isUnlinkAllowed) {
                 if (params?.email && params?.user_id) {

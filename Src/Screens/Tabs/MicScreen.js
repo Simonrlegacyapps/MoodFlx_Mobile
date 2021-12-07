@@ -23,7 +23,6 @@ import {
 import Svg, {Path, SvgUri} from 'react-native-svg';
 import {dynamicSize, getFontSize, horizontalScale, isTablet} from '../../Constants/sizeChoose';
 import axios from 'axios';
-import DeviceInfo from 'react-native-device-info';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
@@ -35,7 +34,7 @@ import {getApiBaseUrl, moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import Clock from '../../../assets/svg/clock';
 import FloCoin from '../../../assets/svg/floCoins';
-import {getDivisionSetFlag, getUpdateAnswerRewardPoints} from '../../services/commonService';
+import {getDivisionSetFlag, getMyDeviceId, getUpdateAnswerRewardPoints, setDivisionSetFlag} from '../../services/commonService';
 import getStore from '../../redux';
 import {
   PulseConnect,
@@ -47,6 +46,7 @@ const MicScreen = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
+  const [isSelectDivisionLoading, setIsSelectDivisionLoading] = useState(false);
   const [count, setCount] = useState(0);
   // const [DateExpired, setDateExpired] = useState(false);
 
@@ -72,23 +72,48 @@ const MicScreen = ({navigation}) => {
   }, []);
 
   const getQuestions = async () => {
-    let UserId = await AsyncStorage.getItem('UserId');
-    let Id = await JSON.parse(UserId);
+    let UserId = '';
+    let Id = '';
+    let p = '';
+    let e = '';
+    try {
+      UserId = await AsyncStorage.getItem('UserId');
+    } catch (e) {
+      console.log('Error in AsyncStorage get UserId --->', e);
+    }
+    try {
+      Id = await JSON.parse(UserId);
+    } catch (e) {
+      console.log('Error in Json parse UserId --->', e);
+    }
+    try {
+      p = await AsyncStorage.getItem('Email');
+    } catch (e) {
+      console.log('Error in AsyncStorage get Email --->', e);
+    }
+    try {
+      e = await JSON.parse(p);
+    } catch (e) {
+      console.log('Error in Json parse Email --->', e);
+    }
     dispatch(GetUserId(Id));
-    let p = await AsyncStorage.getItem('Email');
-    let e = await JSON.parse(p);
-    console.log(`e`, e);
+    console.log('email --->', e);
     dispatch(UserEmail(e));
     if (!(e && Id)) {
       setquestions(null);
       return false;
     }
-    const deviceId = DeviceInfo.getUniqueId();
-    var data = JSON.stringify({
+    const deviceId = getMyDeviceId();
+    // var data = JSON.stringify({
+    //   device_id: deviceId,
+    //   email: e,
+    //   user_id: Id,
+    // });
+    let data = {
       device_id: deviceId,
       email: e,
       user_id: Id,
-    });
+    };
     console.log(`data of questions`, data);
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -96,7 +121,7 @@ const MicScreen = ({navigation}) => {
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
-      body: data,
+      body: JSON.stringify(data),
       redirect: 'follow',
     };
     setLoading(true);
@@ -111,41 +136,59 @@ const MicScreen = ({navigation}) => {
     )
       .then(async (result) => {
         // console.log(
-        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        //   '✅ ✅ ✅ ✅ Mic Screen Success Get Staff User Data ✅ ✅ ✅ ✅',
         //   result?.userData
         // );
-        if (result?.userData?.status !== 2) {
-          return fetch(`${getApiBaseUrl()}getQuestions`, requestOptions);
-        } else {
-          requestOptions.body = JSON.stringify({
-            device_id: deviceId,
+        if (result?.userData?.status === 2) {
+          data = {
+            ...data,
             email: '',
             user_id: '',
-          });
-          return fetch(`${getApiBaseUrl()}getQuestions`, requestOptions);
+          };
         }
+        return axios.post(`${getApiBaseUrl()}getQuestions`, data);
       })
-      .then(async (result) => result.json())
+      // .then(async (result) => result.json())
       .then(async (result) => {
-        if (result) {
-          console.log(' ✅ ✅ ✅ ✅ Success Get Questions✅ ✅ ✅ ✅ ', result);
-          if (result?.questions) {
-            await setquestions(result?.questions);
-          }
-          setLoading(false);
+        console.log(' ✅ ✅ ✅ ✅ Success Get Questions✅ ✅ ✅ ✅ ', result?.data);
+        if (result?.data?.questions) {
+          await setquestions(result.data.questions);
         }
+        setLoading(false);
       })
       .catch(function (error) {
         console.log('❌❌❌❌Fail Get Questions❌❌❌❌', error, data);
+        setLoading(false);
       });
   };
 
   useFocusEffect(
     useCallback(() => {
+      AsyncStorage.getItem('Division')
+        .then((e) => {
+          if (!(e && typeof e === 'string')) {
+            setDivisionSetFlag(false);
+          } else {
+            setDivisionSetFlag(true);
+          }
+        })
+        .catch((error) => {
+          console.log('AsyncStorage get division error', error);
+        });
       const userEmail = getStore?.()?.getState?.()?.First?.UserEmail;
       const userDivision = getStore?.()?.getState?.()?.First?.UserDivision;
       if (userEmail && typeof userEmail === 'string' && !userDivision) {
-        getDivisionName();
+        const deviceId = getMyDeviceId();
+        const userId = getStore?.()?.getState?.()?.First?.UserId;
+        const params = {
+          device_id: deviceId,
+          user_id: userId,
+          email: userEmail,
+        };
+        setIsSelectDivisionLoading(true);
+        getDivisionName(params, dispatch, false, function (isFinish) {
+          setIsSelectDivisionLoading(false);
+        });
       }
       getQuestions();
       return () => {
@@ -349,7 +392,7 @@ const MicScreen = ({navigation}) => {
 
   function getRewardsCoins(day, hour) {
     if (day != 0) {
-      return 'Missed out on flo coins';
+      return 'Missed out on flx coins';
     } else {
       if (hour <= 2) {
         return 8;
@@ -490,8 +533,8 @@ const MicScreen = ({navigation}) => {
                     style={[styles.Text, {fontSize: getFontSize(13), marginVertical: 0}]}>
                     {' '}
                     {rewardPts === 0
-                      ? 'Missed out on flo coins'
-                      : `Earn ${rewardPts} flo coins`
+                      ? 'Missed out on flx coins'
+                      : `Earn ${rewardPts} flx coins`
                     }
                   </Text>
                 </View>
@@ -542,7 +585,7 @@ const MicScreen = ({navigation}) => {
                   styles.Text,
                   {textAlign: 'right', fontSize: getFontSize(13), color: '#FB8D09'},
                 ]}>
-                Earned {i.reward_point} flo coins
+                Earned {i.reward_point} flx coins
               </Text>
             </View>
             <View style={{width: '90%'}}>
@@ -646,12 +689,28 @@ const MicScreen = ({navigation}) => {
     UserData.getDivision.length > 0
   ) {
     return (
-      <PulseSelectDivision
-        divisions={UserData.getDivision}
-        userEmail={UserData.UserEmail}
-        userDivisionName={UserData.UserDivision}
-        setCount={setCount}
-      />
+      <>
+        <PulseSelectDivision
+          divisions={UserData.getDivision}
+          userEmail={UserData.UserEmail}
+          userDivisionName={UserData.UserDivision}
+          setCount={setCount}
+        />
+        {isSelectDivisionLoading && (
+          <View
+            style={{
+              position: 'absolute',
+              height: '100%',
+              width: '100%',
+              backgroundColor: 'rgba(0,0,0,0.2)',
+              // opacity: 0.2,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <ActivityIndicator color="#9889F9" size="large" />
+          </View>
+        )}
+      </>
     );
   }
 

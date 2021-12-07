@@ -27,7 +27,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import PopUp from '../../Components/PopUp/PopUp';
 import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
-import DeviceInfo from 'react-native-device-info';
 import { IsAnonymous, UserDetail } from '../../redux/actions/actions';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import { dynamicSize, horizontalScale } from '../../Constants/sizeChoose';
@@ -37,10 +36,10 @@ import PostRequestApi, {
 } from '../../apirequest/PostRequestApi';
 import DataInsights from '../../Components/DataInsights/DataInsights';
 import moment from 'moment';
-import { dataTypes, getApiBaseUrl, getWeeklyInsightsAvailable } from '../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../Constants/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
-import { getFloCoins, openHealthApp } from '../../services/commonService';
+import { getFloCoins, getMyDeviceId, getWeeklyHealthGraphData, openHealthApp } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 import { activityHealthKitOptions } from '../../services/appPermissions';
@@ -54,32 +53,17 @@ const fitnessInsightsInitialState = {
   dailySuggestionType: '',
   weeklySuggestion: '',
   weeklySuggestionType: '',
+  monthlyInsights: '',
+  monthlySuggestion: '',
+  monthlySuggestionType: '',
 };
 
 const fitnessInsightsTypes = {
-  SET_DALIY_INSIGHTS: 'SET_DALIY_INSIGHTS',
-  SET_WEEKLY_INSIGHTS: 'SET_WEEKLY_INSIGHTS',
-  SET_DAILY_SUGGESTION: 'SET_DAILY_SUGGESTION',
-  SET__DAILY_SUGGESTION_TYPE: 'SET__DAILY_SUGGESTION_TYPE',
-  SET_WEEKLY_SUGGESTION: 'SET_WEEKLY_SUGGESTION',
-  SET__WEEKLY_SUGGESTION_TYPE: 'SET__WEEKLY_SUGGESTION_TYPE',
   SET_INSIGHTS: 'SET_INSIGHTS',
 };
 
 function fitnessInsightsReducer(state, action) {
   switch (action.type) {
-    case fitnessInsightsTypes.SET_DALIY_INSIGHTS:
-      return { ...state, dailyInsights: action.payload };
-    case fitnessInsightsTypes.SET_WEEKLY_INSIGHTS:
-      return { ...state, weeklyInsights: action.payload };
-    case fitnessInsightsTypes.SET_DAILY_SUGGESTION:
-      return { ...state, dailySuggestion: action.payload };
-    case fitnessInsightsTypes.SET__DAILY_SUGGESTION_TYPE:
-      return { ...state, dailySuggestionType: action.payload };
-    case fitnessInsightsTypes.SET_WEEKLY_SUGGESTION:
-      return { ...state, weeklySuggestion: action.payload };
-    case fitnessInsightsTypes.SET__WEEKLY_SUGGESTION_TYPE:
-      return { ...state, weeklySuggestionType: action.payload };
     case fitnessInsightsTypes.SET_INSIGHTS:
       return action?.payload && typeof action?.payload === 'object'
         ? { ...state, ...action.payload }
@@ -87,38 +71,6 @@ function fitnessInsightsReducer(state, action) {
     default:
       return state;
   }
-}
-
-function getWeeklyHealthGraphData(dataArray) {
-  let weekDates = [];
-  let dates = [6, 5, 4, 3, 2, 1, 0];
-  let todaySteps = getStore?.().getState?.()?.First?.UserSteps ?? '0';
-  let apiDataArray = [];
-  dates.forEach((e, idx) => {
-    const d = moment().startOf('day').subtract(e, 'days');
-    weekDates.push({ date: d.format('YYYY-MM-DD'), day: d.format('dd'), y: e === 0 ? todaySteps : "0" });
-  });
-  console.log('dates ->', weekDates);
-  if (!(Array.isArray(dataArray) && dataArray.length > 0)) {
-    return weekDates;
-  }
-  let flag = false;
-  weekDates.forEach((e, idx) => {
-    dataArray.forEach((x) => {
-      if (!flag && x?.date === (e?.date ?? '-1')) {
-        apiDataArray.push({ ...e, y: x?.steps ?? "0" });
-        flag = true;
-      }
-    });
-    if (!flag) {
-      apiDataArray.push({...e});
-    }
-    flag = false;
-  });
-  apiDataArray = apiDataArray.map((e) => {
-    return { ...e, y: typeof e?.y === 'number' ? String(e.y) : (e?.y ?? '0') };
-  })
-  return apiDataArray;
 }
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
@@ -216,7 +168,7 @@ const FitnessData = ({
   };
 
   const callGetHealthDataApi = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     const store = getStore?.()?.getState?.();
     const params = {
       device_id: deviceId,
@@ -236,8 +188,8 @@ const FitnessData = ({
   };
 
   const getInsights = () => {
-    setskeleton(true)
-    const deviceId = DeviceInfo.getUniqueId();
+    setskeleton(true);
+    const deviceId = getMyDeviceId();
     const store = getStore?.()?.getState?.();
     const params = {
       device_id: deviceId,
@@ -280,13 +232,13 @@ const FitnessData = ({
           return PostRequestApi('getActivityInsights', {
             ...params,
             status: 'weekly',
+            flag: 'current',
           });
         } else {
           return new Promise((resolve, reject) => resolve(null));
         }
       })
       .then((res) => {
-        setskeleton(false)
         console.log('getActivityInsights weekly res: ', res?.data);
         let weeklyInsightsPayload = {};
         // console.log('getActivityInsights weeklyInsights: ', res?.data?.insights);
@@ -309,9 +261,42 @@ const FitnessData = ({
           type: fitnessInsightsTypes.SET_INSIGHTS,
           payload: weeklyInsightsPayload,
         });
+        if (getMonthlyInsightsAvailable() === true) {
+          return PostRequestApi('getActivityInsights', {
+            ...params,
+            status: 'monthly',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        setskeleton(false);
+        console.log('✅ ✅ ✅ ✅  getActivityInsights monthly res ✅ ✅ ✅ ✅ : ', res?.data);
+        let monthlyInsightsPayload = {};
+        console.log('monthlyInsights: ', res?.data?.insights);
+        monthlyInsightsPayload.monthlyInsights =
+          res?.data?.insights?.message1 &&
+            typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        monthlyInsightsPayload.monthlySuggestion =
+          res?.data?.insights?.message2 &&
+            typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        monthlyInsightsPayload.monthlySuggestionType =
+          res?.data?.insights?.message2Type &&
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: fitnessInsightsTypes.SET_INSIGHTS,
+          payload: monthlyInsightsPayload,
+        });
       })
       .catch(function (error) {
-        setskeleton(false)
+        setskeleton(false);
         console.log('❌ ❌ ❌ ❌ Error Get Activity Insights ❌ ❌ ❌ ❌', error);
       });
   };
@@ -329,7 +314,7 @@ const FitnessData = ({
   }, [healthUpdateApiCount, UserData.UserEmail, UserData.UserId]);
 
   const ProfileApiCallHere = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Content-Type', 'application/json');
@@ -392,7 +377,7 @@ const FitnessData = ({
 
   const getProfileUserData = () => {
     console.log(`called called called called called called getProfileUserData`);
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -482,7 +467,7 @@ const FitnessData = ({
           isPermissionGiven={UserData.HealthPermission}
           syncText={UserData.fitnessSyncText}
           setOpenActionSheet={
-            isCallSync || Platform.OS === 'android'
+            isCallSync || Platform.OS === 'android' || !UserData.HealthPermission
               ? setOpenActionSheet
               : openHealthApp
           }
@@ -517,20 +502,25 @@ const FitnessData = ({
 
         <View style={styles.subViewTwo}>
           {(Loading || skeleton) && <View style={styles.activityIndicator}><ActivityIndicator color='#9889F9' size='large' /></View>}
-          {(Loading || skeleton) && <Skeleton/>}
-          <DataInsights
-            dailyInsights={!UserData.HealthPermission ? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
-            onPressInsights={insights?.dailyInsights.includes('permissions') ? openHealthApp : undefined}
-            weeklyInsights={!UserData.HealthPermission ? "Your weekly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.weeklyInsights}
-            dailySuggestion={!UserData.HealthPermission ? "Try take a 20 min walk during lunch - 1,800 steps" : insights?.dailySuggestion}
-            dailySuggestionType={!UserData.HealthPermission ? "warning" : insights?.dailySuggestionType}
-            weeklySuggestion={!UserData.HealthPermission ? "The more steps you take the more energy you have" : insights?.weeklySuggestion}
-            weeklySuggestionType={!UserData.HealthPermission ? "warning" : insights?.weeklySuggestionType}
-            timeLeft={UserData?.weeklyInsightsTimeLeft}
-            isPermissionGiven={UserData.HealthPermission}
-            dispatch={dispatch}
-            onSync={onSync}
-          />
+          {(skeleton) && <Skeleton/>}
+          {skeleton === false && (
+            <DataInsights
+              dailyInsights={!UserData.HealthPermission ? "Today your happiest mood input was when you walked over 5,000 steps before 2pm" : insights?.dailyInsights}
+              onPressInsights={insights?.dailyInsights.includes('permissions') ? openHealthApp : undefined}
+              weeklyInsights={!UserData.HealthPermission ? "Your weekly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.weeklyInsights}
+              dailySuggestion={!UserData.HealthPermission ? "Try take a 20 min walk during lunch - 1,800 steps" : insights?.dailySuggestion}
+              dailySuggestionType={!UserData.HealthPermission ? "warning" : insights?.dailySuggestionType}
+              weeklySuggestion={!UserData.HealthPermission ? "The more steps you take the more energy you have" : insights?.weeklySuggestion}
+              weeklySuggestionType={!UserData.HealthPermission ? "warning" : insights?.weeklySuggestionType}
+              monthlyInsights={!UserData.HealthPermission ? "Your monthly Excited mood input was more frequent when you took over 8,000 steps / day" : insights?.monthlyInsights}
+              monthlySuggestion={!UserData.HealthPermission ? "The more steps you take the more energy you have" : insights?.monthlySuggestion}
+              monthlySuggestionType={!UserData.HealthPermission ? "warning" : insights?.monthlySuggestionType}
+              timeLeft={UserData?.weeklyInsightsTimeLeft}
+              isPermissionGiven={UserData.HealthPermission}
+              dispatch={dispatch}
+              onSync={onSync}
+            />
+          )}
           {/* {!UserData.HealthPermission ? (
             <View
               style={{

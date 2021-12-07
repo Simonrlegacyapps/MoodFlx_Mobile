@@ -13,7 +13,6 @@ import Constants from '../../Constants';
 import {RubikLight, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
 import {dynamicSize, getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import CrownBox from '../crownBox/crownBox';
-import DeviceInfo from 'react-native-device-info';
 import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getPrevFloCoins, setPrevFloCoins } from '../../services/commonService';

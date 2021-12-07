@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     // backgroundColor: '#7965F6',
-    marginBottom: 100,
     borderRadius: 25,
     width: metrics.screenWidth,
     alignItems: 'flex-start',

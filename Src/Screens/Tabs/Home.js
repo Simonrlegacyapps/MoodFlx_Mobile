@@ -25,7 +25,6 @@ import AppleHealthKit, {
 } from 'react-native-health';
 import isEmpty from 'lodash.isempty';
 import GetLocation from 'react-native-get-location';
-import DeviceInfo from 'react-native-device-info';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import {
   RubikBlack,
@@ -76,11 +75,13 @@ import {
   activityHealthKitOptions,
 } from '../../services/appPermissions';
 import { dataTypes, getApiBaseUrl, getScreensPriority } from '../../Constants/constants';
-import { setFitnessDataSync, setSwiperIndexHome } from '../../services/commonService';
+import { getMyDeviceId, setFitnessDataSync, setSwiperIndexHome } from '../../services/commonService';
 import { setSleepDataSync } from '../Home/SleepData/sleepDataService';
 import getStore from '../../redux';
 import Constants from '../../Constants';
 import { horizontalScale } from '../../Constants/sizeChoose';
+import StandingData from '../Home/StandingData/StandingData';
+import LocationData from '../Home/LocationData/LocationData';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
@@ -1186,7 +1187,7 @@ const App = (props) => {
       ) {
         Fsteps.push({
           date: dates[i],
-          steps: totalSteps,
+          steps: !isNaN(totalSteps) ? Math.floor(totalSteps) : totalSteps,
           distance: totalDistance,
           calories: userCalories,
           heart_rate: totalHeartRate,
@@ -1229,7 +1230,7 @@ const App = (props) => {
   };
 
   const AddDataToFilter = async () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     Fsteps.push();
 
     console.log(`Fsteps at last`, Fsteps);
@@ -1421,6 +1422,26 @@ const App = (props) => {
           swiperIndex={scrollNo}
           isMoodUpdate={isMoodUpdate}
           CheckForSleepData={CheckForSleepData}
+          MoodCount={MoodCount}
+        />
+      );
+    } else if (type === dataTypes.standTime) {
+      return (
+        <StandingData
+          // key={type}
+          index={idx}
+          swiperIndex={scrollNo}
+          isMoodUpdate={isMoodUpdate}
+          MoodCount={MoodCount}
+        />
+      );
+    } else if (type === dataTypes.location) {
+      return (
+        <LocationData
+          // key={type}
+          index={idx}
+          swiperIndex={scrollNo}
+          isMoodUpdate={isMoodUpdate}
           MoodCount={MoodCount}
         />
       );

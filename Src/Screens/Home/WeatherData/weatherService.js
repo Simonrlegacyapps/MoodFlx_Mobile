@@ -3,22 +3,23 @@ import Geocoder from 'react-native-geocoding';
 import {
   defaultLocation,
   getApiBaseUrl,
+  getMonthlyInsightsAvailable,
   getWeeklyInsightsAvailable,
   isCountryIndia,
   weatherApiDataTypes,
   weatherTypes,
 } from '../../../Constants/constants';
 import GetLocation from 'react-native-get-location';
-import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
 import axios from 'axios';
 import getStore from '../../../redux';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import { SetWeatherInsights } from '../../../redux/actions/actions';
+import { getMyDeviceId } from '../../../services/commonService';
 
 export function callWeatherInsightsApi(reset) {
   const store = getStore();
-  const deviceId = DeviceInfo.getUniqueId();
+  const deviceId = getMyDeviceId();
   var myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
 
@@ -61,6 +62,7 @@ export function callWeatherInsightsApi(reset) {
         return PostRequestApi('getWeatherInsights', {
           ...params,
           status: 'weekly',
+          flag: 'current',
         });
       } else {
         return new Promise((resolve, reject) => resolve(null));
@@ -86,6 +88,35 @@ export function callWeatherInsightsApi(reset) {
           ? res.data.insights.message2Type
           : '';
       store?.dispatch?.(SetWeatherInsights(weeklyInsightsPayload));
+      if (getMonthlyInsightsAvailable() === true) {
+        return PostRequestApi('getWeatherInsights', {
+          ...params,
+          status: 'monthly',
+        });
+      } else {
+        return new Promise((resolve, reject) => resolve(null));
+      }
+    })
+    .then((res) => {
+      // console.log('getSleepInsights weekly res: ', res);
+      let monthlyInsightsPayload = {};
+      console.log('✅ ✅ ✅ ✅getWeatherInsights monthly success✅ ✅ ✅ ✅: ', res?.data);
+      monthlyInsightsPayload.monthlyInsights =
+        !!res?.data?.insights?.message1 &&
+        typeof res.data.insights.message1 === 'string'
+          ? res.data.insights.message1
+          : '';
+      monthlyInsightsPayload.monthlySuggestion =
+        !!res?.data?.insights?.message2 &&
+        typeof res.data.insights.message2 === 'string'
+          ? res.data.insights.message2
+          : '';
+      monthlyInsightsPayload.monthlySuggestionType =
+        !!res?.data?.insights?.message2Type &&
+        res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+          ? res.data.insights.message2Type
+          : '';
+      store?.dispatch?.(SetWeatherInsights(monthlyInsightsPayload));
     })
     .catch(function (error) {
       console.log(
@@ -115,7 +146,7 @@ export async function syncWeatherData() {
   let temp_min = '';
   let temp_max = '';
   let temp = '';
-  let device_id = DeviceInfo.getUniqueId();
+  let device_id = getMyDeviceId();
   const isIndia = isCountryIndia();
   let WeatherP = false;
   try {
@@ -261,7 +292,7 @@ export async function syncWeatherData() {
     console.log('weatherService temp: ', temp);
   }
 
-  const deviceId = DeviceInfo.getUniqueId();
+  const deviceId = getMyDeviceId();
   const data = JSON.stringify({
     user_id,
     email,

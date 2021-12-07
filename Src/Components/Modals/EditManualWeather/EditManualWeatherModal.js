@@ -15,7 +15,7 @@ import {
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
-import {PHOTO_URL, weatherActions, weatherApiDataTypes, weatherTypes} from '../../../Constants/constants';
+import {weatherActions, weatherApiDataTypes, weatherTypes} from '../../../Constants/constants';
 import {
   RubikBlack,
   RubikBold,

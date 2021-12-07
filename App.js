@@ -22,15 +22,18 @@ import {
   Lat,
   Long,
   Moods,
+  ScreenTimePerm,
+  SetNegativeMoodModalData,
   SetNotification,
+  SetShowMonthlyInsightsModal,
   SetShowWeeklyInsightsModal,
   SetWeeklyInsightsTimeLeft,
   SleepPerm,
+  StandTimePerm,
   UserDetail,
   UserEmail,
   WeatherPerm,
 } from './Src/redux/actions/actions';
-import DeviceInfo from 'react-native-device-info';
 import GetLocation from 'react-native-get-location';
 import moment from 'moment';
 // import LightSensor from 'react-native-light-sensor';
@@ -49,9 +52,12 @@ import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
 import {
   getIsInitialVideoVisible,
+  getMyDeviceId,
   getUpdateAnswerRewardPoints,
   onDynamicLinkUpdate,
   onUnlinkUpdate,
+  setDeviceId,
+  setDivisionSetFlag,
   setFitnessDataSync,
   setIsInitialVideoVisible,
   setMoodsArray,
@@ -62,6 +68,7 @@ import Constants from './Src/Constants';
 import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
 import {
   defaultLocation,
+  defaultNegativeMoodModalData,
   getApiBaseUrl,
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
@@ -77,6 +84,12 @@ import getStore from './Src/redux';
 import {useDispatch, useSelector} from 'react-redux';
 
 const SharedStorage = NativeModules.SharedStorage;
+import NoInternetModal from './Src/Components/Modals/NoInternetModal/NoInternetModal';
+import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
+import isEmpty from 'lodash.isempty';
+import RNRestart from 'react-native-restart';
+import MonthlyInsightsProgress from './Src/Components/Modals/MonthlyInsightsProgressModal/MonthlyInsightsProgressModal';
+
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 };
@@ -149,7 +162,7 @@ const toastConfig = {
 
 const App: () => React$Node = () => {
   const [screenName, setScreenName] = useState(false);
-  const [ShowWelcome, setShowWelcome] = useState('');
+  const [ShowWelcome, setShowWelcome] = useState(false);
   const notifService = useRef(new NotifService()).current;
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -163,10 +176,13 @@ const App: () => React$Node = () => {
     text,
   };
 
+  const [isConnected, setIsConnected] = useState(true);
+  const netInfo = useNetInfo();
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
   useEffect(() => {
+    setDeviceId();
     Analytics.init();
     crashlytics().setCrashlyticsCollectionEnabled(true);
     return () => {
@@ -188,10 +204,70 @@ const App: () => React$Node = () => {
       SharedStorage.set(JSON.stringify({text}));
     }
   };
+  useEffect(() => {
+    console.log("Is connected?", netInfo?.isConnected);
+    setIsConnected((e) => {
+      let i = (netInfo.isConnected === true || netInfo.isConnected === null)
+      if (e === false && i === true) {
+        // Reload app to after internet comes back
+        RNRestart?.Restart?.();
+      }
+      return i;
+    });
+  }, [netInfo?.isConnected]);
+
+  useEffect(() => {
+    if (
+      UserData.UserEmail &&
+      UserData.UserId &&
+      UserData?.UserDetails?.division_id
+    ) {
+      const params = {
+        division_id: UserData?.UserDetails?.division_id,
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      };
+      console.log('eapMessageData params ----->', params);
+      PostRequestApi('eapMessageData', params)
+        .then((resp) => {
+          console.log('✅ ✅ ✅ ✅ Success eapMessageData ✅ ✅ ✅ ✅', resp?.data?.data);
+          if (resp?.data?.data) {
+            let data = {};
+            if (resp?.data?.data?.eap_text) {
+              data.eap_text = resp.data.data.eap_text;
+            }
+            if (resp?.data?.data?.eap_link) {
+              data.eap_link = resp.data.data.eap_link;
+            }
+            if (!isEmpty(data)) {
+              dispatch(SetNegativeMoodModalData(data));
+            }
+          }
+        })
+        .catch((err) => {
+          console.log('❌ ❌ ❌ ❌ error eapMessageData❌ ❌ ❌ ❌ ', err);
+        });
+    } else if (!(UserData.UserEmail && UserData.UserId)) {
+      dispatch(SetNegativeMoodModalData(defaultNegativeMoodModalData));
+    }
+  }, [
+    UserData.UserEmail,
+    UserData.UserId,
+    UserData?.UserDetails?.division_id,
+    dispatch,
+  ]);
+
+  const checkInternet = useCallback(() => {
+    NetInfo.fetch().then(state => {
+      console.log("Connection type", state?.type);
+      console.log("Is connected?", state?.isConnected);
+      setIsConnected((state.isConnected === true));
+    });
+  }, []);
 
   const linkCompany = useCallback(
     async (org) => {
-      const deviceId = DeviceInfo.getUniqueId();
+      const deviceId = getMyDeviceId();
       let fcm = '';
       try {
         fcm = await messaging().getToken();
@@ -250,16 +326,16 @@ const App: () => React$Node = () => {
               // data = {...data, division_id: null};
               if (data?.email) {
                 if (RootNavigation?.navigationRef?.current?.navigate) {
-                  RootNavigation?.navigationRef?.current?.navigate(
-                    'HomeScreen',
-                    {
-                      screen: 'LinkCompanyStackNavigation',
-                      params: {
-                        screen: 'Linktocompany',
-                        params: {email: data.email},
-                      },
-                    },
-                  );
+                  // RootNavigation?.navigationRef?.current?.navigate(
+                  //   'HomeScreen',
+                  //   {
+                  //     screen: 'LinkCompanyStackNavigation',
+                  //     params: {
+                  //       screen: 'Linktocompany',
+                  //       params: {email: data.email},
+                  //     },
+                  //   },
+                  // );
                 } else {
                   setEmail(data.email);
                 }
@@ -336,12 +412,12 @@ const App: () => React$Node = () => {
   }, []);
 
   const handleDynamicLink = async (link) => {
-    if (isHandleDynamicLinkCalled.current === true) {
-      return;
-    }
-    if (link) {
-      isHandleDynamicLinkCalled.current = true;
-    }
+    // if (isHandleDynamicLinkCalled.current === true) {
+    //   return;
+    // }
+    // if (link) {
+    //   isHandleDynamicLinkCalled.current = true;
+    // }
     let userEmail;
     let existingOrgName;
     try {
@@ -383,9 +459,18 @@ const App: () => React$Node = () => {
         newOrgName.toUpperCase(),
       );
       newOrg.current = org;
+      if (link) {
+        isHandleDynamicLinkCalled.current = true;
+      }
       setLinkModalText(modalText);
       setIsLinkModalVisible(true);
     } else if (!userEmail) {
+      if (isHandleDynamicLinkCalled.current === true) {
+        return;
+      }
+      if (link) {
+        isHandleDynamicLinkCalled.current = true;
+      }
       console.log('handleDynamicLink org: ', org);
       linkCompany(org);
     }
@@ -394,63 +479,78 @@ const App: () => React$Node = () => {
 
   const goToSelectDivision = useCallback(() => {
     console.log('goToSelectDivision email: ', email);
-    RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
-      screen: 'LinkCompanyStackNavigation',
-      params: {
-        screen: 'Linktocompany',
-        params: { email: email },
-      },
-    });
+    // RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
+    //   screen: 'LinkCompanyStackNavigation',
+    //   params: {
+    //     screen: 'Linktocompany',
+    //     params: { email: email },
+    //   },
+    // });
   }, [email]);
 
   const CheckScreen = async () => {
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
     let welcome = await JSON.parse(p);
-    await setShowWelcome(welcome);
+    await setShowWelcome((welcome === null || welcome === true));
+    return Promise.resolve(welcome);
     // console.log('welcome', welcome);
   };
 
   useEffect(() => {
-    const getWelcomeScreen = async () => {
-      try {
-        let p = await AsyncStorage.getItem('ShowWelcomeScreen');
-        let welcome = await JSON.parse(p);
-        // console.log('Async storage welcome ===', welcome);
-        if (getIsInitialVideoVisible() === false && welcome == null) {
-          setIsInitialVideoVisible(true);
-        }
-      } catch (error) {
-        console.log('Error in get AsyncStorage ShowWelcomeScreen');
-      }
-    };
-    getWelcomeScreen();
-    const timeoutId = setTimeout(() => {
-      SplashScreen.hide();
-      clearTimeout(timeoutId);
-    }, 2500);
-    CheckScreen();
-    if (ShowWelcome == null) {
-      AsyncStorage.setItem('ShowWelcomeScreen', 'true');
-      CheckScreen();
-    } else {
-      setShowWelcome(false);
+    if (isHandleDynamicLinkCalled.current === true && UserData.UserDivision === null) {
+      isHandleDynamicLinkCalled.current = false;
     }
-    PushNotification.popInitialNotification((notification) => {
-      // console.log('popInitialNotification Notification: ', notification);
-      dispatch(SetNotification(notification));
-    });
-    // CheckScreen();
+  }, [UserData.UserDivision]);
 
-    // try {
-    //   let data = AsyncStorage.getItem('WelcomeScreen');
-    //   if (data !== null) {
-    //     setScreenName(true);
-    //   } else {
-    //     setScreenName(false);
-    //   }
-    // } catch (e) {
-    //   console.warn(e);
-    // }
+  useEffect(() => {
+    async function myFunc() {
+      const getWelcomeScreen = async () => {
+        try {
+          let p = await AsyncStorage.getItem('ShowWelcomeScreen');
+          let welcome = await JSON.parse(p);
+          // console.log('Async storage welcome ===', welcome);
+          if (getIsInitialVideoVisible() === false && welcome == null) {
+            setIsInitialVideoVisible(true);
+          }
+        } catch (error) {
+          console.log('Error in get AsyncStorage ShowWelcomeScreen');
+        }
+      };
+      getWelcomeScreen();
+      let isShowWelcome = false;
+      try {
+        isShowWelcome = await CheckScreen();
+      } catch (e) {
+        console.log('checkScreen error -->', e);
+      }
+      if (isShowWelcome === null || isShowWelcome === true) {
+        try {
+          await AsyncStorage.setItem('ShowWelcomeScreen', 'true');
+        } catch (e) {
+          console.log('ShowWelcomeScreen set ShowWelcomeScreen error -->', e);
+        }
+        try {
+          await CheckScreen();
+        } catch (e) {
+          console.log('checkScreen error -->', e);
+        }
+        const timeoutId = setTimeout(() => {
+          SplashScreen.hide();
+          clearTimeout(timeoutId);
+        }, 2500);
+      } else {
+        setShowWelcome(false);
+        const timeoutId = setTimeout(() => {
+          SplashScreen.hide();
+          clearTimeout(timeoutId);
+        }, 2500);
+      }
+      PushNotification.popInitialNotification((notification) => {
+        // console.log('popInitialNotification Notification: ', notification);
+        dispatch(SetNotification(notification));
+      });
+    }
+    myFunc();
   }, []);
 
   useEffect(() => {
@@ -603,6 +703,21 @@ const App: () => React$Node = () => {
     } else if (Platform.OS === 'android') {
       setSleepDataSync(dispatch);
     }
+    //StandTime Permission
+    let StandTimePer = await AsyncStorage.getItem('GiveStandTimePerm');
+    let StandTimeP = await JSON.parse(StandTimePer);
+    dispatch(StandTimePerm(StandTimeP));
+
+    //ScreenTime Permission
+    let ScreenTimePer = await AsyncStorage.getItem('GiveScreenTimePerm');
+    let screenTimeP = await JSON.parse(ScreenTimePer);
+    dispatch(ScreenTimePerm(screenTimeP));
+    //Syncing Sleep Data
+    if (Platform.OS === 'ios') {
+      setSleepDataSync(dispatch, false);
+    } else if (Platform.OS === 'android') {
+      setSleepDataSync(dispatch);
+    }
     // console.log(`Sleep Permission`, SleepP);
     if ((e && Id) || isHandleDynamicLinkCalled.current === true) {
       dispatch(UserEmail(e));
@@ -613,7 +728,7 @@ const App: () => React$Node = () => {
     dispatch(IsAnonymous(a == null ? true : a));
 
     // ---> calling api for get user details
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -644,6 +759,12 @@ const App: () => React$Node = () => {
         if (result?.userData?.status !== 2) {
           await dispatch(UserDetail(result?.userData));
         }
+        // if (
+        //   result?.userData?.division_id &&
+        //   typeof result.userData.division_id === 'string'
+        // ) {
+        //   setDivisionSetFlag(true);
+        // }
       })
       .catch((error) => {
         console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error);
@@ -717,31 +838,32 @@ const App: () => React$Node = () => {
       fetch(`${getApiBaseUrl()}getMood`)
         .then((data) => data.json())
         .then(async (res) => {
+          // console.log('✅ ✅ ✅ ✅ getMood Api success ✅ ✅ ✅ ✅', res);
           // await setGetMoods(res.data);
           setMoodsArray(res?.data);
           await dispatch(Moods(res.data));
         })
         .catch((error) => {
           // const {code, message} = error;
-          console.log('error', error);
+          console.log('getMood Api error', error);
         });
     checkStorage();
     getProfileUserData();
   }, [UserData.WeatherPermission]);
 
   useEffect(() => {
-    // const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     dynamicLinks().getInitialLink().then(handleDynamicLink);
     // handleDynamicLink();
-    // return () => unsubscribe();
+    return () => unsubscribe();
     // return null;
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-    // When the component is unmounted, remove the listener
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+  //   // When the component is unmounted, remove the listener
+  //   return () => unsubscribe();
+  // }, []);
 
 
   useEffect(() => {
@@ -753,7 +875,7 @@ const App: () => React$Node = () => {
       const userEmail = getStore?.()?.getState?.()?.First?.UserEmail ?? "";
       const userId = getStore?.()?.getState?.()?.First?.UserId ?? "";
       getUpdateRewardPoint({
-        "device_id": DeviceInfo?.getUniqueId?.() ?? "",
+        "device_id": getMyDeviceId?.() ?? "",
         "email": userEmail,
         "user_id": userId,
         "section_index": "",
@@ -784,7 +906,7 @@ const App: () => React$Node = () => {
     await AsyncStorage.setItem('ShowWelcomeScreen', 'false');
     CheckScreen();
     try {
-      await AsyncStorage.setItem('WelcomeScreen', 'false');
+      await AsyncStorage.setItem('ShowWelcomeScreen', 'false');
       setScreenName(true);
     } catch (e) {
       console.warn(e);
@@ -804,6 +926,10 @@ const App: () => React$Node = () => {
 
   const dismissWeeklyInsightsModal = () => {
     dispatch(SetShowWeeklyInsightsModal(false));
+  };
+
+  const dismissMonthlyInsightsModal = () => {
+    dispatch(SetShowMonthlyInsightsModal(false));
   };
 
   return (
@@ -860,10 +986,19 @@ const App: () => React$Node = () => {
         onClickButtonTwo={onLinkCancel}
         buttonTwoText="Cancel"
       />
+      <NoInternetModal
+        modalVisible={(isConnected === false)}
+        onButtonOnePress={checkInternet}
+      />
       <WeeklyInsightsProgress
         modalVisible={UserData.showWeeklyInsightsModal}
         verifyDone={dismissWeeklyInsightsModal}
         dismissModalHandler={dismissWeeklyInsightsModal}
+      />
+      <MonthlyInsightsProgress
+        modalVisible={UserData.showMonthlyInsightsModal}
+        verifyDone={dismissMonthlyInsightsModal}
+        dismissModalHandler={dismissMonthlyInsightsModal}
       />
     </>
   );

@@ -32,13 +32,13 @@ import {
 import Colors from '../../../Constants/Colors/Colors';
 import {IsAnonymous, UserDetail} from '../../../redux/actions/actions';
 import AddNameModal from '../AddNameModal/AddNameModal';
-import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-community/async-storage';
 import {GetStaffUserData} from '../../../apirequest/PostRequestApi';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
-import {getApiBaseUrl, PHOTO_URL} from '../../../Constants/constants';
+import {getApiBaseUrl, getPhotoUrl} from '../../../Constants/constants';
 import Constants from '../../../Constants';
 import {BitCoinIcon} from '../../../../assets/svg/bitCoin';
+import { getMyDeviceId } from '../../../services/commonService';
 
 type props = {
   modalVisible: Boolean,
@@ -52,6 +52,7 @@ const NegativeMoodModal = ({
   modalVisible,
   dismissModalHandler,
   emotionText,
+  description,
   onClickButtonOne,
   onClickButtonTwo,
 }: props) => {
@@ -93,7 +94,7 @@ const NegativeMoodModal = ({
   };
 
   const ProfileApiCallHere = () => {
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Accept', 'application/json');
     myHeaders.append('Content-Type', 'application/json');
@@ -164,7 +165,7 @@ const NegativeMoodModal = ({
 
   const getProfileUserData = () => {
     console.log(`called called called called called called`);
-    const deviceId = DeviceInfo.getUniqueId();
+    const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -217,7 +218,7 @@ const NegativeMoodModal = ({
           onStartShouldSetResponder={Keyboard.dismiss}
           style={[styles.upperContainer]}>
           <Text style={styles.textOne}>{moodText?.confirmation_text}</Text>
-          {/* <Text style={styles.textTwo}>Flo feels you</Text> */}
+          {/* <Text style={styles.textTwo}>Flx feels you</Text> */}
           {/* <Text style={styles.textTwo}>{moodText?.confirmation_text}</Text> */}
           <Text style={styles.textThree}>
             Feeling{' '}
@@ -238,7 +239,7 @@ const NegativeMoodModal = ({
                       <Image
                         style={styles.profileImage}
                         source={{
-                          uri: `${PHOTO_URL}${UserData?.UserDetails?.profile_image}`,
+                          uri: `${getPhotoUrl()}${UserData?.UserDetails?.profile_image}`,
                         }}
                       />
                     ) : (
@@ -263,9 +264,7 @@ const NegativeMoodModal = ({
             )}
           </TouchableOpacity>
           <View style={styles.descriptionView}>
-            <Text style={styles.descriptionText}>
-              Would you like to talk to someone?
-            </Text>
+            <Text style={styles.descriptionText}>{description}</Text>
           </View>
           <TouchableOpacity
             style={[
