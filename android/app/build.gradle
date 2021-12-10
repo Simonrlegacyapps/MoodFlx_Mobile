@@ -164,11 +164,13 @@ android {
     }
     buildTypes {
         debug {
+            buildConfigField 'String', 'BASE_URL', '"https://dev.moodflo.com/api/"'
             signingConfig signingConfigs.debug
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
+            buildConfigField 'String', 'BASE_URL', '"https://admin.moodflo.com/api/"'
             signingConfig signingConfigs.release
 //            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
@@ -199,9 +201,11 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation platform('com.google.firebase:firebase-bom:27.1.0') // for push notifications
     implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     implementation "com.google.android.gms:play-services-auth:19.0.0"
-    implementation "com.google.android.gms:play-services-fitness:20.0.0"
+    implementation "com.google.android.gms:play-services-fitness:21.0.0"
     implementation(project(':react-native-maps')){
         exclude group: 'com.google.android.gms', module: 'play-services-base'
         exclude group: 'com.google.android.gms', module: 'play-services-maps'

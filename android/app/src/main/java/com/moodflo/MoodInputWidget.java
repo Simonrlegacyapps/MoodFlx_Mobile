@@ -3,6 +3,7 @@ package com.moodflo;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -18,6 +19,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+
 class Mood {
     String moodName;
     String moodId;
@@ -28,45 +38,164 @@ class Mood {
         this.moodId = id;
         this.idx = idx;
     }
+
+    @Override
+    public String toString() {
+        return "Mood{" +
+                "moodName='" + moodName + '\'' +
+                ", moodId='" + moodId + '\'' +
+                ", idx=" + idx +
+                '}';
+    }
+}
+
+class MoodUpdateResponse {
+    int status_code = -1;
+    int reward_point = -1;
+    String mood_id = "";
+    boolean success = false;
+
+    public MoodUpdateResponse(int status_code, int reward_point, String mood_id, boolean success) {
+        this.status_code = status_code;
+        this.reward_point = reward_point;
+        this.mood_id = mood_id;
+        this.success = success;
+    }
+
+    @Override
+    public String toString() {
+        return "MoodUpdateResponse{" +
+                "status_code=" + status_code +
+                ", reward_point=" + reward_point +
+                ", mood_id='" + mood_id + '\'' +
+                ", success=" + success +
+                '}';
+    }
+}
+
+class MoodUpdateBody {
+    int anonymous = 1;
+    String city = "";
+    String description = "mood input";
+    String device_id = "";
+    String device_token = "";
+    String device_type = "android";
+    String email = "";
+    String lat = "";
+    String lon = "";
+    String mood_id = "";
+    String mood_type = "regular";
+    int reward_point = 0;
+    int section_index = 4;
+    String state = "";
+    String country = "";
+    String user_id = "";
+//    {
+//        "anonymous": 1,
+//            "city": "Melbourne",
+//            "country": "Australia",
+//            "description": "mood input",
+//            "device_id": "F8EA5DB9-75E0-45FB-9E26-A243876ADAE8",
+//            "device_token": "dupgKHolukmHpamOWbyNeS:APA91bEsSJL9TpF0SaHhsuQakVhB3Tm58NMOKEbXpjKojBk7x8fjaCwuLclgp4gavPGmd67LAA5064P5o9sDTjVFn4oA80k2iwrmfRnEkdgLj10TcXJoEiUo2s3bLsQeNjK9v34oY2EQ",
+//            "device_type": "ios",
+//            "email": null,
+//            "lat": "-37.8112451",
+//            "long": "144.9543962",
+//            "mood_id": "79fba97b-2eb8-47d5-8d44-9b15ceaa1e6c",
+//            "mood_type": "regular",
+//            "reward_point": 0,
+//            "section_index": 4,
+//            "state": "Victoria",
+//            "user_id": null
+//    }
+    public MoodUpdateBody(
+            int anonymous,
+            String city,
+            String description,
+            String device_id,
+            String device_token,
+            String device_type,
+            String email,
+            String lat,
+            String lon,
+            String mood_id,
+            String mood_type,
+            int reward_point,
+            int section_index,
+            String state,
+            String country,
+            String user_id
+            ) {
+        this.anonymous = anonymous;
+        this.city = city;
+        this.description = description;
+        this.device_id = device_id;
+        this.device_token = device_token;
+        this.device_type = device_type;
+        this.email = email;
+        this.lat = lat;
+        this.lon = lon;
+        this.mood_id = mood_id;
+        this.mood_type = mood_type;
+        this.reward_point = reward_point;
+        this.section_index = 4;
+        this.state = state;
+        this.country = country;
+        this.user_id = user_id;
+    }
+
+    @Override
+    public String toString() {
+        return "MoodUpdateBody{" +
+                "anonymous=" + anonymous +
+                ", city='" + city + '\'' +
+                ", description='" + description + '\'' +
+                ", device_id='" + device_id + '\'' +
+                ", device_token='" + device_token + '\'' +
+                ", device_type='" + device_type + '\'' +
+                ", email='" + email + '\'' +
+                ", lat='" + lat + '\'' +
+                ", lon='" + lon + '\'' +
+                ", mood_id='" + mood_id + '\'' +
+                ", mood_type='" + mood_type + '\'' +
+                ", reward_point=" + reward_point +
+                ", section_index=" + section_index +
+                ", state='" + state + '\'' +
+                ", country='" + country + '\'' +
+                ", user_id='" + user_id + '\'' +
+                '}';
+    }
+}
+
+interface GitHubService {
+    @POST("moodUpdate")
+    Call<MoodUpdateResponse> updateMood(@Body MoodUpdateBody moodUpdateBody);
 }
 
 /**
  * Implementation of App Widget functionality.
  */
 public class MoodInputWidget extends AppWidgetProvider {
+    public final static String BASE_URL = BuildConfig.BASE_URL;
+    public final static String MOOD_TYPE_REGULAR = "regular";
+    public final static String MOOD_TYPE_PRETTY = "pretty";
+    public final static String MOOD_TYPE_VERY = "very";
     private static final String OnSaveClick = "onSaveClick";
-    private List<Mood> moods = new ArrayList<>();
-    private  List<String> onClickIntents = new ArrayList(
+    private static final String OnPrettyClick = "onPrettyClick";
+    private static final String OnVeryClick = "onVeryClick";
+    private static List<Mood> moods = new ArrayList<>();
+    private static final String intentExtraWidgetIdKey = "widgetId";
+    private static Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+    private static String moodType = MOOD_TYPE_REGULAR;
+
+    private static GitHubService service = retrofit.create(GitHubService.class);
+    private List<String> onClickIntents = new ArrayList(
             List.of("0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"));
-    private  List<Integer> buttonIds = new ArrayList(
-            List.of(
-                    R.id.button_1_id,
-                    R.id.button_2_id,
-                    R.id.button_3_id,
-                    R.id.button_4_id,
-                    R.id.button_5_id,
-                    R.id.button_6_id,
-                    R.id.button_7_id,
-                    R.id.button_8_id,
-                    R.id.button_9_id,
-                    R.id.button_10_id,
-                    R.id.button_11_id,
-                    R.id.button_12_id,
-                    R.id.button_13_id,
-                    R.id.button_14_id,
-                    R.id.button_15_id,
-                    R.id.button_16_id,
-                    R.id.button_17_id,
-                    R.id.button_18_id,
-                    R.id.button_19_id,
-                    R.id.button_20_id,
-                    R.id.button_21_id,
-                    R.id.button_22_id,
-                    R.id.button_23_id,
-                    R.id.button_24_id
-                    ));
-    private int widgetId = -1;
-    private Mood selectedMood = null;
+    private static List<Integer> buttonIds = null;
+    private static Mood selectedMood = null;
 
 
 //    public void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
@@ -97,6 +226,47 @@ public class MoodInputWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
+        setMoods();
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+        }
+        if (service == null) {
+            service = retrofit.create(GitHubService.class);
+        }
+
+        if (buttonIds == null) {
+            buttonIds = new ArrayList(
+                    List.of(
+                            R.id.button_1_id,
+                            R.id.button_2_id,
+                            R.id.button_3_id,
+                            R.id.button_4_id,
+                            R.id.button_5_id,
+                            R.id.button_6_id,
+                            R.id.button_7_id,
+                            R.id.button_8_id,
+                            R.id.button_9_id,
+                            R.id.button_10_id,
+                            R.id.button_11_id,
+                            R.id.button_12_id,
+                            R.id.button_13_id,
+                            R.id.button_14_id,
+                            R.id.button_15_id,
+                            R.id.button_16_id,
+                            R.id.button_17_id,
+                            R.id.button_18_id,
+                            R.id.button_19_id,
+                            R.id.button_20_id,
+                            R.id.button_21_id,
+                            R.id.button_22_id,
+                            R.id.button_23_id,
+                            R.id.button_24_id
+                    ));
+        }
 
         for (int appWidgetId : appWidgetIds) {
 //            updateAppWidget(context, appWidgetManager, appWidgetId);
@@ -105,24 +275,30 @@ public class MoodInputWidget extends AppWidgetProvider {
 //            appWidgetManager.updateAppWidget(appWidgetId, views);
 
 //            views.setOnClickPendingIntent(R.id.button_1_id, getPendingSelfIntent(context, MyOnClick));
-            views.setOnClickPendingIntent(R.id.save_button_id, getPendingSelfIntent(context, OnSaveClick));
+            views.setOnClickPendingIntent(R.id.save_button_id, getPendingSelfIntent(context, OnSaveClick, appWidgetId));
+            views.setOnClickPendingIntent(R.id.pretty_button_id, getPendingSelfIntent(context, OnPrettyClick, appWidgetId));
+            views.setOnClickPendingIntent(R.id.very_button_id, getPendingSelfIntent(context, OnVeryClick, appWidgetId));
             for (int i = 0; i < buttonIds.size(); i++) {
-                views.setOnClickPendingIntent(buttonIds.get(i), getPendingSelfIntent(context, onClickIntents.get(i)));
+                views.setOnClickPendingIntent(buttonIds.get(i), getPendingSelfIntent(context, onClickIntents.get(i), appWidgetId));
             }
-            widgetId = appWidgetId;
-            setMoods();
+            Log.d("buttonId ", buttonIds.toString());
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
 
     @Override
     public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
+        super.onEnabled(context);
     }
 
     @Override
     public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
+        super.onDisabled(context);
+    }
+
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        super.onDeleted(context, appWidgetIds);
     }
 
     public void setMoods() {
@@ -179,35 +355,144 @@ public class MoodInputWidget extends AppWidgetProvider {
     }
 
 
-    protected PendingIntent getPendingSelfIntent(Context context, String action) {
+    protected PendingIntent getPendingSelfIntent(Context context, String action, int widgetId) {
         Intent intent = new Intent(context, getClass());
+        intent.putExtra(intentExtraWidgetIdKey, widgetId);
         intent.setAction(action);
         return PendingIntent.getBroadcast(context, 0, intent, 0);
+    }
+
+    protected void resetMoodData(Context context, RemoteViews views, int widgetId) {
+        moodType = MOOD_TYPE_REGULAR;
+        views.setInt(R.id.pretty_button_id, "setTextColor", context.getColor(R.color.black));
+        views.setInt(R.id.pretty_button_id, "setBackgroundColor", context.getColor(R.color.white));
+        views.setInt(R.id.very_button_id, "setTextColor", context.getColor(R.color.black));
+        views.setInt(R.id.very_button_id, "setBackgroundColor", context.getColor(R.color.white));
+        views.setTextViewText(R.id.mood_name_text_view_id, "Select Mood");
+        AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context.getPackageName(), MoodInputWidget.class.getName()), views);
+    }
+
+    protected void onMoodUpdate(Mood _selectedMood, String _moodType, Context context, RemoteViews _views, int _widgetId) {
+        MoodUpdateBody body = null;
+        try {
+            SharedPreferences sharedPref = context.getSharedPreferences("DATA", Context.MODE_PRIVATE);
+            String appString = sharedPref.getString("appData", "{\"text\":'no data'}");
+            JSONObject appData = new JSONObject(appString);
+            JSONObject moodUpdateBody = appData.getJSONObject("moodUpdateBody");
+            body = new MoodUpdateBody(
+                    moodUpdateBody.getInt("anonymous"),
+                    moodUpdateBody.getString("city"),
+                    "mood input",
+                    moodUpdateBody.getString("device_id"),
+                    moodUpdateBody.getString("device_token"),
+                    "android",
+                    moodUpdateBody.getString("email"),
+                    moodUpdateBody.getString("lat"),
+                    moodUpdateBody.getString("lon"),
+                    _selectedMood.moodId,
+                    _moodType,
+                    moodUpdateBody.getInt("reward_point"),
+                    moodUpdateBody.getInt("section_index"),
+                    moodUpdateBody.getString("state"),
+                    moodUpdateBody.getString("country"),
+                    moodUpdateBody.getString("user_id")
+            );
+            Log.d("onMoodUpdate ", body.toString());
+//            views.setTextViewText(R.id.appwidget_text, appData.getString("text"));
+//            appWidgetManager.updateAppWidget(appWidgetId, views);
+
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("MoodUpdateBody ", body.toString());
+        if (body != null && body instanceof MoodUpdateBody) {
+            Call<MoodUpdateResponse> call = service.updateMood(body);
+            call.enqueue(new Callback<MoodUpdateResponse>() {
+
+                @Override
+                public void onResponse(Call<MoodUpdateResponse> call, Response<MoodUpdateResponse> response) {
+                    Log.d("Api call success ", response.toString());
+                    resetMoodData(context, _views, _widgetId);
+                }
+
+                @Override
+                public void onFailure(Call<MoodUpdateResponse> call, Throwable t) {
+                    Log.d("Api call fail", t.toString());
+                }
+            });
+        }
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+//        Log.d("Base Url ", BASE_URL);
+//        Log.d("onClickIntents", onClickIntents.toString());
+        setMoods();
+//        Log.d("moods ", moods.toString());
+        if (selectedMood != null && selectedMood instanceof Mood) {
+            Log.d("selectedMood ", selectedMood.toString());
+        }
         RemoteViews views = new RemoteViews(context.getPackageName(),
                 R.layout.mood_input_widget);
+        int widgetId = -1;
         if (OnSaveClick.equals(intent.getAction())) {
+            widgetId = intent.getIntExtra(intentExtraWidgetIdKey, -1);
             String saveMoodName = "No mood selected";
             if (selectedMood != null && selectedMood instanceof Mood) {
                 saveMoodName = selectedMood.moodName;
+                Log.d("moodType ", moodType);
+                onMoodUpdate(selectedMood, moodType, context, views, widgetId);
             }
             Log.d("Save Button Click", "Save mood" + "---" + saveMoodName);
+        } else if (OnPrettyClick.equals(intent.getAction())) {
+            widgetId = intent.getIntExtra(intentExtraWidgetIdKey, -1);
+            Log.d("moodType ", moodType);
+            if (moodType == MOOD_TYPE_VERY || moodType == MOOD_TYPE_REGULAR) {
+                moodType = MOOD_TYPE_PRETTY;
+                views.setInt(R.id.pretty_button_id, "setTextColor", context.getColor(R.color.white));
+                views.setInt(R.id.pretty_button_id, "setBackgroundColor", context.getColor(R.color.green));
+                views.setInt(R.id.very_button_id, "setTextColor", context.getColor(R.color.black));
+                views.setInt(R.id.very_button_id, "setBackgroundColor", context.getColor(R.color.white));
+            } else {
+                moodType = MOOD_TYPE_REGULAR;
+                views.setInt(R.id.pretty_button_id, "setTextColor", context.getColor(R.color.black));
+                views.setInt(R.id.pretty_button_id, "setBackgroundColor", context.getColor(R.color.white));
+            }
+            if (widgetId != -1) {
+                AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context.getPackageName(), MoodInputWidget.class.getName()), views);
+            }
+        } else if (OnVeryClick.equals(intent.getAction())) {
+            Log.d("moodType ", moodType);
+            widgetId = intent.getIntExtra(intentExtraWidgetIdKey, -1);
+            if (moodType == MOOD_TYPE_PRETTY || moodType == MOOD_TYPE_REGULAR) {
+                moodType = MOOD_TYPE_VERY;
+                views.setInt(R.id.very_button_id, "setTextColor", context.getColor(R.color.white));
+                views.setInt(R.id.very_button_id, "setBackgroundColor", context.getColor(R.color.green));
+                views.setInt(R.id.pretty_button_id, "setTextColor", context.getColor(R.color.black));
+                views.setInt(R.id.pretty_button_id, "setBackgroundColor", context.getColor(R.color.white));
+            } else {
+                moodType = MOOD_TYPE_REGULAR;
+                views.setInt(R.id.very_button_id, "setTextColor", context.getColor(R.color.black));
+                views.setInt(R.id.very_button_id, "setBackgroundColor", context.getColor(R.color.white));
+            }
+            if (widgetId != -1) {
+                AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context.getPackageName(), MoodInputWidget.class.getName()), views);
+            }
         } else {
             for (int i = 0; i < onClickIntents.size(); i++) {
                 if (onClickIntents.get(i).equals(intent.getAction())){
                     //your onClick action is here
+                    widgetId = intent.getIntExtra(intentExtraWidgetIdKey, -1);
                     Log.d("Button Click", onClickIntents.get(i) + "---" + moods.get(i).moodName);
                     selectedMood = null;
                     selectedMood = moods.get(i);
                     views.setTextViewText(R.id.mood_name_text_view_id, moods.get(i).moodName);
-                    AppWidgetManager.getInstance(context).updateAppWidget(
-                            widgetId,views);
+                    if (widgetId != -1) {
+                        AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context.getPackageName(), MoodInputWidget.class.getName()), views);
+                    }
+                }
             }
-        }
         }
     }
 

@@ -45,6 +45,7 @@ import PostRequestApi, {
   GetStaffUserData,
   getUpdateRewardPoint,
 } from './Src/apirequest/PostRequestApi';
+import Geocoder from 'react-native-geocoding';
 import * as RootNavigation from './Src/navigator/RootNavigation';
 import crashlytics from '@react-native-firebase/crashlytics';
 import Analytics from './Src/services/analyticsService';
@@ -171,10 +172,26 @@ const App: () => React$Node = () => {
   const [linkModalText, setLinkModalText] = useState('');
   const newOrg = useRef(null);
   const isHandleDynamicLinkCalled = useRef(false);
-  const [text, setText] = useState('');
-  const widgetData = {
-    text,
-  };
+  const widgetData = useRef({
+    "moodUpdateBody": {
+      "anonymous": 1,
+      "city": "",
+      "country": "",
+      "description": "mood input",
+      "device_id": "",
+      "device_token": "",
+      "device_type": Platform.OS,
+      "email": "",
+      "lat": "",
+      "lon": "",
+      "mood_id": "",
+      "mood_type": "regular",
+      "reward_point": 0,
+      "section_index": 4,
+      "state": "",
+      "user_id": ""
+    }
+  });
 
   const [isConnected, setIsConnected] = useState(true);
   const netInfo = useNetInfo();
@@ -190,20 +207,6 @@ const App: () => React$Node = () => {
     };
   }, []);
 
-  const handleSubmit = async () => {
-    if (Platform.OS === 'ios') {
-      try {
-        console.log('widgetData ---->', widgetData);
-        // iOS
-        await SharedGroupPreferences.setItem('widgetKey', widgetData, widgetDataGroup);
-      } catch (error) {
-        console.log({error});
-      }
-    } else if (Platform.OS === 'android') {
-      // Android
-      SharedStorage.set(JSON.stringify({text}));
-    }
-  };
   useEffect(() => {
     console.log("Is connected?", netInfo?.isConnected);
     setIsConnected((e) => {
@@ -215,6 +218,88 @@ const App: () => React$Node = () => {
       return i;
     });
   }, [netInfo?.isConnected]);
+
+  useEffect(() => {
+    const setWidgetData = async () => {
+      const fcm = await messaging().getToken();
+      Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
+      let state_info = '';
+      let city_info = '';
+      let country_info = '';
+      if (UserData.lat && UserData.lon) {
+        await Geocoder.from({
+          lat: UserData.lat,
+          lng: UserData.lon,
+        })
+          .then((data) => {
+            const address_list = data.results[0].address_components;
+            for (let i = 0; i < address_list.length; i++) {
+              if (address_list?.[i]?.types?.includes?.('country')) {
+                country_info = address_list?.[i]?.long_name ?? '';
+              }
+              if (
+                address_list?.[i]?.types?.includes?.(
+                  'administrative_area_level_1',
+                )
+              ) {
+                state_info = address_list?.[i]?.long_name ?? '';
+              }
+              if (
+                address_list?.[i]?.types?.includes?.(
+                  'administrative_area_level_2',
+                )
+              ) {
+                city_info = address_list?.[i]?.long_name ?? '';
+              }
+            }
+          })
+          .catch((err) => console.log(`weather api location err`, err));
+      }
+      const isIndia = isCountryIndia();
+      widgetData.current = {
+        ...widgetData.current,
+        moodUpdateBody: {
+          ...widgetData.current.moodUpdateBody,
+          mood_id: "",
+          device_id: getMyDeviceId(),
+          mood_type: "",
+          city: isIndia || !UserData.lat ? defaultLocation.city : city_info,
+          state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
+          country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
+          lat: isIndia || !UserData.lat ? defaultLocation.latitude : UserData.lat,
+          lon: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
+          email: UserData.UserEmail ? UserData.UserEmail : "",
+          user_id: UserData.UserId && !isNaN(UserData.UserId) ? String(UserData.UserId) : "",
+          device_token: fcm,
+          device_type: Platform.OS,
+          anonymous: !UserData.Anonymous ? 0 : 1,
+          reward_point: 0,
+          section_index: 4,
+          description: 'mood input',
+        },
+      };
+      if (Platform.OS === 'ios') {
+        try {
+          // iOS
+          await SharedGroupPreferences.setItem('widgetKey', widgetData.current, widgetDataGroup);
+          console.log('SharedGroupPreferences.setItem success ---->', widgetData.current);
+        } catch (error) {
+          console.log('SharedGropPrefences widgetKey error: ', error);
+        }
+      } else if (Platform.OS === 'android') {
+        // Android
+        SharedStorage.set(JSON.stringify(widgetData.current));
+        console.log('SharedStorage.set success ---->', widgetData.current);
+      }
+    };
+    setWidgetData();
+  }, [
+    UserData.lat,
+    UserData.lon,
+    UserData.UserEmail,
+    UserData.UserId,
+    UserData.Anonymous,
+  ]);
 
   useEffect(() => {
     if (
@@ -934,20 +1019,6 @@ const App: () => React$Node = () => {
 
   return (
     <>
-    <TextInput
-        style={{
-          width: '100%',
-          borderBottomWidth: 1,
-          fontSize: 20,
-          marginTop: 50,
-          minHeight: 40,
-        }}
-        onChangeText={newText => setText(newText)}
-        value={text}
-        returnKeyType="send"
-        onEndEditing={handleSubmit}
-        placeholder="Enter the text to display..."
-      />
       {ShowWelcome === false ? (
         <NavigationContainer
           ref={RootNavigation.navigationRef}

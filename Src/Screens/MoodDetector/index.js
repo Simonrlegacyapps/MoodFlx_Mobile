@@ -1232,7 +1232,7 @@ export default function MoodDetector({ navigation }) {
         state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
         country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
         lat: isIndia || !UserData.lat ? defaultLocation.latitude : UserData.lat,
-        long: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
+        lon: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
         email: UserData.UserEmail,
         user_id: UserData.UserId,
         device_token: fcm,
