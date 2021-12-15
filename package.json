@@ -76,7 +76,6 @@
     "react-native-svg": "^12.1.0",
     "react-native-tab-view": "^2.x",
     "react-native-toast-message": "^1.4.9",
-    "react-native-today-widget": "^1.0.0",
     "react-native-usage-stats": "file:./react-native-usage-stats",
     "react-native-uuid": "^2.0.1",
     "react-native-vector-icons": "^8.1.0",

@@ -13,7 +13,7 @@
 			android:layout_height="@dimen/widget_button_height"
 			android:layout_width="@dimen/widget_button_width"
 			android:textColor="@color/black"
-			android:textSize="12sp"
+			android:textSize="9sp"
 			android:background="@color/white"
 			android:stateListAnimator="@null"
 			android:text="Pretty" />
@@ -22,7 +22,7 @@
 			android:layout_height="@dimen/widget_button_height"
 			android:layout_width="@dimen/widget_button_width"
 			android:textColor="@color/black"
-			android:textSize="12sp"
+			android:textSize="9sp"
 			android:background="@color/white"
 			android:stateListAnimator="@null"
 			android:text="Very" />
@@ -42,7 +42,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:textColor="@color/white"
-			android:background="#A1C595"
+			android:background="#B8B2F1"
 			android:text="SAVE" />
 	</LinearLayout>
 	<GridLayout
@@ -57,7 +57,7 @@
 			android:textColor="#C3D3DF"
 			android:background="#C3D3DF"
 			android:stateListAnimator="@null"
-			android:text="1" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_2_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -65,7 +65,7 @@
 			android:textColor="#C3D3DF"
 			android:background="#C3D3DF"
 			android:stateListAnimator="@null"
-			android:text="2" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_3_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -73,7 +73,7 @@
 			android:textColor="#B2C6D6"
 			android:background="#B2C6D6"
 			android:stateListAnimator="@null"
-			android:text="3" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_4_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -81,7 +81,7 @@
 			android:textColor="#B2C6D6"
 			android:background="#B2C6D6"
 			android:stateListAnimator="@null"
-			android:text="4" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_5_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -89,7 +89,7 @@
 			android:textColor="#C3D3DF"
 			android:background="#C3D3DF"
 			android:stateListAnimator="@null"
-			android:text="5" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_6_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -97,7 +97,7 @@
 			android:textColor="#C3D3DF"
 			android:background="#C3D3DF"
 			android:stateListAnimator="@null"
-			android:text="6" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_7_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -105,7 +105,7 @@
 			android:textColor="#B2C6D6"
 			android:background="#B2C6D6"
 			android:stateListAnimator="@null"
-			android:text="7" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_8_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -113,7 +113,7 @@
 			android:textColor="#B2C6D6"
 			android:background="#B2C6D6"
 			android:stateListAnimator="@null"
-			android:text="8" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_9_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -121,7 +121,7 @@
 			android:textColor="#C3D3DF"
 			android:background="#C3D3DF"
 			android:stateListAnimator="@null"
-			android:text="9" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_10_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -129,7 +129,7 @@
 			android:textColor="#C3D3DF"
 			android:background="#C3D3DF"
 			android:stateListAnimator="@null"
-			android:text="10" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_11_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -137,7 +137,7 @@
 			android:textColor="#B2C6D6"
 			android:background="#B2C6D6"
 			android:stateListAnimator="@null"
-			android:text="11" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_12_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -145,7 +145,7 @@
 			android:textColor="#B2C6D6"
 			android:background="#B2C6D6"
 			android:stateListAnimator="@null"
-			android:text="12" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_13_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -153,7 +153,7 @@
 			android:textColor="#91AEC5"
 			android:background="#91AEC5"
 			android:stateListAnimator="@null"
-			android:text="13" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_14_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -161,7 +161,7 @@
 			android:textColor="#91AEC5"
 			android:background="#91AEC5"
 			android:stateListAnimator="@null"
-			android:text="14" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_15_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -169,7 +169,7 @@
 			android:textColor="#A3BBCE"
 			android:background="#A3BBCE"
 			android:stateListAnimator="@null"
-			android:text="15" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_16_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -177,7 +177,7 @@
 			android:textColor="#A3BBCE"
 			android:background="#A3BBCE"
 			android:stateListAnimator="@null"
-			android:text="16" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_17_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -185,7 +185,7 @@
 			android:textColor="#91AEC5"
 			android:background="#91AEC5"
 			android:stateListAnimator="@null"
-			android:text="17" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_18_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -193,7 +193,7 @@
 			android:textColor="#91AEC5"
 			android:background="#91AEC5"
 			android:stateListAnimator="@null"
-			android:text="18" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_19_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -201,7 +201,7 @@
 			android:textColor="#A3BBCE"
 			android:background="#A3BBCE"
 			android:stateListAnimator="@null"
-			android:text="19" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_20_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -209,7 +209,7 @@
 			android:textColor="#A3BBCE"
 			android:background="#A3BBCE"
 			android:stateListAnimator="@null"
-			android:text="20" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_21_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -217,7 +217,7 @@
 			android:textColor="#91AEC5"
 			android:background="#91AEC5"
 			android:stateListAnimator="@null"
-			android:text="21" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_22_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -225,7 +225,7 @@
 			android:textColor="#91AEC5"
 			android:background="#91AEC5"
 			android:stateListAnimator="@null"
-			android:text="22" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_23_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -233,7 +233,7 @@
 			android:textColor="#A3BBCE"
 			android:background="#A3BBCE"
 			android:stateListAnimator="@null"
-			android:text="23" />
+			android:text="" />
 		<Button
 			android:id="@+id/button_24_id"
 			android:layout_height="@dimen/widget_button_height"
@@ -241,6 +241,6 @@
 			android:textColor="#A3BBCE"
 			android:background="#A3BBCE"
 			android:stateListAnimator="@null"
-			android:text="24" />
+			android:text="" />
 	</GridLayout>
 </LinearLayout>

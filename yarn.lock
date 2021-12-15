@@ -7832,11 +7832,6 @@ react-native-toast-message@^1.4.9:
   dependencies:
     prop-types "^15.7.2"
 
-react-native-today-widget@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-today-widget/-/react-native-today-widget-1.0.0.tgz#2547494c497aa7163b3a40a66937879be4b5412c"
-  integrity sha512-ZtxNcaDNSnKcv0NJNUhWlZSdzm6cHlvYi6emYxb/e1kyZgC7vBugR4S9Rm5HEOcsN+MEcBEaBIWSzJGJjRddkQ==
-
 "react-native-usage-stats@file:./react-native-usage-stats":
   version "1.0.0"
 

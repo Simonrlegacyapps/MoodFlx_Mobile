@@ -1511,6 +1511,10 @@ export default function MoodDetector({ navigation }) {
     // forceUpdate();
   };
 
+  // console.log('color --->', color);
+  // console.log('pSBC(0.25, color) --->', pSBC(0.25, color));
+  // console.log('pSBC(0.5, color) --->', pSBC(0.5, color));
+  // console.log('pSBC(0.75, color) --->', pSBC(0.75, color));
   const renderBlocks = (tbColor) => {
     const fontSize = getFontSize(12);
     const lineHeight = getLineHeight(fontSize);
