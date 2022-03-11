@@ -73,6 +73,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = MoodFlo/main.m; sourceTree = "<group>"; };
 		145FFD024E29D2E69DD6A0E8 /* Pods-MoodFlo-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-tvOS.release.xcconfig"; path = "Target Support Files/Pods-MoodFlo-tvOS/Pods-MoodFlo-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		198925E727DB47F400FE1AE4 /* MoodFloRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MoodFloRelease.entitlements; path = MoodFlo/MoodFloRelease.entitlements; sourceTree = "<group>"; };
 		19A6BB55271733EC00AF40D0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		19C805F22678A3CA006C1FA2 /* RCTMoodDataModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTMoodDataModule.h; sourceTree = "<group>"; };
 		19DCB895267B1B19009C4DC1 /* RCTMoodDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTMoodDataModule.m; sourceTree = "<group>"; };
@@ -180,6 +181,7 @@
 		13B07FAE1A68108700A75B9A /* MoodFlo */ = {
 			isa = PBXGroup;
 			children = (
+				198925E727DB47F400FE1AE4 /* MoodFloRelease.entitlements */,
 				19A6BB55271733EC00AF40D0 /* Launch Screen.storyboard */,
 				19C805F22678A3CA006C1FA2 /* RCTMoodDataModule.h */,
 				1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */,
@@ -879,12 +881,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 6.8;
+				MARKETING_VERSION = 6.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -904,15 +906,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFloRelease.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Sir. Conrad Pty Ltd (UV3Z6BTTHA)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 6.8;
+				MARKETING_VERSION = 6.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
