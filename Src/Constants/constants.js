@@ -207,6 +207,7 @@ export const getMonthlyInsightsAvailable = () => {
   }
 };
 
+export const widgetDataGroup = 'group.moodflo';
 export const getMonthlyInsightsDaysLeft = () => {
   if (getMonthlyInsightsAvailable() === true) {
     return 0;

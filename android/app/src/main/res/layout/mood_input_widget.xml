@@ -1,0 +1,287 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+	android:orientation="vertical"
+    android:background="#FFFFFF">
+
+	<LinearLayout
+		android:layout_width="@dimen/widget_min_width"
+		android:layout_height="@dimen/widget_button_height"
+		android:orientation="horizontal">
+		<Button
+			android:id="@+id/pretty_button_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="@color/black"
+			android:textSize="9sp"
+			android:background="@color/white"
+			android:stateListAnimator="@null"
+			android:text="Pretty" />
+		<Button
+			android:id="@+id/very_button_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="@color/black"
+			android:textSize="9sp"
+			android:background="@color/white"
+			android:stateListAnimator="@null"
+			android:text="Very" />
+		<TextView
+			android:id="@+id/mood_name_text_view_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="@color/black"
+			android:gravity="center_horizontal|center_vertical"
+			android:textSize="9sp"
+			android:autoSizeTextType="uniform"
+			android:autoSizeMinTextSize="6sp"
+			android:autoSizeMaxTextSize="10sp"
+			android:text="@string/mood_name_default" />
+		<Button
+			android:id="@+id/save_button_id"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:textColor="@color/white"
+			android:background="@drawable/round_corner_button"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:text="SAVE" />
+	</LinearLayout>
+	<GridLayout
+		android:layout_width="@dimen/widget_min_width"
+		android:layout_height="wrap_content"
+		android:columnCount="4">
+
+		<Button
+			android:id="@+id/button_1_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#C3D3DF"
+			android:background="#C3D3DF"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.3"
+			android:text="" />
+		<Button
+			android:id="@+id/button_2_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#C3D3DF"
+			android:background="#C3D3DF"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.3"
+			android:text="" />
+		<Button
+			android:id="@+id/button_3_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#B2C6D6"
+			android:background="#B2C6D6"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.5"
+			android:text="" />
+		<Button
+			android:id="@+id/button_4_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#B2C6D6"
+			android:background="#B2C6D6"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.5"
+			android:text="" />
+		<Button
+			android:id="@+id/button_5_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#C3D3DF"
+			android:background="#C3D3DF"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.3"
+			android:text="" />
+		<Button
+			android:id="@+id/button_6_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#C3D3DF"
+			android:background="#C3D3DF"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.3"
+			android:text="" />
+		<Button
+			android:id="@+id/button_7_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#B2C6D6"
+			android:background="#B2C6D6"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.5"
+			android:text="" />
+		<Button
+			android:id="@+id/button_8_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#B2C6D6"
+			android:background="#B2C6D6"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.5"
+			android:text="" />
+		<Button
+			android:id="@+id/button_9_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#C3D3DF"
+			android:background="#C3D3DF"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.3"
+			android:text="" />
+		<Button
+			android:id="@+id/button_10_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#C3D3DF"
+			android:background="#C3D3DF"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.3"
+			android:text="" />
+		<Button
+			android:id="@+id/button_11_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#B2C6D6"
+			android:background="#B2C6D6"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.5"
+			android:text="" />
+		<Button
+			android:id="@+id/button_12_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#B2C6D6"
+			android:background="#B2C6D6"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.5"
+			android:text="" />
+		<Button
+			android:id="@+id/button_13_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#91AEC5"
+			android:background="#91AEC5"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:text="" />
+		<Button
+			android:id="@+id/button_14_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#91AEC5"
+			android:background="#91AEC5"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:text="" />
+		<Button
+			android:id="@+id/button_15_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#A3BBCE"
+			android:background="#A3BBCE"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.7"
+			android:text="" />
+		<Button
+			android:id="@+id/button_16_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#A3BBCE"
+			android:background="#A3BBCE"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.7"
+			android:text="" />
+		<Button
+			android:id="@+id/button_17_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#91AEC5"
+			android:background="#91AEC5"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:text="" />
+		<Button
+			android:id="@+id/button_18_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#91AEC5"
+			android:background="#91AEC5"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:text="" />
+		<Button
+			android:id="@+id/button_19_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#A3BBCE"
+			android:background="#A3BBCE"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.7"
+			android:text="" />
+		<Button
+			android:id="@+id/button_20_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#A3BBCE"
+			android:background="#A3BBCE"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:alpha="0.7"
+			android:text="" />
+		<Button
+			android:id="@+id/button_21_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#91AEC5"
+			android:background="#91AEC5"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:text="" />
+		<Button
+			android:id="@+id/button_22_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#91AEC5"
+			android:background="#91AEC5"
+			android:stateListAnimator="@null"
+			android:foreground="?android:attr/selectableItemBackground"
+			android:text="" />
+		<Button
+			android:id="@+id/button_23_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#A3BBCE"
+			android:background="#A3BBCE"
+			android:stateListAnimator="@null"
+			android:alpha="0.7"
+			android:text="" />
+		<Button
+			android:id="@+id/button_24_id"
+			android:layout_height="@dimen/widget_button_height"
+			android:layout_width="@dimen/widget_button_width"
+			android:textColor="#A3BBCE"
+			android:background="#A3BBCE"
+			android:stateListAnimator="@null"
+			android:alpha="0.7"
+			android:text="" />
+	</GridLayout>
+</LinearLayout>
