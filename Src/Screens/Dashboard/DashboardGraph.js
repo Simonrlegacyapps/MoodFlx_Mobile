@@ -868,7 +868,7 @@ export function SleepQualityTab(props) {
         const inBedArray = result?.sleepData?.INBED ? Object.values(result.sleepData.INBED) : [];
         const asleepArray = result?.sleepData?.ASLEEP ? Object.values(result.sleepData.ASLEEP) : [];
         const graphData = getSleepGraphData({ weeklyData: { ASLEEP: asleepArray, INBED: inBedArray } });
-        console.log('graphData: ', graphData);
+        console.log('graphData: ', JSON.stringify(graphData));
         if (graphData !== null) {
           setGraphData(graphData);
         } else {
@@ -903,7 +903,17 @@ export function SleepQualityTab(props) {
 }
 
 function DashboardGraph({data}) {
+  const selectedMoodName = useSelector((state) => state.First?.dashboardMoodName ?? '');
+  let graphInfo = "";
+  if (Array.isArray(data)){
+    if (data.length === 7) {
+      graphInfo = `${selectedMoodName ? selectedMoodName : 'Selected'} mood data of last 7 days`
+    } else if (data.length > 7) {
+      graphInfo = "All mood data grouped in parent mood of last 7 days in %";
+    }
+  }
   return (
+    <>
     <VictoryChart polar
       theme={VictoryTheme.material}
       startAngle={90}
@@ -950,6 +960,12 @@ function DashboardGraph({data}) {
         }}
       />
     </VictoryChart>
+      {graphInfo && (
+        <View style={{ alignSelf: 'center', marginTop: 20, width: '80%' }}>
+          <Text style={{textAlign: 'center'}}>{graphInfo}</Text>
+        </View>
+      )}
+    </>
   );
 }
 

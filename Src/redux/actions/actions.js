@@ -45,7 +45,7 @@ import {
   GET_STANDTIME_PERM,
   NEGATIVE_MOOD_MODAL_DATA,
   SHOW_MONTHLY_INSIGHTS_MODAL,
-  DASHBOARD_MOOD_ID,
+  DASHBOARD_MOOD_DATA,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -331,9 +331,9 @@ export const SetNegativeMoodModalData = (data) => {
   };
 };
 
-export const SetDashboardMoodId = (data) => {
+export const SetDashboardMoodData = (data) => {
   return {
-    type: DASHBOARD_MOOD_ID,
+    type: DASHBOARD_MOOD_DATA,
     payload: data,
   };
 };

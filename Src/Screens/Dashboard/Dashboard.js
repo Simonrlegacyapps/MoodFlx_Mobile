@@ -28,7 +28,7 @@ import moment from 'moment';
 import getStore from '../../redux';
 import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 import { ViewIcon } from '../../../assets/svg/ViewIcon';
-import {SetDashboardMoodId} from '../../redux/actions/actions';
+import {SetDashboardMoodData} from '../../redux/actions/actions';
 
 const Tab = createMaterialTopTabNavigator();
 // const characterDemoData = [
@@ -119,14 +119,17 @@ function Dashboard(props) {
 
   const onPressMoodItem = useCallback((item) => () => {
       let m = getStore?.().getState?.()?.First?.dashboardMoodId ?? null;
+      let n = getStore?.().getState?.()?.First?.dashboardMoodName ?? null;
       if (item.id === m) {
         m = '';
+        n = '';
         getMoodsApi();
       } else {
         m = item.id;
+        n = item?.moodName ?? '';
         getMoodsApi(item.id);
       }
-      dispatch(SetDashboardMoodId(m));
+      dispatch(SetDashboardMoodData({dashboardMoodId: m, dashboardMoodName: n}));
     }, []);
 
   useEffect(() => {
