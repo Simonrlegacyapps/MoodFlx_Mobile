@@ -101,9 +101,9 @@ const Screen1 = ({onDone}) => {
                 </Text>
               </View>
               <View style={styles.bottomButtons}>
-                <TouchableOpacity onPress={onDone} style={{flex: 1}}>
+                {/* <TouchableOpacity onPress={onDone} style={{flex: 1}}>
                   <Text allowFontScaling={false} style={styles.skip}>Skip > ></Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity
                   onPress={() => {
                     setnumber(number + 1);
@@ -175,9 +175,9 @@ const Screen1 = ({onDone}) => {
 
               {/* // bottom buttons */}
               <View style={styles.bottomButtons}>
-                <TouchableOpacity onPress={onDone} style={{flex: 1}}>
+                {/* <TouchableOpacity onPress={onDone} style={{flex: 1}}>
                   <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity
                   onPress={() => {
                     data[number - 1].button === "Next" ? setnumber(number + 1) : onDone();
@@ -210,10 +210,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   bottomButtons: {
+    width: '100%',
     position: 'absolute',
     bottom: 10,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingHorizontal: 20,
   },
   smallText0: {
