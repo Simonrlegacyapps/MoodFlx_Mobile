@@ -5,27 +5,109 @@ import moment from 'moment';
 import {Platform} from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
+let rA = [];
+
+function getRandomInt(num = 16) {
+  if (Array.isArray(rA) && rA.length >= 6) {
+    rA = null;
+    rA = [];
+  }
+
+  let n = Math.floor(Math.random() * num);
+  for (let x = 1; x <= 3 && rA.includes(n); x++) {
+    n = Math.floor(Math.random() * num);
+  }
+  rA.push(n);
+  return n;
+}
+
+const notifMessages = [
+  "How are you feeling?",
+  "Is this a good time for a Flx moment?",
+  "Flx time?",
+  "Mood input time?",
+  "Time to flx?",
+  "How are you?",
+  "All your feelings count - Flx it",
+  "Just go ahead and Flx it!",
+  "To Flx is to let it all out!",
+  "The research says when you Flx you feel better",
+  "What is your mood right now?",
+  "All moods are important - input yours now",
+  "I feel ……",
+  "moodflx could use some love right now😊",
+  "What if I told you that you feel better when you Flx",
+  "When we Flx we just tell it how it is",
+  "I wonder if it's a Flx kind of moment",
+];
+
 export default class NotifService {
   static notifData = {
     one: {
       id: 1,
-      title: 'Flx would love to know how you feel',
-      timeInHour: 9,
-      timeInMin: 50,
+      title: notifMessages?.[getRandomInt(16)] ?? 'Flx would love to know how you feel',
+      timeInHour: 19,
+      timeInMin: 0,
     },
     two: {
       id: 2,
-      title: 'Time to check in with Flx',
-      timeInHour: 12,
-      timeInMin: 50,
+      title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with Flx',
+      timeInHour: 19,
+      timeInMin: 0,
     },
     three: {
       id: 3,
-      title: "It's Flx time",
-      timeInHour: 15,
-      timeInMin: 50,
+      title: notifMessages?.[getRandomInt(16)] ?? "It's Flx time",
+      timeInHour: 19,
+      timeInMin: 0,
     },
   };
+
+  static setNotifData() {
+    if (NotifService.notifData !== null) {
+      NotifService.notifData = null;
+    }
+    NotifService.notifData = {
+      one: {
+        id: 1,
+        title: notifMessages?.[getRandomInt(16)] ?? 'Flx would love to know how you feel',
+        timeInHour: moment().hour(),
+        timeInMin: moment().minute() + 2,
+      },
+      two: {
+        id: 2,
+        title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with Flx',
+        timeInHour: moment().hour(),
+        timeInMin: moment().minute() + 2,
+      },
+      three: {
+        id: 3,
+        title: notifMessages?.[getRandomInt(16)] ?? "It's Flx time",
+        timeInHour: moment().hour(),
+        timeInMin: moment().minute() + 2,
+      },
+    };
+  }
+  // static notifData = {
+  //   one: {
+  //     id: 1,
+  //     title: 'Flx would love to know how you feel',
+  //     timeInHour: 9,
+  //     timeInMin: 50,
+  //   },
+  //   two: {
+  //     id: 2,
+  //     title: 'Time to check in with Flx',
+  //     timeInHour: 12,
+  //     timeInMin: 50,
+  //   },
+  //   three: {
+  //     id: 3,
+  //     title: "It's Flx time",
+  //     timeInHour: 15,
+  //     timeInMin: 50,
+  //   },
+  // };
 
   static latestNotificationData = null;
 
@@ -205,68 +287,15 @@ export default class NotifService {
 
   scheduleMoodFloLocalNotif() {
     NotifService.cancelAll();
-    this.getScheduledLocalNotifications((notif) => {
-      // console.log(
-      //   'scheduleMoodFloLocalNotif before update: ',
-      //   JSON.stringify(notif),
-      // );
-
-      let isOne = false;
-      let isTwo = false;
-      let isThree = false;
-      Array.isArray(notif) &&
-        notif.forEach((e) => {
-          if (
-            e.id === NotifService.notifData.one.id &&
-            e.title === NotifService.notifData.one.title &&
-            e.date &&
-            moment(e.date).isSame(
-              moment(e.date)
-                .hour(NotifService.notifData.one.timeInHour)
-                .minute(NotifService.notifData.one.timeInMin),
-            )
-          ) {
-            isOne = true;
-          } else if (
-            e.id === NotifService.notifData.two.id &&
-            e.title === NotifService.notifData.two.title &&
-            e.date &&
-            moment(e.date).isSame(
-              moment(e.date)
-                .hour(NotifService.notifData.two.timeInHour)
-                .minute(NotifService.notifData.two.timeInMin),
-            )
-          ) {
-            isTwo = true;
-          } else if (
-            e.id === NotifService.notifData.three.id &&
-            e.title === NotifService.notifData.three.title &&
-            e.date &&
-            moment(e.date).isSame(
-              moment(e.date)
-                .hour(NotifService.notifData.three.timeInHour)
-                .minute(NotifService.notifData.three.timeInMin),
-            )
-          ) {
-            isThree = true;
-          }
-          // this.cancelNotif(e?.id);
-        });
-      if (!isOne) {
-        this.scheduleMoodFloNotifWithId(NotifService.notifData.one.id);
-      }
-      if (!isTwo) {
-        this.scheduleMoodFloNotifWithId(NotifService.notifData.two.id);
-      }
-      if (!isThree) {
-        this.scheduleMoodFloNotifWithId(NotifService.notifData.three.id);
-      }
-      // this.getScheduledLocalNotifications((notifications) => {
-      //   console.log(
-      //     'scheduleMoodFloLocalNotif after update: ',
-      //     JSON.stringify(notifications),
-      //   );
-      // });
+    NotifService.setNotifData();
+    this.scheduleMoodFloNotifWithId(NotifService.notifData.one.id);
+    this.scheduleMoodFloNotifWithId(NotifService.notifData.two.id);
+    this.scheduleMoodFloNotifWithId(NotifService.notifData.three.id);
+    this.getScheduledLocalNotifications((notifications) => {
+      console.log(
+        'scheduleMoodFloLocalNotif after update: ',
+        JSON.stringify(notifications),
+      );
     });
   }
 
@@ -416,11 +445,11 @@ export default class NotifService {
             let isFlagSet = false;
             if (
               (e.id === NotifService.notifData.one.id &&
-                e.title !== NotifService.notifData.one.title) ||
+                typeof e.title !== 'string') ||
               (e.id === NotifService.notifData.two.id &&
-                e.title !== NotifService.notifData.two.title) ||
+                typeof e.title !== 'string') ||
               (e.id === NotifService.notifData.three.id &&
-                e.title !== NotifService.notifData.three.title)
+                typeof e.title !== 'string')
             ) {
               this.cancelNotif(id);
               isScheduled = false;
@@ -472,10 +501,10 @@ export default class NotifService {
 
   static cancelDeliveredNotifications(identifiers) {
     console.log('cancelDeliveredNotifications idnetifiers', identifiers);
-    if(Array.isArray(identifiers)){
+    if (Array.isArray(identifiers)){
       PushNotification.removeDeliveredNotifications(identifiers)
     } else {
-      if(identifiers){
+      if (identifiers){
         PushNotification.removeDeliveredNotifications([String(identifiers)])
       }
     }

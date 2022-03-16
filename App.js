@@ -172,6 +172,7 @@ const App: () => React$Node = () => {
   const [linkModalText, setLinkModalText] = useState('');
   const newOrg = useRef(null);
   const isHandleDynamicLinkCalled = useRef(false);
+  const notifSchedulePreviousDay = useRef(null);
   const widgetData = useRef({
     "moodUpdateBody": {
       "anonymous": 1,
@@ -685,6 +686,9 @@ const App: () => React$Node = () => {
       console.log("App has come to the foreground!");
       NotifService.cancelMoodFloSheduledNotifications();
       dispatch(SetWeeklyInsightsTimeLeft(getWeeklyInsightsDaysLeft()));
+      if (notifSchedulePreviousDay.current !== moment().day()) {
+        fp();
+      }
     }
 
     appState.current = nextAppState;
@@ -888,6 +892,7 @@ const App: () => React$Node = () => {
 
   const fp = () => {
     notifService.scheduleMoodFloLocalNotif();
+    notifSchedulePreviousDay.current = moment().day();
   };
   useEffect(() => {
     // console.log(`LightSensor`, LightSensor);
