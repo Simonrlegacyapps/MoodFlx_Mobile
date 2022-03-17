@@ -7,19 +7,70 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
+import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import ProfileCoinModal from '../../Components/PopUp/profileCoinModal';
 import Constants from '../../Constants';
-import { RubikLight } from '../../Constants/fonts/Fonts';
+import { RubikLight, RubikRegular } from '../../Constants/fonts/Fonts';
 import Images from '../../Constants/Images/Images';
 import { getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+import getStore from '../../redux';
 import { setScrolling } from '../../redux/actions/actions';
 
-const Rewards = ({setIsLevelsHide, islevelsHide}) => {
-  const [openActionSheet, setopenActionSheet] = useState(false)
-  const offset = useRef(0);
-  const isHidden = useRef(false);
-  const data = useRef([
+function getModalText(pointsToUnlock) {
+  if (typeof pointsToUnlock === 'number') {
+    return `Please earn ${pointsToUnlock} more points to unlock this reward`;
+  }
+  return "Are you sure you'd like to redeem this reward?";
+}
+
+function getPointsToUnlock(currentPts, price) {
+  return (currentPts - price) >= 0 ? undefined : (price - currentPts);
+}
+
+function getRewards(userId, currentPts) {
+  if (!userId) {
+    userId = getStore?.()?.getState?.()?.First?.UserId ?? "";
+  }
+  if (currentPts === undefined) {
+    currentPts = getStore?.()?.getState?.()?.First?.floCoins ?? 0;
+    if (!isNaN(currentPts)) {
+      currentPts = Number(currentPts);
+    }
+  }
+  if (!isNaN(userId) && Number(userId) === 85) {
+    return [
+      {
+        id: '1',
+        image: Images.HalfDayOffWorkImg,
+        details: 'Late Start Monday @ 10am',
+        price: 300,
+        coinsToUnlock: getPointsToUnlock(currentPts, 300),
+      },
+      {
+        id: '2',
+        image: Images.HalfDayOffWorkImg,
+        details: 'Early Finish Friday @ 2pm',
+        price: 400,
+        coinsToUnlock: getPointsToUnlock(currentPts, 400),
+      },
+      {
+        id: '3',
+        image: Images.CareerMentoring,
+        details: 'Career Mentoring Session by Jen',
+        price: 700,
+        coinsToUnlock: getPointsToUnlock(currentPts, 700),
+      },
+      {
+        id: '4',
+        image: Images.LeaveWithoutPayImg,
+        details: 'Day Off',
+        price: 1000,
+        coinsToUnlock: getPointsToUnlock(currentPts, 1000),
+      },
+    ];
+  }
+  return [
     {
       id: '1',
       image: Images.MusicFestivalImg,
@@ -129,9 +180,18 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
       details: 'Anaconda Member Benefits',
       price: 500,
     },
-  ]); 
+  ];
+}
 
-  const dispatch = useDispatch()
+const Rewards = ({setIsLevelsHide, islevelsHide}) => {
+  const [openActionSheet, setopenActionSheet] = useState(false);
+  const [ptsToUnlock, setPtsToUnlock] = useState(false);
+  const offset = useRef(0);
+  const isHidden = useRef(false);
+  const data = useRef(getRewards());
+
+  const userId = useSelector((state) => state.First?.UserId);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!islevelsHide) {
@@ -140,7 +200,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   }, [islevelsHide]);
 
   const VerifyDone = () => {
-    setopenActionSheet(false)
+    setopenActionSheet(false);
   };
 
   const onScroll = useCallback((event) => {
@@ -156,11 +216,20 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
     }
   }, [setIsLevelsHide]);
 
+  const onPressRewardItem = (item) => {
+    if (item.coinsToUnlock && !isNaN(item.coinsToUnlock)) {
+      setPtsToUnlock(Number(item.coinsToUnlock));
+    } else {
+      setPtsToUnlock(null);
+    }
+    setopenActionSheet(true);
+  };
+
   const renderItem = ({ item, index }) => {
     return (
       <TouchableOpacity
         key={`${item?.id ?? index}`}
-        onPress={() => setopenActionSheet(true)}
+        onPress={() => onPressRewardItem(item)}
         activeOpacity={0.7}
         style={styles.card}>
         <View style={styles.cardSubView}>
@@ -210,14 +279,27 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
         showsVerticalScrollIndicator={false}
       />
       <View style={{ padding: 40 }} />
-      <ProfileCoinModal
-        permission={"Hang in there you'll be able to cash in your Flx soon!"}
-        // image={Constants.Images.FitnessPopUp}
-        dataType={'fitness'}
-        modalVisible={openActionSheet}
-        dismissModalHandler={() => setopenActionSheet(false)}
-        verifyDone={() => VerifyDone()}
-      />
+      {userId == 85 ? (
+        <CustomModal
+          modalVisible={openActionSheet}
+          dismissModalHandler={() => setopenActionSheet(false)}
+          modalText={getModalText(ptsToUnlock)}
+          onClickButtonOne={VerifyDone}
+          modalTextStyle={styles.modalText}
+          buttonOneText={typeof ptsToUnlock === 'number' ? "Okay" : "Yes"}
+          onClickButtonTwo={typeof ptsToUnlock === 'number' ? undefined : VerifyDone}
+          buttonTwoText={typeof ptsToUnlock === 'number' ? undefined : "No"}
+        />
+      ) : (
+        <ProfileCoinModal
+          permission={"Hang in there you'll be able to cash in your Flx soon!"}
+          // image={Constants.Images.FitnessPopUp}
+          dataType={'fitness'}
+          modalVisible={openActionSheet}
+          dismissModalHandler={() => setopenActionSheet(false)}
+          verifyDone={() => VerifyDone()}
+        />
+      )}
     </View>
   );
 };
@@ -291,6 +373,12 @@ const styles = StyleSheet.create({
     color: '#7265E3',
     marginVertical: horizontalScale(3),
     marginLeft: horizontalScale(8),
+  },
+  modalText: {
+    marginTop: horizontalScale(30),
+    fontFamily: RubikRegular,
+    fontSize: getFontSize(18),
+    textAlign: 'center',
   },
 });
 

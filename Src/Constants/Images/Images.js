@@ -60,6 +60,7 @@ export default {
   ReeceImg: require('../../../assets/RewardsImages/reece.png'),
   SleepingDuckImg: require('../../../assets/RewardsImages/sleeping_duck.png'),
   WhoopImg: require('../../../assets/RewardsImages/whoop.png'),
+  CareerMentoring: require('../../../assets/RewardsImages/career_mentoring.jpeg'),
   anxious: require('../../../assets/moodIcons/anxious.png'),
   tense: require('../../../assets/moodIcons/anxious.png'),
   calm: require('../../../assets/moodIcons/calm.png'),
