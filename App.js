@@ -53,6 +53,7 @@ import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
 import {
   getIsInitialVideoVisible,
+  getIsMoodLvlUp,
   getMyDeviceId,
   getUpdateAnswerRewardPoints,
   onDynamicLinkUpdate,
@@ -90,6 +91,7 @@ import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
 import isEmpty from 'lodash.isempty';
 import RNRestart from 'react-native-restart';
 import MonthlyInsightsProgress from './Src/Components/Modals/MonthlyInsightsProgressModal/MonthlyInsightsProgressModal';
+import LvlUpModal from './Src/Components/Modals/LvlUpModal/LvlUpModal';
 
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -170,6 +172,8 @@ const App: () => React$Node = () => {
   const [email, setEmail] = useState('');
   const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
   const [linkModalText, setLinkModalText] = useState('');
+  const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const newOrg = useRef(null);
   const isHandleDynamicLinkCalled = useRef(false);
   const notifSchedulePreviousDay = useRef(null);
@@ -1001,6 +1005,7 @@ const App: () => React$Node = () => {
     } catch (e) {
       console.warn(e);
     }
+    checkAndSetPoints();
   };
 
   const onNavigationReady = useCallback(() => {
@@ -1020,6 +1025,52 @@ const App: () => React$Node = () => {
 
   const dismissMonthlyInsightsModal = () => {
     dispatch(SetShowMonthlyInsightsModal(false));
+  };
+
+  const closeLvlUpModal = useCallback(() => {
+    setIsOpenLvlUpModal(false);
+  }, []);
+
+  const checkAndSetPoints = async () => {
+    let p = await AsyncStorage.getItem('givePoints');
+    let points = await JSON.parse(p);
+    console.log(`points`, points);
+    if (points === null) {
+      await AsyncStorage.setItem('givePoints', '1');
+      howMoodfloWorks();
+    }
+  };
+
+  const howMoodfloWorks = () => {
+    const userData = getStore?.()?.getState?.()?.First;
+    const prevRewardPts = userData?.floCoins;
+    const deviceId = getMyDeviceId();
+    let params = {
+      "device_id": deviceId,
+      "email": userData?.UserEmail ?? null,
+      "user_id": userData?.UserId ?? null,
+      "section_index": 1,
+      "reward_point": 50,
+      "description": "How moodflo works"
+    };
+    console.log(`params of how mood flx works 50 coins`, params);
+    setIsLoading(true);
+    function onError() {
+      setIsLoading(false);
+    }
+    getUpdateRewardPoint(params, dispatch, onError).then((res) => {
+      console.log('getUpdateRewardPoint res.data----', res?.data);
+      setIsLoading(false);
+      if (
+        res?.data?.reward_point &&
+        getIsMoodLvlUp(prevRewardPts, res.data.reward_point)
+      ) {
+        const timeoutId = setTimeout(() => {
+          setIsOpenLvlUpModal(true);
+          clearTimeout(timeoutId);
+        }, 400);
+      }
+    });
   };
 
   return (
@@ -1053,6 +1104,14 @@ const App: () => React$Node = () => {
             ref={(ref) => Toast.setRef(ref)} />
         </>
       )}
+      <LvlUpModal
+        bigText="You’ve leveled up!"
+        modalVisible={isOpenLvlUpModal && !isLoading}
+        dismissModalHandler={closeLvlUpModal}
+        buttonText="Let's Go!"
+        verifyDone={closeLvlUpModal}
+        smallText="Check out what rewards you’ve unlocked"
+      />
       <CustomModal
         modalVisible={!!linkModalText && isLinkModalVisible}
         dismissModalHandler={onLinkCancel}

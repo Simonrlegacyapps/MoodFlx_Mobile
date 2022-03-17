@@ -15,17 +15,11 @@
 		16B7472354AF498A989EBC24 /* Rubik-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D1809BF6DD824C91BBAA3583 /* Rubik-Bold.ttf */; };
 		17EE349F80E94A9F9E81582E /* Rubik-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B122875F7C8F437D8DE83DC1 /* Rubik-ExtraBold.ttf */; };
 		18217A31F5B245DBBD6882EC /* Rubik-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 61B67AA48684412AB9063198 /* Rubik-BlackItalic.ttf */; };
-		1922D43027060118003403BB /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1922D42F27060118003403BB /* WidgetKit.framework */; };
-		1922D43227060118003403BB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1922D43127060118003403BB /* SwiftUI.framework */; };
-		1922D43527060118003403BB /* MoodInputWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1922D43427060118003403BB /* MoodInputWidget.swift */; };
-		1922D4382706011A003403BB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1922D4372706011A003403BB /* Assets.xcassets */; };
-		1922D43A2706011A003403BB /* MoodInputWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 1922D43627060118003403BB /* MoodInputWidget.intentdefinition */; };
 		1922D43B2706011A003403BB /* MoodInputWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 1922D43627060118003403BB /* MoodInputWidget.intentdefinition */; };
-		1922D43E2706011A003403BB /* MoodInputWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 1922D42E27060118003403BB /* MoodInputWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1922D444270602B9003403BB /* SwiftFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1922D443270602B9003403BB /* SwiftFile.swift */; };
 		1922D4ED2642730A00CBD43A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */; };
-		19746E512705F4950085920A /* libPods-MoodFlo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19746E502705F4950085920A /* libPods-MoodFlo.a */; };
 		193C07082718394D001BA9A5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		19746E512705F4950085920A /* libPods-MoodFlo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19746E502705F4950085920A /* libPods-MoodFlo.a */; };
 		19A6BB56271733EC00AF40D0 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 19A6BB55271733EC00AF40D0 /* Launch Screen.storyboard */; };
 		19DCB896267B1B19009C4DC1 /* RCTMoodDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 19DCB895267B1B19009C4DC1 /* RCTMoodDataModule.m */; };
 		2C10DEE89E1EFCF9426961F7 /* libPods-MoodFlo-MoodFloTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20882D955B333096F3B6DF18 /* libPods-MoodFlo-MoodFloTests.a */; };
@@ -56,13 +50,6 @@
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
 			remoteInfo = MoodFlo;
 		};
-		1922D43C2706011A003403BB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1922D42D27060118003403BB;
-			remoteInfo = MoodInputWidgetExtension;
-		};
 		2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
@@ -79,7 +66,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				1922D43E2706011A003403BB /* MoodInputWidgetExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -101,7 +87,6 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MoodFlo/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = MoodFlo/main.m; sourceTree = "<group>"; };
 		145FFD024E29D2E69DD6A0E8 /* Pods-MoodFlo-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-tvOS.release.xcconfig"; path = "Target Support Files/Pods-MoodFlo-tvOS/Pods-MoodFlo-tvOS.release.xcconfig"; sourceTree = "<group>"; };
-		1922D42E27060118003403BB /* MoodInputWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoodInputWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		1922D42F27060118003403BB /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		1922D43127060118003403BB /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		1922D43427060118003403BB /* MoodInputWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodInputWidget.swift; sourceTree = "<group>"; };
@@ -112,11 +97,11 @@
 		1922D443270602B9003403BB /* SwiftFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftFile.swift; sourceTree = "<group>"; };
 		1922D44527060376003403BB /* MoodInputWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MoodInputWidgetExtension.entitlements; sourceTree = "<group>"; };
 		1922D4EC2642730A00CBD43A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		198925E727DB47F400FE1AE4 /* MoodFloRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MoodFloRelease.entitlements; path = MoodFlo/MoodFloRelease.entitlements; sourceTree = "<group>"; };
 		19746E4A2705F4460085920A /* libPromisesObjC.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libPromisesObjC.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		19746E4C2705F46C0085920A /* libReact-Core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-Core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		19746E4E2705F47B0085920A /* libReact-CoreModules.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-CoreModules.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		19746E502705F4950085920A /* libPods-MoodFlo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libPods-MoodFlo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		198925E727DB47F400FE1AE4 /* MoodFloRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MoodFloRelease.entitlements; path = MoodFlo/MoodFloRelease.entitlements; sourceTree = "<group>"; };
 		19A6BB55271733EC00AF40D0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		19C805F22678A3CA006C1FA2 /* RCTMoodDataModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTMoodDataModule.h; sourceTree = "<group>"; };
 		19DCB895267B1B19009C4DC1 /* RCTMoodDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTMoodDataModule.m; sourceTree = "<group>"; };
@@ -181,15 +166,6 @@
 			files = (
 				19746E512705F4950085920A /* libPods-MoodFlo.a in Frameworks */,
 				CF7CE0FF25FB70DB00E73988 /* HealthKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1922D42B27060118003403BB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1922D43227060118003403BB /* SwiftUI.framework in Frameworks */,
-				1922D43027060118003403BB /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,7 +290,6 @@
 				00E356EE1AD99517003FC87E /* MoodFloTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* MoodFlo-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* MoodFlo-tvOSTests.xctest */,
-				1922D42E27060118003403BB /* MoodInputWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -412,29 +387,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				1922D43D2706011A003403BB /* PBXTargetDependency */,
 			);
 			name = MoodFlo;
 			productName = MoodFlo;
 			productReference = 13B07F961A680F5B00A75B9A /* MoodFlo.app */;
 			productType = "com.apple.product-type.application";
-		};
-		1922D42D27060118003403BB /* MoodInputWidgetExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1922D4412706011A003403BB /* Build configuration list for PBXNativeTarget "MoodInputWidgetExtension" */;
-			buildPhases = (
-				1922D42A27060118003403BB /* Sources */,
-				1922D42B27060118003403BB /* Frameworks */,
-				1922D42C27060118003403BB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = MoodInputWidgetExtension;
-			productName = MoodInputWidgetExtension;
-			productReference = 1922D42E27060118003403BB /* MoodInputWidgetExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
 		};
 		2D02E47A1E0B4A5D006451C7 /* MoodFlo-tvOS */ = {
 			isa = PBXNativeTarget;
@@ -492,11 +449,6 @@
 						DevelopmentTeam = UV3Z6BTTHA;
 						LastSwiftMigration = 1250;
 					};
-					1922D42D27060118003403BB = {
-						CreatedOnToolsVersion = 12.5.1;
-						DevelopmentTeam = UV3Z6BTTHA;
-						ProvisioningStyle = Automatic;
-					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
 						ProvisioningStyle = Automatic;
@@ -525,7 +477,6 @@
 				00E356ED1AD99517003FC87E /* MoodFloTests */,
 				2D02E47A1E0B4A5D006451C7 /* MoodFlo-tvOS */,
 				2D02E48F1E0B4A5D006451C7 /* MoodFlo-tvOSTests */,
-				1922D42D27060118003403BB /* MoodInputWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -559,14 +510,6 @@
 				DE0FDA1E82A1408C9792AE3B /* Rubik-Regular.ttf in Resources */,
 				5A9CBE314A754C3DA8F06F95 /* Rubik-SemiBold.ttf in Resources */,
 				13010DA679A64031A88DAE34 /* Rubik-SemiBoldItalic.ttf in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1922D42C27060118003403BB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1922D4382706011A003403BB /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -908,15 +851,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1922D42A27060118003403BB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1922D43A2706011A003403BB /* MoodInputWidget.intentdefinition in Sources */,
-				1922D43527060118003403BB /* MoodInputWidget.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		2D02E4771E0B4A5D006451C7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -941,11 +875,6 @@
 			isa = PBXTargetDependency;
 			target = 13B07F861A680F5B00A75B9A /* MoodFlo */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
-		};
-		1922D43D2706011A003403BB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1922D42D27060118003403BB /* MoodInputWidgetExtension */;
-			targetProxy = 1922D43C2706011A003403BB /* PBXContainerItemProxy */;
 		};
 		2D02E4921E0B4A5D006451C7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1008,7 +937,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
@@ -1120,7 +1049,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Sir. Conrad Pty Ltd (UV3Z6BTTHA)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1213,75 +1142,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.MoodFlo;
 				PRODUCT_NAME = MoodFlo;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "MoodFlo-Bridging-Header.h";
 				PROVISIONING_PROFILE_SPECIFIER = "MoodFlx Distribution Profile";
+				SWIFT_OBJC_BRIDGING_HEADER = "MoodFlo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Release;
-		};
-		1922D43F2706011A003403BB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = MoodInputWidgetExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = UV3Z6BTTHA;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = MoodInputWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.MoodFlo.MoodInputWidget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		1922D4402706011A003403BB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = MoodInputWidgetExtension.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = UV3Z6BTTHA;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = MoodInputWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.MoodFlo.MoodInputWidget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1528,15 +1392,6 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1922D4412706011A003403BB /* Build configuration list for PBXNativeTarget "MoodInputWidgetExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1922D43F2706011A003403BB /* Debug */,
-				1922D4402706011A003403BB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

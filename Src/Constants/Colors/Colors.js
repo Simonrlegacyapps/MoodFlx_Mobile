@@ -15,4 +15,5 @@ export default {
   greyTextColor : '#484F5F',
   lightGrey: '#83848E',
   coinOrange: '#FB8D09',
+  loaderColor: '#9889F9',
 };
