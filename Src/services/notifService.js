@@ -46,20 +46,20 @@ export default class NotifService {
     one: {
       id: 1,
       title: notifMessages?.[getRandomInt(16)] ?? 'Flx would love to know how you feel',
-      timeInHour: 19,
-      timeInMin: 0,
+      timeInHour: 9,
+      timeInMin: 50,
     },
     two: {
       id: 2,
       title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with Flx',
-      timeInHour: 19,
-      timeInMin: 0,
+      timeInHour: 12,
+      timeInMin: 50,
     },
     three: {
       id: 3,
       title: notifMessages?.[getRandomInt(16)] ?? "It's Flx time",
-      timeInHour: 19,
-      timeInMin: 0,
+      timeInHour: 15,
+      timeInMin: 50,
     },
   };
 
@@ -71,20 +71,20 @@ export default class NotifService {
       one: {
         id: 1,
         title: notifMessages?.[getRandomInt(16)] ?? 'Flx would love to know how you feel',
-        timeInHour: moment().hour(),
-        timeInMin: moment().minute() + 2,
+        timeInHour: 9,
+        timeInMin: 50,
       },
       two: {
         id: 2,
         title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with Flx',
-        timeInHour: moment().hour(),
-        timeInMin: moment().minute() + 2,
+        timeInHour: 12,
+        timeInMin: 50,
       },
       three: {
         id: 3,
         title: notifMessages?.[getRandomInt(16)] ?? "It's Flx time",
-        timeInHour: moment().hour(),
-        timeInMin: moment().minute() + 2,
+        timeInHour: 15,
+        timeInMin: 50,
       },
     };
   }
