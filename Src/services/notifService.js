@@ -229,7 +229,7 @@ export default class NotifService {
     });
   }
 
-  scheduleNotif({soundName, id, time, title, message}) {
+  scheduleNotif({soundName, id, time, title = '', message}) {
     this.lastId++;
     PushNotification.localNotificationSchedule({
       date: time, // in 30 secs
@@ -349,7 +349,7 @@ export default class NotifService {
       this.scheduleNotif({
         id: NotifService.notifData.one.id,
         time: time,
-        title: NotifService.notifData.one.title,
+        message: NotifService.notifData.one.title,
       });
     } else if (secondDuration > 0 && secondDuration < 120) {
       this.cancelNotif(NotifService.notifData.two.id);
@@ -357,7 +357,7 @@ export default class NotifService {
       this.scheduleNotif({
         id: NotifService.notifData.two.id,
         time: time,
-        title: NotifService.notifData.two.title,
+        message: NotifService.notifData.two.title,
       });
     } else if (thirdDuration > 0 && thirdDuration < 120) {
       this.cancelNotif(NotifService.notifData.three.id);
@@ -365,7 +365,7 @@ export default class NotifService {
       this.scheduleNotif({
         id: NotifService.notifData.three.id,
         time: time,
-        title: NotifService.notifData.three.title,
+        message: NotifService.notifData.three.title,
       });
     }
     // this.getScheduledLocalNotifications((notif) => {
@@ -394,7 +394,7 @@ export default class NotifService {
       this.scheduleNotif({
         id: NotifService.notifData.one.id,
         time: first,
-        title: NotifService.notifData.one.title,
+        message: NotifService.notifData.one.title,
       });
     } else if (id === NotifService.notifData.two.id) {
       let second = new Date(
@@ -413,7 +413,7 @@ export default class NotifService {
       this.scheduleNotif({
         id: NotifService.notifData.two.id,
         time: second,
-        title: NotifService.notifData.two.title,
+        message: NotifService.notifData.two.title,
       });
     } else if (id === NotifService.notifData.three.id) {
       let third = new Date(
@@ -431,7 +431,7 @@ export default class NotifService {
       this.scheduleNotif({
         id: NotifService.notifData.three.id,
         time: third,
-        title: NotifService.notifData.three.title,
+        message: NotifService.notifData.three.title,
       });
     }
   }
