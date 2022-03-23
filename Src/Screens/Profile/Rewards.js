@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useSelector,useDispatch } from 'react-redux';
+import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import ProfileCoinModal from '../../Components/PopUp/profileCoinModal';
 import Constants from '../../Constants';
@@ -186,6 +187,9 @@ function getRewards(userId, currentPts) {
 const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [ptsToUnlock, setPtsToUnlock] = useState(false);
+  const [showInputNameModal, setShowInputNameModal] = useState(false);
+  const [userName, setUserName] = useState('');
+
   const offset = useRef(0);
   const isHidden = useRef(false);
   const data = useRef(getRewards());
@@ -202,6 +206,10 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   const VerifyDone = () => {
     setopenActionSheet(false);
   };
+
+  const updateShowInputNameModal = (f) => () => setShowInputNameModal(f);
+
+  const onSubmitNameInput = useCallback(() => {}, []);
 
   const onScroll = useCallback((event) => {
     var currentOffset = event.nativeEvent.contentOffset.y;
@@ -264,43 +272,55 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   };
 
   return (
-    <View
-      style={{
-        backgroundColor: 'white',
-        padding: 14,
-        height: '100%',
-        width: '100%',
-      }}>
-      <FlatList
-        scrollEnabled={true}
-        data={data.current}
-        renderItem={renderItem}
-        onScroll={onScroll}
-        showsVerticalScrollIndicator={false}
+    <>
+      <View
+        style={{
+          backgroundColor: 'white',
+          padding: 14,
+          height: '100%',
+          width: '100%',
+        }}>
+        <FlatList
+          scrollEnabled={true}
+          data={data.current}
+          renderItem={renderItem}
+          onScroll={onScroll}
+          showsVerticalScrollIndicator={false}
+        />
+        <View style={{ padding: 40 }} />
+        {userId == 85 ? (
+          <CustomModal
+            modalVisible={openActionSheet}
+            dismissModalHandler={() => setopenActionSheet(false)}
+            modalText={getModalText(ptsToUnlock)}
+            onClickButtonOne={VerifyDone}
+            modalTextStyle={styles.modalText}
+            buttonOneText={typeof ptsToUnlock === 'number' ? "Okay" : "Yes"}
+            onClickButtonTwo={typeof ptsToUnlock === 'number' ? undefined : VerifyDone}
+            buttonTwoText={typeof ptsToUnlock === 'number' ? undefined : "No"}
+          />
+        ) : (
+          <ProfileCoinModal
+            permission={"Hang in there you'll be able to cash in your Flx soon!"}
+            // image={Constants.Images.FitnessPopUp}
+            dataType={'fitness'}
+            modalVisible={openActionSheet}
+            dismissModalHandler={() => setopenActionSheet(false)}
+            verifyDone={() => VerifyDone()}
+          />
+        )}
+      </View>
+      <AddNameModal
+        modalVisible={showInputNameModal}
+        dismissModalHandler={updateShowInputNameModal(false)}
+        verifyDone={onSubmitNameInput}
+        buttonText="Redeem Now!"
+        value={userName}
+        onChangeText={setUserName}
+        title="Your name"
+        description="To redeem your reward, only your name will be sent to the rewards activations team."
       />
-      <View style={{ padding: 40 }} />
-      {userId == 85 ? (
-        <CustomModal
-          modalVisible={openActionSheet}
-          dismissModalHandler={() => setopenActionSheet(false)}
-          modalText={getModalText(ptsToUnlock)}
-          onClickButtonOne={VerifyDone}
-          modalTextStyle={styles.modalText}
-          buttonOneText={typeof ptsToUnlock === 'number' ? "Okay" : "Yes"}
-          onClickButtonTwo={typeof ptsToUnlock === 'number' ? undefined : VerifyDone}
-          buttonTwoText={typeof ptsToUnlock === 'number' ? undefined : "No"}
-        />
-      ) : (
-        <ProfileCoinModal
-          permission={"Hang in there you'll be able to cash in your Flx soon!"}
-          // image={Constants.Images.FitnessPopUp}
-          dataType={'fitness'}
-          modalVisible={openActionSheet}
-          dismissModalHandler={() => setopenActionSheet(false)}
-          verifyDone={() => VerifyDone()}
-        />
-      )}
-    </View>
+    </>
   );
 };
 

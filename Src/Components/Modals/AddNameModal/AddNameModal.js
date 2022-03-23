@@ -9,6 +9,8 @@ import {
   Image,
   Dimensions,
   TextInput,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import Constants from '../../../Constants';
@@ -17,7 +19,7 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import {dynamicSize} from '../../../Constants/sizeChoose';
+import {dynamicSize, getFontSize} from '../../../Constants/sizeChoose';
 
 type props = {
   modalVisible: Boolean,
@@ -31,8 +33,11 @@ const AddNameModal = ({
   dismissModalHandler,
   selectedValue,
   verifyDone,
+  buttonText,
   image,
   dataType,
+  title,
+  description,
   onChangeText,
   value,
 }: props) => {
@@ -60,7 +65,7 @@ const AddNameModal = ({
           <View style={{flex: 1, backgroundColor: '#000000'}} />
         </TouchableWithoutFeedback>
       }>
-      <View style={styles.container}>
+      <KeyboardAvoidingView behavior={"padding"} style={styles.container}>
         <TouchableOpacity
           onPress={dismissModalHandler}
           style={{
@@ -73,7 +78,7 @@ const AddNameModal = ({
             position: 'absolute',
           }}></TouchableOpacity>
         <View style={styles.upperContainer}>
-          <TouchableOpacity onPress={dismissModalHandler}>
+          <TouchableOpacity style={{alignSelf: 'flex-start'}} onPress={dismissModalHandler}>
             <Image
               source={Constants.Images.PlusBlack}
               style={{
@@ -86,20 +91,20 @@ const AddNameModal = ({
           </TouchableOpacity>
           <Text
             style={{
-              fontWeight: '500',
+              fontWeight: Platform.OS === 'android' ? '700' : '500',
               fontSize: dynamicSize(26),
               textAlign: 'center',
               marginTop: 50,
               fontFamily: RubikRegular,
             }}>
-            Your name
+            {title}
           </Text>
           <Text
-            numberOfLines={3}
+            // numberOfLines={3}
             style={{
               fontWeight: '300',
               letterSpacing: 1,
-              fontSize: dynamicSize(14),
+              fontSize: Platform.OS === 'android' ? getFontSize(16) : dynamicSize(14),
               marginTop: 12,
               marginLeft: 62,
               marginRight: 62,
@@ -107,7 +112,7 @@ const AddNameModal = ({
               width: '60%',
               lineHeight: dynamicSize(26),
             }}>
-            If you’d like to share your mood as yourself, then add your name
+            {description}
           </Text>
           <View
             style={{
@@ -174,8 +179,8 @@ const AddNameModal = ({
                 justifyContent: 'center',
                 marginBottom: 40,
               }}>
-              <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
-                Save
+              <Text style={{fontWeight: '500', fontSize: 14, color: '#FFFFFF'}}>
+                {buttonText}
               </Text>
             </View>
           </TouchableOpacity>
@@ -186,10 +191,17 @@ const AddNameModal = ({
           style={styles.cancelButtonStyle}>
           <Text style={styles.textStyles}>Cancel</Text>
         </TouchableOpacity> */}
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
+
+AddNameModal.defaultProps = {
+  buttonText: 'Save',
+  title: 'Your name',
+  description: "If you'd like to share your mood as yourself, then add your name",
+};
+
 export default AddNameModal;
 const styles = StyleSheet.create({
   container: {
@@ -215,7 +227,7 @@ const styles = StyleSheet.create({
     width: '100%',
     overflow: 'hidden',
     justifyContent: 'center',
-    // alignItems: 'center',
+    alignItems: 'center',
   },
   upperHandel: {
     height: 7,
