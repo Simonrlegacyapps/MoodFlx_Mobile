@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useReducer } from 'react';
 import {
   View,
   Text,
@@ -44,6 +44,8 @@ import {ScreenTimePerm} from '../../../redux/actions/actions';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import {fetchAndUpdateScreenTimeData, getMyDeviceId, getScreenDataTimeInHoursMin, getScreenGraphData, getScreenTimeProgress} from '../../../services/commonService';
 import AsyncStorage from '@react-native-community/async-storage';
+import Skeleton from '../../../Components/Skeleton/Skeleton';
+import { getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -55,6 +57,33 @@ const IndicatorHelper = ({ color, text }) => {
     </View>
   );
 };
+
+const screenInsightsInitialState = {
+  dailyInsights: '',
+  weeklyInsights: '',
+  dailySuggestion: '',
+  dailySuggestionType: '',
+  weeklySuggestion: '',
+  weeklySuggestionType: '',
+  monthlyInsights: '',
+  monthlySuggestion: '',
+  monthlySuggestionType: '',
+};
+
+const screenInsightsTypes = {
+  SET_INSIGHTS: 'SET_INSIGHTS',
+};
+
+function screenInsightsReducer(state, action) {
+  switch (action.type) {
+    case screenInsightsTypes.SET_INSIGHTS:
+      return action?.payload && typeof action?.payload === 'object'
+        ? { ...state, ...action.payload }
+        : state;
+    default:
+      return state;
+  }
+}
 
 const ScreenData = ({
   CheckForScreenData,
@@ -81,6 +110,11 @@ const ScreenData = ({
   const requestingPermission = useRef(false);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [skeleton, setskeleton] = useState(false);
+  const [insights, setInsights] = useReducer(
+    screenInsightsReducer,
+    screenInsightsInitialState,
+  );
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -262,6 +296,121 @@ const ScreenData = ({
     return totalScreenTime;
   };
 
+  const callInsightsApi = () => {
+    setskeleton(true);
+    const deviceId = getMyDeviceId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    var params = {
+      device_id: deviceId,
+      email: UserData?.UserEmail ?? '',
+      user_id: UserData?.UserId ?? '',
+    };
+
+    console.log(`Screen Insights Api Params`, params);
+    PostRequestApi('getScreenTimeInsights', {...params, status: 'daily'})
+      .then((res) => {
+        console.log('✅ ✅ ✅ ✅ getScreenTimeInsights daily: ✅ ✅ ✅ ✅ ', res?.data);
+        // console.log('getSleepInsights daily res: ', res);
+        let dailyInsightsPayload = {};
+        dailyInsightsPayload.dailyInsights =
+          res?.data?.insights?.message1 &&
+          typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        dailyInsightsPayload.dailySuggestion =
+          res?.data?.insights?.message2 &&
+          typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        dailyInsightsPayload.dailySuggestionType =
+          res?.data?.insights?.message2Type &&
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: screenInsightsTypes.SET_INSIGHTS,
+          payload: dailyInsightsPayload,
+        });
+        /*
+        Weekly api should be called between
+        Friday @ 12pm until Saturday 6pm
+        */
+        if (getWeeklyInsightsAvailable() === true) {
+          return PostRequestApi('getScreenTimeInsights', {
+            ...params,
+            status: 'weekly',
+            flag: 'current',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        // console.log('getSleepInsights weekly res: ', res);
+        let weeklyInsightsPayload = {};
+        console.log('✅ ✅ ✅ ✅ getScreenTimeInsights weekly: ✅ ✅ ✅ ✅ ', res?.data);
+        weeklyInsightsPayload.weeklyInsights =
+          res?.data?.insights?.message1 &&
+            typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        weeklyInsightsPayload.weeklySuggestion =
+          res?.data?.insights?.message2 &&
+            typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        weeklyInsightsPayload.weeklySuggestionType =
+          res?.data?.insights?.message2Type &&
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: screenInsightsTypes.SET_INSIGHTS,
+          payload: weeklyInsightsPayload,
+        });
+        if (getMonthlyInsightsAvailable() === true) {
+          return PostRequestApi('getScreenTimeInsights', {
+            ...params,
+            status: 'monthly',
+          });
+        } else {
+          return new Promise((resolve, reject) => resolve(null));
+        }
+      })
+      .then((res) => {
+        setskeleton(false);
+        // console.log('getScreenTimeInsights weekly res: ', res);
+        let monthlyInsightsPayload = {};
+        console.log('✅ ✅ ✅ ✅  getScreenTimeInsights monthly: ✅ ✅ ✅ ✅ ', res?.data);
+        monthlyInsightsPayload.monthlyInsights =
+          res?.data?.insights?.message1 &&
+            typeof res.data.insights.message1 === 'string'
+            ? res.data.insights.message1
+            : '';
+        monthlyInsightsPayload.monthlySuggestion =
+          res?.data?.insights?.message2 &&
+            typeof res.data.insights.message2 === 'string'
+            ? res.data.insights.message2
+            : '';
+        monthlyInsightsPayload.monthlySuggestionType =
+          res?.data?.insights?.message2Type &&
+            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+            ? res.data.insights.message2Type
+            : '';
+        setInsights({
+          type: screenInsightsTypes.SET_INSIGHTS,
+          payload: monthlyInsightsPayload,
+        });
+      })
+      .catch(function (error) {
+        setskeleton(false);
+        console.log('❌❌❌❌Fail Get Screen Time Insights❌❌❌❌', error, params);
+      });
+  };
+
+
   const getDailyStats = () => {
     fetchAndUpdateScreenTimeData({
       setMorningTime: function (d) {
@@ -292,6 +441,9 @@ const ScreenData = ({
         setGraphData(d);
       },
       shouldCallUpdateApi: true,
+      callScreenInsights: function () {
+        callInsightsApi();
+      },
     });
     // let currentDayTime = 0;
     // let morning = 0;
@@ -504,8 +656,6 @@ const ScreenData = ({
   //     });
   // };
 
-  const ScreenDurations = [{ label: 'Day' }, { label: 'Week' }, { label: 'Month' }];
-
   const AnonymousPopUpcancelled = () => {
     setAnonymousClick(false);
   };
@@ -517,31 +667,6 @@ const ScreenData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        {/* <View style={styles.HeaderView}>
-          <TouchableOpacity
-            onPress={async () => {
-              CheckForScreenData();
-              setopenActionSheet(true);
-            }}
-            style={{
-              flexDirection: 'row',
-            }}>
-            <View style={styles.syncButtonView}>
-              <Image
-                style={{ height: 20, width: 20 }}
-                source={Constants.Images.Sync}
-              />
-            </View>
-            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
-              <Text style={styles.lightText}>Sync your</Text>
-              <Text style={styles.normalText}>Screen data</Text>
-            </View>
-          </TouchableOpacity>
-          <CrownBox floCoins={UserData.floCoins}/>
-          <View style={styles.ColoredView}>
-            <Text style={styles.ColoredText}>Anon</Text>
-          </View>
-        </View> */}
         <HomeSyncHeader
           label={'Screen'}
           isPermissionGiven={false}
@@ -572,101 +697,33 @@ const ScreenData = ({
             </Text>
           </View>
         </View>
-        {/* <TouchableOpacity
-          style={{
-            marginTop: 30,
-            alignSelf: 'center',
-            borderWidth: 1.5,
-            borderColor: '#000000',
-          }}
-          onPress={requestUsageStatsPermission}>
-              <Text>Check Usage Permission</Text>
-          </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            marginTop: 30,
-            alignSelf: 'center',
-            borderWidth: 1.5,
-            borderColor: '#000000',
-          }}
-          onPress={getDailyStats}>
-              <Text>Get Current Day Statistics</Text>
-          </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            marginTop: 30,
-            alignSelf: 'center',
-            borderWidth: 1.5,
-            borderColor: '#000000',
-          }}
-          onPress={getPreviousDayStats}>
-              <Text>Get Yesterday Statistics</Text>
-          </TouchableOpacity> */}
+        {skeleton && <Skeleton/>}
         <View>
           <DataInsights
-            dailyInsights={'You became more tired and anxious as your screen time went over 5hrs per day'}
-            weeklyInsights={'This week you were more Anxious when you got more than 7 hrs of screen time'}
-            dailySuggestion={'Try getting less than 4hrs for a few days'}
-            dailySuggestionType={'warning'}
-            weeklySuggestion={'Try to get less than 5 hrs per day'}
-            weeklySuggestionType={'warning'}
+            dailyInsights={!UserData.ScreenTimePermission ? 'You became more tired and anxious as your screen time went over 5hrs per day' : insights?.dailyInsights}
+            weeklyInsights={!UserData.ScreenTimePermission ? 'This week you were more Anxious when you got more than 7 hrs of screen time' : insights?.weeklyInsights}
+            dailySuggestion={!UserData.ScreenTimePermission ? 'Try getting less than 4hrs for a few days' : insights?.dailySuggestion}
+            dailySuggestionType={!UserData.ScreenTimePermission ? 'warning' : insights?.dailySuggestionType}
+            weeklySuggestion={!UserData.ScreenTimePermission ? 'Try to get less than 5 hrs per day' : insights?.weeklySuggestion}
+            weeklySuggestionType={!UserData.ScreenTimePermission ? 'warning' : insights?.weeklySuggestionType}
+            monthlyInsights={!UserData.ScreenTimePermission ? "This month your Saddest mood input was when you got more than 7 hrs of screen time" : insights?.monthlyInsights}
+            monthlySuggestion={!UserData.ScreenTimePermission ? "Try to get less than 5 hrs per day" : insights?.monthlySuggestion}
+            monthlySuggestionType={!UserData.ScreenTimePermission ? "warning" : insights?.monthlySuggestionType}
             timeLeft={UserData?.weeklyInsightsTimeLeft}
-            // isPermissionGiven={UserData.ScreenTimePermission}
-            isPermissionGiven={false}
+            isPermissionGiven={UserData.ScreenTimePermission}
             dispatch={dispatch}
           />
-          {/* <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-              SCREEN TIME
-            </Text>
-            <Text style={styles.swiperText}>
-              You became more <Text style={{ color: '#5947D0' }}>tired</Text> and{' '}
-              <Text style={{ color: '#5947D0' }}>anxious</Text> as your screen
-              time <Text style={{ color: '#5947D0' }}>increased</Text> above{' '}
-              <Text style={{ color: '#5947D0' }}>3hrs</Text> per day
-            </Text>
-            <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-              Try get less than 3hrs a day
-            </Text>
-          </View> */}
 
-          {/* <ProgressBarCustom /> */}
           <HomeHeader
-            // click={() => setScreenTimeDuration(false)}
             value={screenDuration}
           />
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
-            {/* {swiperIndex == index && ( */}
             {true && (
-              // <BarGraph color={'#16B7C7'} ShowPollen={false} RightBar={false} />
               <ScreenTimeBarGraph graphWidth={SIZE} data={graphData} />
             )}
           </View>
 
           <View style={styles.bottomView}>
-            {/* <ScreenCircleBar
-              DarkColor="#0DDE79"
-              lightColor="#CFF9ED"
-              Label="Today"
-              // Time="1hr 34min"
-              Time={getScreenDataTimeInHoursMin(currentDayScreenTime)}
-              value={getScreenTimeProgress(currentDayScreenTime)}
-              border={true}
-            />
-            <ScreenCircleBar
-              DarkColor="#F992BE"
-              lightColor="#FEE9F2"
-              Label="Yesterday"
-              Time={getScreenDataTimeInHoursMin(yesterdayScreenTime)}
-              // Time="1hr 34min"
-              value={getScreenTimeProgress(yesterdayScreenTime)}
-              border={true}
-            /> */}
             <ScreenCircleBar
               DarkColor="#0DDE79"
               lightColor="#CFF9ED"
@@ -706,37 +763,10 @@ const ScreenData = ({
               value={getScreenTimeProgress((UserData.ScreenTimePermission ? nightTime : 94), 720)}
             />
           </View>
-          {/* <GraphicChart /> */}
-          {/* <ScreenTimeLineGraph /> */}
-          {/* {!PermScreenTime && (
-            <View
-              style={{
-                position: 'absolute',
-                top: 420,
-                alignItems: 'center',
-                height: '100%',
-                width: '100%',
-                zIndex: -234234,
-              }}>
-              <Text
-                allowFontScaling={false}
-                style={{
-                  marginTop: -260,
-                  fontWeight: '700',
-                  fontFamily: RubikExtraBold,
-                  fontSize: SIZE / 3.5,
-                  color: '#E0DDED',
-                  transform: [{ rotate: '-15deg' }],
-                }}>
-                Demo
-              </Text>
-            </View>
-          )} */}
           {!UserData.ScreenTimePermission && (
             <TouchableOpacity
               activeOpacity={0}
               onPress={async () => {
-                // await AsyncStorage.setItem('GiveHealthPerm', 'true');
                 setopenActionSheet(true);
               }}
               style={{
@@ -766,14 +796,6 @@ const ScreenData = ({
         dismissModalHandler={() => AnonymousPopUpcancelled()}
         verifyDone={() => AnonymousPopUpcancelled()}
       />
-
-      {/* <WeatherGraphDurationModal
-        data={ScreenDurations}
-        modalVisible={ScreenDuration}
-        onChangeText={setScreenDuration}
-        value={ScreenDuration}
-        dismissModalHandler={() => setScreenDuration(false)}
-      /> */}
     </View>
   );
 };
