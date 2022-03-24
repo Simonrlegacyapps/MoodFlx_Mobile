@@ -748,6 +748,7 @@ export function fetchAndUpdateScreenTimeData({
   setYesterdayScreenTime,
   setGraphData,
   shouldCallUpdateApi = false,
+  callScreenInsights,
 }) {
   let currentDayTime = 0;
   let prevDayTime = 0;
@@ -948,6 +949,9 @@ export function fetchAndUpdateScreenTimeData({
     })
     .then((data) => {
       console.log('✅ ✅ ✅ ✅ updateScreenTime api success✅ ✅ ✅ ✅ -data---->', data?.data);
+      if (data?.data && isFunction(callScreenInsights)) {
+        callScreenInsights();
+      }
       if (isFunction(setGraphData)) {
         const params = {
           device_id: getMyDeviceId(),
