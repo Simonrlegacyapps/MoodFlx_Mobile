@@ -57,14 +57,14 @@ function getRewards(userId, currentPts) {
       },
       {
         id: '3',
-        image: Images.CareerMentoring,
+        image: Images.HalfDayOffWorkImg,
         details: 'Career Mentoring Session by Jen',
         price: 700,
         coinsToUnlock: getPointsToUnlock(currentPts, 700),
       },
       {
         id: '4',
-        image: Images.LeaveWithoutPayImg,
+        image: Images.HalfDayOffWorkImg,
         details: 'Day Off',
         price: 1000,
         coinsToUnlock: getPointsToUnlock(currentPts, 1000),
