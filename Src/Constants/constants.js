@@ -35,6 +35,27 @@ export const getMoodIconsUrl = () => {
   }
 };
 
+const getRewardsListApiRequestJson = {
+  device_id: 'deice_id',
+  email: 'email',
+  user_id: 'user_id',
+}
+
+const claimRewardsListApiRequestJson = {
+  device_id: 'deice_id',
+  email: 'email',
+  user_id: 'user_id',
+  reward_item_id: 'reward_item_id',
+  user_name: 'user_name',
+  section_index: 6
+}
+
+const rewardHistoryRequestJson = {
+  device_id: 'deice_id',
+  email: 'email',
+  user_id: 'user_id',
+}
+
 export const hapticsConfigs = {
   car: {
     light: 'impactLight',

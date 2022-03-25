@@ -58,6 +58,7 @@ export default {
   MyerImg: require('../../../assets/RewardsImages/myer.png'),
   NorthFaceImg: require('../../../assets/RewardsImages/north_face.png'),
   ReeceImg: require('../../../assets/RewardsImages/reece.png'),
+  WhiteBg: require('../../../assets/RewardsImages/White_Bg.png'),
   SleepingDuckImg: require('../../../assets/RewardsImages/sleeping_duck.png'),
   WhoopImg: require('../../../assets/RewardsImages/whoop.png'),
   anxious: require('../../../assets/moodIcons/anxious.png'),
