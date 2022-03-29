@@ -181,4 +181,22 @@ export function getUpdateRewardPoint(params, dispatch, onError) {
     });
 }
 
+export function getRewardsListApi(params, onError) {
+  console.log('params getUpdateRewardPoint', params);
+  return PostRequestApi('availableRewardList', params)
+    .then((res) => {
+      console.log(
+        '✅ ✅ ✅ ✅ Success availableRewardList Api ✅ ✅ ✅ ✅',
+        res?.data,
+      );
+      return Promise.resolve(res?.data?.rewardData ?? []);
+    })
+    .catch((err) => {
+      console.log('❌ ❌ ❌ ❌ Error availableRewardList api ❌ ❌ ❌ ❌', err);
+      if (isFunction(onError)) {
+        onError();
+      }
+    });
+}
+
 export default PostRequestApi;

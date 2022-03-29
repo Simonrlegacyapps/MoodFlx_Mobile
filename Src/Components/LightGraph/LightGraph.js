@@ -69,6 +69,7 @@ export default function LightGraph({
           labels: labels,
           datasets: _dataSet,
         //   legend: ["Low = < 150", "Ideal = 150 - 400", "High = < 400"]
+          // legend: [" LUX"],
         }}
         // width={graphWidth} // from react-native
         width={metrics.screenWidth * 0.8} // from react-native

@@ -29,6 +29,13 @@ export function DataGraph({
   duration
 }) {
 
+  let legends = undefined;
+  if (data?.INBED) {
+    legends = ["IN BED", "ASLEEP"];
+  }
+  // } else if (graphType === dataTypes.activity) {
+  //   legends = [" STEPS"];
+  // }
 
   const labels = useMemo(() => {
     // console.log('DataGraph labels', data);
@@ -177,7 +184,8 @@ export function DataGraph({
         data={{
           labels: labels,
           datasets: _dataSet,
-          legend: data?.INBED ? ["IN BED", "ASLEEP"] : undefined
+          // legend: data?.INBED ? ["IN BED", "ASLEEP"] : undefined
+          legend: legends,
         }}
         width={Dimensions.get("window").width} // from react-native
         height={220}

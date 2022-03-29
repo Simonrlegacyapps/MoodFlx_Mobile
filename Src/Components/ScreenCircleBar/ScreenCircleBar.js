@@ -21,6 +21,8 @@ const ScreenCircleBar = ({
   size,
   width,
   fontSize,
+  marginTop,
+  marginBottom,
 }) => {
   return (
     <View
@@ -31,7 +33,8 @@ const ScreenCircleBar = ({
         justifyContent: 'center',
         marginHorizontal: 30,
         paddingVertical: 16,
-
+        marginTop: marginTop,
+        marginBottom: marginBottom,
         borderBottomWidth: border && 1,
         borderBottomColor: border && '#ebebeb',
       }}>

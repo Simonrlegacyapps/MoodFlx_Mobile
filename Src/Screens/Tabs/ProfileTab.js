@@ -144,15 +144,6 @@ const ProfileTab = ({ navigation }) => {
         console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
       );
     setImageLoading(false);
-    // fetch('https://admin.moodflo.com/api/getStaffUserData', requestOptions)
-    //   .then((response) => response.json())
-    //   .then((result) => {
-    //     console.log('UserDetaills', result.userData);
-    //     dispatch(UserDetail(result.userData));
-    //     setImageLoading(false);
-    //   })
-    //   .catch((error) => console.log('error', error));
-    // setImageLoading(false);
   };
 
   const onRefresh = () => {

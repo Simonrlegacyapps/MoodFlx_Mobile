@@ -2,16 +2,19 @@ import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {
   View,
   SafeAreaView,
+  TextInput,
   Dimensions,
   Image,
   Platform,
   AppState,
+  NativeModules,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
+import SharedGroupPreferences from 'react-native-shared-group-preferences';
 import {
   GetUserId,
   HealthPerm,
@@ -42,6 +45,7 @@ import PostRequestApi, {
   GetStaffUserData,
   getUpdateRewardPoint,
 } from './Src/apirequest/PostRequestApi';
+import Geocoder from 'react-native-geocoding';
 import * as RootNavigation from './Src/navigator/RootNavigation';
 import crashlytics from '@react-native-firebase/crashlytics';
 import Analytics from './Src/services/analyticsService';
@@ -49,6 +53,7 @@ import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
 import {
   getIsInitialVideoVisible,
+  getIsMoodLvlUp,
   getMyDeviceId,
   getUpdateAnswerRewardPoints,
   onDynamicLinkUpdate,
@@ -70,6 +75,7 @@ import {
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
   isCountryIndia,
+  widgetDataGroup,
 } from './Src/Constants/constants';
 import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
 import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgressModal/WeeklyInsightsProgressModal';
@@ -78,11 +84,14 @@ import Screen1 from './Src/Screens/WalkThrough/Screen1';
 import BoardingNavigation from './Src/navigator/BoardingNavigation';
 import getStore from './Src/redux';
 import {useDispatch, useSelector} from 'react-redux';
+
+const SharedStorage = NativeModules.SharedStorage;
 import NoInternetModal from './Src/Components/Modals/NoInternetModal/NoInternetModal';
 import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
 import isEmpty from 'lodash.isempty';
 import RNRestart from 'react-native-restart';
 import MonthlyInsightsProgress from './Src/Components/Modals/MonthlyInsightsProgressModal/MonthlyInsightsProgressModal';
+import LvlUpModal from './Src/Components/Modals/LvlUpModal/LvlUpModal';
 
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -163,8 +172,32 @@ const App: () => React$Node = () => {
   const [email, setEmail] = useState('');
   const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
   const [linkModalText, setLinkModalText] = useState('');
+  const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const newOrg = useRef(null);
   const isHandleDynamicLinkCalled = useRef(false);
+  const notifSchedulePreviousDay = useRef(null);
+  const widgetData = useRef({
+    "moodUpdateBody": {
+      "anonymous": 1,
+      "city": "",
+      "country": "",
+      "description": "mood input",
+      "device_id": "",
+      "device_token": "",
+      "device_type": Platform.OS,
+      "email": "",
+      "lat": "",
+      "lon": "",
+      "mood_id": "",
+      "mood_type": "regular",
+      "reward_point": 0,
+      "section_index": 4,
+      "state": "",
+      "user_id": ""
+    }
+  });
+
   const [isConnected, setIsConnected] = useState(true);
   const netInfo = useNetInfo();
   const UserData = useSelector((state) => state.First);
@@ -190,6 +223,88 @@ const App: () => React$Node = () => {
       return i;
     });
   }, [netInfo?.isConnected]);
+
+  useEffect(() => {
+    const setWidgetData = async () => {
+      const fcm = await messaging().getToken();
+      Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
+      let state_info = '';
+      let city_info = '';
+      let country_info = '';
+      if (UserData.lat && UserData.lon) {
+        await Geocoder.from({
+          lat: UserData.lat,
+          lng: UserData.lon,
+        })
+          .then((data) => {
+            const address_list = data.results[0].address_components;
+            for (let i = 0; i < address_list.length; i++) {
+              if (address_list?.[i]?.types?.includes?.('country')) {
+                country_info = address_list?.[i]?.long_name ?? '';
+              }
+              if (
+                address_list?.[i]?.types?.includes?.(
+                  'administrative_area_level_1',
+                )
+              ) {
+                state_info = address_list?.[i]?.long_name ?? '';
+              }
+              if (
+                address_list?.[i]?.types?.includes?.(
+                  'administrative_area_level_2',
+                )
+              ) {
+                city_info = address_list?.[i]?.long_name ?? '';
+              }
+            }
+          })
+          .catch((err) => console.log(`weather api location err`, err));
+      }
+      const isIndia = isCountryIndia();
+      widgetData.current = {
+        ...widgetData.current,
+        moodUpdateBody: {
+          ...widgetData.current.moodUpdateBody,
+          mood_id: "",
+          device_id: getMyDeviceId(),
+          mood_type: "",
+          city: isIndia || !UserData.lat ? defaultLocation.city : city_info,
+          state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
+          country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
+          lat: isIndia || !UserData.lat ? defaultLocation.latitude : UserData.lat,
+          lon: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
+          email: UserData.UserEmail ? UserData.UserEmail : "",
+          user_id: UserData.UserId && !isNaN(UserData.UserId) ? String(UserData.UserId) : "",
+          device_token: fcm,
+          device_type: Platform.OS,
+          anonymous: !UserData.Anonymous ? 0 : 1,
+          reward_point: 0,
+          section_index: 4,
+          description: 'mood input',
+        },
+      };
+      if (Platform.OS === 'ios') {
+        try {
+          // iOS
+          await SharedGroupPreferences.setItem('widgetKey', widgetData.current, widgetDataGroup);
+          console.log('SharedGroupPreferences.setItem success ---->', widgetData.current);
+        } catch (error) {
+          console.log('SharedGropPrefences widgetKey error: ', error);
+        }
+      } else if (Platform.OS === 'android') {
+        // Android
+        SharedStorage.set(JSON.stringify(widgetData.current));
+        console.log('SharedStorage.set success ---->', widgetData.current);
+      }
+    };
+    setWidgetData();
+  }, [
+    UserData.lat,
+    UserData.lon,
+    UserData.UserEmail,
+    UserData.UserId,
+    UserData.Anonymous,
+  ]);
 
   useEffect(() => {
     if (
@@ -575,6 +690,9 @@ const App: () => React$Node = () => {
       console.log("App has come to the foreground!");
       NotifService.cancelMoodFloSheduledNotifications();
       dispatch(SetWeeklyInsightsTimeLeft(getWeeklyInsightsDaysLeft()));
+      if (notifSchedulePreviousDay.current !== moment().day()) {
+        fp();
+      }
     }
 
     appState.current = nextAppState;
@@ -778,6 +896,7 @@ const App: () => React$Node = () => {
 
   const fp = () => {
     notifService.scheduleMoodFloLocalNotif();
+    notifSchedulePreviousDay.current = moment().day();
   };
   useEffect(() => {
     // console.log(`LightSensor`, LightSensor);
@@ -886,6 +1005,7 @@ const App: () => React$Node = () => {
     } catch (e) {
       console.warn(e);
     }
+    checkAndSetPoints();
   };
 
   const onNavigationReady = useCallback(() => {
@@ -905,6 +1025,52 @@ const App: () => React$Node = () => {
 
   const dismissMonthlyInsightsModal = () => {
     dispatch(SetShowMonthlyInsightsModal(false));
+  };
+
+  const closeLvlUpModal = useCallback(() => {
+    setIsOpenLvlUpModal(false);
+  }, []);
+
+  const checkAndSetPoints = async () => {
+    let p = await AsyncStorage.getItem('givePoints');
+    let points = await JSON.parse(p);
+    console.log(`points`, points);
+    if (points === null) {
+      await AsyncStorage.setItem('givePoints', '1');
+      howMoodfloWorks();
+    }
+  };
+
+  const howMoodfloWorks = () => {
+    const userData = getStore?.()?.getState?.()?.First;
+    const prevRewardPts = userData?.floCoins;
+    const deviceId = getMyDeviceId();
+    let params = {
+      "device_id": deviceId,
+      "email": userData?.UserEmail ?? null,
+      "user_id": userData?.UserId ?? null,
+      "section_index": 1,
+      "reward_point": 50,
+      "description": "How moodflo works"
+    };
+    console.log(`params of how mood flx works 50 coins`, params);
+    setIsLoading(true);
+    function onError() {
+      setIsLoading(false);
+    }
+    getUpdateRewardPoint(params, dispatch, onError).then((res) => {
+      console.log('getUpdateRewardPoint res.data----', res?.data);
+      setIsLoading(false);
+      if (
+        res?.data?.reward_point &&
+        getIsMoodLvlUp(prevRewardPts, res.data.reward_point)
+      ) {
+        const timeoutId = setTimeout(() => {
+          setIsOpenLvlUpModal(true);
+          clearTimeout(timeoutId);
+        }, 400);
+      }
+    });
   };
 
   return (
@@ -938,6 +1104,14 @@ const App: () => React$Node = () => {
             ref={(ref) => Toast.setRef(ref)} />
         </>
       )}
+      <LvlUpModal
+        bigText="You’ve leveled up!"
+        modalVisible={isOpenLvlUpModal && !isLoading}
+        dismissModalHandler={closeLvlUpModal}
+        buttonText="Let's Go!"
+        verifyDone={closeLvlUpModal}
+        smallText="Check out what rewards you’ve unlocked"
+      />
       <CustomModal
         modalVisible={!!linkModalText && isLinkModalVisible}
         dismissModalHandler={onLinkCancel}

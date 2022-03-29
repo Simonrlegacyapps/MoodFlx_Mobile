@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
+  Platform
 } from 'react-native';
 import Mood from '../../../assets/svg/mood';
 import {
@@ -16,7 +17,7 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import {dynamicSize, getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import Anonimity from '../../../assets/svg/Anonimity';
 import Science from '../../../assets/svg/science';
 import Rewards from '../../../assets/svg/rewards';
@@ -25,11 +26,20 @@ import ScienceG from '../../../assets/svg/ScienceG';
 import RewardG from '../../../assets/svg/RewardG';
 import Graph from '../../../assets/svg/graph';
 import BackIcon from '../../../assets/svg/backIcon';
+import {GetStaffUserData} from '../../apirequest/PostRequestApi';
+import {useDispatch, useSelector} from 'react-redux';
+import { getMyDeviceId } from '../../services/commonService';
+import { BitCoinIcon } from '../../../assets/svg/bitCoin';
+import Constants from '../../Constants';
+import Colors from '../../Constants/Colors/Colors';
 
 const {height} = Dimensions.get("window")
 
 const Screen1 = ({onDone}) => {
   const [number, setnumber] = useState(0);
+  const [isHowMoodFloWorksPtsGiven, setIsHowMoodFloWorksPtsGiven] = useState(true);
+  const UserData = useSelector((state) => state.First);
+  const dispatch = useDispatch();
 
   const data = [
     {
@@ -81,6 +91,36 @@ const Screen1 = ({onDone}) => {
     },
   ];
 
+  const checkHowMoodFloWorksPtsGive = (userEmail, userId) => {
+    // console.log('called called called called called called');
+    const deviceId = getMyDeviceId();
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    GetStaffUserData(
+      {
+        device_id: deviceId,
+        email: userEmail,
+        user_id: userId,
+      },
+      dispatch,
+    )
+      .then(async (result) => {
+        console.log(
+          '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+          result?.userData,
+        );
+        setIsHowMoodFloWorksPtsGiven(result?.specialPointFlag === 1);
+      })
+      .catch((error) =>
+        console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
+      );
+  };
+
+  useEffect(() => {
+    checkHowMoodFloWorksPtsGive(UserData.UserEmail, UserData.UserId)
+  }, [UserData.UserEmail, UserData.UserId])
+
   return (
     <View>
       <ImageBackground
@@ -101,9 +141,9 @@ const Screen1 = ({onDone}) => {
                 </Text>
               </View>
               <View style={styles.bottomButtons}>
-                <TouchableOpacity onPress={onDone} style={{flex: 1}}>
+                {/* <TouchableOpacity onPress={onDone} style={{flex: 1}}>
                   <Text allowFontScaling={false} style={styles.skip}>Skip > ></Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity
                   onPress={() => {
                     setnumber(number + 1);
@@ -175,18 +215,51 @@ const Screen1 = ({onDone}) => {
 
               {/* // bottom buttons */}
               <View style={styles.bottomButtons}>
-                <TouchableOpacity onPress={onDone} style={{flex: 1}}>
+                {/* <TouchableOpacity onPress={onDone} style={{flex: 1}}>
                   <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    data[number - 1].button === "Next" ? setnumber(number + 1) : onDone();
-                  }}
-                  style={{backgroundColor: '#7265E3', borderRadius: 7}}>
-                  <Text allowFontScaling={false} style={styles.next}>
-                    {data[number - 1].button}
-                  </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+                {(isHowMoodFloWorksPtsGiven === false && data[number - 1].button === "Done") ? (
+                  // <TouchableOpacity
+                  //   onPress={() => onDone()}
+                  //   style={{ backgroundColor: '#7265E3', borderRadius: 7 }}>
+                  //   <Text allowFontScaling={false} style={styles.next}>
+                  //     {data[number - 1].button}
+                  //   </Text>
+                  // </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => onDone()}
+                    style={styles.bottomFlatlistContainer}>
+                    <View>
+                      <Text style={styles.anonymousTextStyle}>
+                        {data[number - 1].button}
+                      </Text>
+                      <ImageBackground
+                        style={styles.pupView}
+                        imageStyle={styles.pup}
+                        source={require('../../../assets/newImage/AddCoinsPopUp/popUp.png')}>
+                        <BitCoinIcon
+                          style={styles.bitCoinIconView}
+                          color={'#FFFFFF'}
+                          w={getFontSize(12.5)}
+                          h={getFontSize(12.5)}
+                        />
+                        <Text allowFontScaling={false} style={styles.coinText}>
+                          +50 coins
+                        </Text>
+                      </ImageBackground>
+                    </View>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => {
+                      data[number - 1].button === "Next" ? setnumber(number + 1) : onDone();
+                    }}
+                    style={styles.nextButton}>
+                    <Text allowFontScaling={false} style={styles.next}>
+                      {data[number - 1].button}
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           )}
@@ -210,11 +283,69 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   bottomButtons: {
+    width: '100%',
     position: 'absolute',
     bottom: 10,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingHorizontal: 20,
+  },
+  bottomFlatlistContainer: {
+    flexDirection: 'row',
+    paddingTop: horizontalScale(15),
+    marginTop: dynamicSize(10),
+    marginBottom: dynamicSize(20),
+    backgroundColor: '#7265E3',
+    borderRadius: 7,
+    alignItems: 'center',
+  },
+  anonymousTextStyle: {
+    color: Colors.WhiteColor,
+    fontSize: dynamicSize(16),
+    fontWeight: '500',
+    marginVertical: dynamicSize(8),
+    marginHorizontal: dynamicSize(16),
+  },
+  pupView: {
+    flexDirection: 'row',
+    position: 'absolute',
+    alignSelf: 'center',
+    height: horizontalScale(45),
+    width: horizontalScale(100),
+    top: horizontalScale(-25),
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  pup: {
+    height: horizontalScale(45),
+    width: horizontalScale(100),
+    resizeMode: 'stretch',
+    tintColor: Colors.coinOrange,
+  },
+  bitCoinIconView: {
+    top: horizontalScale(7),
+    marginRight: horizontalScale(3),
+  },
+  coinText: {
+    ...Platform.select({
+      android: {
+        top: horizontalScale(6),
+      },
+      ios: {
+        top: horizontalScale(5),
+      },
+      default: {
+        // other platforms, web for example
+        top: horizontalScale(6),
+      },
+    }),
+    color: '#FFFFFF',
+    fontSize: getFontSize(12.5),
+    fontFamily: RubikRegular,
+  },
+  nextButton: {
+    backgroundColor: '#7265E3',
+    borderRadius: 7,
   },
   smallText0: {
     marginTop: dynamicSize(10),

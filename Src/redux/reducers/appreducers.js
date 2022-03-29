@@ -46,7 +46,7 @@ import {
   GET_STANDTIME_PERM,
   NEGATIVE_MOOD_MODAL_DATA,
   SHOW_MONTHLY_INSIGHTS_MODAL,
-  DASHBOARD_MOOD_ID,
+  DASHBOARD_MOOD_DATA,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -104,6 +104,7 @@ const intializedState = {
   isLinkToCompanyRouteParamsReset: false,
   negativeMoodModalData: defaultNegativeMoodModalData,
   dashboardMoodId: '',
+  dashboardMoodName: '',
 };
 
 export const First = (state = intializedState, action) => {
@@ -293,9 +294,10 @@ export const First = (state = intializedState, action) => {
           ...action.payload,
         },
       });
-    case DASHBOARD_MOOD_ID:
+    case DASHBOARD_MOOD_DATA:
       return Object.assign({}, state, {
-        dashboardMoodId: action.payload,
+        dashboardMoodId: action.payload?.dashboardMoodId ?? '',
+        dashboardMoodName: action.payload?.dashboardMoodName ?? '',
       });
     default:
       return state;

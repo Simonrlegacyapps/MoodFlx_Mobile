@@ -28,10 +28,10 @@ import moment from 'moment';
 import getStore from '../../redux';
 import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 import { ViewIcon } from '../../../assets/svg/ViewIcon';
-import {SetDashboardMoodId} from '../../redux/actions/actions';
+import {SetDashboardMoodData} from '../../redux/actions/actions';
 
 const Tab = createMaterialTopTabNavigator();
-// const characterData = [
+// const characterDemoData = [
 //   { x: 'Monday', y: 18, fill: '#E74C3C' },
 //   { x: 'Tuesday', y: 24, fill: '#CDE73C' },
 //   { x: 'Wednesday', y: 8, fill: '#3FE73C' },
@@ -119,14 +119,17 @@ function Dashboard(props) {
 
   const onPressMoodItem = useCallback((item) => () => {
       let m = getStore?.().getState?.()?.First?.dashboardMoodId ?? null;
+      let n = getStore?.().getState?.()?.First?.dashboardMoodName ?? null;
       if (item.id === m) {
         m = '';
+        n = '';
         getMoodsApi();
       } else {
         m = item.id;
+        n = item?.moodName ?? '';
         getMoodsApi(item.id);
       }
-      dispatch(SetDashboardMoodId(m));
+      dispatch(SetDashboardMoodData({dashboardMoodId: m, dashboardMoodName: n}));
     }, []);
 
   useEffect(() => {
@@ -259,7 +262,7 @@ const styles = StyleSheet.create({
     textTransform: 'none',
   },
   tabStyle: {
-    width: horizontalScale(100),
+    width: horizontalScale(120),
   },
   itemContainer: {
     flexDirection: 'row',

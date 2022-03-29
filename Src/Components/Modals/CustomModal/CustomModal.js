@@ -27,6 +27,7 @@ const CustomModal = ({
   onClickButtonTwo,
   buttonTwoText,
   buttonOneStyle,
+  modalTextStyle,
 }) => {
   const [color, setcolor] = useState('black');
 
@@ -52,7 +53,7 @@ const CustomModal = ({
           style={[styles.dismissView, {backgroundColor: color}]}
         />
         <View style={[styles.upperContainer, ]}>
-          <Text style={styles.textOne}>{modalText ?? ''}</Text>
+          <Text style={modalTextStyle}>{modalText ?? ''}</Text>
           {(!!onClickButtonOne || !!onClickButtonTwo) && (
             <View style={styles.buttonsContainer}>
               {!!onClickButtonOne && (
@@ -81,17 +82,6 @@ const CustomModal = ({
   );
 };
 
-CustomModal.propTypes = {
-  modalVisible: PropTypes.bool,
-  dismissModalHandler: PropTypes.func,
-  modalText: PropTypes.string,
-  onClickButtonOne: PropTypes.func,
-  buttonOneText: PropTypes.string,
-  onClickButtonTwo: PropTypes.func,
-  buttonTwoText: PropTypes.string,
-};
-
-export default CustomModal;
 const fontSize = getFontSize(22);
 const styles = StyleSheet.create({
   container: {
@@ -156,3 +146,20 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 });
+
+CustomModal.propTypes = {
+  modalVisible: PropTypes.bool,
+  dismissModalHandler: PropTypes.func,
+  modalText: PropTypes.string,
+  onClickButtonOne: PropTypes.func,
+  buttonOneText: PropTypes.string,
+  onClickButtonTwo: PropTypes.func,
+  buttonTwoText: PropTypes.string,
+  modalTextStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+};
+
+CustomModal.defaultProps = {
+  modalTextStyle: styles.textOne,
+};
+
+export default CustomModal;

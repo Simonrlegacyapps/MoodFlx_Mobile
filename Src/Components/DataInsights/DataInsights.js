@@ -455,7 +455,7 @@ function DataInsights({
         image={Images.SadButRelievedFaceImg}
         textOne="Damn... not enough moods"
         textTwo={
-          insightsDuration === insightsDurationFlags.weekly
+          modalDuration === insightsDurationFlags.weekly
             ? 'Try input your mood at least 3 times per week to unlock this'
             : 'Try input your mood at least 16 times per month to unlock this'
         }

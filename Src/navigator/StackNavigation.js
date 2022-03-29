@@ -42,7 +42,13 @@ const StackNavigation = () => {
               height={horizontalScale(22)}
             />
           ),
-          headerTransparent: true,
+          headerStyle: {
+            backgroundColor: '#FFFFFF',
+            elevation: 0, // remove shadow on Android
+            shadowOpacity: 0, // remove shadow on iOS
+            borderBottomWidth: 0,
+          },
+          // headerTransparent: true,
           headerLeftContainerStyle:
             Platform.OS === 'ios'
               ? {

@@ -35,6 +35,27 @@ export const getMoodIconsUrl = () => {
   }
 };
 
+const getRewardsListApiRequestJson = {
+  device_id: 'deice_id',
+  email: 'email',
+  user_id: 'user_id',
+}
+
+const claimRewardsListApiRequestJson = {
+  device_id: 'deice_id',
+  email: 'email',
+  user_id: 'user_id',
+  reward_item_id: 'reward_item_id',
+  user_name: 'user_name',
+  section_index: 6
+}
+
+const rewardHistoryRequestJson = {
+  device_id: 'deice_id',
+  email: 'email',
+  user_id: 'user_id',
+}
+
 export const hapticsConfigs = {
   car: {
     light: 'impactLight',
@@ -152,21 +173,22 @@ export const getScreensPriority = (data) => {
       priority: 4,
     },
     {
-      name: dataTypes.screenTime,
-      permission: data?.ScreenTimePermission,
-      priority: 5,
-    },
-    {
       name: dataTypes.location,
       permission: data?.WeatherPermission,
-      priority: 6,
+      priority: 5,
     },
   ];
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'android') {
+    x.push({
+      name: dataTypes.screenTime,
+      permission: data?.ScreenTimePermission,
+      priority: 6,
+    });
+  } else if (Platform.OS === 'ios') {
     x.push({
       name: dataTypes.standTime,
       permission: data?.StandTimePermission,
-      priority: 7,
+      priority: 6,
     });
   }
   return x;
@@ -206,6 +228,7 @@ export const getMonthlyInsightsAvailable = () => {
   }
 };
 
+export const widgetDataGroup = 'group.moodflo';
 export const getMonthlyInsightsDaysLeft = () => {
   if (getMonthlyInsightsAvailable() === true) {
     return 0;
