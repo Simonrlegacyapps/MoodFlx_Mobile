@@ -3,11 +3,13 @@ import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Image }
 import { useSelector } from 'react-redux';
 import HisotyImage from '../../../assets/svg/historyImage'
 import PostRequestApi from '../../apirequest/PostRequestApi';
+import { getPhotoUrl } from '../../Constants/constants';
 import { RubikLight, RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts'
 import Images from '../../Constants/Images/Images';
 import { getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import getStore from '../../redux';
 import { getMyDeviceId } from '../../services/commonService';
+import { useFocusEffect } from '@react-navigation/native';
 
 function getHistory() {
   return [
@@ -16,35 +18,49 @@ function getHistory() {
       image: Images.HalfDayOffWorkImg,
       description: 'Late Start Monday @ 10am',
       reward_point: 0,
+      isDummy: true,
     },
     {
       id: '2',
       image: Images.HalfDayOffWorkImg,
       description: 'Early Finish Friday @ 2pm',
       reward_point: 400,
+      isDummy: true,
     },
     {
       id: '3',
       image: Images.HalfDayOffWorkImg,
       description: 'Career Mentoring Session by Jen',
       reward_point: 0,
+      isDummy: true,
     },
     {
       id: '4',
       image: Images.HalfDayOffWorkImg,
       description: 'Day Off',
       reward_point: 1000,
+      isDummy: true,
     },
   ];
 }
 
-const History = ({setIsLevelsHide, islevelsHide}) => {
+function RewardsHistory({setIsLevelsHide, islevelsHide}) {
   const [claimRewardList, setClaimRewardList] = useState(null);
   const [isHistoryLoading, setIsHistoryLoading] = useState(null);
   const offset = useRef(0);
   const isHidden = useRef(false);
 
   const UserData = useSelector((state) => state.First);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (UserData.UserEmail && UserData.UserId) {
+        callClaimedRewardListApi();
+      } else {
+        setClaimRewardList(null);
+      }
+    }, [UserData.UserEmail, UserData.UserId])
+  );
 
   const callClaimedRewardListApi = () => {
     const userData = getStore?.()?.getState?.()?.First;
@@ -82,13 +98,13 @@ const History = ({setIsLevelsHide, islevelsHide}) => {
     }
   }, [islevelsHide]);
 
-  useEffect(() => {
-    if ((UserData.UserEmail, UserData.UserId)) {
-      callClaimedRewardListApi();
-    } else {
-      setClaimRewardList(null);
-    }
-  }, [UserData.UserEmail, UserData.UserId]);
+  // useEffect(() => {
+  //   if ((UserData.UserEmail, UserData.UserId)) {
+  //     callClaimedRewardListApi();
+  //   } else {
+  //     setClaimRewardList(null);
+  //   }
+  // }, [UserData.UserEmail, UserData.UserId]);
 
   const onScroll = useCallback((event) => {
     var currentOffset = event.nativeEvent.contentOffset.y;
@@ -104,21 +120,22 @@ const History = ({setIsLevelsHide, islevelsHide}) => {
   }, [setIsLevelsHide]);
 
   const renderItem = ({ item, index }) => {
+    let img = item.image && !item.isDummy ? {uri: `${getPhotoUrl()}${item.image}`} : item.image;
     return (
       <View
-        key={`${item?.id ?? index}`}
+        // key={`${item?.claim_history_id ?? index}`}
         // onPress={() => onPressRewardItem(item)}
         activeOpacity={0.7}
         style={styles.card}>
         <View style={styles.cardSubView}>
-          {(item?.image || item.image === null) && (
+          {img && (
             <View>
               {!isNaN(item.reward_point) && Number(item.reward_point) === 0 && (
                 <View style={styles.coinsRequiredView}>
                   <Text style={styles.deniedText}>Denied</Text>
                 </View>
               )}
-              <Image source={item.image ?? Images.HalfDayOffWorkImg} style={styles.image} />
+              <Image source={img} style={styles.image} />
             </View>
           )}
           <View style={styles.itemBody}>
@@ -133,10 +150,6 @@ const History = ({setIsLevelsHide, islevelsHide}) => {
                 style={styles.itemPrice}>{`${item.reward_point} coins`}</Text>
             )}
           </View>
-          <Image
-            source={require('../../../assets/newImage/arrow/arrow.png')}
-            style={styles.imageArrow}
-          />
         </View>
       </View>
     );
@@ -151,6 +164,7 @@ const History = ({setIsLevelsHide, islevelsHide}) => {
             data={(UserData.UserId && UserData.UserEmail) ? (claimRewardList ?? []) : getHistory()}
             renderItem={renderItem}
             onScroll={onScroll}
+            keyExtractor={(item, index) => (item?.claim_history_id ?? index)}
             showsVerticalScrollIndicator={false}
           />
           <View style={{ padding: 40 }} />
@@ -278,5 +292,5 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
   },
 });
-
-export default History
+const History = React.memo(RewardsHistory);
+export default History;

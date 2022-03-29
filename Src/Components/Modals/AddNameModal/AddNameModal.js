@@ -11,15 +11,18 @@ import {
   TextInput,
   Platform,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import Constants from '../../../Constants';
+import Colors from '../../../Constants/Colors/Colors';
 import {
   RubikLight,
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import {dynamicSize, getFontSize} from '../../../Constants/sizeChoose';
+import {dynamicSize, getFontSize, horizontalScale} from '../../../Constants/sizeChoose';
+import getStore from '../../../redux';
 
 type props = {
   modalVisible: Boolean,
@@ -40,8 +43,10 @@ const AddNameModal = ({
   description,
   onChangeText,
   value,
+  isLoading,
 }: props) => {
   const [color, setcolor] = useState('black');
+  const user_id = getStore?.()?.getState?.()?.First?.UserId;
   // const [value, onChangeText] = React.useState('');
   //   console.log(
   //     `modalView, dismissModalHandler, selectedValue`,
@@ -53,7 +58,7 @@ const AddNameModal = ({
     <Modal
       style={styles.modalView}
       testID={'modal'}
-      onSwipeComplete={dismissModalHandler}
+      onSwipeComplete={isLoading ? undefined : dismissModalHandler}
       useNativeDriverForBackdrop
       swipeDirection={['down']}
       isVisible={modalVisible}
@@ -65,9 +70,9 @@ const AddNameModal = ({
           <View style={{flex: 1, backgroundColor: '#000000'}} />
         </TouchableWithoutFeedback>
       }>
-      <KeyboardAvoidingView behavior={"padding"} style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : null} style={styles.container}>
         <TouchableOpacity
-          onPress={dismissModalHandler}
+          onPress={isLoading ? undefined : dismissModalHandler}
           style={{
             height: '100%',
             width: '100%',
@@ -159,13 +164,13 @@ const AddNameModal = ({
               }}
               onChangeText={(text) => {
                 // onChangeText(text);
-                onChangeText('Tester');
+                onChangeText(user_id == 67 || user_id == 85 ? text : 'Tester');
               }}
               value={value}
             />
           </View>
           <TouchableOpacity
-            disabled={!value}
+            disabled={!value || isLoading}
             onPress={verifyDone}
             style={{alignItems: 'center'}}>
             <View
@@ -178,10 +183,12 @@ const AddNameModal = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginBottom: 40,
+                flexDirection: 'row',
               }}>
               <Text style={{fontWeight: '500', fontSize: 14, color: '#FFFFFF'}}>
                 {buttonText}
               </Text>
+              {isLoading && <View style={styles.loadingView}><ActivityIndicator size="small" color={Colors.loaderColor} /></View>}
             </View>
           </TouchableOpacity>
         </View>
@@ -282,5 +289,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginRight: 12,
     // width:'80%'
+  },
+  loadingView: {
+    alignSelf: 'center',
+    marginLeft: horizontalScale(15),
   },
 });
