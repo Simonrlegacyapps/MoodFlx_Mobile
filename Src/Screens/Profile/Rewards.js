@@ -26,6 +26,7 @@ import getStore from '../../redux';
 import {SetAvailableRewards} from '../../redux/actions/actions';
 import {getMyDeviceId} from '../../services/commonService';
 import {useFocusEffect} from '@react-navigation/native';
+import Loader from '../../Components/Loader/Loader';
 
 function getModalText(pointsToUnlock) {
   if (typeof pointsToUnlock === 'number') {
@@ -257,6 +258,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
         }
       })
       .catch((err) => {
+        setIsRewardsLoading(false);
         console.log('availableRewardList api error ', err);
       });
   };
@@ -493,6 +495,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
         description={claimRewardsDescription}
         dismissModalHandler={updateShowPostRewardsClaimModal(false)}
       />
+      <Loader isLoading={isRewardsLoading} />
     </>
   );
 };
