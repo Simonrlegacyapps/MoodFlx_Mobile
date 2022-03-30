@@ -61,7 +61,7 @@ const AddNameModal = ({
       onSwipeComplete={isLoading ? undefined : dismissModalHandler}
       useNativeDriverForBackdrop
       swipeDirection={['down']}
-      isVisible={!modalVisible}
+      isVisible={modalVisible}
       onSwipeMove={() => {
         setcolor('transparent');
       }}
