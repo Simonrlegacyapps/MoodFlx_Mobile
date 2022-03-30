@@ -61,13 +61,13 @@ const AddNameModal = ({
       onSwipeComplete={isLoading ? undefined : dismissModalHandler}
       useNativeDriverForBackdrop
       swipeDirection={['down']}
-      isVisible={modalVisible}
+      isVisible={!modalVisible}
       onSwipeMove={() => {
         setcolor('transparent');
       }}
       customBackdrop={
         <TouchableWithoutFeedback onPress={dismissModalHandler}>
-          <View style={{flex: 1, backgroundColor: '#000000'}} />
+          <View style={{flex: 1, backgroundColor: 'transparent'}} />
         </TouchableWithoutFeedback>
       }>
       <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : null} style={styles.container}>
@@ -163,8 +163,8 @@ const AddNameModal = ({
                 paddingLeft: 15,
               }}
               onChangeText={(text) => {
-                // onChangeText(text);
-                onChangeText(user_id == 67 || user_id == 85 ? text : 'Tester');
+                onChangeText(text);
+                // onChangeText(user_id == 67 || user_id == 85 ? text : 'Tester');
               }}
               value={value}
             />
