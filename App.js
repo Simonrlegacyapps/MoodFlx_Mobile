@@ -378,7 +378,7 @@ const App: () => React$Node = () => {
         newOrg.current = null;
         console.log('getDownloadLink api params: ', params);
         try {
-          const getDownloadLinkRes = await PostRequestApi('getDownloadLink', params);
+          const getDownloadLinkRes = await PostRequestApi('v2/getDownloadLink', params);
           console.log('getDownloadLink api res: ', getDownloadLinkRes);
           let userData = null;
           if (
@@ -416,16 +416,16 @@ const App: () => React$Node = () => {
               // data = {...data, division_id: null};
               if (data?.email) {
                 if (RootNavigation?.navigationRef?.current?.navigate) {
-                  // RootNavigation?.navigationRef?.current?.navigate(
-                  //   'HomeScreen',
-                  //   {
-                  //     screen: 'LinkCompanyStackNavigation',
-                  //     params: {
-                  //       screen: 'Linktocompany',
-                  //       params: {email: data.email},
-                  //     },
-                  //   },
-                  // );
+                  RootNavigation?.navigationRef?.current?.navigate(
+                    'HomeScreen',
+                    {
+                      screen: 'LinkCompanyStackNavigation',
+                      params: {
+                        screen: 'Linktocompany',
+                        params: {email: data.email},
+                      },
+                    },
+                  );
                 } else {
                   setEmail(data.email);
                 }
@@ -443,6 +443,94 @@ const App: () => React$Node = () => {
     },
     [dispatch],
   );
+  // const linkCompany = useCallback(
+  //   async (org) => {
+  //     const deviceId = getMyDeviceId();
+  //     let fcm = '';
+  //     try {
+  //       fcm = await messaging().getToken();
+  //     } catch (error) {
+  //       console.log('error getting fcm token');
+  //     }
+  //     if (!org) {
+  //       org = newOrg.current;
+  //     }
+  //     if (typeof org === 'string' && deviceId && fcm) {
+  //       console.log('handleDynamicLink org true: ', org);
+  //       const params = {
+  //         device_id: deviceId,
+  //         user_id: org ?? newOrg.current,
+  //         device_token: fcm,
+  //         device_type: Platform.OS,
+  //       };
+  //       newOrg.current = null;
+  //       console.log('getDownloadLink api params: ', params);
+  //       try {
+  //         const getDownloadLinkRes = await PostRequestApi('getDownloadLink', params);
+  //         console.log('getDownloadLink api res: ', getDownloadLinkRes);
+  //         let userData = null;
+  //         if (
+  //           !getDownloadLinkRes.data.staffData?.email &&
+  //           getDownloadLinkRes?.data?.staffData === 'Not found'
+  //         ) {
+  //           // console.log('Showing Toast ====>');
+  //           Toast.show({
+  //             type: 'error',
+  //             text2: 'Cannot link this device, please contact your HR manager',
+  //             visibilityTime: 4000,
+  //             autoHide: true,
+  //           });
+  //         } else if (
+  //           getDownloadLinkRes?.data?.staffData &&
+  //           getDownloadLinkRes?.data?.user_id
+  //         ) {
+  //           userData = {
+  //             ...getDownloadLinkRes.data.staffData,
+  //             user_id: getDownloadLinkRes.data.user_id,
+  //           };
+  //         }
+  //         const currentRoute = RootNavigation.getCurrentRoute();
+  //         if (
+  //           currentRoute &&
+  //           currentRoute.name === 'Linktocompany' &&
+  //           userData?.email
+  //         ) {
+  //           RootNavigation?.getNavigationRef?.()?.current?.setParams?.({
+  //             email: userData?.email,
+  //           });
+  //         }
+  //         onDynamicLinkUpdate(userData, dispatch, function (data) {
+  //           if (data !== false) {
+  //             // data = {...data, division_id: null};
+  //             if (data?.email) {
+  //               if (RootNavigation?.navigationRef?.current?.navigate) {
+  //                 // RootNavigation?.navigationRef?.current?.navigate(
+  //                 //   'HomeScreen',
+  //                 //   {
+  //                 //     screen: 'LinkCompanyStackNavigation',
+  //                 //     params: {
+  //                 //       screen: 'Linktocompany',
+  //                 //       params: {email: data.email},
+  //                 //     },
+  //                 //   },
+  //                 // );
+  //               } else {
+  //                 setEmail(data.email);
+  //               }
+  //             } else {
+  //               console.log('Dynamic link onDynamicLinkUpdate onFinish else block');
+  //             }
+  //           }
+  //         });
+  //         console.log('getDownloadLink api res', getDownloadLinkRes);
+  //         // })
+  //       } catch (error) {
+  //         console.log('error calling getDownloadLink api: ', error);
+  //       }
+  //     }
+  //   },
+  //   [dispatch],
+  // );
 
   const onLinkConfirm = useCallback(async () => {
     setLinkModalText('');
@@ -532,6 +620,8 @@ const App: () => React$Node = () => {
       org = url?.split?.('/org/')?.pop?.()?.split?.('/n')?.[0];
     }
     console.log('org user id====', org);
+    console.log('existingOrgName name ====', existingOrgName);
+    console.log('newOrgName name ====', newOrgName);
     if (!newOrgName && email) {
       return;
     }
@@ -542,7 +632,7 @@ const App: () => React$Node = () => {
       typeof newOrgName === 'string' &&
       existingOrgName &&
       typeof existingOrgName === 'string' &&
-      newOrgName.toLowerCase() !== existingOrgName.toLowerCase()
+      !newOrgName.toLowerCase().includes(existingOrgName.toLowerCase())
     ) {
       const modalText = getLinkModalText(
         existingOrgName.toUpperCase(),
@@ -569,13 +659,13 @@ const App: () => React$Node = () => {
 
   const goToSelectDivision = useCallback(() => {
     console.log('goToSelectDivision email: ', email);
-    // RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
-    //   screen: 'LinkCompanyStackNavigation',
-    //   params: {
-    //     screen: 'Linktocompany',
-    //     params: { email: email },
-    //   },
-    // });
+    RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
+      screen: 'LinkCompanyStackNavigation',
+      params: {
+        screen: 'Linktocompany',
+        params: { email: email },
+      },
+    });
   }, [email]);
 
   const CheckScreen = async () => {

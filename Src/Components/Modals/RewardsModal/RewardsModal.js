@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 30,
     marginHorizontal: 10,
-    paddingBottom: horizontalScale(30),
+    paddingBottom: horizontalScale(50),
     width: '100%',
     overflow: 'hidden',
     justifyContent: 'center',
