@@ -47,7 +47,7 @@ const RewardsModal = ({
       }}
       customBackdrop={
         <TouchableWithoutFeedback onPress={dismissModalHandler}>
-          <View style={{flex: 1, backgroundColor: 'transparent'}} />
+          <View style={{flex: 1, backgroundColor: '#000000'}} />
         </TouchableWithoutFeedback>
       }>
       <View style={styles.container}>
@@ -110,13 +110,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.WhiteColor,
-    height: dynamicSize(30),
-    width: dynamicSize(30),
-    borderRadius: dynamicSize(17),
+    height: dynamicSize(40),
+    width: dynamicSize(40),
+    borderRadius: dynamicSize(22),
   },
   cancelIcon: {
-    height: dynamicSize(18),
-    width: dynamicSize(18),
+    height: dynamicSize(25),
+    width: dynamicSize(25),
     resizeMode: 'contain',
   },
   upperContainer: {

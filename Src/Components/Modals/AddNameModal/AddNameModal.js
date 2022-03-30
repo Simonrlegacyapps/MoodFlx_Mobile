@@ -67,7 +67,7 @@ const AddNameModal = ({
       }}
       customBackdrop={
         <TouchableWithoutFeedback onPress={dismissModalHandler}>
-          <View style={{flex: 1, backgroundColor: 'transparent'}} />
+          <View style={{flex: 1, backgroundColor: '#000000'}} />
         </TouchableWithoutFeedback>
       }>
       <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : null} style={styles.container}>
@@ -99,7 +99,7 @@ const AddNameModal = ({
               fontWeight: Platform.OS === 'android' ? '700' : '500',
               fontSize: dynamicSize(26),
               textAlign: 'center',
-              marginTop: 50,
+              marginTop: 30,
               fontFamily: RubikRegular,
             }}>
             {title}
@@ -111,10 +111,10 @@ const AddNameModal = ({
               letterSpacing: 1,
               fontSize: Platform.OS === 'android' ? getFontSize(16) : dynamicSize(14),
               marginTop: 12,
-              marginLeft: 62,
-              marginRight: 62,
+              // marginLeft: 62,
+              // marginRight: 62,
               textAlign: 'center',
-              width: '60%',
+              width: '80%',
               lineHeight: dynamicSize(26),
             }}>
             {description}
@@ -182,7 +182,7 @@ const AddNameModal = ({
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: 40,
+                marginBottom: 50,
                 flexDirection: 'row',
               }}>
               <Text style={{fontWeight: '500', fontSize: 14, color: '#FFFFFF'}}>
