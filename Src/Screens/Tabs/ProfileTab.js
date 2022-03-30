@@ -52,10 +52,10 @@ import {RubikRegular} from '../../Constants/fonts/Fonts';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 const listData = [
-  { name: 'Name', value: 'Annonymous' },
-  { name: 'Gender', value: 'Annonymous' },
-  { name: 'Birthday', value: 'Annonymous' },
-  { name: 'Pronoun', value: 'Annonymous' },
+  { name: 'Name', value: 'Anonymous' },
+  { name: 'Gender', value: 'Anonymous' },
+  { name: 'Birthday', value: 'Anonymous' },
+  { name: 'Pronoun', value: 'Anonymous' },
 ];
 
 const bottomList = [
@@ -111,7 +111,8 @@ const ProfileTab = ({ navigation }) => {
   };
 
   const updateName = useCallback((text) => {
-    setname('Tester');
+    // setname('Tester');
+    setname(text);
   }, []);
 
   const getProfileUserData = () => {

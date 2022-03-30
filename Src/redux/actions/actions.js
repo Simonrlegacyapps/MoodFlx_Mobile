@@ -46,6 +46,8 @@ import {
   NEGATIVE_MOOD_MODAL_DATA,
   SHOW_MONTHLY_INSIGHTS_MODAL,
   DASHBOARD_MOOD_DATA,
+  AVAILABLE_REWARDS,
+  CLAIMED_REWARDS,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -334,6 +336,20 @@ export const SetNegativeMoodModalData = (data) => {
 export const SetDashboardMoodData = (data) => {
   return {
     type: DASHBOARD_MOOD_DATA,
+    payload: data,
+  };
+};
+
+export const SetAvailableRewards = (data) => {
+  return {
+    type: AVAILABLE_REWARDS,
+    payload: data,
+  };
+};
+
+export const SetClaimedRewards = (data) => {
+  return {
+    type: CLAIMED_REWARDS,
     payload: data,
   };
 };

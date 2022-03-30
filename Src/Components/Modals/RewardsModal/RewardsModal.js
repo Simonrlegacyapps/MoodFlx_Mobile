@@ -47,7 +47,7 @@ const RewardsModal = ({
       }}
       customBackdrop={
         <TouchableWithoutFeedback onPress={dismissModalHandler}>
-          <View style={{flex: 1, backgroundColor: '#000000'}} />
+          <View style={{flex: 1, backgroundColor: 'transparent'}} />
         </TouchableWithoutFeedback>
       }>
       <View style={styles.container}>
@@ -70,7 +70,7 @@ const RewardsModal = ({
               style={styles.cancelIcon}
             />
           </TouchableOpacity>
-          <Image source={Constants.Images.WhiteBg} style={styles.topImage}/>
+          {/* <Image source={Constants.Images.WhiteBg} style={styles.topImage}/> */}
           <Text style={styles.titleText}>{title}</Text>
           <Text style={styles.descriptionText}>{description}</Text>
         </View>

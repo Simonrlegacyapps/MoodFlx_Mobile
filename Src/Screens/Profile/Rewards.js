@@ -8,21 +8,24 @@ import {
   StyleSheet,
   Keyboard,
 } from 'react-native';
-import { useSelector,useDispatch } from 'react-redux';
-import PostRequestApi, { getRewardsListApi, getUpdateRewardPoint } from '../../apirequest/PostRequestApi';
+import {useSelector, useDispatch} from 'react-redux';
+import PostRequestApi, {
+  getRewardsListApi,
+  getUpdateRewardPoint,
+} from '../../apirequest/PostRequestApi';
 import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import RewardsModal from '../../Components/Modals/RewardsModal/RewardsModal';
 import ProfileCoinModal from '../../Components/PopUp/profileCoinModal';
 import Constants from '../../Constants';
-import { getPhotoUrl } from '../../Constants/constants';
-import { RubikLight, RubikRegular } from '../../Constants/fonts/Fonts';
+import {getPhotoUrl} from '../../Constants/constants';
+import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
 import Images from '../../Constants/Images/Images';
-import { getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import getStore from '../../redux';
-import { setScrolling } from '../../redux/actions/actions';
-import { getMyDeviceId } from '../../services/commonService';
-import { useFocusEffect } from '@react-navigation/native';
+import {SetAvailableRewards} from '../../redux/actions/actions';
+import {getMyDeviceId} from '../../services/commonService';
+import {useFocusEffect} from '@react-navigation/native';
 
 function getModalText(pointsToUnlock) {
   if (typeof pointsToUnlock === 'number') {
@@ -216,7 +219,6 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   const [userName, setUserName] = useState('');
   const [isRewardsLoading, setIsRewardsLoading] = useState(false);
   const [isClaimingReward, setIsClaimingReward] = useState(false);
-  const [rewardsList, setRewardsList] = useState(null);
   const [contactEmails, setContactEmails] = useState(null);
   const rewardId = useRef();
 
@@ -227,6 +229,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   const userId = useSelector((state) => state.First?.UserId);
   const userEmail = useSelector((state) => state.First?.UserEmail);
   const floCoins = useSelector((state) => state.First?.floCoins);
+  const rewardsList = useSelector((state) => state.First?.availableRewards);
   const dispatch = useDispatch();
 
   const callGetRewardsApi = () => {
@@ -250,7 +253,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
         console.log('availableRewardList api res----', res);
         setIsRewardsLoading(false);
         if (Array.isArray(res)) {
-          setRewardsList([...res]);
+          dispatch(SetAvailableRewards(res));
         }
       })
       .catch((err) => {
@@ -318,7 +321,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
       if ((userEmail && userId && (!Array.isArray(rewardsList) || rewardsList.length === 0))) {
         callGetRewardsApi();
       } else {
-        setRewardsList(null);
+        dispatch(SetAvailableRewards(null));
       }
     }, [userId, userEmail])
   );
@@ -328,7 +331,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   //   if (userId && userEmail) {
   //     callGetRewardsApi();
   //   } else {
-  //     setRewardsList(null);
+  //     dispatch(SetAvailableRewards(null));
   //   }
   // }, []);
 
