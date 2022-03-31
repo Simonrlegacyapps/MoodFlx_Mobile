@@ -47,6 +47,8 @@ import {
   NEGATIVE_MOOD_MODAL_DATA,
   SHOW_MONTHLY_INSIGHTS_MODAL,
   DASHBOARD_MOOD_DATA,
+  AVAILABLE_REWARDS,
+  CLAIMED_REWARDS,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -105,6 +107,8 @@ const intializedState = {
   negativeMoodModalData: defaultNegativeMoodModalData,
   dashboardMoodId: '',
   dashboardMoodName: '',
+  availableRewards: null,
+  claimedRewards: null,
 };
 
 export const First = (state = intializedState, action) => {
@@ -298,6 +302,18 @@ export const First = (state = intializedState, action) => {
       return Object.assign({}, state, {
         dashboardMoodId: action.payload?.dashboardMoodId ?? '',
         dashboardMoodName: action.payload?.dashboardMoodName ?? '',
+      });
+    case AVAILABLE_REWARDS:
+      return Object.assign({}, state, {
+        availableRewards: Array.isArray(action.payload)
+          ? [...action.payload]
+          : state.availableRewards,
+      });
+    case CLAIMED_REWARDS:
+      return Object.assign({}, state, {
+        claimedRewards: Array.isArray(action.payload)
+          ? [...action.payload]
+          : state.claimedRewards,
       });
     default:
       return state;

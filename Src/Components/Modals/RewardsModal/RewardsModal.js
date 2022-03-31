@@ -70,7 +70,7 @@ const RewardsModal = ({
               style={styles.cancelIcon}
             />
           </TouchableOpacity>
-          <Image source={Constants.Images.WhiteBg} style={styles.topImage}/>
+          {/* <Image source={Constants.Images.WhiteBg} style={styles.topImage}/> */}
           <Text style={styles.titleText}>{title}</Text>
           <Text style={styles.descriptionText}>{description}</Text>
         </View>
@@ -110,20 +110,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.WhiteColor,
-    height: dynamicSize(30),
-    width: dynamicSize(30),
-    borderRadius: dynamicSize(17),
+    height: dynamicSize(40),
+    width: dynamicSize(40),
+    borderRadius: dynamicSize(22),
   },
   cancelIcon: {
-    height: dynamicSize(18),
-    width: dynamicSize(18),
+    height: dynamicSize(25),
+    width: dynamicSize(25),
     resizeMode: 'contain',
   },
   upperContainer: {
     backgroundColor: 'white',
     borderRadius: 30,
     marginHorizontal: 10,
-    paddingBottom: horizontalScale(30),
+    paddingBottom: horizontalScale(50),
     width: '100%',
     overflow: 'hidden',
     justifyContent: 'center',

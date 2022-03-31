@@ -1,15 +1,24 @@
 import React, {useState, useRef, useEffect, useCallback} from 'react'
-import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Image } from 'react-native'
-import { useSelector } from 'react-redux';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  FlatList,
+  Image,
+} from 'react-native';
+import {useSelector, useDispatch} from 'react-redux';
 import HisotyImage from '../../../assets/svg/historyImage'
 import PostRequestApi from '../../apirequest/PostRequestApi';
-import { getPhotoUrl } from '../../Constants/constants';
-import { RubikLight, RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts'
+import {getPhotoUrl} from '../../Constants/constants';
+import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
 import Images from '../../Constants/Images/Images';
-import { getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import getStore from '../../redux';
-import { getMyDeviceId } from '../../services/commonService';
-import { useFocusEffect } from '@react-navigation/native';
+import {getMyDeviceId} from '../../services/commonService';
+import {useFocusEffect} from '@react-navigation/native';
+import moment from 'moment';
+import {SetClaimedRewards} from '../../redux/actions/actions';
 
 function getHistory() {
   return [
@@ -45,22 +54,37 @@ function getHistory() {
 }
 
 function RewardsHistory({setIsLevelsHide, islevelsHide}) {
-  const [claimRewardList, setClaimRewardList] = useState(null);
   const [isHistoryLoading, setIsHistoryLoading] = useState(null);
   const offset = useRef(0);
   const isHidden = useRef(false);
 
   const UserData = useSelector((state) => state.First);
+  const claimRewardList = useSelector((state) => state.First.claimedRewards);
+  const dispatch = useDispatch();
 
   useFocusEffect(
     React.useCallback(() => {
       if (UserData.UserEmail && UserData.UserId) {
         callClaimedRewardListApi();
       } else {
-        setClaimRewardList(null);
+        dispatch(SetClaimedRewards(null));
       }
     }, [UserData.UserEmail, UserData.UserId])
   );
+
+  const getSortedHistory = (l) => {
+    let sortedList = l;
+    sortedList.sort(function (a, b) {
+      let itemOneData = a.created_at ? moment(a.created_at) : null;
+      let itemTwoData = b.created_at ? moment(b.created_at) : null;
+      if (itemOneData.isSame(itemTwoData)) {
+        return 0;
+      } else {
+        return itemOneData.isAfter(itemTwoData) ? -1 : 1;
+      }
+    });
+    return sortedList;
+  };
 
   const callClaimedRewardListApi = () => {
     const userData = getStore?.()?.getState?.()?.First;
@@ -82,7 +106,7 @@ function RewardsHistory({setIsLevelsHide, islevelsHide}) {
           res?.data,
         );
         if (Array.isArray(res?.data?.rewardData)) {
-          setClaimRewardList([...res.data.rewardData]);
+          dispatch(SetClaimedRewards(getSortedHistory(res.data.rewardData)));
         }
         setIsHistoryLoading(false);
       })
@@ -102,7 +126,7 @@ function RewardsHistory({setIsLevelsHide, islevelsHide}) {
   //   if ((UserData.UserEmail, UserData.UserId)) {
   //     callClaimedRewardListApi();
   //   } else {
-  //     setClaimRewardList(null);
+  //     dispatch(SetClaimedRewards(null));
   //   }
   // }, [UserData.UserEmail, UserData.UserId]);
 
@@ -164,7 +188,7 @@ function RewardsHistory({setIsLevelsHide, islevelsHide}) {
             data={(UserData.UserId && UserData.UserEmail) ? (claimRewardList ?? []) : getHistory()}
             renderItem={renderItem}
             onScroll={onScroll}
-            keyExtractor={(item, index) => (item?.claim_history_id ?? index)}
+            keyExtractor={(item, index) => (item?.claim_reward_item_id ?? index)}
             showsVerticalScrollIndicator={false}
           />
           <View style={{ padding: 40 }} />

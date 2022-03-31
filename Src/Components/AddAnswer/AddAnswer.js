@@ -40,7 +40,7 @@ const AddAnswer = ({
         <Text style={styles.nameTextStyle}>{label}</Text>
         {!edit ? (
           <Text style={styles.anonymousTextStyle}>
-            {!value ? 'Annonymous' : value}
+            {!value ? 'Anonymous' : value}
           </Text>
         ) : popUp ? (
           <TouchableOpacity
@@ -48,7 +48,7 @@ const AddAnswer = ({
               setOpenActionSheet(true);
             }}>
             <Text style={styles.anonymousTextStyle}>
-              {!value ? 'Annonymous' : value}
+              {!value ? 'Anonymous' : value}
             </Text>
           </TouchableOpacity>
         ) : (
@@ -63,7 +63,7 @@ const AddAnswer = ({
             }}
             autoCapitalize={'words'}
             autoCompleteType={'off'}
-            placeholder={'Annonymous'}
+            placeholder={'Anonymous'}
             placeholderTextColor={Constants.Colors.greyColorCode}
             style={[
               {
