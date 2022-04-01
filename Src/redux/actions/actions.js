@@ -48,6 +48,7 @@ import {
   DASHBOARD_MOOD_DATA,
   AVAILABLE_REWARDS,
   CLAIMED_REWARDS,
+  IS_DIVISION_SELECTED,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -350,6 +351,13 @@ export const SetAvailableRewards = (data) => {
 export const SetClaimedRewards = (data) => {
   return {
     type: CLAIMED_REWARDS,
+    payload: data,
+  };
+};
+
+export const SetIsDivisionSelected = (data) => {
+  return {
+    type: IS_DIVISION_SELECTED,
     payload: data,
   };
 };

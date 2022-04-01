@@ -25,6 +25,7 @@ import {
   IsAnonymous,
   OTP_Verify,
   ResetLinkToCompanyParams,
+  SetIsDivisionSelected,
   UserDetail,
   UserDivision,
   UserEmail,
@@ -331,9 +332,11 @@ const Linktocompany = ({ navigation }) => {
         } else {
           setLoading(false);
         }
+        dispatch(SetIsDivisionSelected(true));
         navigation?.replace?.('MoodEmotionDetector');
       })
       .catch((err) => {
+        dispatch(SetIsDivisionSelected(true));
         console.log('err', err), setLoading(false), setAPIfail(true);
       });
   };

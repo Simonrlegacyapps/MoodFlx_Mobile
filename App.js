@@ -25,6 +25,7 @@ import {
   ScreenTimePerm,
   SetAvailableRewards,
   SetClaimedRewards,
+  SetIsDivisionSelected,
   SetNegativeMoodModalData,
   SetNotification,
   SetShowMonthlyInsightsModal,
@@ -418,6 +419,7 @@ const App: () => React$Node = () => {
               // data = {...data, division_id: null};
               if (data?.email) {
                 if (RootNavigation?.navigationRef?.current?.navigate) {
+                  dispatch(SetIsDivisionSelected(false));
                   RootNavigation?.navigationRef?.current?.navigate(
                     'HomeScreen',
                     {
@@ -661,6 +663,7 @@ const App: () => React$Node = () => {
 
   const goToSelectDivision = useCallback(() => {
     console.log('goToSelectDivision email: ', email);
+    dispatch(SetIsDivisionSelected(false));
     RootNavigation?.navigationRef?.current?.navigate('HomeScreen', {
       screen: 'LinkCompanyStackNavigation',
       params: {
