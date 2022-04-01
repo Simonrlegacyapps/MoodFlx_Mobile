@@ -307,13 +307,13 @@ export const First = (state = intializedState, action) => {
       return Object.assign({}, state, {
         availableRewards: Array.isArray(action.payload)
           ? [...action.payload]
-          : state.availableRewards,
+          : action.payload,
       });
     case CLAIMED_REWARDS:
       return Object.assign({}, state, {
         claimedRewards: Array.isArray(action.payload)
           ? [...action.payload]
-          : state.claimedRewards,
+          : action.payload,
       });
     default:
       return state;

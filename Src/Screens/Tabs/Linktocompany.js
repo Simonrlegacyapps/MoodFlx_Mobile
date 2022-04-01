@@ -364,6 +364,7 @@ const Linktocompany = ({ navigation }) => {
             setLabelShow(null);
             setSelectedDivision('');
             setSelectedDivisionId('');
+            setCompanyDetails(null);
             setLoading(false);
             clearTimeout(timeoutId);
           }, 500);

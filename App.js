@@ -23,6 +23,8 @@ import {
   Long,
   Moods,
   ScreenTimePerm,
+  SetAvailableRewards,
+  SetClaimedRewards,
   SetNegativeMoodModalData,
   SetNotification,
   SetShowMonthlyInsightsModal,
@@ -1066,6 +1068,13 @@ const App: () => React$Node = () => {
         "reward_point": "",
         "description": ""
       }, dispatch);
+    }
+  }, [UserData.UserId, UserData.UserEmail]);
+
+  useEffect(() => {
+    if (!UserData.UserId && !UserData.UserEmail) {
+      dispatch(SetAvailableRewards(null));
+      dispatch(SetClaimedRewards(null));
     }
   }, [UserData.UserId, UserData.UserEmail]);
 

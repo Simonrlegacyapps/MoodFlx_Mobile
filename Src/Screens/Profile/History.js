@@ -188,7 +188,7 @@ function RewardsHistory({setIsLevelsHide, islevelsHide}) {
             data={(UserData.UserId && UserData.UserEmail) ? (claimRewardList ?? []) : getHistory()}
             renderItem={renderItem}
             onScroll={onScroll}
-            keyExtractor={(item, index) => (item?.claim_reward_item_id ?? index)}
+            keyExtractor={(item, index) => (`${item?.claim_reward_item_id ?? index}`)}
             showsVerticalScrollIndicator={false}
           />
           <View style={{ padding: 40 }} />

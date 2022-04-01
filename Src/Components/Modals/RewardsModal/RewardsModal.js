@@ -32,6 +32,7 @@ const RewardsModal = ({
   dismissModalHandler,
   title,
   description,
+  rewardImageSource,
 }) => {
   const [color, setcolor] = useState('black');
   return (
@@ -70,7 +71,9 @@ const RewardsModal = ({
               style={styles.cancelIcon}
             />
           </TouchableOpacity>
-          {/* <Image source={Constants.Images.WhiteBg} style={styles.topImage}/> */}
+          {rewardImageSource && (
+            <Image source={rewardImageSource} style={styles.topImage} />
+          )}
           <Text style={styles.titleText}>{title}</Text>
           <Text style={styles.descriptionText}>{description}</Text>
         </View>
@@ -110,14 +113,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.WhiteColor,
-    height: dynamicSize(40),
-    width: dynamicSize(40),
-    borderRadius: dynamicSize(22),
+    height: dynamicSize(27),
+    width: dynamicSize(27),
+    borderRadius: dynamicSize(16),
   },
   cancelIcon: {
-    height: dynamicSize(25),
-    width: dynamicSize(25),
-    resizeMode: 'contain',
+    height: dynamicSize(18),
+    width: dynamicSize(18),
+    resizeMode: 'stretch',
   },
   upperContainer: {
     backgroundColor: 'white',
@@ -145,8 +148,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     fontSize: Platform.OS === 'android' ? getFontSize(16) : dynamicSize(14),
     marginTop: 12,
-    marginLeft: 62,
-    marginRight: 62,
+    // marginLeft: 62,
+    // marginRight: 62,
     textAlign: 'center',
     width: '60%',
     lineHeight: dynamicSize(26),
