@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
   topImage: {
     width: '100%',
     height: horizontalScale(209),
+    resizeMode: 'stretch',
   },
   titleText: {
     fontWeight: Platform.OS === 'android' ? '700' : '500',
