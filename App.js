@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
+import type {Node} from 'react';
 import {
   View,
   SafeAreaView,
@@ -166,7 +167,7 @@ const toastConfig = {
   ),
 };
 
-const App: () => React$Node = () => {
+const App: () => Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState(false);
   const notifService = useRef(new NotifService()).current;
