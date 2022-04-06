@@ -12,6 +12,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import PostRequestApi, {
   getRewardsListApi,
   getUpdateRewardPoint,
+  updateNameInProfileApi,
 } from '../../apirequest/PostRequestApi';
 import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
@@ -212,7 +213,15 @@ function getRewards(userId, currentPts) {
   ];
 }
 
+const getUserNameFromUserData = (userDetails) => {
+  let fullName = userDetails?.full_name;
+  return typeof fullName === 'string' && fullName.toLowerCase() !== 'anonymous'
+    ? fullName
+    : '';
+};
+
 const Rewards = ({setIsLevelsHide, islevelsHide}) => {
+  const userDetails = useSelector((state) => state.First?.UserDetails);
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [ptsToUnlock, setPtsToUnlock] = useState(false);
   const [showInputNameModal, setShowInputNameModal] = useState(false);
@@ -220,6 +229,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   const [userName, setUserName] = useState('');
   const [isRewardsLoading, setIsRewardsLoading] = useState(false);
   const [isClaimingReward, setIsClaimingReward] = useState(false);
+  const [rewardImageSource, setRewardImageSource] = useState(null);
   const [contactEmails, setContactEmails] = useState(null);
   const rewardId = useRef();
 
@@ -245,7 +255,9 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
       "user_id": userData?.UserId ?? null,
     };
     console.log(`params of availableRewardList api`, params);
-    setIsRewardsLoading(true);
+    if (!(Array.isArray(rewardsList) && rewardsList.length > 0)) {
+      setIsRewardsLoading(true);
+    }
     function onError() {
       setIsRewardsLoading(false);
     }
@@ -281,7 +293,19 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
     };
     console.log('params claimReward api', params);
     setIsClaimingReward(true);
-    return PostRequestApi('claimReward', params)
+    if (typeof name === 'string' && name !== '' && userData?.UserDetails?.full_name !== name) {
+      const requestData = {
+        device_id: deviceId,
+        email: userEmail,
+        user_id: userId,
+        full_name: name,
+        pronouns: null,
+        date_of_birth: null,
+        gender: null,
+      };
+      updateNameInProfileApi(requestData, dispatch);
+    }
+    PostRequestApi('claimReward', params)
       .then((res) => {
         console.log(
           '✅ ✅ ✅ ✅ Success claimReward Api ✅ ✅ ✅ ✅',
@@ -320,7 +344,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if ((userEmail && userId && (!Array.isArray(rewardsList) || rewardsList.length === 0))) {
+      if (userEmail && userId) {
         callGetRewardsApi();
       } else {
         dispatch(SetAvailableRewards(null));
@@ -341,7 +365,12 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
     setopenActionSheet(false);
   };
 
-  const updateShowInputNameModal = (f) => () => setShowInputNameModal(f);
+  const updateShowInputNameModal = (f) => () => {
+    if (f === true) {
+      setUserName(getUserNameFromUserData(userDetails));
+    }
+    setShowInputNameModal(f);
+  };
   const updateShowPostRewardsClaimModal = (f) => () => setShowPostRewardsClaimModal(f);
 
   const onSubmitNameInput = useCallback(() => {
@@ -362,7 +391,11 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
     }
   }, [setIsLevelsHide]);
 
-  const onPressRewardItem = (item, coinsToUnlock) => {
+  const onPressRewardItem = (item, coinsToUnlock, img) => {
+    if (img) {
+      setRewardImageSource(null);
+    }
+    setRewardImageSource(img);
     if (item.isDummy) {
       setopenActionSheet(true);
     } else if (coinsToUnlock && !isNaN(coinsToUnlock) && coinsToUnlock > 0) {
@@ -381,7 +414,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
     return (
       <TouchableOpacity
         key={`${item?.id ?? index}`}
-        onPress={() => onPressRewardItem(item, pointsToUnlock)}
+        onPress={() => onPressRewardItem(item, pointsToUnlock, img)}
         activeOpacity={0.7}
         style={styles.card}>
         <View style={styles.cardSubView}>
@@ -415,16 +448,18 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
     );
   };
 
-  let claimRewardsDescription = 'To claim your reward, contact Telstra rewards activations on';
+  let claimRewardsDescription = `To claim your reward, contact Telstra rewards activations on`;
   if (Array.isArray(contactEmails) && contactEmails.length > 0) {
     if (contactEmails.length === 1) {
       claimRewardsDescription = `${claimRewardsDescription} ${contactEmails[0]}`;
     } else {
       contactEmails.forEach((e, idx) => {
         if (idx === (contactEmails.length - 1)) {
-          claimRewardsDescription = `${claimRewardsDescription} or ${e}`;
+          claimRewardsDescription = `${claimRewardsDescription} and ${'\n'}${e}`;
+        } else if (idx === 0) {
+          claimRewardsDescription = `${claimRewardsDescription} ${'\n'}${e}`;
         } else {
-          claimRewardsDescription = `${claimRewardsDescription}, ${e}`;
+          claimRewardsDescription = `${claimRewardsDescription}, ${'\n'}${e}`;
         }
       });
     }
@@ -470,14 +505,6 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
             verifyDone={() => VerifyDone()}
           />
         )}
-        {/* <ProfileCoinModal
-          permission={"Hang in there you'll be able to cash in your Flx soon!"}
-          // image={Constants.Images.FitnessPopUp}
-          dataType={'fitness'}
-          modalVisible={openActionSheet}
-          dismissModalHandler={() => setopenActionSheet(false)}
-          verifyDone={() => VerifyDone()}
-        /> */}
       </View>
       <AddNameModal
         modalVisible={showInputNameModal}
@@ -493,6 +520,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
       <RewardsModal
         modalVisible={showPostRewardsClaimModal}
         description={claimRewardsDescription}
+        rewardImageSource={rewardImageSource}
         dismissModalHandler={updateShowPostRewardsClaimModal(false)}
       />
       <Loader isLoading={isRewardsLoading} />

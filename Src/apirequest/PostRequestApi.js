@@ -3,12 +3,14 @@ import axios from 'axios';
 import {
   getDivisions,
   SetFloCoins,
+  UserDetail,
   UserDivision,
 } from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
-import {onUnlinkUpdate, setPrevFloCoins} from '../services/commonService';
+import {getMyDeviceId, onUnlinkUpdate, setPrevFloCoins} from '../services/commonService';
 import {getApiBaseUrl} from '../Constants/constants';
 import isFunction from 'lodash.isfunction';
+import getStore from '../redux';
 
 const PostRequestApi = async (url, params) => {
   return await axios.post(getApiBaseUrl() + url, params).then((resp) => {
@@ -198,5 +200,91 @@ export function getRewardsListApi(params, onError) {
       }
     });
 }
+
+export const updateNameInProfileApi = (requestData, dispatch) => {
+  if (!requestData) {
+    return;
+  }
+  const deviceId = getMyDeviceId();
+  if (!dispatch) {
+    dispatch = getStore?.()?.dispatch;
+  }
+  var myHeaders = new Headers();
+  myHeaders.append('Accept', 'application/json');
+  myHeaders.append('Content-Type', 'application/json');
+
+  var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: JSON.stringify(requestData),
+    redirect: 'follow',
+  };
+
+  console.log(`requestData`, requestData);
+  const staffUserDataRequest = {
+    device_id: deviceId,
+    email: requestData.email,
+    user_id: requestData.user_id,
+  };
+  GetStaffUserData(staffUserDataRequest, dispatch)
+    .then(async (result) => {
+      // console.log(
+      //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+      //   result?.userData
+      // );
+      if (result?.userData?.status !== 2) {
+        return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
+      } else {
+        requestData.email = '';
+        requestData.user_id = '';
+        requestOptions.body = JSON.stringify(requestData);
+        return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
+      }
+    })
+    .then(async (result) => {
+      if (result) {
+        // console.log('profile updated', result), getProfileUserData();
+        console.log(
+          '✅ ✅ ✅ ✅ Success Update Staff Profile ✅ ✅ ✅ ✅',
+          result,
+        );
+        fetchAndUpdateUserDetail(staffUserDataRequest, dispatch);
+      }
+    })
+    .catch((error) => console.log('❌ ❌ ❌ ❌ Error Update Staff Profile ❌ ❌ ❌ ❌', error));
+
+};
+
+const fetchAndUpdateUserDetail = (requestData, dispatch) => {
+  const deviceId = getMyDeviceId();
+  if (!dispatch) {
+    dispatch = getStore?.()?.dispatch;
+  }
+  var myHeaders = new Headers();
+  myHeaders.append('Content-Type', 'application/json');
+  if (!requestData) {
+    requestData = {
+      device_id: deviceId,
+      email: getStore?.()?.getState?.()?.First?.UserEmail,
+      user_id: getStore?.()?.getState?.()?.First?.UserId,
+    };
+  }
+  var raw = JSON.stringify(requestData);
+
+  var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow',
+  };
+
+  fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
+    .then((response) => response.json())
+    .then((result) => {
+      console.log('UserDetail', result.userData);
+      dispatch?.(UserDetail(result.userData));
+    })
+    .catch((error) => console.log('error', error));
+};
 
 export default PostRequestApi;

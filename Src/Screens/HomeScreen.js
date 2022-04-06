@@ -17,12 +17,13 @@ import LinkIcon from '../../assets/tabicons/LinkIcon';
 import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import MainProfileTab from './Profile/MainProfileTab';
+import {useSelector} from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 const WIDTH = Dimensions.get('screen').width;
 
 const HomeScreen = ({ navigation, route }) => {
-  // console.log(`route`, route);
+  const isDivisionSelected = useSelector((state) => state.First?.isDivisionSelected);
   return (
     <View style={{ flex: 1 }}>
       <Tab.Navigator
@@ -37,6 +38,7 @@ const HomeScreen = ({ navigation, route }) => {
             } else if (route.name === 'LogoTab') {
               iconName = (
                 <TouchableOpacity
+                  disabled={!isDivisionSelected}
                   onPress={() => navigation.replace('MoodEmotionDetector')}>
                   <Image
                     resizeMode={'contain'}
@@ -68,19 +70,49 @@ const HomeScreen = ({ navigation, route }) => {
           name={'Home'}
           component={Home}
           initialParams={{ cord: route.params }}
+          listeners={{
+            tabPress: e => {
+              // Prevent default action
+              !isDivisionSelected && e.preventDefault();
+            },
+          }}
         />
-        <Tab.Screen name={'MicScreen'} component={MicScreen} />
+        <Tab.Screen
+          name={'MicScreen'}
+          component={MicScreen}
+          listeners={{
+            tabPress: e => {
+              // Prevent default action
+              !isDivisionSelected && e.preventDefault();
+            },
+          }}
+        />
         <Tab.Screen
           name={'LogoTab'}
           component={LogoTab}
-        //   options={{tabBarVisible: false}}
+          // options={{tabBarVisible: false}}
+          listeners={{
+            tabPress: e => {
+              // Prevent default action
+              !isDivisionSelected && e.preventDefault();
+            },
+          }}
         />
         <Tab.Screen
           name={'LinkCompanyStackNavigation'}
           component={LinkCompanyStackNavigation}
         />
         {/* <Tab.Screen name={'ProfileTab'} component={ProfileTab} /> */}
-        <Tab.Screen name={'MainProfileTab'} component={MainProfileTab} />
+        <Tab.Screen 
+          name={'MainProfileTab'}
+          component={MainProfileTab}
+          listeners={{
+            tabPress: e => {
+              // Prevent default action
+              !isDivisionSelected && e.preventDefault();
+            },
+          }}
+        />
       </Tab.Navigator>
       <View
         style={{

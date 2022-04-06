@@ -49,6 +49,7 @@ import {
   DASHBOARD_MOOD_DATA,
   AVAILABLE_REWARDS,
   CLAIMED_REWARDS,
+  IS_DIVISION_SELECTED,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -109,6 +110,7 @@ const intializedState = {
   dashboardMoodName: '',
   availableRewards: null,
   claimedRewards: null,
+  isDivisionSelected: true,
 };
 
 export const First = (state = intializedState, action) => {
@@ -307,13 +309,17 @@ export const First = (state = intializedState, action) => {
       return Object.assign({}, state, {
         availableRewards: Array.isArray(action.payload)
           ? [...action.payload]
-          : state.availableRewards,
+          : action.payload,
       });
     case CLAIMED_REWARDS:
       return Object.assign({}, state, {
         claimedRewards: Array.isArray(action.payload)
           ? [...action.payload]
-          : state.claimedRewards,
+          : action.payload,
+      });
+    case IS_DIVISION_SELECTED:
+      return Object.assign({}, state, {
+        isDivisionSelected: action.payload,
       });
     default:
       return state;
