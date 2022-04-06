@@ -12,6 +12,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import PostRequestApi, {
   getRewardsListApi,
   getUpdateRewardPoint,
+  updateNameInProfileApi,
 } from '../../apirequest/PostRequestApi';
 import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
@@ -292,7 +293,19 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
     };
     console.log('params claimReward api', params);
     setIsClaimingReward(true);
-    return PostRequestApi('claimReward', params)
+    if (typeof name === 'string' && name !== '' && userData?.UserDetails?.full_name !== name) {
+      const requestData = {
+        device_id: deviceId,
+        email: userEmail,
+        user_id: userId,
+        full_name: name,
+        pronouns: null,
+        date_of_birth: null,
+        gender: null,
+      };
+      updateNameInProfileApi(requestData, dispatch);
+    }
+    PostRequestApi('claimReward', params)
       .then((res) => {
         console.log(
           '✅ ✅ ✅ ✅ Success claimReward Api ✅ ✅ ✅ ✅',
