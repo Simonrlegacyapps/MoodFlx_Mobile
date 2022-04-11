@@ -144,7 +144,7 @@ const ProgressScreen = ({navigation, route}) => {
       t1: 'Flx can use your data. ',
       t2: 'The more data, the more smarter!',
       t3: '',
-      t4: 'Let Flx undestand your environment and how it impacts your mood',
+      t4: 'Let Flx understand your environment and how it impacts your mood',
       button: "Next"
     },
     {
