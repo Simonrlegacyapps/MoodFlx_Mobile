@@ -797,11 +797,11 @@ const App: () => Node = () => {
   };
 
   useEffect(() => {
-    AppState.addEventListener("change", _handleAppStateChange);
+    const subscription = AppState.addEventListener("change", _handleAppStateChange);
     NotifService.cancelMoodFloSheduledNotifications();
     dispatch(SetWeeklyInsightsTimeLeft(getWeeklyInsightsDaysLeft()));
     return () => {
-      AppState.removeEventListener("change", _handleAppStateChange);
+      subscription?.remove?.();
     };
   }, []);
 
