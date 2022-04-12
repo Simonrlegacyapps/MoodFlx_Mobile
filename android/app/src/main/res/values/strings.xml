@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MoodFlx</string>
+    <string name="app_name">moodflx</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="widget_button_text">Press Me</string>
