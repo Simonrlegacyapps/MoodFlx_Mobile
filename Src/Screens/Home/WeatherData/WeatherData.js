@@ -58,6 +58,7 @@ import CrownBox from '../../../Components/crownBox/crownBox'
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import { getMyDeviceId } from '../../../services/commonService';
 import { IndicatorHelper } from '../../../Components/CommonComponents/CommonComponents';
+import getStore from '../../../redux';
 
 let weatherData = null;
 
@@ -462,9 +463,12 @@ const WeatherData = ({
   // };
 
 
-  const syncWeatherData = async (lat = UserData.lat, lng = UserData.lon) => {
+  const syncWeatherData = async (lat, lng) => {
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     let WeatherP = await JSON.parse(Wp);
+    const userData = getStore?.()?.getState?.()?.First;
+    lat = lat ? lat : userData.lat;
+    lng = lng ? lng : userData.lng;
     if (!WeatherP && !UserData.WeatherPermission) {
       console.log('Cannot sync weather data without permisison.');
       return;
@@ -473,10 +477,10 @@ const WeatherData = ({
       console.log('Cannot call update weather api without weather data');
       return;
     }
-    let manual_hours = null;
-    let manual_weather_type = null;
-    let manul_pollen = null;
-    let manual_temp = null;
+    let manual_hours = ManulHours;
+    let manual_weather_type = ManualWeatherType;
+    let manul_pollen = ManulPollen;
+    let manual_temp = ManualTemp;
     setManulHours(v => {
       manual_hours = v;
       return v;
@@ -522,8 +526,8 @@ const WeatherData = ({
     const isIndia = isCountryIndia();
     const deviceId = getMyDeviceId();
     const data = JSON.stringify({
-      user_id: UserData.UserId,
-      email: UserData.UserEmail,
+      user_id: userData.UserId,
+      email: userData.UserEmail,
       device_id: deviceId,
       hours: manual_hours ? manual_hours : hours,
       weather_type: manual_weather_type
@@ -540,12 +544,12 @@ const WeatherData = ({
       city: isIndia && city_info ? defaultLocation.city : city_info,
       state: isIndia && state_info ? defaultLocation.state : state_info,
       country: isIndia && country_info ? defaultLocation.country : country_info,
-      lat: isIndia && UserData.lat ? defaultLocation.latitude : UserData.lat,
-      lon: isIndia && UserData.lon ? defaultLocation.longitude : UserData.lon,
+      lat: isIndia && userData.WeatherPermission ? defaultLocation.latitude : lat,
+      lon: isIndia && userData.WeatherPermission ? defaultLocation.longitude : lng,
     });
 
     // const _temp_ = manual_temp ? manual_temp : Math.round(weatherData?.main?.temp ? weatherData.main.temp : '0');
-    // console.log('Weather update temp ------------', _temp_);
+    // console.log('Weather update api params ------------', data);
     var config = {
       method: 'post',
       url: `${getApiBaseUrl()}updateWeather`,
