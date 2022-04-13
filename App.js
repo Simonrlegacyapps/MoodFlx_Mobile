@@ -804,14 +804,6 @@ const App: () => React$Node = () => {
     };
   }, []);
 
-  const checkStorage = async () => {
-    // let anonymous = await AsyncStorage.getItem('Anonymous');
-    // let a = await JSON.parse(anonymous);
-    // if (a == null) {
-    //   await AsyncStorage.setItem('Anonymous', 'true');
-    // }
-  };
-
   const getProfileUserData = async () => {
     let DateCheck = await AsyncStorage.getItem('DateCheck');
     let CheckForTodayDate = await JSON.parse(DateCheck);
@@ -858,9 +850,14 @@ const App: () => React$Node = () => {
     let anonymous = await AsyncStorage.getItem('Anonymous');
     let p = await AsyncStorage.getItem('Email');
     // let d = await AsyncStorage.getItem('Division');
-    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    
     let e = await JSON.parse(p);
+    if ((e && Id) || isHandleDynamicLinkCalled.current === true) {
+      console.log('App.js getProfileUserData email --->', e);
+      console.log('App.js getProfileUserData userId --->', Id);
+      dispatch(UserEmail(e));
+      dispatch(GetUserId(Id));
+    }
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     // let division = await JSON.parse(d);
     let WeatherP = await JSON.parse(Wp);
     let Id = await JSON.parse(UserId);
@@ -883,7 +880,7 @@ const App: () => React$Node = () => {
 
     //Sleep Permission
     let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
-    let SleepP = await JSON.parse(SleepPer); 
+    let SleepP = await JSON.parse(SleepPer);
     dispatch(SleepPerm(SleepP));
     //Syncing Sleep Data
     if (Platform.OS === 'ios') {
@@ -907,10 +904,6 @@ const App: () => React$Node = () => {
       setSleepDataSync(dispatch);
     }
     // console.log(`Sleep Permission`, SleepP);
-    if ((e && Id) || isHandleDynamicLinkCalled.current === true) {
-      dispatch(UserEmail(e));
-      dispatch(GetUserId(Id));
-    }
     // dispatch(UserDivision(division));
     dispatch(WeatherPerm(WeatherP));
     dispatch(IsAnonymous(a == null ? true : a));
@@ -993,6 +986,24 @@ const App: () => React$Node = () => {
     notifService.scheduleMoodFloLocalNotif();
     notifSchedulePreviousDay.current = moment().day();
   };
+
+  useEffect(() => {
+    UserData.AllMoods == null &&
+      fetch(`${getApiBaseUrl()}getMood`)
+        .then((data) => data.json())
+        .then(async (res) => {
+          // console.log('✅ ✅ ✅ ✅ getMood Api success ✅ ✅ ✅ ✅', res);
+          // await setGetMoods(res.data);
+          setMoodsArray(res?.data);
+          await dispatch(Moods(res.data));
+        })
+        .catch((error) => {
+          // const {code, message} = error;
+          console.log('getMood Api error', error);
+        });
+    getProfileUserData();
+  }, []);
+
   useEffect(() => {
     // console.log(`LightSensor`, LightSensor);
     UserData.WeatherPermission &&
@@ -1023,21 +1034,6 @@ const App: () => React$Node = () => {
           const { code, message } = error;
           console.log('error getting lat lon from geolocation api', code, message);
         });
-    UserData.AllMoods == null &&
-      fetch(`${getApiBaseUrl()}getMood`)
-        .then((data) => data.json())
-        .then(async (res) => {
-          // console.log('✅ ✅ ✅ ✅ getMood Api success ✅ ✅ ✅ ✅', res);
-          // await setGetMoods(res.data);
-          setMoodsArray(res?.data);
-          await dispatch(Moods(res.data));
-        })
-        .catch((error) => {
-          // const {code, message} = error;
-          console.log('getMood Api error', error);
-        });
-    checkStorage();
-    getProfileUserData();
   }, [UserData.WeatherPermission]);
 
   useEffect(() => {
