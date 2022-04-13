@@ -44,8 +44,10 @@ import {
   dataTypes,
   defaultLocation,
   getApiBaseUrl,
+  getIsGetCurrentLocationCalled,
   getWeeklyInsightsAvailable,
   isCountryIndia,
+  setIsGetCurrentLocationCalled,
   weatherActions,
   weatherTypes,
 } from '../../../Constants/constants';
@@ -164,47 +166,54 @@ const WeatherData = ({
 
   // console.log(`Weather`, UserData.DayTemperature);
   const getUserLocation = async () => {
-    new Promise((resolve, reject) => {
-      GetLocation.getCurrentPosition({
-        enableHighAccuracy: false,
-        timeout: 15000,
-      })
-        .then((location) => {
-          const isIndia = isCountryIndia();
-          if (isIndia) {
-            location = {
-              latitude: defaultLocation.latitude,
-              longitude: defaultLocation.longitude
-            };
-          }
-          console.log('Success', location);
-          // setlat(location.latitude);
-          dispatch(SetLocation({
-            lat: location.latitude,
-            lon: location.longitude,
-          }));
-          location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, function (flag) {
-            console.log('WeatherDayData called from getUserLocation');
-            location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude, function (isSuccess) {
-              resolve(isSuccess);
-            });
-              },
-            );
-          // if (UserData.lat == null || UserData.lon == null) {
-          // }
+    return new Promise((resolve, reject) => {
+      if (getIsGetCurrentLocationCalled() === false) {
+        setIsGetCurrentLocationCalled(true);
+        GetLocation.getCurrentPosition({
+          enableHighAccuracy: false,
+          timeout: 25000,
         })
-        .catch(async (error) => {
-          const {code, message} = error;
-          let flag;
-          try {
-            flag = await AppPermissions.requestLocationPermission(dispatch);
-          } catch (e) {
-            console.log('Request Location Permission error: ', e);
-            flag = false
-          }
-          resolve(flag);
-          console.log('error', code, message);
-        });
+          .then((location) => {
+            setIsGetCurrentLocationCalled(false);
+            const isIndia = isCountryIndia();
+            if (isIndia) {
+              location = {
+                latitude: defaultLocation.latitude,
+                longitude: defaultLocation.longitude
+              };
+            }
+            console.log('Success', location);
+            // setlat(location.latitude);
+            dispatch(SetLocation({
+              lat: location.latitude,
+              lon: location.longitude,
+            }));
+            location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, function (flag) {
+              console.log('WeatherDayData called from getUserLocation');
+              location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude, function (isSuccess) {
+                resolve(isSuccess);
+              });
+            },
+            );
+            // if (UserData.lat == null || UserData.lon == null) {
+            // }
+          })
+          .catch(async (error) => {
+            const { code, message } = error;
+            setIsGetCurrentLocationCalled(false);
+            let flag;
+            try {
+              flag = await AppPermissions.requestLocationPermission(dispatch);
+            } catch (e) {
+              console.log('Request Location Permission error: ', e);
+              flag = false
+            }
+            resolve(flag);
+            console.log('error', code, message);
+          });
+      } else {
+        resolve();
+      }
     });
   };
 
@@ -581,9 +590,9 @@ const WeatherData = ({
   const VerifyDone = async () => {
     const v = await getUserLocation();
     const timeoutIdOut = setTimeout(() => {
-      AppPermissions.checkAppPermissions(dispatch);
+      AppPermissions.checkAppPermissions(dispatch, false);
       const timeoutIdIn = setTimeout(() => {
-        AppPermissions.checkAppPermissions(dispatch);
+        AppPermissions.checkAppPermissions(dispatch, false);
         syncWeatherData();
         clearTimeout(timeoutIdIn);
       }, 1000);

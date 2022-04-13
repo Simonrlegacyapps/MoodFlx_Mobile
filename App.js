@@ -26,6 +26,7 @@ import {
   SetAvailableRewards,
   SetClaimedRewards,
   SetIsDivisionSelected,
+  SetLocation,
   SetNegativeMoodModalData,
   SetNotification,
   SetShowMonthlyInsightsModal,
@@ -75,9 +76,11 @@ import {
   defaultLocation,
   defaultNegativeMoodModalData,
   getApiBaseUrl,
+  getIsGetCurrentLocationCalled,
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
   isCountryIndia,
+  setIsGetCurrentLocationCalled,
   widgetDataGroup,
 } from './Src/Constants/constants';
 import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
@@ -1006,13 +1009,18 @@ const App: () => React$Node = () => {
 
   useEffect(() => {
     // console.log(`LightSensor`, LightSensor);
-    UserData.WeatherPermission &&
+    if (
+      UserData.WeatherPermission && 
       (UserData.lat == null || UserData.lon == null) &&
+      getIsGetCurrentLocationCalled() === false
+    ) {
+      setIsGetCurrentLocationCalled(true);
       GetLocation.getCurrentPosition({
         enableHighAccuracy: false,
         timeout: 15000,
       })
         .then((location) => {
+          setIsGetCurrentLocationCalled(false);
           //   console.log('Success', location);
           // setlat(location.latitude);
           const isIndia = isCountryIndia();
@@ -1026,15 +1034,20 @@ const App: () => React$Node = () => {
             '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
             JSON.stringify(location),
           );
-          dispatch(Lat(location.latitude));
-          // setlng(location.longitude);
-          dispatch(Long(location.longitude));
+          dispatch(
+            SetLocation({
+              lat: location.latitude,
+              lon: location.longitude,
+            }),
+          );
         })
         .catch((error) => {
           const { code, message } = error;
+          setIsGetCurrentLocationCalled(false);
           console.log('error getting lat lon from geolocation api', code, message);
         });
-  }, [UserData.WeatherPermission]);
+      }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);

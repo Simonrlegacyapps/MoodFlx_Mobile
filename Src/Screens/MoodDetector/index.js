@@ -79,9 +79,11 @@ import messaging, { firebase } from '@react-native-firebase/messaging';
 import {
   defaultLocation,
   getApiBaseUrl,
+  getIsGetCurrentLocationCalled,
   hapticsTopFlags,
   isCountryIndia,
   moodTypes,
+  setIsGetCurrentLocationCalled,
 } from '../../Constants/constants';
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
@@ -969,13 +971,18 @@ export default function MoodDetector({ navigation }) {
     const timeoutId = setTimeout(() => {
       checkStorage();
       getProfileUserData();
-      UserData.WeatherPermission &&
+      if (
+        UserData.WeatherPermission &&
         (UserData.lat == null || UserData.lon == null) &&
+        getIsGetCurrentLocationCalled() === false
+      ) {
+        setIsGetCurrentLocationCalled(true);
         GetLocation.getCurrentPosition({
           enableHighAccuracy: false,
           timeout: 15000,
         })
           .then((location) => {
+            setIsGetCurrentLocationCalled(false);
             const isIndia = isCountryIndia();
             if (isIndia) {
               location = {
@@ -990,9 +997,11 @@ export default function MoodDetector({ navigation }) {
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
-            const {code, message} = error;
+            setIsGetCurrentLocationCalled(false);
+            const { code, message } = error;
             console.log('error', code, message);
           });
+      }
     }, 150);
     return () => {
       timeoutId && clearTimeout(timeoutId);

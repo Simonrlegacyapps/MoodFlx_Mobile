@@ -82,7 +82,7 @@ const PopUp = ({
           {!permission && (
             <Text style={styles.smallText}>
               {' '}
-              Let’s sync your {dataType} data
+              Let's sync your {dataType} data
             </Text>
           )}
           <Text style={styles.bigText}>

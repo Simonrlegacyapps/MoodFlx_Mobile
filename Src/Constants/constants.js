@@ -10,6 +10,7 @@ import {Platform} from 'react-native';
 export const PRIVACY_POLICY_URL = 'https://moodflo.com/privacy-policy';
 export const TERMS_OF_USE_URL = 'https://moodflo.com/terms-of-use';
 export const FAQ_URL = 'https://moodflo.com/frequently-asked-questions';
+let isCurrentLocationCalled = false;
 
 export const getApiBaseUrl = () => {
   if (__DEV__) {
@@ -33,6 +34,14 @@ export const getMoodIconsUrl = () => {
   } else {
     return MOOD_ICONS;
   }
+};
+
+export const setIsGetCurrentLocationCalled = (f) => {
+  isCurrentLocationCalled = f;
+};
+
+export const getIsGetCurrentLocationCalled = () => {
+  return isCurrentLocationCalled;
 };
 
 export const hapticsConfigs = {

@@ -3,9 +3,11 @@ import Geocoder from 'react-native-geocoding';
 import {
   defaultLocation,
   getApiBaseUrl,
+  getIsGetCurrentLocationCalled,
   getMonthlyInsightsAvailable,
   getWeeklyInsightsAvailable,
   isCountryIndia,
+  setIsGetCurrentLocationCalled,
   weatherApiDataTypes,
   weatherTypes,
 } from '../../../Constants/constants';
@@ -176,7 +178,8 @@ export async function syncWeatherData() {
     console.log(
       'Weather update api called with default location because country is India.',
     );
-  } else if (WeatherP) {
+  } else if (WeatherP && getIsGetCurrentLocationCalled() === false) {
+    setIsGetCurrentLocationCalled(true);
     try {
       location = await GetLocation.getCurrentPosition({
         enableHighAccuracy: false,
@@ -185,6 +188,7 @@ export async function syncWeatherData() {
     } catch (error) {
       console.log('error getting location');
     }
+    setIsGetCurrentLocationCalled(false);
   }
   if (location) {
     lat = location?.latitude;
