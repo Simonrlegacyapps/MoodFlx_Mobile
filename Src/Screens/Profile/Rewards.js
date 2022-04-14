@@ -420,6 +420,11 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
         <View style={styles.cardSubView}>
           {item?.image && <Image source={img} style={styles.image} />}
           <View style={styles.itemBody}>
+            {typeof item.title === 'string' && (
+              <Text numberOfLines={1} style={styles.itemTitle}>
+                {item.title}
+              </Text>
+            )}
             {typeof item.description === 'string' && (
               <Text numberOfLines={2} style={styles.itemDetails}>
                 {item.description}
@@ -562,7 +567,15 @@ const styles = StyleSheet.create({
   itemBody: {
     flex: 1,
   },
+  itemTitle: {
+    width: '80%',
+    fontFamily: RubikRegular,
+    color: '#4C5980',
+    fontSize: getFontSize(13.5),
+    flex: 1,
+  },
   itemDetails: {
+    marginTop: horizontalScale(4),
     width: '80%',
     fontFamily: RubikLight,
     color: '#4C5980',
@@ -570,6 +583,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemPrice: {
+    marginTop: horizontalScale(4),
     color: '#D1D1D1',
     fontSize: getFontSize(12),
     fontFamily: RubikLight,
