@@ -181,7 +181,7 @@ const NegativeMoodModal = ({
       body: raw,
       redirect: 'follow',
     };
-
+    console.log('NegativeMoodModal getStafUserData params --->', raw);
     fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then((result) => {

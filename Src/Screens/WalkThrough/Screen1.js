@@ -118,8 +118,8 @@ const Screen1 = ({onDone}) => {
   };
 
   useEffect(() => {
-    checkHowMoodFloWorksPtsGive(UserData.UserEmail, UserData.UserId)
-  }, [UserData.UserEmail, UserData.UserId])
+    checkHowMoodFloWorksPtsGive(UserData.UserEmail, UserData.UserId);
+  }, [UserData.UserEmail, UserData.UserId]);
 
   return (
     <View>
