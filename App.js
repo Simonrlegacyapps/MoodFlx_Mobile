@@ -849,11 +849,12 @@ const App: () => React$Node = () => {
 
     // ---> checking all the data in local storage
     await AsyncStorage.setItem('Anonymous', 'true');
-    let UserId = await AsyncStorage.getItem('UserId');
     let anonymous = await AsyncStorage.getItem('Anonymous');
+    let UserId = await AsyncStorage.getItem('UserId');
+    let Id = await JSON.parse(UserId);
     let p = await AsyncStorage.getItem('Email');
-    // let d = await AsyncStorage.getItem('Division');
     let e = await JSON.parse(p);
+    // let d = await AsyncStorage.getItem('Division');
     if ((e && Id) || isHandleDynamicLinkCalled.current === true) {
       console.log('App.js getProfileUserData email --->', e);
       console.log('App.js getProfileUserData userId --->', Id);
@@ -863,7 +864,6 @@ const App: () => React$Node = () => {
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     // let division = await JSON.parse(d);
     let WeatherP = await JSON.parse(Wp);
-    let Id = await JSON.parse(UserId);
     let a = await JSON.parse(anonymous);
     // console.log(`e`, e);
     // console.log(`division`, division);
