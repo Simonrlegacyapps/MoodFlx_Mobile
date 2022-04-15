@@ -123,7 +123,8 @@ export const defaultLocation = {
   timeZoneOffset: 600,
 };
 
-export const isCountryIndia = () => (moment().utcOffset() == 330);
+// export const isCountryIndia = () => (moment().utcOffset() == 330);
+export const isCountryIndia = () => false;
 
 export const moodTypes = {
   regular: 'regular',

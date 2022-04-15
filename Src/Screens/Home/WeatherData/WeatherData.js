@@ -252,16 +252,7 @@ const WeatherData = ({
   const WeatherDayData = (loc_lat, loc_long, onFinish) => {
     let startTime;
     const isIndia = isCountryIndia();
-    if (isIndia) {
-      startTime = moment
-        .utc()
-        // .utcOffset(defaultLocation.timeZoneOffset)
-        .subtract(1, 'day')
-        .startOf('day')
-        .toString();
-    } else {
-      startTime = a;
-    }
+    startTime = a;
     console.log('WeatherDayData function loc_lat: ', loc_lat);
     console.log('WeatherDayData function loc_long: ', loc_long);
     console.log('WeatherDayData function args: ', startTime);
@@ -544,7 +535,6 @@ const WeatherData = ({
         : findWeather(weatherData?.weather?.[0]?.main),
       pollen: null,
       pollen_type: manul_pollen ? manul_pollen : 'Low',
-      weather_data: allDayWeatherData.current,
       temp_min: weatherData?.main?.temp_min,
       temp_max: weatherData?.main?.temp_max,
       temp: manual_temp
@@ -555,10 +545,11 @@ const WeatherData = ({
       country: isIndia && country_info ? defaultLocation.country : country_info,
       lat: isIndia && userData.WeatherPermission ? defaultLocation.latitude : lat,
       lon: isIndia && userData.WeatherPermission ? defaultLocation.longitude : lng,
+      weather_data: allDayWeatherData.current,
     });
 
     // const _temp_ = manual_temp ? manual_temp : Math.round(weatherData?.main?.temp ? weatherData.main.temp : '0');
-    // console.log('Weather update api params ------------', data);
+    console.log('Weather update api params data.temp ------------', data);
     var config = {
       method: 'post',
       url: `${getApiBaseUrl()}updateWeather`,

@@ -50,6 +50,7 @@ import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
 import Clipboard from '@react-native-clipboard/clipboard';
+import getStore from '../../redux';
 
 const listData = [
   { name: 'Name', value: 'Anonymous' },
@@ -117,6 +118,7 @@ const ProfileTab = ({ navigation }) => {
 
   const getProfileUserData = () => {
     // console.log('called called called called called called');
+    const userData = getStore?.()?.getState?.()?.First;
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -124,8 +126,8 @@ const ProfileTab = ({ navigation }) => {
     GetStaffUserData(
       {
         device_id: deviceId,
-        email: UserData.UserEmail,
-        user_id: UserData.UserId,
+        email: userData.UserEmail,
+        user_id: userData.UserId,
       },
       dispatch,
     )
@@ -477,27 +479,27 @@ const ProfileTab = ({ navigation }) => {
                 style={[styles.borderStyle, { marginRight: dynamicSize(17) }]}
               />
               <Text
-                // onPress={() => Alert.alert('Personal Details', JSON.stringify({
-                //   device_id: getMyDeviceId(),
-                //   email: UserData.UserEmail,
-                //   user_id: UserData.UserId,
-                //   division: UserData.UserDivision,
-                //   server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
-                // }), [
-                //   {
-                //     text: "Cancel",
-                //     onPress: () => console.log("Cancel Pressed"),
-                //     style: "cancel"
-                //   },
-                //   { text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
-                //     device_id: getMyDeviceId(),
-                //     email: UserData.UserEmail,
-                //     user_id: UserData.UserId,
-                //     division: UserData.UserDivision,
-                //     server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
-                //   }))
-                //   }
-                // ])}
+                onPress={() => Alert.alert('Personal Details', JSON.stringify({
+                  device_id: getMyDeviceId(),
+                  email: UserData.UserEmail,
+                  user_id: UserData.UserId,
+                  division: UserData.UserDivision,
+                  server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                }), [
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                  },
+                  { text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
+                    device_id: getMyDeviceId(),
+                    email: UserData.UserEmail,
+                    user_id: UserData.UserId,
+                    division: UserData.UserDivision,
+                    server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                  }))
+                  }
+                ])}
               >PERSONAL DETAILS</Text>
               <View
                 style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}
@@ -677,7 +679,7 @@ const ProfileTab = ({ navigation }) => {
                       styles.anonymousTextStyle,
                       { marginLeft: dynamicSize(16) },
                     ]}>
-                    How MoodFlx Works
+                    How moodflx Works
                   </Text>
                   {isHowMoodFloWorksPtsGiven === false && (
                     <ImageBackground

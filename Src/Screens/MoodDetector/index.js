@@ -49,7 +49,7 @@ import CloseIcon from '../../../assets/commonicons/CloseIcon';
 import QuestionMarkIcon from '../../../assets/commonicons/QuestionMarkIcon';
 import moment from 'moment';
 import GetLocation from 'react-native-get-location';
-import PostRequestApi from '../../apirequest/PostRequestApi';
+import PostRequestApi, { checkAndUpdateUserIfBlocked, GetStaffUserData } from '../../apirequest/PostRequestApi';
 import VideoModal from '../../Components/VideoModal/VideoModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
@@ -892,17 +892,18 @@ export default function MoodDetector({ navigation }) {
       user_id: UserData?.UserId,
     });
 
+    console.log('MoodInput screen getStafUserData params --->', raw);
+
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
       body: raw,
       redirect: 'follow',
     };
-
     fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
-        // console.log('UserDetailsssssssssssssssss here', await result);
+        console.log('✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅', result);
         await dispatch(UserDetail(result.userData));
       })
       .catch((error) => console.log('error', error));
@@ -1451,6 +1452,7 @@ export default function MoodDetector({ navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
+      checkAndUpdateUserIfBlocked(dispatch);
       isMoodDetectorScreenFocused = true;
       setIsScreenFocused(true);
       // if(currentNotif) {

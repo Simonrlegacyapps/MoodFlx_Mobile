@@ -232,15 +232,16 @@ const App: () => React$Node = () => {
 
   useEffect(() => {
     const setWidgetData = async () => {
+      const userData = getStore?.()?.getState?.()?.First;
       const fcm = await messaging().getToken();
       Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
       let state_info = '';
       let city_info = '';
       let country_info = '';
-      if (UserData.lat && UserData.lon) {
+      if (userData.lat && userData.lon) {
         await Geocoder.from({
-          lat: UserData.lat,
-          lng: UserData.lon,
+          lat: userData.lat,
+          lng: userData.lon,
         })
           .then((data) => {
             const address_list = data.results[0].address_components;
@@ -274,16 +275,16 @@ const App: () => React$Node = () => {
           mood_id: "",
           device_id: getMyDeviceId(),
           mood_type: "",
-          city: isIndia || !UserData.lat ? defaultLocation.city : city_info,
-          state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
-          country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
-          lat: isIndia || !UserData.lat ? defaultLocation.latitude : UserData.lat,
-          lon: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
-          email: UserData.UserEmail ? UserData.UserEmail : "",
-          user_id: UserData.UserId && !isNaN(UserData.UserId) ? String(UserData.UserId) : "",
+          city: isIndia && userData.WeatherPermission ? defaultLocation.city : city_info,
+          state: isIndia && userData.WeatherPermission ? defaultLocation.state : state_info,
+          country: isIndia && userData.WeatherPermission ? defaultLocation.country : country_info,
+          lat: isIndia && userData.WeatherPermission ? defaultLocation.latitude : userData.lat,
+          lon: isIndia && userData.WeatherPermission ? defaultLocation.longitude : userData.lon,
+          email: userData.UserEmail ? userData.UserEmail : "",
+          user_id: userData.UserId && !isNaN(userData.UserId) ? String(userData.UserId) : "",
           device_token: fcm,
           device_type: Platform.OS,
-          anonymous: !UserData.Anonymous ? 0 : 1,
+          anonymous: !userData.Anonymous ? 0 : 1,
           reward_point: 0,
           section_index: 4,
           description: 'mood input',
@@ -303,7 +304,14 @@ const App: () => React$Node = () => {
         console.log('SharedStorage.set success ---->', widgetData.current);
       }
     };
-    setWidgetData();
+    if (
+      ((UserData.UserId && UserData.UserEmail) ||
+      (!UserData.UserId && !UserData.UserEmail)) &&
+      ((UserData.lat && UserData.lon) ||
+      (!UserData.lat && !UserData.lon))
+    ) {
+      setWidgetData();
+    }
   }, [
     UserData.lat,
     UserData.lon,
