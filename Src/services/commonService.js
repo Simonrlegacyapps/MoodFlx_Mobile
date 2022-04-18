@@ -762,6 +762,7 @@ export function fetchAndUpdateScreenTimeData({
   setGraphData,
   shouldCallUpdateApi = false,
   callScreenInsights,
+  manualScreenTime,
 }) {
   let currentDayTime = 0;
   let prevDayTime = 0;
@@ -890,6 +891,21 @@ export function fetchAndUpdateScreenTimeData({
         setCurrentDayScreenTime(currentDayTime);
         isFunction(setScreenTimePermission) && updateScreenTimePermission(data);
       }
+      // if (
+      //   isFunction(setCurrentDayScreenTime) &&
+      //   manualScreenTime !== '' &&
+      //   !isNaN(manualScreenTime)
+      // ) {
+      //   currentDayTime = Number(manualScreenTime);
+      //   setCurrentDayScreenTime(currentDayTime);
+      //   isFunction(setScreenTimePermission) && updateScreenTimePermission(data);
+      // } else {
+      //   if (isFunction(setCurrentDayScreenTime)) {
+      //     currentDayTime = getTotalTimeInForeground(data);
+      //     setCurrentDayScreenTime(currentDayTime);
+      //     isFunction(setScreenTimePermission) && updateScreenTimePermission(data);
+      //   }
+      // }
       if (isFunction(setYesterdayScreenTime)) {
         return UsageStats.getYesterdayStats();
       } else {

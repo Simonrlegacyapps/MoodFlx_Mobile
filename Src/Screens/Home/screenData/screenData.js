@@ -46,6 +46,7 @@ import {fetchAndUpdateScreenTimeData, getMyDeviceId, getScreenDataTimeInHoursMin
 import AsyncStorage from '@react-native-community/async-storage';
 import Skeleton from '../../../Components/Skeleton/Skeleton';
 import { getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
+// import AddManualScreenTimeModal from '../../../Components/Modals/AddManualScreenTime/AddManualScreenTimeModal';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -115,6 +116,8 @@ const ScreenData = ({
     screenInsightsReducer,
     screenInsightsInitialState,
   );
+  // const [manualScreenTime, setManualScreenTime] = useState('');
+  // const [showManualScreenTimeModal, setShowManualScreenTimeModal] = useState(false);
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -412,6 +415,7 @@ const ScreenData = ({
 
 
   const getDailyStats = () => {
+    // setShowManualScreenTimeModal(false);
     fetchAndUpdateScreenTimeData({
       setMorningTime: function (d) {
         setMorningTime(d);
@@ -444,6 +448,7 @@ const ScreenData = ({
       callScreenInsights: function () {
         callInsightsApi();
       },
+      // manualScreenTime,
     });
     // let currentDayTime = 0;
     // let morning = 0;
@@ -671,6 +676,7 @@ const ScreenData = ({
           label={'Screen'}
           isPermissionGiven={false}
           setOpenActionSheet={setopenActionSheet}
+          // setOpenActionSheet={() => setShowManualScreenTimeModal(true)}
           setAnonymousClick={setAnonymousClick}
         />
         <View style={styles.ProgressBarView}>
@@ -796,6 +802,14 @@ const ScreenData = ({
         dismissModalHandler={() => AnonymousPopUpcancelled()}
         verifyDone={() => AnonymousPopUpcancelled()}
       />
+
+      {/* <AddManualScreenTimeModal
+        modalVisible={showManualScreenTimeModal}
+        dismissModalHandler={() => setShowManualScreenTimeModal(false)}
+        verifyDone={getDailyStats}
+        onChangeText={setManualScreenTime}
+        value={manualScreenTime}
+      /> */}
     </View>
   );
 };
