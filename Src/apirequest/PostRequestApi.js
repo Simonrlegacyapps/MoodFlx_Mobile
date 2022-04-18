@@ -47,7 +47,10 @@ export async function GetStaffUserData(
         // console.log('result.userData.reward_point ----', Number(result.userData.reward_point));
         dispatch(SetFloCoins(Number(result.userData.reward_point)));
       }
-      if (!isNotCheckUserBlocked && result?.userData?.status === 2) {
+      if (
+        !isNotCheckUserBlocked && 
+        (result?.userData?.status === 2 || result?.userData?.status === 3)
+      ) {
         unlinkFromCompany(params, dispatch);
         // onUnlinkUpdate(dispatch);
       }
