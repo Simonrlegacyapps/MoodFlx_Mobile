@@ -30,7 +30,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
 import {useDispatch, useSelector} from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
-import {NotificationPerm, UserDetail} from '../../redux/actions/actions';
+import {NotificationPerm, SetShowIsDevServerModal, UserDetail} from '../../redux/actions/actions';
 import {GetStaffUserData} from '../../apirequest/PostRequestApi';
 import {AppPermissions} from '../../services/appPermissions';
 import {useFocusEffect} from '@react-navigation/native';
@@ -500,6 +500,7 @@ const ProfileTab = ({ navigation }) => {
                   }))
                   }
                 ])}
+                // onLongPress={() => dispatch(SetShowIsDevServerModal(true))}
               >PERSONAL DETAILS</Text>
               <View
                 style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}

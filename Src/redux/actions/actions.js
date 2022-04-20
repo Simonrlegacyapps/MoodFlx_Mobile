@@ -49,6 +49,7 @@ import {
   AVAILABLE_REWARDS,
   CLAIMED_REWARDS,
   IS_DIVISION_SELECTED,
+  SHOW_IS_DEV_SERVER_MODAL,
 } from '../constants/action-types';
 
 export const FIRST_ACTION = (data) => {
@@ -358,6 +359,13 @@ export const SetClaimedRewards = (data) => {
 export const SetIsDivisionSelected = (data) => {
   return {
     type: IS_DIVISION_SELECTED,
+    payload: data,
+  };
+};
+
+export const SetShowIsDevServerModal = (data) => {
+  return {
+    type: SHOW_IS_DEV_SERVER_MODAL,
     payload: data,
   };
 };

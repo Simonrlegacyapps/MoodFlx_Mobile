@@ -80,6 +80,7 @@ import {
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
   isCountryIndia,
+  setIsDevServer,
   setIsGetCurrentLocationCalled,
   widgetDataGroup,
 } from './Src/Constants/constants';
@@ -98,6 +99,7 @@ import isEmpty from 'lodash.isempty';
 import RNRestart from 'react-native-restart';
 import MonthlyInsightsProgress from './Src/Components/Modals/MonthlyInsightsProgressModal/MonthlyInsightsProgressModal';
 import LvlUpModal from './Src/Components/Modals/LvlUpModal/LvlUpModal';
+import SetIsDevServerFlagModal from './Src/Components/Modals/SetIsDevServerFlagModal/SetIsDevServerFlagModal';
 
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -209,6 +211,22 @@ const App: () => React$Node = () => {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
+  // useEffect(() => {
+  //   const fetchAndSetIsDevServer = async () => {
+  //     try {
+  //       let f = await AsyncStorage.getItem('isDevServerFlag');
+  //       let isDevServerFlag = await JSON.parse(f);
+  //       if (typeof isDevServerFlag === 'boolean') {
+  //         console.log('setting isDevServerFlag: ', isDevServerFlag);
+  //         setIsDevServer(isDevServerFlag);
+  //       }
+  //     } catch (error) {
+  //       console.log('error fetching isDevServerFlag: ', error);
+  //     }
+  //   }
+  //   fetchAndSetIsDevServer();
+  // }, []);
+
   useEffect(() => {
     setDeviceId();
     Analytics.init();
@@ -318,47 +336,6 @@ const App: () => React$Node = () => {
     UserData.UserEmail,
     UserData.UserId,
     UserData.Anonymous,
-  ]);
-
-  useEffect(() => {
-    if (
-      UserData.UserEmail &&
-      UserData.UserId &&
-      UserData?.UserDetails?.division_id
-    ) {
-      const params = {
-        division_id: UserData?.UserDetails?.division_id,
-        email: UserData.UserEmail,
-        user_id: UserData.UserId,
-      };
-      console.log('eapMessageData params ----->', params);
-      PostRequestApi('eapMessageData', params)
-        .then((resp) => {
-          console.log('✅ ✅ ✅ ✅ Success eapMessageData ✅ ✅ ✅ ✅', resp?.data?.data);
-          if (resp?.data?.data) {
-            let data = {};
-            if (resp?.data?.data?.eap_text) {
-              data.eap_text = resp.data.data.eap_text;
-            }
-            if (resp?.data?.data?.eap_link) {
-              data.eap_link = resp.data.data.eap_link;
-            }
-            if (!isEmpty(data)) {
-              dispatch(SetNegativeMoodModalData(data));
-            }
-          }
-        })
-        .catch((err) => {
-          console.log('❌ ❌ ❌ ❌ error eapMessageData❌ ❌ ❌ ❌ ', err);
-        });
-    } else if (!(UserData.UserEmail && UserData.UserId)) {
-      dispatch(SetNegativeMoodModalData(defaultNegativeMoodModalData));
-    }
-  }, [
-    UserData.UserEmail,
-    UserData.UserId,
-    UserData?.UserDetails?.division_id,
-    dispatch,
   ]);
 
   const checkInternet = useCallback(() => {
@@ -748,6 +725,47 @@ const App: () => React$Node = () => {
     }
     myFunc();
   }, []);
+
+  useEffect(() => {
+    if (
+      UserData.UserEmail &&
+      UserData.UserId &&
+      UserData?.UserDetails?.division_id
+    ) {
+      const params = {
+        division_id: UserData?.UserDetails?.division_id,
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      };
+      console.log('eapMessageData params ----->', params);
+      PostRequestApi('eapMessageData', params)
+        .then((resp) => {
+          console.log('✅ ✅ ✅ ✅ Success eapMessageData ✅ ✅ ✅ ✅', resp?.data?.data);
+          if (resp?.data?.data) {
+            let data = {};
+            if (resp?.data?.data?.eap_text) {
+              data.eap_text = resp.data.data.eap_text;
+            }
+            if (resp?.data?.data?.eap_link) {
+              data.eap_link = resp.data.data.eap_link;
+            }
+            if (!isEmpty(data)) {
+              dispatch(SetNegativeMoodModalData(data));
+            }
+          }
+        })
+        .catch((err) => {
+          console.log('❌ ❌ ❌ ❌ error eapMessageData❌ ❌ ❌ ❌ ', err);
+        });
+    } else if (!(UserData.UserEmail && UserData.UserId)) {
+      dispatch(SetNegativeMoodModalData(defaultNegativeMoodModalData));
+    }
+  }, [
+    UserData.UserEmail,
+    UserData.UserId,
+    UserData?.UserDetails?.division_id,
+    dispatch,
+  ]);
 
   useEffect(() => {
     let isCurrentRoute = false;
@@ -1253,6 +1271,10 @@ const App: () => React$Node = () => {
         modalVisible={UserData.showMonthlyInsightsModal}
         verifyDone={dismissMonthlyInsightsModal}
         dismissModalHandler={dismissMonthlyInsightsModal}
+      />
+      <SetIsDevServerFlagModal
+        isModalVisible={UserData.showIsDevServerModal}
+        dispatch={dispatch}
       />
     </>
   );

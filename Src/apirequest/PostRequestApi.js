@@ -61,7 +61,7 @@ export async function GetStaffUserData(
     );
 }
 
-export const unlinkFromCompany = (params, dispatch) => {
+export const unlinkFromCompany = (params, dispatch, onFinish) => {
   if (params?.email && params?.user_id) {
     const p = {
       email: params?.email,
@@ -70,7 +70,7 @@ export const unlinkFromCompany = (params, dispatch) => {
     PostRequestApi('unlinkToCompany', p)
       .then(async (resp) => {
         console.log('unlinkToCompany api Success');
-        onUnlinkUpdate(dispatch);
+        onUnlinkUpdate(dispatch, onFinish);
       })
       .catch((err) => {
         console.log('unlink api failed error: ', err);

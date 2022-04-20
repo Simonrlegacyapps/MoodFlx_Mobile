@@ -11,9 +11,16 @@ export const PRIVACY_POLICY_URL = 'https://moodflo.com/privacy-policy';
 export const TERMS_OF_USE_URL = 'https://moodflo.com/terms-of-use';
 export const FAQ_URL = 'https://moodflo.com/frequently-asked-questions';
 let isCurrentLocationCalled = false;
+let isDevServer = (__DEV__);
+// let isDevServer = true;
+
+export const getIsDevServer = () => isDevServer;
+export const setIsDevServer = (flag = (__DEV__)) => {
+  isDevServer = flag;
+};
 
 export const getApiBaseUrl = () => {
-  if (__DEV__) {
+  if (isDevServer) {
     return BASE_URL_DEV_API;
   } else {
     return BASE_URL_PRODUCTION_API;
@@ -21,7 +28,7 @@ export const getApiBaseUrl = () => {
 };
 
 export const getPhotoUrl = () => {
-  if (__DEV__) {
+  if (isDevServer) {
     return PHOTO_URL_DEV;
   } else {
     return PHOTO_URL;
@@ -29,7 +36,7 @@ export const getPhotoUrl = () => {
 };
 
 export const getMoodIconsUrl = () => {
-  if (__DEV__) {
+  if (isDevServer) {
     return MOOD_ICONS_DEV;
   } else {
     return MOOD_ICONS;

@@ -50,6 +50,7 @@ import {
   AVAILABLE_REWARDS,
   CLAIMED_REWARDS,
   IS_DIVISION_SELECTED,
+  SHOW_IS_DEV_SERVER_MODAL,
 } from '../constants/action-types';
 
 const intializedState = {
@@ -111,6 +112,7 @@ const intializedState = {
   availableRewards: null,
   claimedRewards: null,
   isDivisionSelected: true,
+  showIsDevServerModal: false,
 };
 
 export const First = (state = intializedState, action) => {
@@ -320,6 +322,10 @@ export const First = (state = intializedState, action) => {
     case IS_DIVISION_SELECTED:
       return Object.assign({}, state, {
         isDivisionSelected: action.payload,
+      });
+    case SHOW_IS_DEV_SERVER_MODAL:
+      return Object.assign({}, state, {
+        showIsDevServerModal: action.payload,
       });
     default:
       return state;
