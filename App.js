@@ -26,6 +26,7 @@ import {
   SetAvailableRewards,
   SetClaimedRewards,
   SetIsDivisionSelected,
+  SetLocation,
   SetNegativeMoodModalData,
   SetNotification,
   SetShowMonthlyInsightsModal,
@@ -75,9 +76,12 @@ import {
   defaultLocation,
   defaultNegativeMoodModalData,
   getApiBaseUrl,
+  getIsGetCurrentLocationCalled,
   getLinkModalText,
   getWeeklyInsightsDaysLeft,
   isCountryIndia,
+  setIsDevServer,
+  setIsGetCurrentLocationCalled,
   widgetDataGroup,
 } from './Src/Constants/constants';
 import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
@@ -95,6 +99,7 @@ import isEmpty from 'lodash.isempty';
 import RNRestart from 'react-native-restart';
 import MonthlyInsightsProgress from './Src/Components/Modals/MonthlyInsightsProgressModal/MonthlyInsightsProgressModal';
 import LvlUpModal from './Src/Components/Modals/LvlUpModal/LvlUpModal';
+import SetIsDevServerFlagModal from './Src/Components/Modals/SetIsDevServerFlagModal/SetIsDevServerFlagModal';
 
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -206,6 +211,22 @@ const App: () => React$Node = () => {
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
+  // useEffect(() => {
+  //   const fetchAndSetIsDevServer = async () => {
+  //     try {
+  //       let f = await AsyncStorage.getItem('isDevServerFlag');
+  //       let isDevServerFlag = await JSON.parse(f);
+  //       if (typeof isDevServerFlag === 'boolean') {
+  //         console.log('setting isDevServerFlag: ', isDevServerFlag);
+  //         setIsDevServer(isDevServerFlag);
+  //       }
+  //     } catch (error) {
+  //       console.log('error fetching isDevServerFlag: ', error);
+  //     }
+  //   }
+  //   fetchAndSetIsDevServer();
+  // }, []);
+
   useEffect(() => {
     setDeviceId();
     Analytics.init();
@@ -229,15 +250,16 @@ const App: () => React$Node = () => {
 
   useEffect(() => {
     const setWidgetData = async () => {
+      const userData = getStore?.()?.getState?.()?.First;
       const fcm = await messaging().getToken();
       Geocoder.init('AIzaSyD8BafHP8VtNFGyMg4uozFJcgsBaKDxS9s');
       let state_info = '';
       let city_info = '';
       let country_info = '';
-      if (UserData.lat && UserData.lon) {
+      if (userData.lat && userData.lon) {
         await Geocoder.from({
-          lat: UserData.lat,
-          lng: UserData.lon,
+          lat: userData.lat,
+          lng: userData.lon,
         })
           .then((data) => {
             const address_list = data.results[0].address_components;
@@ -271,16 +293,16 @@ const App: () => React$Node = () => {
           mood_id: "",
           device_id: getMyDeviceId(),
           mood_type: "",
-          city: isIndia || !UserData.lat ? defaultLocation.city : city_info,
-          state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
-          country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
-          lat: isIndia || !UserData.lat ? defaultLocation.latitude : UserData.lat,
-          lon: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
-          email: UserData.UserEmail ? UserData.UserEmail : "",
-          user_id: UserData.UserId && !isNaN(UserData.UserId) ? String(UserData.UserId) : "",
+          city: isIndia && userData.WeatherPermission ? defaultLocation.city : city_info,
+          state: isIndia && userData.WeatherPermission ? defaultLocation.state : state_info,
+          country: isIndia && userData.WeatherPermission ? defaultLocation.country : country_info,
+          lat: isIndia && userData.WeatherPermission ? defaultLocation.latitude : userData.lat,
+          lon: isIndia && userData.WeatherPermission ? defaultLocation.longitude : userData.lon,
+          email: userData.UserEmail ? userData.UserEmail : "",
+          user_id: userData.UserId && !isNaN(userData.UserId) ? String(userData.UserId) : "",
           device_token: fcm,
           device_type: Platform.OS,
-          anonymous: !UserData.Anonymous ? 0 : 1,
+          anonymous: !userData.Anonymous ? 0 : 1,
           reward_point: 0,
           section_index: 4,
           description: 'mood input',
@@ -300,54 +322,20 @@ const App: () => React$Node = () => {
         console.log('SharedStorage.set success ---->', widgetData.current);
       }
     };
-    setWidgetData();
+    if (
+      ((UserData.UserId && UserData.UserEmail) ||
+      (!UserData.UserId && !UserData.UserEmail)) &&
+      ((UserData.lat && UserData.lon) ||
+      (!UserData.lat && !UserData.lon))
+    ) {
+      setWidgetData();
+    }
   }, [
     UserData.lat,
     UserData.lon,
     UserData.UserEmail,
     UserData.UserId,
     UserData.Anonymous,
-  ]);
-
-  useEffect(() => {
-    if (
-      UserData.UserEmail &&
-      UserData.UserId &&
-      UserData?.UserDetails?.division_id
-    ) {
-      const params = {
-        division_id: UserData?.UserDetails?.division_id,
-        email: UserData.UserEmail,
-        user_id: UserData.UserId,
-      };
-      console.log('eapMessageData params ----->', params);
-      PostRequestApi('eapMessageData', params)
-        .then((resp) => {
-          console.log('✅ ✅ ✅ ✅ Success eapMessageData ✅ ✅ ✅ ✅', resp?.data?.data);
-          if (resp?.data?.data) {
-            let data = {};
-            if (resp?.data?.data?.eap_text) {
-              data.eap_text = resp.data.data.eap_text;
-            }
-            if (resp?.data?.data?.eap_link) {
-              data.eap_link = resp.data.data.eap_link;
-            }
-            if (!isEmpty(data)) {
-              dispatch(SetNegativeMoodModalData(data));
-            }
-          }
-        })
-        .catch((err) => {
-          console.log('❌ ❌ ❌ ❌ error eapMessageData❌ ❌ ❌ ❌ ', err);
-        });
-    } else if (!(UserData.UserEmail && UserData.UserId)) {
-      dispatch(SetNegativeMoodModalData(defaultNegativeMoodModalData));
-    }
-  }, [
-    UserData.UserEmail,
-    UserData.UserId,
-    UserData?.UserDetails?.division_id,
-    dispatch,
   ]);
 
   const checkInternet = useCallback(() => {
@@ -739,6 +727,47 @@ const App: () => React$Node = () => {
   }, []);
 
   useEffect(() => {
+    if (
+      UserData.UserEmail &&
+      UserData.UserId &&
+      UserData?.UserDetails?.division_id
+    ) {
+      const params = {
+        division_id: UserData?.UserDetails?.division_id,
+        email: UserData.UserEmail,
+        user_id: UserData.UserId,
+      };
+      console.log('eapMessageData params ----->', params);
+      PostRequestApi('eapMessageData', params)
+        .then((resp) => {
+          console.log('✅ ✅ ✅ ✅ Success eapMessageData ✅ ✅ ✅ ✅', resp?.data?.data);
+          if (resp?.data?.data) {
+            let data = {};
+            if (resp?.data?.data?.eap_text) {
+              data.eap_text = resp.data.data.eap_text;
+            }
+            if (resp?.data?.data?.eap_link) {
+              data.eap_link = resp.data.data.eap_link;
+            }
+            if (!isEmpty(data)) {
+              dispatch(SetNegativeMoodModalData(data));
+            }
+          }
+        })
+        .catch((err) => {
+          console.log('❌ ❌ ❌ ❌ error eapMessageData❌ ❌ ❌ ❌ ', err);
+        });
+    } else if (!(UserData.UserEmail && UserData.UserId)) {
+      dispatch(SetNegativeMoodModalData(defaultNegativeMoodModalData));
+    }
+  }, [
+    UserData.UserEmail,
+    UserData.UserId,
+    UserData?.UserDetails?.division_id,
+    dispatch,
+  ]);
+
+  useEffect(() => {
     let isCurrentRoute = false;
     if (UserData.notification) {
       if (
@@ -804,14 +833,6 @@ const App: () => React$Node = () => {
     };
   }, []);
 
-  const checkStorage = async () => {
-    // let anonymous = await AsyncStorage.getItem('Anonymous');
-    // let a = await JSON.parse(anonymous);
-    // if (a == null) {
-    //   await AsyncStorage.setItem('Anonymous', 'true');
-    // }
-  };
-
   const getProfileUserData = async () => {
     let DateCheck = await AsyncStorage.getItem('DateCheck');
     let CheckForTodayDate = await JSON.parse(DateCheck);
@@ -854,16 +875,21 @@ const App: () => React$Node = () => {
 
     // ---> checking all the data in local storage
     await AsyncStorage.setItem('Anonymous', 'true');
-    let UserId = await AsyncStorage.getItem('UserId');
     let anonymous = await AsyncStorage.getItem('Anonymous');
+    let UserId = await AsyncStorage.getItem('UserId');
+    let Id = await JSON.parse(UserId);
     let p = await AsyncStorage.getItem('Email');
-    // let d = await AsyncStorage.getItem('Division');
-    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
-    
     let e = await JSON.parse(p);
+    // let d = await AsyncStorage.getItem('Division');
+    if ((e && Id) || isHandleDynamicLinkCalled.current === true) {
+      console.log('App.js getProfileUserData email --->', e);
+      console.log('App.js getProfileUserData userId --->', Id);
+      dispatch(UserEmail(e));
+      dispatch(GetUserId(Id));
+    }
+    let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
     // let division = await JSON.parse(d);
     let WeatherP = await JSON.parse(Wp);
-    let Id = await JSON.parse(UserId);
     let a = await JSON.parse(anonymous);
     // console.log(`e`, e);
     // console.log(`division`, division);
@@ -883,7 +909,7 @@ const App: () => React$Node = () => {
 
     //Sleep Permission
     let SleepPer = await AsyncStorage.getItem('GiveSleepPerm');
-    let SleepP = await JSON.parse(SleepPer); 
+    let SleepP = await JSON.parse(SleepPer);
     dispatch(SleepPerm(SleepP));
     //Syncing Sleep Data
     if (Platform.OS === 'ios') {
@@ -907,10 +933,6 @@ const App: () => React$Node = () => {
       setSleepDataSync(dispatch);
     }
     // console.log(`Sleep Permission`, SleepP);
-    if ((e && Id) || isHandleDynamicLinkCalled.current === true) {
-      dispatch(UserEmail(e));
-      dispatch(GetUserId(Id));
-    }
     // dispatch(UserDivision(division));
     dispatch(WeatherPerm(WeatherP));
     dispatch(IsAnonymous(a == null ? true : a));
@@ -993,36 +1015,8 @@ const App: () => React$Node = () => {
     notifService.scheduleMoodFloLocalNotif();
     notifSchedulePreviousDay.current = moment().day();
   };
+
   useEffect(() => {
-    // console.log(`LightSensor`, LightSensor);
-    UserData.WeatherPermission &&
-      (UserData.lat == null || UserData.lon == null) &&
-      GetLocation.getCurrentPosition({
-        enableHighAccuracy: false,
-        timeout: 15000,
-      })
-        .then((location) => {
-          //   console.log('Success', location);
-          // setlat(location.latitude);
-          const isIndia = isCountryIndia();
-          if (isIndia) {
-            location = {
-              latitude: defaultLocation.latitude,
-              longitude: defaultLocation.longitude
-            };
-          }
-          console.log(
-            '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
-            JSON.stringify(location),
-          );
-          dispatch(Lat(location.latitude));
-          // setlng(location.longitude);
-          dispatch(Long(location.longitude));
-        })
-        .catch((error) => {
-          const { code, message } = error;
-          console.log('error getting lat lon from geolocation api', code, message);
-        });
     UserData.AllMoods == null &&
       fetch(`${getApiBaseUrl()}getMood`)
         .then((data) => data.json())
@@ -1036,9 +1030,50 @@ const App: () => React$Node = () => {
           // const {code, message} = error;
           console.log('getMood Api error', error);
         });
-    checkStorage();
     getProfileUserData();
-  }, [UserData.WeatherPermission]);
+  }, []);
+
+  useEffect(() => {
+    // console.log(`LightSensor`, LightSensor);
+    if (
+      UserData.WeatherPermission && 
+      (UserData.lat == null || UserData.lon == null) &&
+      getIsGetCurrentLocationCalled() === false
+    ) {
+      setIsGetCurrentLocationCalled(true);
+      GetLocation.getCurrentPosition({
+        enableHighAccuracy: false,
+        timeout: 15000,
+      })
+        .then((location) => {
+          setIsGetCurrentLocationCalled(false);
+          //   console.log('Success', location);
+          // setlat(location.latitude);
+          const isIndia = isCountryIndia();
+          if (isIndia) {
+            location = {
+              latitude: defaultLocation.latitude,
+              longitude: defaultLocation.longitude
+            };
+          }
+          console.log(
+            '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
+            JSON.stringify(location),
+          );
+          dispatch(
+            SetLocation({
+              lat: location.latitude,
+              lon: location.longitude,
+            }),
+          );
+        })
+        .catch((error) => {
+          const { code, message } = error;
+          setIsGetCurrentLocationCalled(false);
+          console.log('error getting lat lon from geolocation api', code, message);
+        });
+      }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
@@ -1236,6 +1271,10 @@ const App: () => React$Node = () => {
         modalVisible={UserData.showMonthlyInsightsModal}
         verifyDone={dismissMonthlyInsightsModal}
         dismissModalHandler={dismissMonthlyInsightsModal}
+      />
+      <SetIsDevServerFlagModal
+        isModalVisible={UserData.showIsDevServerModal}
+        dispatch={dispatch}
       />
     </>
   );

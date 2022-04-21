@@ -395,7 +395,18 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
   if (!(Array.isArray(allMoods) && allMoods.length > 0)) {
     return false;
   }
-  const negativeMoodNames = ['Upset', 'Anxious', 'Sad', 'Tired', 'Cranky', 'Wired', 'Flat', 'Spent'];
+  const negativeMoodNames = [
+    'Annoyed',
+    'Frustrated',
+    'Upset',
+    'Sad',
+    'Bored',
+    'Gloomy',
+    'Tense',
+    'Impatient',
+    'Worried',
+    'Tired',
+  ];
   const allNegativeMoods = allMoods
     .filter((e) => negativeMoodNames.indexOf(e?.name) !== -1)
     .map((e) => e.id);
@@ -414,6 +425,7 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
   }
   if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 13) {
   // if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 1) {
+  // if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 0) {
     return false;
   }
   const params = {
@@ -422,6 +434,7 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     "user_id": getStore?.()?.getState?.()?.First?.UserId ?? '',
     "start_date": moment().utcOffset(600).subtract(13, 'days').format('YYYY-MM-DD'),
     // "start_date": moment().utcOffset(600).subtract(1, 'days').format('YYYY-MM-DD'),
+    // "start_date": moment().utcOffset(600).subtract(0, 'days').format('YYYY-MM-DD'),
   };
   let response;
   try {
@@ -749,6 +762,7 @@ export function fetchAndUpdateScreenTimeData({
   setGraphData,
   shouldCallUpdateApi = false,
   callScreenInsights,
+  manualScreenTime,
 }) {
   let currentDayTime = 0;
   let prevDayTime = 0;
@@ -877,6 +891,21 @@ export function fetchAndUpdateScreenTimeData({
         setCurrentDayScreenTime(currentDayTime);
         isFunction(setScreenTimePermission) && updateScreenTimePermission(data);
       }
+      // if (
+      //   isFunction(setCurrentDayScreenTime) &&
+      //   manualScreenTime !== '' &&
+      //   !isNaN(manualScreenTime)
+      // ) {
+      //   currentDayTime = Number(manualScreenTime);
+      //   setCurrentDayScreenTime(currentDayTime);
+      //   isFunction(setScreenTimePermission) && updateScreenTimePermission(data);
+      // } else {
+      //   if (isFunction(setCurrentDayScreenTime)) {
+      //     currentDayTime = getTotalTimeInForeground(data);
+      //     setCurrentDayScreenTime(currentDayTime);
+      //     isFunction(setScreenTimePermission) && updateScreenTimePermission(data);
+      //   }
+      // }
       if (isFunction(setYesterdayScreenTime)) {
         return UsageStats.getYesterdayStats();
       } else {

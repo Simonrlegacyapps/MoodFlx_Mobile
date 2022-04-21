@@ -48,6 +48,7 @@ import {getMyDeviceId, onUnlinkUpdate, setDivisionSetFlag} from '../../services/
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import FeedBackModal from '../../Components/Modals/FeedBackModal/FeedBackModal';
 import {NoteIcon} from '../../../assets/svg/noteIcon';
+import getStore from '../../redux';
 
 const FeedbackButton = ({onClick}) => (
   <Pressable
@@ -251,15 +252,17 @@ const Linktocompany = ({ navigation }) => {
           setDivisionSetFlag(false);
         }
       };
+      const userData = getStore?.()?.getState?.()?.First;
       if (UserData.UserEmail && UserData.UserId) {
         const deviceId = getMyDeviceId();
         const params = {
           device_id: deviceId,
-          user_id: UserData.UserId,
-          email: UserData.UserEmail,
+          user_id: userData?.UserId ?? null,
+          email: userData?.UserEmail ?? null,
         };
         check();
         console.log('===useFocusEffect getDivision params ===', params);
+        console.log('===LinkToCompany useFocusEffect route?.params?.email ===', route?.params?.email);
         const isUnlinkAllowed = route?.params?.email ? false : true;
         setDivisions(null);
         getDivisionName(params, dispatch, isUnlinkAllowed);

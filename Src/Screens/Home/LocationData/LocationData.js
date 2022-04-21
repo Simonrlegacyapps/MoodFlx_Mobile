@@ -31,7 +31,7 @@ import PostRequestApi from '../../../apirequest/PostRequestApi';
 import {getMyDeviceId} from '../../../services/commonService';
 import {AppPermissions} from '../../../services/appPermissions';
 import GetLocation from 'react-native-get-location';
-import {defaultLocation, isCountryIndia} from '../../../Constants/constants';
+import {dataTypes, defaultLocation, isCountryIndia} from '../../../Constants/constants';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Images from '../../../Constants/Images/Images';
 let mapStyle = [
@@ -133,7 +133,7 @@ const LocationData = ({
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
   const [region, setRegion] = useState({...defaultLoc});
-  const [markers, setMarkers] = useState([]);
+  const [markers, setMarkers] = useState(null);
   const mapRef = useRef(null);
 
   const UserData = useSelector((state) => state.First);
@@ -146,30 +146,24 @@ const LocationData = ({
   //   }
   // }, [UserData.lat, UserData.lon]);
 
-  const getUserLocation = async () => {
-    GetLocation.getCurrentPosition({
-      enableHighAccuracy: false,
-      timeout: 15000,
-    })
-      .then((location) => {
-        const isIndia = isCountryIndia();
-        if (isIndia) {
-          location = {
-            latitude: Number.parseFloat(defaultLocation.latitude),
-            longitude: Number.parseFloat(defaultLocation.longitude),
-          };
-        }
-        console.log('getCurrentPosition success', location);
-        // setlat(location.latitude);
-        setRegion({
-          ...defaultLoc,
-          ...location,
-        });
-      })
-      .catch(async (error) => {
-        const { code, message } = error;
-        console.log('getCurrentPosition error', code, message);
-      });
+  const setLocationData = async (lat, lon) => {
+    let location = {
+      latitude: Number.parseFloat(lat),
+      longitude: Number.parseFloat(lon),
+    };
+    const isIndia = isCountryIndia();
+    if (isIndia) {
+      location.latitude = Number.parseFloat(defaultLocation.latitude);
+      location.longitude = Number.parseFloat(defaultLocation.longitude);
+    }
+    console.log('getCurrentPosition success', location);
+    // setlat(location.latitude);
+    let _region = {
+      ...defaultLoc,
+      ...location,
+    };
+    setRegion(_region);
+    setMarkers([...[{location: {..._region}, icon: 'default'}]]);
   };
 
   const getLocationDataApi = () => {
@@ -230,11 +224,11 @@ const LocationData = ({
   };
 
   useEffect(() => {
-    if (UserData.WeatherPermission === true) {
-      getUserLocation();
-      getLocationDataApi();
+    if (UserData.WeatherPermission === true && UserData.lat && UserData.lon) {
+      setLocationData(UserData.lat, UserData.lon);
+      // getLocationDataApi();
     }
-  }, [UserData.WeatherPermission]);
+  }, [UserData.WeatherPermission, UserData.lat, UserData.lon]);
 
   const VerifyDone = async () => {
     // await AsyncStorage.setItem('GiveSleepPerm', 'true');
@@ -259,7 +253,7 @@ const LocationData = ({
     <View style={styles.container}>
       <HomeSyncHeader
         label={'Location'}
-        isPermissionGiven={false}
+        isPermissionGiven={UserData.WeatherPermission}
         setOpenActionSheet={setopenActionSheet}
         setAnonymousClick={setAnonymousClick}
       />
@@ -293,18 +287,21 @@ const LocationData = ({
           style={styles.map}
           region={region}
           initialRegion={defaultLoc}
+          moveOnMarkerPress={false}
           customMapStyle={mapStyle}
           // mapType={MAP_TYPES.HYBRID}
           showsScale>
-          {markers.map((e, idx) => (
-            <Marker
-              key={idx}
-              coordinate={e.location}
-              image={Images?.[e?.icon]}
-            // title={marker.title}
-            // description={marker.description}
-            />
-          ))}
+          {UserData.WeatherPermission &&
+            Array.isArray(markers) &&
+            markers.map((e, idx) => (
+              <Marker
+                key={idx}
+                coordinate={e.location}
+                // image={Images?.[e?.icon]}
+                // title={marker.title}
+                // description={marker.description}
+              />
+            ))}
         </MapView>
       </View>
       {!UserData.WeatherPermission && (
@@ -317,9 +314,9 @@ const LocationData = ({
 
       <PopUp
         ComingUp={false}
-        permission={UserData.StandTimePermission}
+        permission={UserData.WeatherPermission}
         image={Constants.Images.ScreenPopUpImg}
-        dataType={'standing'}
+        dataType={dataTypes.location}
         modalVisible={openActionSheet}
         dismissModalHandler={() => setopenActionSheet(false)}
         verifyDone={() => VerifyDone()}

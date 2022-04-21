@@ -47,8 +47,12 @@ export async function GetStaffUserData(
         // console.log('result.userData.reward_point ----', Number(result.userData.reward_point));
         dispatch(SetFloCoins(Number(result.userData.reward_point)));
       }
-      if (!isNotCheckUserBlocked && result?.userData?.status === 2) {
-        onUnlinkUpdate(dispatch);
+      if (
+        !isNotCheckUserBlocked && 
+        (result?.userData?.status === 2 || result?.userData?.status === 3)
+      ) {
+        unlinkFromCompany(params, dispatch);
+        // onUnlinkUpdate(dispatch);
       }
       return result;
     })
@@ -56,6 +60,23 @@ export async function GetStaffUserData(
       console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
     );
 }
+
+export const unlinkFromCompany = (params, dispatch, onFinish) => {
+  if (params?.email && params?.user_id) {
+    const p = {
+      email: params?.email,
+      user_id: params?.user_id,
+    };
+    PostRequestApi('unlinkToCompany', p)
+      .then(async (resp) => {
+        console.log('unlinkToCompany api Success');
+        onUnlinkUpdate(dispatch, onFinish);
+      })
+      .catch((err) => {
+        console.log('unlink api failed error: ', err);
+      });
+  }
+};
 
 export async function getDivisionName(
   params,
@@ -277,14 +298,30 @@ const fetchAndUpdateUserDetail = (requestData, dispatch) => {
     body: raw,
     redirect: 'follow',
   };
-
+  console.log('fetchAndUpdateUserDetail getStafUserData params --->', raw);
   fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
     .then((response) => response.json())
     .then((result) => {
-      console.log('UserDetail', result.userData);
+      console.log(
+        '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+        result.userData,
+      );
       dispatch?.(UserDetail(result.userData));
     })
     .catch((error) => console.log('error', error));
+};
+
+export const checkAndUpdateUserIfBlocked = (dispatch) => {
+  const userData = getStore?.()?.getState?.()?.First;
+  const deviceId = getMyDeviceId();
+  GetStaffUserData(
+    {
+      device_id: deviceId,
+      email: userData.UserEmail,
+      user_id: userData.UserId,
+    },
+    dispatch,
+  );
 };
 
 export default PostRequestApi;

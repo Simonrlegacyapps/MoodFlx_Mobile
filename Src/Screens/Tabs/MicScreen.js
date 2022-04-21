@@ -97,7 +97,7 @@ const MicScreen = ({navigation}) => {
       console.log('Error in Json parse Email --->', e);
     }
     dispatch(GetUserId(Id));
-    console.log('email --->', e);
+    // console.log('email --->', e);
     dispatch(UserEmail(e));
     if (!(e && Id)) {
       setquestions(null);
