@@ -64,11 +64,10 @@ import {
 import messaging, { firebase } from '@react-native-firebase/messaging';
 import LightData from '../Home/LightData/LightData';
 import GoogleFit, { Scopes } from 'react-native-google-fit';
-import {
-  AppInstalledChecker,
-  CheckPackageInstallation,
-} from 'react-native-check-app-install';
-import RNAndroidInstalledApps from 'react-native-android-installed-apps';
+// import {
+//   AppInstalledChecker,
+//   CheckPackageInstallation,
+// } from 'react-native-check-app-install';
 import InstallGoogleFitModal from '../../Components/Modals/InstallGoogleFitModal/InstallGoogleFitModal';
 import {
   googleFitScopes,
@@ -82,6 +81,7 @@ import Constants from '../../Constants';
 import { horizontalScale } from '../../Constants/sizeChoose';
 import StandingData from '../Home/StandingData/StandingData';
 import LocationData from '../Home/LocationData/LocationData';
+import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;

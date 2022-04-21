@@ -10,7 +10,7 @@ import {
 } from '../redux/actions/actions';
 import AsyncStorage from '@react-native-community/async-storage';
 import isFunction from 'lodash.isfunction';
-import {Platform, Linking, Alert} from 'react-native';
+import {Platform, Linking, Alert, NativeModules} from 'react-native';
 import isEmpty from 'lodash.isempty';
 import { activityHealthKitOptions } from './appPermissions';
 import moment from 'moment';
@@ -21,8 +21,8 @@ import getStore from '../redux';
 import { getApiBaseUrl } from '../Constants/constants';
 import uuid from 'react-native-uuid';
 import Toast from 'react-native-toast-message';
-import UsageStats from 'react-native-usage-stats';
 import PostRequestApi from '../apirequest/PostRequestApi';
+const {UsageStats} = NativeModules;
 
 let moodsArray = [];
 let isInitialVideoVisisble = false;

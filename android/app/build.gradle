@@ -236,6 +236,14 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
+            /* Add the firebaseCrashlytics extension (by default,
+            * it's disabled to improve build speeds) and set
+            * nativeSymbolUploadEnabled to true along with a pointer to native libs. */
+
+            firebaseCrashlytics {
+                nativeSymbolUploadEnabled true
+                unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
+            }
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             buildConfigField 'String', 'BASE_URL', '"https://admin.moodflo.com/api/"'
@@ -272,14 +280,14 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    implementation "com.google.android.gms:play-services-auth:19.0.0"
-    implementation "com.google.android.gms:play-services-fitness:21.0.0"
+    implementation "com.google.android.gms:play-services-auth:20.1.0"
+    implementation "com.google.android.gms:play-services-fitness:21.0.1"
     implementation(project(':react-native-maps')){
         exclude group: 'com.google.android.gms', module: 'play-services-base'
         exclude group: 'com.google.android.gms', module: 'play-services-maps'
     }
-    implementation "com.google.android.gms:play-services-base:17.6.0"
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation "com.google.android.gms:play-services-base:18.0.1"
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

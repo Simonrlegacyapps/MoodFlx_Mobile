@@ -17,6 +17,10 @@ import com.moodflo.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
+import com.moodflo.SharedStoragePackager;
+import com.moodflo.CheckPackageInstallationPackage;
+import com.moodflo.nativemodules.sensormanager.SensorManagerPackage;
+import com.moodflo.nativemodules.usagestats.UsageStatsPackage;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
@@ -33,6 +37,9 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
            packages.add(new SharedStoragePackager());
+           packages.add(new CheckPackageInstallationPackage());
+           packages.add(new SensorManagerPackage());
+           packages.add(new UsageStatsPackage());
           return packages;
         }
 

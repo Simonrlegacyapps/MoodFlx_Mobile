@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Platform,
   AppState,
+  NativeModules,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -28,7 +29,6 @@ import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezier
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import PopUp from '../../../Components/PopUp/PopUp';
 import Toast from 'react-native-toast-message';
-import UsageStats from 'react-native-usage-stats';
 import moment from 'moment';
 import CrownBox from '../../../Components/crownBox/crownBox';
 import {useSelector, useDispatch} from 'react-redux';
@@ -46,6 +46,7 @@ import {fetchAndUpdateScreenTimeData, getMyDeviceId, getScreenDataTimeInHoursMin
 import AsyncStorage from '@react-native-community/async-storage';
 import Skeleton from '../../../Components/Skeleton/Skeleton';
 import { getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
+const {UsageStats} = NativeModules;
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
