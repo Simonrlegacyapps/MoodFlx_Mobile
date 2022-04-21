@@ -338,7 +338,7 @@ const FitnessData = ({
       redirect: 'follow',
     };
 
-    console.log(`raw`, raw);
+    console.log('FitnessData  updateStaffProfile params --->', raw);
 
     GetStaffUserData(
       {
@@ -347,16 +347,16 @@ const FitnessData = ({
         user_id: UserData.UserId,
       }, dispatch)
       .then(async (result) => {
-        // console.log(
-        //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
-        //   result?.userData
-        // );
+        console.log(
+          '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+          result?.userData,
+        );
         if (result?.userData?.status !== 2) {
           return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         } else {
           raw.user_id = '';
-          raw.email = ''
-          requestOptions.body = JSON.stringify(raw)
+          raw.email = '';
+          requestOptions.body = JSON.stringify(raw);
           return fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions);
         }
       })
@@ -393,7 +393,7 @@ const FitnessData = ({
       body: raw,
       redirect: 'follow',
     };
-
+    console.log('FitnessData getStafUserData params --->', raw);
     fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then((result) => {

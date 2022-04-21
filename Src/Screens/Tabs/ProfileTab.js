@@ -30,7 +30,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
 import {useDispatch, useSelector} from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
-import {NotificationPerm, UserDetail} from '../../redux/actions/actions';
+import {NotificationPerm, SetShowIsDevServerModal, UserDetail} from '../../redux/actions/actions';
 import {GetStaffUserData} from '../../apirequest/PostRequestApi';
 import {AppPermissions} from '../../services/appPermissions';
 import {useFocusEffect} from '@react-navigation/native';
@@ -50,6 +50,7 @@ import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
 import Clipboard from '@react-native-clipboard/clipboard';
+import getStore from '../../redux';
 
 const listData = [
   { name: 'Name', value: 'Anonymous' },
@@ -117,6 +118,7 @@ const ProfileTab = ({ navigation }) => {
 
   const getProfileUserData = () => {
     // console.log('called called called called called called');
+    const userData = getStore?.()?.getState?.()?.First;
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -124,8 +126,8 @@ const ProfileTab = ({ navigation }) => {
     GetStaffUserData(
       {
         device_id: deviceId,
-        email: UserData.UserEmail,
-        user_id: UserData.UserId,
+        email: userData.UserEmail,
+        user_id: userData.UserId,
       },
       dispatch,
     )
@@ -335,7 +337,7 @@ const ProfileTab = ({ navigation }) => {
     });
   };
 
-  const ProfileApiCallHere = async ({ _name, _gender, _pronoun }) => {
+  const ProfileApiCallHere = async ({_name, _gender, _pronoun}) => {
     const name_ = _name ? _name : name;
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
@@ -350,21 +352,21 @@ const ProfileTab = ({ navigation }) => {
         name_ != 'Anonymous'
           ? name_
           : name_ != '' && UserData?.UserDetails?.full_name
-            ? UserData?.UserDetails?.full_name
-            : name_,
+          ? UserData?.UserDetails?.full_name
+          : name_,
       pronouns: _pronoun
         ? _pronoun.name
         : UserData?.UserDetails?.pronouns
-          ? UserData?.UserDetails?.pronouns
-          : '',
+        ? UserData?.UserDetails?.pronouns
+        : '',
       date_of_birth: UserData?.UserDetails?.date_of_bitrh
         ? UserData?.UserDetails?.date_of_bitrh
         : Birthday,
       gender: _gender
         ? _gender.id
         : UserData?.UserDetails?.gender
-          ? UserData?.UserDetails?.gender
-          : '',
+        ? UserData?.UserDetails?.gender
+        : '',
     });
 
     var requestOptions = {
@@ -380,7 +382,11 @@ const ProfileTab = ({ navigation }) => {
     await fetch(`${getApiBaseUrl()}updateStaffProfile`, requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        console.log('profile updated', result), getProfileUserData();
+        console.log(
+          '✅ ✅ ✅ ✅ Success Update Staff Profile ✅ ✅ ✅ ✅',
+          result,
+        );
+        getProfileUserData();
       })
       .catch((error) => console.log('error', error));
     setLoading(false);
@@ -477,27 +483,28 @@ const ProfileTab = ({ navigation }) => {
                 style={[styles.borderStyle, { marginRight: dynamicSize(17) }]}
               />
               <Text
-                // onPress={() => Alert.alert('Personal Details', JSON.stringify({
-                //   device_id: getMyDeviceId(),
-                //   email: UserData.UserEmail,
-                //   user_id: UserData.UserId,
-                //   division: UserData.UserDivision,
-                //   server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
-                // }), [
-                //   {
-                //     text: "Cancel",
-                //     onPress: () => console.log("Cancel Pressed"),
-                //     style: "cancel"
-                //   },
-                //   { text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
-                //     device_id: getMyDeviceId(),
-                //     email: UserData.UserEmail,
-                //     user_id: UserData.UserId,
-                //     division: UserData.UserDivision,
-                //     server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
-                //   }))
-                //   }
-                // ])}
+                onPress={() => Alert.alert('Personal Details', JSON.stringify({
+                  device_id: getMyDeviceId(),
+                  email: UserData.UserEmail,
+                  user_id: UserData.UserId,
+                  division: UserData.UserDivision,
+                  server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                }), [
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                  },
+                  { text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
+                    device_id: getMyDeviceId(),
+                    email: UserData.UserEmail,
+                    user_id: UserData.UserId,
+                    division: UserData.UserDivision,
+                    server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                  }))
+                  }
+                ])}
+                // onLongPress={() => dispatch(SetShowIsDevServerModal(true))}
               >PERSONAL DETAILS</Text>
               <View
                 style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}
@@ -677,7 +684,7 @@ const ProfileTab = ({ navigation }) => {
                       styles.anonymousTextStyle,
                       { marginLeft: dynamicSize(16) },
                     ]}>
-                    How MoodFlx Works
+                    How moodflx Works
                   </Text>
                   {isHowMoodFloWorksPtsGiven === false && (
                     <ImageBackground

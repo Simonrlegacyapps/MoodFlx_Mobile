@@ -77,7 +77,7 @@ const Screen1 = ({onDone}) => {
       t1: 'Flx can use your data. ',
       t2: 'The more data, the more smarter!',
       t3: '',
-      t4: 'Let Flx undestand your environment and how it impacts your mood',
+      t4: 'Let Flx understand your environment and how it impacts your mood',
       button: "Next"
     },
     {
@@ -118,8 +118,8 @@ const Screen1 = ({onDone}) => {
   };
 
   useEffect(() => {
-    checkHowMoodFloWorksPtsGive(UserData.UserEmail, UserData.UserId)
-  }, [UserData.UserEmail, UserData.UserId])
+    checkHowMoodFloWorksPtsGive(UserData.UserEmail, UserData.UserId);
+  }, [UserData.UserEmail, UserData.UserId]);
 
   return (
     <View>

@@ -411,11 +411,12 @@ const SleepData = ({
     }
     console.log('api sleep data: ', sleepData);
     // return;
+    const userData = getStore?.()?.getState?.()?.First;
     const deviceId = getMyDeviceId();
     let data = {
       device_id: deviceId,
-      email: UserData.UserEmail ?? '',
-      user_id: UserData.UserId ?? '',
+      email: userData.UserEmail ?? '',
+      user_id: userData.UserId ?? '',
       sleep_data: sleepData,
     };
     var config = {
@@ -431,8 +432,8 @@ const SleepData = ({
     GetStaffUserData(
       {
         device_id: deviceId,
-        email: UserData.UserEmail ?? '',
-        user_id: UserData.UserId ?? '',
+        email: userData.UserEmail ?? '',
+        user_id: userData.UserId ?? '',
       },
       dispatch,
     )

@@ -21,7 +21,12 @@ import {
   StandTimePerm,
   WeatherPerm,
 } from '../redux/actions/actions';
-import {defaultLocation, isCountryIndia} from '../Constants/constants';
+import {
+  defaultLocation,
+  getIsGetCurrentLocationCalled,
+  isCountryIndia,
+  setIsGetCurrentLocationCalled,
+} from '../Constants/constants';
 import { setFitnessDataSync } from './commonService';
 
 const CAMERA_PERMISSION = {
@@ -233,7 +238,7 @@ class MoodFloPermission {
     }
   };
 
-  checkAppPermissions = async (dispatch) => {
+  checkAppPermissions = async (dispatch, isFetchCurrentLocation = true) => {
     if (!dispatch) {
       return false;
     }
@@ -260,22 +265,29 @@ class MoodFloPermission {
     } catch (error) {
       console.log('error in location permission', error);
     }
-    try {
-      if (isLocationPermissionGiven) {
-        location = await GetLocation.getCurrentPosition({
-          enableHighAccuracy: false,
-          timeout: 15000,
-        });
+    if (
+      isFetchCurrentLocation === true &&
+      getIsGetCurrentLocationCalled() === false
+    ) {
+      try {
+        if (isLocationPermissionGiven) {
+          setIsGetCurrentLocationCalled(true);
+          location = await GetLocation.getCurrentPosition({
+            enableHighAccuracy: false,
+            timeout: 15000,
+          });
+        }
+      } catch (error) {
+        console.log('error in getCurrentPosition', error);
       }
-    } catch (error) {
-      console.log('error in getCurrentPosition', error);
-    }
-    const isIndia = isCountryIndia();
-    if (location && isIndia) {
-      location = {
-        latitude: defaultLocation.latitude,
-        longitude: defaultLocation.longitude,
-      };
+      setIsGetCurrentLocationCalled(false);
+      const isIndia = isCountryIndia();
+      if (location && isIndia) {
+        location = {
+          latitude: defaultLocation.latitude,
+          longitude: defaultLocation.longitude,
+        };
+      }
     }
     if (isLocationPermissionGiven) {
       await AsyncStorage.setItem('GiveWeatherPerm', 'true');

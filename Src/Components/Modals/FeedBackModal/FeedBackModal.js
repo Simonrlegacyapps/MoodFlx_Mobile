@@ -182,7 +182,7 @@ const FeedBackModal = ({
       body: raw,
       redirect: 'follow',
     };
-
+    console.log('Feedback Modal getStafUserData params --->', raw);
     fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then((result) => {

@@ -186,7 +186,7 @@ const SaveMoodConfirmModal = ({
       body: raw,
       redirect: 'follow',
     };
-
+    console.log('SaveMoodConfirmModal getStafUserData params --->', raw);
     fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then((result) => {

@@ -181,18 +181,21 @@ function RewardsHistory({setIsLevelsHide, islevelsHide}) {
 
   return (
     <>
-      {(!(UserData.UserId && UserData.UserEmail) || (Array.isArray(claimRewardList) && claimRewardList.length > 0)) ? (
+      {UserData.UserId &&
+      UserData.UserEmail &&
+      Array.isArray(claimRewardList) &&
+      claimRewardList.length > 0 ? (
         <View style={styles.availableContainer}>
           <FlatList
             scrollEnabled={true}
-            data={(UserData.UserId && UserData.UserEmail) ? (claimRewardList ?? []) : getHistory()}
+            data={(claimRewardList ?? [])}
             renderItem={renderItem}
             onScroll={onScroll}
             keyExtractor={(item, index) => (`${item?.claim_reward_item_id ?? index}`)}
             showsVerticalScrollIndicator={false}
           />
           <View style={{ padding: 40 }} />
-        </View >
+        </View>
       ) : (
         <ScrollView
           style={styles.notAvailableContainer}

@@ -114,7 +114,7 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
       body: raw,
       redirect: 'follow',
     };
-
+    console.log('AnonymousHeader getStafUserData params --->', raw);
     fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then((result) => {

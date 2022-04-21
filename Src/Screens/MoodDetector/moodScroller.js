@@ -143,13 +143,15 @@ export default function MoodScroller({
                 // viewBox="0 0 24 24"
                 // fill={t === 'content' ? '#000000' : undefined}
                 // stroke="#000000"
+                // source={{
+                //   uri: `${MOOD_ICONS}mood_icons/161616176321272238406054abe3bb450.svg`,
+                // }}
                 source={{
                   uri:
                     typeof toolTipData?.icon === 'string'
                       ? `${getMoodIconsUrl()}${toolTipData.icon}`
                       : `${MOOD_ICONS}mood_icons/161616176321272238406054abe3bb450.svg`,
                 }}
-              // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
               />
             )}
           </View>

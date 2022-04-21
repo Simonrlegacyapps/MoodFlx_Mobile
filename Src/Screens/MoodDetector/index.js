@@ -49,7 +49,7 @@ import CloseIcon from '../../../assets/commonicons/CloseIcon';
 import QuestionMarkIcon from '../../../assets/commonicons/QuestionMarkIcon';
 import moment from 'moment';
 import GetLocation from 'react-native-get-location';
-import PostRequestApi from '../../apirequest/PostRequestApi';
+import PostRequestApi, { checkAndUpdateUserIfBlocked, GetStaffUserData } from '../../apirequest/PostRequestApi';
 import VideoModal from '../../Components/VideoModal/VideoModal';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
@@ -79,9 +79,11 @@ import messaging, { firebase } from '@react-native-firebase/messaging';
 import {
   defaultLocation,
   getApiBaseUrl,
+  getIsGetCurrentLocationCalled,
   hapticsTopFlags,
   isCountryIndia,
   moodTypes,
+  setIsGetCurrentLocationCalled,
 } from '../../Constants/constants';
 import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
@@ -328,7 +330,7 @@ export default function MoodDetector({ navigation }) {
         return true;
       },
       onPanResponderRelease: (event, gestureState) => {
-        console.log('onPanResponderRelease');
+        // console.log('onPanResponderRelease');
         // pan.current.flattenOffset();
         setisHapticsEnabled(false);
         shouldPlayHaptics.current = false;
@@ -858,9 +860,9 @@ export default function MoodDetector({ navigation }) {
       let e = await JSON.parse(p);
       let HealthP = await JSON.parse(Hp);
       let WeatherP = await JSON.parse(Wp);
-      console.log(`e`, e);
-      console.log(`HealthPerm`, HealthP);
-      console.log(`WeatherPerm`, WeatherP);
+      // console.log(`e`, e);
+      // console.log(`HealthPerm`, HealthP);
+      // console.log(`WeatherPerm`, WeatherP);
       dispatch(UserEmail(e));
       dispatch(HealthPerm(HealthP));
       dispatch(WeatherPerm(WeatherP));
@@ -890,17 +892,18 @@ export default function MoodDetector({ navigation }) {
       user_id: UserData?.UserId,
     });
 
+    console.log('MoodInput screen getStafUserData params --->', raw);
+
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
       body: raw,
       redirect: 'follow',
     };
-
     fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
       .then((response) => response.json())
       .then(async (result) => {
-        // console.log('UserDetailsssssssssssssssss here', await result);
+        console.log('✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅', result);
         await dispatch(UserDetail(result.userData));
       })
       .catch((error) => console.log('error', error));
@@ -969,13 +972,18 @@ export default function MoodDetector({ navigation }) {
     const timeoutId = setTimeout(() => {
       checkStorage();
       getProfileUserData();
-      UserData.WeatherPermission &&
+      if (
+        UserData.WeatherPermission &&
         (UserData.lat == null || UserData.lon == null) &&
+        getIsGetCurrentLocationCalled() === false
+      ) {
+        setIsGetCurrentLocationCalled(true);
         GetLocation.getCurrentPosition({
           enableHighAccuracy: false,
           timeout: 15000,
         })
           .then((location) => {
+            setIsGetCurrentLocationCalled(false);
             const isIndia = isCountryIndia();
             if (isIndia) {
               location = {
@@ -990,9 +998,11 @@ export default function MoodDetector({ navigation }) {
             dispatch(Long(location.longitude));
           })
           .catch((error) => {
-            const {code, message} = error;
+            setIsGetCurrentLocationCalled(false);
+            const { code, message } = error;
             console.log('error', code, message);
           });
+      }
     }, 150);
     return () => {
       timeoutId && clearTimeout(timeoutId);
@@ -1146,6 +1156,7 @@ export default function MoodDetector({ navigation }) {
   };
 
   const findId = async () => {
+    const user_data = getStore?.()?.getState?.()?.First;
     let mood_type = moodTypes.regular;
     if (wheelSize === mediumWheelSize) {
       mood_type = moodTypes.pretty;
@@ -1166,10 +1177,10 @@ export default function MoodDetector({ navigation }) {
     var city_info = '';
     var country_info = '';
     setLoading(true);
-    if (UserData.lat && UserData.lon) {
+    if (user_data.lat && user_data.lon) {
       await Geocoder.from({
-        lat: UserData.lat,
-        lng: UserData.lon,
+        lat: user_data.lat,
+        lng: user_data.lon,
       })
         .then((data) => {
           geocode = data.plus_code.compound_code;
@@ -1196,7 +1207,7 @@ export default function MoodDetector({ navigation }) {
         })
         .catch((err) => console.log(`weather api location err`, err));
     }
-    const Id = UserData.AllMoods.find(({ name }) => {
+    const Id = user_data.AllMoods.find(({ name }) => {
       // console.log(`name`, name);
       return name === emotionText;
     });
@@ -1228,16 +1239,21 @@ export default function MoodDetector({ navigation }) {
         mood_id: Id.id,
         device_id: deviceId,
         mood_type,
-        city: isIndia || !UserData.lat ? defaultLocation.city : city_info,
-        state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
-        country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
-        lat: isIndia || !UserData.lat ? defaultLocation.latitude : UserData.lat,
-        lon: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
-        email: UserData.UserEmail,
-        user_id: UserData.UserId,
+        city: isIndia && user_data.WeatherPermission ? defaultLocation.city : city_info,
+        state: isIndia && user_data.WeatherPermission ? defaultLocation.state : state_info,
+        country: isIndia && user_data.WeatherPermission ? defaultLocation.country : country_info,
+        lat: isIndia && user_data.WeatherPermission ? defaultLocation.latitude : user_data.lat,
+        lon: isIndia && user_data.WeatherPermission ? defaultLocation.longitude : user_data.lon,
+        // city: isIndia || !UserData.lat ? defaultLocation.city : city_info,
+        // state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
+        // country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
+        // lat: isIndia || !UserData.lat ? defaultLocation.latitude : UserData.lat,
+        // lon: isIndia || !UserData.lon ? defaultLocation.longitude : UserData.lon,
+        email: user_data.UserEmail,
+        user_id: user_data.UserId,
         device_token: fcm,
         device_type: Platform.OS,
-        anonymous: !UserData.Anonymous ? 0 : 1,
+        anonymous: !user_data.Anonymous ? 0 : 1,
         reward_point: rewardPoint,
         section_index: 4,
         description: 'mood input',
@@ -1255,14 +1271,14 @@ export default function MoodDetector({ navigation }) {
         });
         var raw = JSON.stringify({
           device_id: deviceId,
-          email: UserData.UserEmail,
+          email: user_data.UserEmail,
           pulse_question_id: route?.params?.question
             ? route?.params?.question
             : QuestionID,
           mood_id: Id.id,
           mood_type,
-          is_anonymous: !UserData.Anonymous ? 0 : 1,
-          user_id: UserData.UserId,
+          is_anonymous: !user_data.Anonymous ? 0 : 1,
+          user_id: user_data.UserId,
           reward_point: pulseAnswerRewardPoints,
           section_index: 3,
           description: 'team pulse answer',
@@ -1436,6 +1452,7 @@ export default function MoodDetector({ navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
+      checkAndUpdateUserIfBlocked(dispatch);
       isMoodDetectorScreenFocused = true;
       setIsScreenFocused(true);
       // if(currentNotif) {
