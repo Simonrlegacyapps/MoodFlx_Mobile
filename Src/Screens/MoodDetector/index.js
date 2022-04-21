@@ -330,7 +330,7 @@ export default function MoodDetector({ navigation }) {
         return true;
       },
       onPanResponderRelease: (event, gestureState) => {
-        console.log('onPanResponderRelease');
+        // console.log('onPanResponderRelease');
         // pan.current.flattenOffset();
         setisHapticsEnabled(false);
         shouldPlayHaptics.current = false;
