@@ -10,6 +10,7 @@ import Svg, {
   Rect,
   SvgXml,
 } from 'react-native-svg';
+import Colors from '../../Src/Constants/Colors/Colors';
 
 export function MonthlyInsightsProgressImage(props) {
   const xml = `
@@ -37,7 +38,7 @@ export function MonthlyInsightsProgressImage(props) {
     </filter>
     <linearGradient id="paint0_linear" x1="91.1261" y1="12.4999" x2="-1.14865" y2="12.4999" gradientUnits="userSpaceOnUse">
     <stop stop-color="#54A7E3"/>
-    <stop offset="1" stop-color="#7265E3"/>
+    <stop offset="1" stop-color="${Colors.blueTextColor}"/>
     </linearGradient>
     </defs>
     </svg>

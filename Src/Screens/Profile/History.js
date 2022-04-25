@@ -19,6 +19,7 @@ import {getMyDeviceId} from '../../services/commonService';
 import {useFocusEffect} from '@react-navigation/native';
 import moment from 'moment';
 import {SetClaimedRewards} from '../../redux/actions/actions';
+import Colors from '../../Constants/Colors/Colors';
 
 function getHistory() {
   return [
@@ -206,7 +207,7 @@ function RewardsHistory({setIsLevelsHide, islevelsHide}) {
               <HisotyImage />
             </View>
             <Text style={styles.BigText}>You're Getting There! </Text>
-            <Text style={styles.SmallText}>You haven't redeemed {`\n`}any rewards yet. Keep bringing {`\n`}in the Flx coins!</Text>
+            <Text style={styles.SmallText}>You haven't redeemed {`\n`}any rewards yet. Keep bringing {`\n`}in the flx coins!</Text>
           </View>
           <View style={styles.bottomTwo} />
         </ScrollView>
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   SmallText: {
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
     textAlign: 'center',
     marginTop: 20,
     fontSize: 16,
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
   itemDetails: {
     width: '80%',
     fontFamily: RubikLight,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontSize: getFontSize(12),
     flex: 1,
   },

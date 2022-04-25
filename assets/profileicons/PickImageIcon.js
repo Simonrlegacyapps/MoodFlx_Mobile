@@ -1,5 +1,6 @@
 import * as React from "react"
 import Svg, { Path } from "react-native-svg"
+import Colors from "../../Src/Constants/Colors/Colors"
 
 const PickImageIcon = ({ w, h }) => {
     return (
@@ -12,7 +13,7 @@ const PickImageIcon = ({ w, h }) => {
         >
             <Path
                 d="M15.158 0h17.684C41.214 0 48 6.786 48 15.158v17.684C48 41.214 41.214 48 32.842 48H15.158C6.786 48 0 41.214 0 32.842V15.158C0 6.786 6.786 0 15.158 0z"
-                fill="#7265E3"
+                fill={Colors.blueTextColor}
             />
             <Path
                 fillRule="evenodd"

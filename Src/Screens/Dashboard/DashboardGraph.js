@@ -49,6 +49,7 @@ import BarGraph from '../../Components/BarChart/BarGraph';
 import {IndicatorHelper} from '../../Components/CommonComponents/CommonComponents';
 import {getSleepGraphData} from '../Home/SleepData/sleepDataService';
 import {RubikExtraBold, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
+import Colors from '../../Constants/Colors/Colors';
 // const characterData = [
 //   { x: 'Monday', y: 18, fill: '#E74C3C' },
 //   { x: 'Tuesday', y: 24, fill: '#CDE73C' },
@@ -770,7 +771,7 @@ export function WeatherTab(props) {
           <BarGraph
             max={max}
             min={Lowmin}
-            color={'#7265E3'}
+            color={Colors.blueTextColor}
             TopLabels
             ShowPollen={true}
             RightBar={true}
@@ -807,7 +808,7 @@ export function WeatherTab(props) {
           style={weatherStyles.indicatorHelperContainer}>
           <IndicatorHelper color={'#7FE3F0'} text={'Min ºC'} />
           <IndicatorHelper color={'#FC4190'} text={'Max ºC'} />
-          <IndicatorHelper color={'#7265E3'} text={'Rainfall'} />
+          <IndicatorHelper color={Colors.blueTextColor} text={'Rainfall'} />
           <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
         </View>
       </View>

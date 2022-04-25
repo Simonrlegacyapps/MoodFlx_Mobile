@@ -17,6 +17,7 @@ import Constants from '../../Constants';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import { getMyDeviceId } from '../../services/commonService';
+import Colors from '../../Constants/Colors/Colors';
 
 const {width: width} = Dimensions.get('window');
 
@@ -227,7 +228,7 @@ const EmailConfirmation = ({navigation}) => {
             style={{
               height: 56,
               width: dynamicSize(240),
-              backgroundColor: '#7265E3',
+              backgroundColor: Colors.blueTextColor,
               borderRadius: 16,
               alignItems: 'center',
               justifyContent: 'center',

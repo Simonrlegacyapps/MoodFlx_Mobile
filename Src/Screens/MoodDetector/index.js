@@ -1933,7 +1933,9 @@ const styles = StyleSheet.create({
   },
   saveText: {
     textAlign: 'center',
-    fontSize: getFontSize(18),
+    fontSize: getFontSize(16),
+    fontFamily: RubikMedium,
+    color: Colors.blackColorCode,
   },
   ErrorText: {
     fontWeight: '300',

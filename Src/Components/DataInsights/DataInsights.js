@@ -30,6 +30,7 @@ import { useSelector } from 'react-redux';
 import PostRequestApi from '../../apirequest/PostRequestApi'
 import isFunction from 'lodash.isfunction';
 import ProgressDay from './ProgressDay';
+import Colors from '../../Constants/Colors/Colors';
 
 const insightsDurationFlags = {
   daily: 'daily',
@@ -315,7 +316,7 @@ function DataInsights({
                   width={2.5}
                   fill={(timeLeft / 5) * 100}
                   rotation={0}
-                  tintColor="#7265E3"
+                  tintColor={Colors.blueTextColor}
                   lineCap={'round'}
                   backgroundColor="#CFF9ED">
                   {(fill) => (
@@ -355,7 +356,7 @@ function DataInsights({
                   width={2.5}
                   fill={(getMonthlyInsightsDaysLeft() / getMonthlyInsightsStartEndTime().startTime.date()) * 100}
                   rotation={0}
-                  tintColor="#7265E3"
+                  tintColor={Colors.blueTextColor}
                   lineCap={'round'}
                   backgroundColor="#CFF9ED">
                   {(fill) => (
@@ -426,7 +427,7 @@ function DataInsights({
             <View style={styles.borderLine} />
             <ProgressDay color={'#4C5F79'} label={"W"} label2={MoodCountData[3].mood_count} progress={MoodCountData[2].mood_count} />
             <View style={styles.borderLine} />
-            <ProgressDay color={'#7265E3'} label={"T"} label2={MoodCountData[4].mood_count} progress={MoodCountData[3].mood_count} />
+            <ProgressDay color={Colors.blueTextColor} label={"T"} label2={MoodCountData[4].mood_count} progress={MoodCountData[3].mood_count} />
             <View style={styles.borderLine} />
             <ProgressDay color={'#7FE3F0'} label={"F"} label2={MoodCountData[5].mood_count} progress={MoodCountData[4].mood_count} />
             {/* <View style={styles.borderLine} /> */}
@@ -567,12 +568,12 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: getFontSize(18),
     fontFamily: RubikMedium,
-    color: '#7265E3',
+    color: Colors.blueTextColor,
   },
   monthlyProgressText: {
     fontSize: getFontSize(13),
     fontFamily: RubikMedium,
-    color: '#7265E3',
+    color: Colors.blueTextColor,
   },
   progressView: {
     width: '50%',
@@ -583,7 +584,7 @@ const styles = StyleSheet.create({
   },
   borderLine:{height: 1, width: '75%', backgroundColor: '#D6D6D6'},
   TargetView:{
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,

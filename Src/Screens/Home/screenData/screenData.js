@@ -46,6 +46,7 @@ import {fetchAndUpdateScreenTimeData, getMyDeviceId, getScreenDataTimeInHoursMin
 import AsyncStorage from '@react-native-community/async-storage';
 import Skeleton from '../../../Components/Skeleton/Skeleton';
 import { getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import Colors from '../../../Constants/Colors/Colors';
 const {UsageStats} = NativeModules;
 // import AddManualScreenTimeModal from '../../../Components/Modals/AddManualScreenTime/AddManualScreenTimeModal';
 
@@ -928,7 +929,7 @@ const styles = StyleSheet.create({
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
-    color: '#747690',
+    color: Colors.greyColorCode,
   },
   swiperText: {
     fontSize: SIZE / 14,
@@ -946,7 +947,7 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
   bottomView: {

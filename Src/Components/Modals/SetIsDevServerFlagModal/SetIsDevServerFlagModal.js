@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     width: '80%',
     marginTop: horizontalScale(35),
     padding: dynamicSize(10),
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: horizontalScale(8),
     alignItems: 'center',
     justifyContent: 'center',

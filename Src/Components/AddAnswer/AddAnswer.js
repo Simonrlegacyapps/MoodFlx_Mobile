@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import Constants from '../../Constants';
+import { RubikMedium } from '../../Constants/fonts/Fonts';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import AddButton from '../buttons/AddButton';
 import ProfileGenderModal from '../Modals/ProfileGender/ProfileGenderModal';
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
   anonymousTextStyle: {
     color: Constants.Colors.blackColorCode,
     fontSize: dynamicSize(16),
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     marginTop: dynamicSize(8),
   },
   flatlistViewStyle: {

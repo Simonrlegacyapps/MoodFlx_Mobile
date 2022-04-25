@@ -23,6 +23,7 @@ import {
 import {dynamicSize} from '../../../Constants/sizeChoose';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
 import Constants from '../../../Constants';
+import Colors from '../../../Constants/Colors/Colors';
 
 type props = {
   modalVisible: Boolean,
@@ -102,7 +103,7 @@ const NotificationQuestion = ({
             style={{
               fontWeight: '500',
               fontSize: 16,
-              color: '#9C9EB9',
+              color: Colors.greyColorCode,
               textAlign: 'center',
               marginTop: 20,
             }}>
@@ -148,42 +149,14 @@ const NotificationQuestion = ({
                     fontWeight: '500',
                     marginHorizontal: 20,
                     fontSize: 16,
-                    color: '#7265E3',
+                    color: Colors.blueTextColor,
                   }}>
                   Answer with mood
                 </Text>
               </View>
             </TouchableOpacity>
-            {/* <TouchableOpacity
-              onPress={() => {
-                verifyDone('No');
-              }}
-              style={{alignItems: 'center'}}>
-              <View
-                style={{
-                  marginTop: 48,
-                  height: dynamicSize(53),
-                  width: dynamicSize(130),
-                  backgroundColor: '#7265E3',
-                  borderRadius: 16,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 40,
-                }}>
-                <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
-                  Later
-                </Text>
-              </View>
-            </TouchableOpacity> */}
           </View>
         </View>
-        {/* <TouchableOpacity
-          onPress={dismissModalHandler}
-          activeOpacity={0.9}
-          style={styles.cancelButtonStyle}>
-          <Text style={styles.textStyles}>Cancel</Text>
-        </TouchableOpacity> */}
       </View>
     </Modal>
   );

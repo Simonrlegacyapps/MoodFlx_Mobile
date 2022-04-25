@@ -1,5 +1,6 @@
 import * as React from "react"
 import Svg, { Path } from "react-native-svg"
+import Colors from "../../Src/Constants/Colors/Colors"
 
 const MicActiveIcon = () => {
     return (
@@ -14,7 +15,7 @@ const MicActiveIcon = () => {
                 fillRule="evenodd"
                 clipRule="evenodd"
                 d="M12.25 4.565C12.25 2.287 10.422.44 8.167.44S4.083 2.288 4.083 4.565v7.216c0 2.277 1.829 4.123 4.084 4.123s4.083-1.846 4.083-4.123V4.565zm3.063 6.185c-.564 0-1.021.461-1.021 1.03 0 3.417-2.743 6.186-6.125 6.186-3.383 0-6.125-2.77-6.125-6.185 0-.57-.457-1.031-1.021-1.031C.457 10.75 0 11.21 0 11.78c0 4.555 3.656 8.247 8.167 8.247 4.51 0 8.166-3.692 8.166-8.246 0-.57-.457-1.031-1.02-1.031z"
-                fill="#2D3142"
+                fill={Colors.blackColorCode}
             />
         </Svg>
     )

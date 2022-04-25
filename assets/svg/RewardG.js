@@ -1,5 +1,6 @@
 import * as React from "react"
 import Svg, { Circle, Path } from 'react-native-svg'
+import Colors from "../../Src/Constants/Colors/Colors"
 
 function RewardG({w,h, color}) {
     return (
@@ -11,7 +12,7 @@ function RewardG({w,h, color}) {
         xmlns="http://www.w3.org/2000/svg"
         
       >
-        <Circle cx={36} cy={36} r={36} fill="#4C5980" />
+        <Circle cx={36} cy={36} r={36} fill={Colors.greyTwo} />
         <Path
           d="M23.745 34.448v7.87c0 2.881 0 2.881 2.723 4.718l7.49 4.322c1.123.65 2.96.65 4.084 0l7.49-4.322c2.723-1.837 2.723-1.837 2.723-4.718v-7.87c0-2.881 0-2.881-2.724-4.718l-7.489-4.323c-1.124-.649-2.96-.649-4.085 0l-7.489 4.323c-2.723 1.837-2.723 1.837-2.723 4.718z"
           stroke="#fff"

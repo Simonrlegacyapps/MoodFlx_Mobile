@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import {dynamicSize} from '../../Constants/sizeChoose';
 import Constants from '../../Constants';
+import {RubikMedium} from '../../Constants/fonts/Fonts';
 
 const AddButton = ({label, containerStyle}) => {
   return (
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textStyle: {
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: dynamicSize(14),
     color: Constants.Colors.blueTextColor,
   },

@@ -2,6 +2,7 @@ import React, {useEffect, useState, useCallback} from 'react';
 import {Animated, StyleSheet, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import TickProgressBar from '../../../assets/svg/tickProgressBar';
+import Colors from '../../Constants/Colors/Colors';
 
 const Progress = (props) => {
   const {
@@ -173,7 +174,7 @@ const Progress = (props) => {
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={[
-              backgroundColor? backgroundColor : MoodCount > 3 ? '#A29EF1' : '#7265E3',
+              backgroundColor? backgroundColor : MoodCount > 3 ? '#A29EF1' : Colors.blueTextColor,
               backgroundColor? backgroundColor : MoodCount > 3 ? '#8EC2F0' : '#58A0E3',
             ]}
             style={styles.linearGradient}></LinearGradient>
@@ -183,7 +184,7 @@ const Progress = (props) => {
       {dot1 ? null :
       <View style={[{left: 0}, styles.circleView, styles.circle]}>
         {MoodCount >= 0 && (
-          <View style={[{backgroundColor: '#7265E3'}, styles.smallCircle]} />
+          <View style={[{backgroundColor: Colors.blueTextColor}, styles.smallCircle]} />
         )}
       </View>}
       {dot2 ? <View style={[{right: '33.3%'}, styles.LineView, styles.Line]}>

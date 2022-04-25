@@ -29,6 +29,7 @@ import getStore from '../../redux';
 import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 import { ViewIcon } from '../../../assets/svg/ViewIcon';
 import {SetDashboardMoodData} from '../../redux/actions/actions';
+import Colors from '../../Constants/Colors/Colors';
 
 const Tab = createMaterialTopTabNavigator();
 // const characterDemoData = [
@@ -177,7 +178,7 @@ function Dashboard(props) {
           <ViewIcon
             width={horizontalScale(18)}
             height={horizontalScale(14)}
-            color={isActive === true ? '#FFFFFF' : '#7265E3'}
+            color={isActive === true ? '#FFFFFF' : Colors.blueTextColor}
           />
           <Text
             style={
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: horizontalScale(8),
     borderWidth: 1,
-    borderColor: '#7265E3',
+    borderColor: Colors.blueTextColor,
     borderRadius: 2,
     backgroundColor: '#FFFFFF',
     marginLeft: horizontalScale(28),
@@ -315,7 +316,7 @@ const styles = StyleSheet.create({
   viewActiveButton: {
     flexDirection: 'row',
     padding: horizontalScale(8),
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: 2,
     marginLeft: horizontalScale(28),
   },
@@ -323,7 +324,7 @@ const styles = StyleSheet.create({
     marginLeft: horizontalScale(8),
     fontSize: getFontSize(12),
     fontFamily: RubikMedium,
-    color: '#7265E3',
+    color: Colors.blueTextColor,
   },
   viewActiveText: {
     marginLeft: horizontalScale(8),

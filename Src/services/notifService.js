@@ -23,41 +23,41 @@ function getRandomInt(num = 16) {
 
 const notifMessages = [
   "How are you feeling?",
-  "Is this a good time for a Flx moment?",
-  "Flx time?",
+  "Is this a good time for a flx moment?",
+  "flx time?",
   "Mood input time?",
   "Time to flx?",
   "How are you?",
-  "All your feelings count - Flx it",
-  "Just go ahead and Flx it!",
-  "To Flx is to let it all out!",
-  "The research says when you Flx you feel better",
+  "All your feelings count - flx it",
+  "Just go ahead and flx it!",
+  "To flx is to let it all out!",
+  "The research says when you flx you feel better",
   "What is your mood right now?",
   "All moods are important - input yours now",
   "I feel ……",
   "moodflx could use some love right now😊",
-  "What if I told you that you feel better when you Flx",
-  "When we Flx we just tell it how it is",
-  "I wonder if it's a Flx kind of moment",
+  "What if I told you that you feel better when you flx",
+  "When we flx we just tell it how it is",
+  "I wonder if it's a flx kind of moment",
 ];
 
 export default class NotifService {
   static notifData = {
     one: {
       id: 1,
-      title: notifMessages?.[getRandomInt(16)] ?? 'Flx would love to know how you feel',
+      title: notifMessages?.[getRandomInt(16)] ?? 'flx would love to know how you feel',
       timeInHour: 9,
       timeInMin: 50,
     },
     two: {
       id: 2,
-      title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with Flx',
+      title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with flx',
       timeInHour: 12,
       timeInMin: 50,
     },
     three: {
       id: 3,
-      title: notifMessages?.[getRandomInt(16)] ?? "It's Flx time",
+      title: notifMessages?.[getRandomInt(16)] ?? "It's flx time",
       timeInHour: 15,
       timeInMin: 50,
     },
@@ -70,19 +70,19 @@ export default class NotifService {
     NotifService.notifData = {
       one: {
         id: 1,
-        title: notifMessages?.[getRandomInt(16)] ?? 'Flx would love to know how you feel',
+        title: notifMessages?.[getRandomInt(16)] ?? 'flx would love to know how you feel',
         timeInHour: 9,
         timeInMin: 50,
       },
       two: {
         id: 2,
-        title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with Flx',
+        title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with flx',
         timeInHour: 12,
         timeInMin: 50,
       },
       three: {
         id: 3,
-        title: notifMessages?.[getRandomInt(16)] ?? "It's Flx time",
+        title: notifMessages?.[getRandomInt(16)] ?? "It's flx time",
         timeInHour: 15,
         timeInMin: 50,
       },
@@ -91,19 +91,19 @@ export default class NotifService {
   // static notifData = {
   //   one: {
   //     id: 1,
-  //     title: 'Flx would love to know how you feel',
+  //     title: 'flx would love to know how you feel',
   //     timeInHour: 9,
   //     timeInMin: 50,
   //   },
   //   two: {
   //     id: 2,
-  //     title: 'Time to check in with Flx',
+  //     title: 'Time to check in with flx',
   //     timeInHour: 12,
   //     timeInMin: 50,
   //   },
   //   three: {
   //     id: 3,
-  //     title: "It's Flx time",
+  //     title: "It's flx time",
   //     timeInHour: 15,
   //     timeInMin: 50,
   //   },

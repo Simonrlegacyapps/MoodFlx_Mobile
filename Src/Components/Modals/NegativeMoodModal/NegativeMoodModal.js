@@ -218,7 +218,7 @@ const NegativeMoodModal = ({
           onStartShouldSetResponder={Keyboard.dismiss}
           style={[styles.upperContainer]}>
           <Text style={styles.textOne}>{moodText?.confirmation_text}</Text>
-          {/* <Text style={styles.textTwo}>Flx feels you</Text> */}
+          {/* <Text style={styles.textTwo}>flx feels you</Text> */}
           {/* <Text style={styles.textTwo}>{moodText?.confirmation_text}</Text> */}
           <Text style={styles.textThree}>
             Feeling{' '}
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
   imageView: {
     height: horizontalScale(20),
     width: horizontalScale(20),
-    backgroundColor: '#4C5980',
+    backgroundColor: Colors.greyTwo,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
@@ -370,7 +370,8 @@ const styles = StyleSheet.create({
   },
   fullNameText: {
     color: 'white',
-    fontSize: Platform.OS === 'ios' ? getFontSize(13) : getFontSize(15),
+    // fontSize: Platform.OS === 'ios' ? getFontSize(13) : getFontSize(15),
+    fontSize: getFontSize(13),
     fontFamily: RubikRegular,
     alignSelf: 'center',
     justifyContent: 'center',
@@ -385,21 +386,21 @@ const styles = StyleSheet.create({
     fontFamily: RubikRegular,
     fontSize: getFontSize(16),
     marginTop: 7,
-    color:"#9C9EB9"
+    color: Colors.greyColorCode,
   },
   textThree: {
     fontFamily: RubikLight,
     fontSize: getFontSize(13),
     marginTop: 15,
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
   },
   textThreeBold: {
     fontFamily: RubikMedium,
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
   },
   buttonOne: {
     width: '50%',
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     paddingVertical: horizontalScale(10),
     borderRadius: horizontalScale(15),
     justifyContent: 'center',
@@ -413,7 +414,7 @@ const styles = StyleSheet.create({
   buttonTwoText: {
     fontFamily: RubikMedium,
     fontSize: getFontSize(15),
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
   },
   purpleBackground: {
     position: 'absolute',
@@ -449,7 +450,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: getFontSize(16),
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
     textAlign: 'center',
     fontFamily: RubikRegular,
   },

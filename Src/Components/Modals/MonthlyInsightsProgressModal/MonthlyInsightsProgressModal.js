@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { MonthlyInsightsProgressImage } from '../../../../assets/svg/monthlyInsightsProgress';
+import Colors from '../../../Constants/Colors/Colors';
 import { getMonthlyInsightsDaysLeft, getMonthlyInsightsStartEndTime } from '../../../Constants/constants';
 import {RubikMedium, RubikRegular} from '../../../Constants/fonts/Fonts';
 import { getFontSize, horizontalScale } from '../../../Constants/sizeChoose';
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
     fontSize: width / 20,
     paddingHorizontal: 12,
     marginRight: 12,
-    color: '#2D3142',
+    color: Colors.blackColorCode,
     // width:'80%'
     textAlign: 'center',
     marginTop: horizontalScale(20),
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(24),
     // height: horizontalScale(56),
     // width: 250,
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: horizontalScale(8),
     alignItems: 'center',
     justifyContent: 'center',

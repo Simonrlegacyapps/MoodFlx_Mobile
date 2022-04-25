@@ -18,6 +18,7 @@ import {
   RubikRegular,
   RubikSemiBold,
 } from '../../../Constants/fonts/Fonts';
+import Colors from '../../../Constants/Colors/Colors';
 
 type props = {
   modalVisible: Boolean,
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
   smallText: {
     fontFamily: RubikRegular,
     marginTop: horizontalScale(10),
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
     fontSize: getFontSize(16),
   },
   bigText: {
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: horizontalScale(24),
     width: '70%',
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: horizontalScale(16),
     alignItems: 'center',
     justifyContent: 'center',

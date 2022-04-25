@@ -2,6 +2,7 @@ import React, {useEffect, useState, useRef, memo} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Crown from '../../../assets/svg/Crown';
+import Colors from '../../Constants/Colors/Colors';
 import { RubikRegular } from '../../Constants/fonts/Fonts';
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import { getFloCoins } from '../../services/commonService';
@@ -26,7 +27,7 @@ const CrownBox = memo(({floCoins}) => {
       <LinearGradient
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        colors={['#7265E3', '#58A0E3']}
+        colors={[Colors.blueTextColor, '#58A0E3']}
         style={styles.linearGradient}>
         <View style={styles.subView}>
           <Crown />
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
   },
   subView: {
     marginHorizontal: dynamicSize(15),

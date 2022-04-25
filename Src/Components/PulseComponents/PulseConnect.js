@@ -20,6 +20,7 @@ import { Division, ResetLinkToCompanyParams, UserDivision } from '../../redux/ac
 import AsyncStorage from '@react-native-community/async-storage';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {setDivisionSetFlag} from '../../services/commonService';
+import Colors from '../../Constants/Colors/Colors';
 
 const getMarginTop = () => {
   let top = horizontalScale(44)
@@ -54,7 +55,7 @@ function PulseConnectTop() {
         <PulseProgressBar
           progress={10}
           height={horizontalScale(7)}
-          backgroundColor="#7265E3"
+          backgroundColor={Colors.blueTextColor}
           animated={false}
         />
       </View>
@@ -205,13 +206,13 @@ const styles = StyleSheet.create({
   teamPulseText: {
     marginTop: getMarginTop(),
     fontSize: getFontSize(12),
-    color: '#7265E3',
+    color: Colors.blueTextColor,
     fontFamily: RubikRegular,
   },
   asACollectiveText: {
     marginTop: horizontalScale(9),
     fontSize: getFontSize(32),
-    color: '#2D3142',
+    color: Colors.blackColorCode,
     fontFamily: RubikMedium,
   },
   progressBarView: {
@@ -229,7 +230,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '10%',
     borderRadius: horizontalScale(9) / 2,
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
   },
   answerOnTimeView: {
     flexDirection: 'row',
@@ -241,12 +242,12 @@ const styles = StyleSheet.create({
   },
   answerOnTimeText: {
     fontSize: getFontSize(14),
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
     fontFamily: RubikRegular,
   },
   progressCountText: {
     fontSize: getFontSize(14),
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
     fontFamily: RubikRegular,
   },
   //Connect
@@ -263,7 +264,7 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(33),
     fontSize: getFontSize(14),
     lineHeight: getLineHeight(getFontSize(14)),
-    color: '#2D3142',
+    color: Colors.blackColorCode,
     textAlign: 'center',
     fontFamily: RubikLight,
   },
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
   },
   connectButtonText: {
     fontSize: getFontSize(16),
-    color: '#7265E3',
+    color: Colors.blueTextColor,
     fontFamily: RubikRegular,
   },
   // Select Division
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     marginHorizontal: '10%',
     marginTop: horizontalScale(26),
     fontSize: getFontSize(24),
-    color: '#2D3142',
+    color: Colors.blackColorCode,
     fontFamily: RubikRegular,
   },
   divisionDescription: {
@@ -306,7 +307,7 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(16),
     lineHeight: getFontSize(16) + 6,
     textAlign: 'center',
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikLight,
   },
   loader: {
@@ -334,19 +335,19 @@ const styles = StyleSheet.create({
   divisionName: {
     fontSize: getFontSize(16),
     fontFamily: RubikRegular,
-    color: '#4C5980',
+    color: Colors.greyTwo,
   },
   egText: {
     marginTop: horizontalScale(20),
     fontSize: getFontSize(14),
     fontFamily: RubikRegular,
-    color: '#4C5980',
+    color: Colors.greyTwo,
   },
   doneButton: {
     marginTop: horizontalScale(40),
     paddingVertical: horizontalScale(19),
     width: '66%',
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: horizontalScale(16),

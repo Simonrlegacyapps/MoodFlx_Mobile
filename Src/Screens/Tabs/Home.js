@@ -82,6 +82,7 @@ import { horizontalScale } from '../../Constants/sizeChoose';
 import StandingData from '../Home/StandingData/StandingData';
 import LocationData from '../Home/LocationData/LocationData';
 import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
+import Colors from '../../Constants/Colors/Colors';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
@@ -1830,7 +1831,7 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
 });

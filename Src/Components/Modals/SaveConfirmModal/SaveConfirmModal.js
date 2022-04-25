@@ -14,6 +14,7 @@ import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
 import Constants from '../../../Constants';
+import Colors from '../../../Constants/Colors/Colors';
 import {getPhotoUrl} from '../../../Constants/constants';
 import {
   RubikBlack,
@@ -22,7 +23,7 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import {dynamicSize} from '../../../Constants/sizeChoose';
+import {dynamicSize, getFontSize} from '../../../Constants/sizeChoose';
 
 type props = {
   modalVisible: Boolean,
@@ -91,7 +92,7 @@ const SaveConfirmModal = ({
               style={{
                 height: dynamicSize(80),
                 width: dynamicSize(80),
-                backgroundColor: '#4C5980',
+                backgroundColor: Colors.greyTwo,
                 borderRadius: dynamicSize(45),
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -134,8 +135,9 @@ const SaveConfirmModal = ({
           <Text
             style={{
               fontWeight: '500',
-              fontSize: 16,
-              color: '#9C9EB9',
+              fontSize: getFontSize(16),
+              color: Colors.greyColorCode,
+              fontFamily: RubikMedium,
               textAlign: 'center',
               marginTop: 20,
             }}>
@@ -147,7 +149,7 @@ const SaveConfirmModal = ({
               fontWeight: '500',
               // letterSpacing: 1,
               fontFamily: RubikBold,
-
+              color: Colors.blackColorCode,
               fontSize: dynamicSize(20),
               marginTop: 12,
               alignSelf: 'center',
@@ -178,7 +180,12 @@ const SaveConfirmModal = ({
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
+                  style={{
+                    fontWeight: '500',
+                    fontFamily: RubikMedium,
+                    fontSize: getFontSize(16),
+                    color: Colors.blueTextColor,
+                  }}>
                   Yes
                 </Text>
               </View>
@@ -193,14 +200,19 @@ const SaveConfirmModal = ({
                   marginTop: 48,
                   height: dynamicSize(53),
                   width: dynamicSize(130),
-                  backgroundColor: '#7265E3',
+                  backgroundColor: Colors.blueTextColor,
                   borderRadius: 16,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+                  style={{
+                    fontWeight: '500',
+                    fontFamily: RubikMedium,
+                    fontSize: getFontSize(16),
+                    color: '#FFFFFF',
+                  }}>
                   No
                 </Text>
               </View>

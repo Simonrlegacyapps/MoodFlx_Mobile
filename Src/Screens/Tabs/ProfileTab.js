@@ -48,7 +48,7 @@ import {
 } from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
 import {BitCoinIcon} from '../../../assets/svg/bitCoin';
-import {RubikRegular} from '../../Constants/fonts/Fonts';
+import {RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
 import Clipboard from '@react-native-clipboard/clipboard';
 import getStore from '../../redux';
 
@@ -483,6 +483,7 @@ const ProfileTab = ({ navigation }) => {
                 style={[styles.borderStyle, { marginRight: dynamicSize(17) }]}
               />
               <Text
+                style={styles.personalDetails}
                 onPress={() => Alert.alert('Personal Details', JSON.stringify({
                   device_id: getMyDeviceId(),
                   email: UserData.UserEmail,
@@ -582,7 +583,7 @@ const ProfileTab = ({ navigation }) => {
                 { marginRight: dynamicSize(17), width: dynamicSize(134) },
               ]}
             />
-            <Text>SYNC YOUR DATA</Text>
+            <Text style={styles.personalDetails}>SYNC YOUR DATA</Text>
             <View
               style={[
                 styles.borderStyle,
@@ -664,7 +665,7 @@ const ProfileTab = ({ navigation }) => {
                 { marginRight: dynamicSize(17), width: dynamicSize(134) },
               ]}
             />
-            <Text>MORE</Text>
+            <Text style={styles.personalDetails}>MORE</Text>
             <View
               style={[
                 styles.borderStyle,
@@ -749,6 +750,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  personalDetails: {
+    fontSize: getFontSize(12),
+    fontFamily: RubikMedium,
+    color: Colors.greyTwo,
+  },
   profileImageStyle: {
     marginTop: dynamicSize(40),
     alignSelf: 'center',
@@ -757,7 +763,7 @@ const styles = StyleSheet.create({
   //   flex: 1,
   // },
   borderStyle: {
-    height: 1,
+    height: 1.2,
     width: 77,
     backgroundColor: 'rgba(0,0,0,0.1)',
     alignSelf: 'center',
@@ -772,7 +778,7 @@ const styles = StyleSheet.create({
   anonymousTextStyle: {
     color: Constants.Colors.blackColorCode,
     fontSize: dynamicSize(16),
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     marginTop: dynamicSize(8),
   },
   flatlistContainer: {
@@ -833,13 +839,13 @@ const styles = StyleSheet.create({
   allowed: {
     // width: dynamicSize(68),
     color: Constants.Colors.blackColorCode,
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     alignSelf: 'center',
     fontSize: dynamicSize(14),
   },
   permissionText: {
     color: Constants.Colors.blackColorCode,
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: dynamicSize(16),
     alignSelf: 'center',
   },

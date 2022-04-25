@@ -16,6 +16,7 @@ import {
   getFontSize,
   horizontalScale,
 } from '../../../Constants/sizeChoose';
+import Colors from '../../../Constants/Colors/Colors';
 
 const {width} = Dimensions.get('window');
 const CustomModal = ({
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     // marginBottom: horizontalScale(30),
     // width: '100%',
     flex: 0.4,
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     paddingVertical: horizontalScale(8),
     borderRadius: horizontalScale(5),
     justifyContent: 'center',

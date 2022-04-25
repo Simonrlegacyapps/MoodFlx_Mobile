@@ -9,6 +9,7 @@ import {dynamicSize} from '../../Constants/sizeChoose';
 import CustomProgressBar from '../ProgressBar/ProgressBarCustom';
 import moment from 'moment';
 import GraphBar from '../GraphBar/GraphBar';
+import Colors from '../../Constants/Colors/Colors';
 
 const BarGraph = ({
   ShowPollen,
@@ -136,7 +137,7 @@ const BarGraph = ({
                         marginHorizontal: 6,
                         textAlign: 'center',
                         fontFamily: RubikLight,
-                        color: '#9C9EB9',
+                        color: Colors.greyColorCode,
                       }}>
                       {item.value}
                     </Text>
@@ -175,7 +176,7 @@ const BarGraph = ({
                           marginHorizontal: 6,
                           textAlign: 'center',
                           fontFamily: item.bold ? RubikMedium : RubikLight,
-                          color: item.bold ? '#000' : '#9C9EB9',
+                          color: item.bold ? '#000' : Colors.greyColorCode,
                         }}>
                         {item.hours}
                       </Text>
@@ -258,7 +259,7 @@ const BarGraph = ({
                         bottom: -120,
                         right: -8,
                         fontFamily: RubikRegular,
-                        color: '#9C9EB9',
+                        color: Colors.greyColorCode,
                       }}>
                       {item.label}
                     </Text>

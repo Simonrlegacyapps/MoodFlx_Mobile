@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 export default {
   WhiteColor: 'rgb(255,255,255)',
   GreenColor: 'rgb(125,217,106)',
@@ -8,10 +10,13 @@ export default {
   BlueTextColor: 'rgb(119,123,255)',
   GrayColor: 'rgb(151,151,151)',
   MagoliaColor: '#E4DFFF',
-  blueTextColor: '#7265E3',
-  greyColorCode: '#9C9EB9',
+  // blueTextColor: Platform.OS === 'ios' ? '#7265E3' : '#5B50B5',
+  blueTextColor: Platform.OS === 'ios' ? '#7265E3' : '#665ACC',
+  greyColorCode: Platform.OS === 'ios' ? '#9C9EB9' : '#7C7E94',
   blackColorCode: '#2D3142',
+  blackTwo: '#030047',
   greyTextColor : '#484F5F',
+  greyTwo: Platform.OS === 'ios' ? '#4C5980' : '#353e59',
   lightGrey: '#83848E',
   coinOrange: '#FB8D09',
   loaderColor: '#9889F9',

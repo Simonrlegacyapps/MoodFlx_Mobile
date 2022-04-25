@@ -28,6 +28,8 @@ import {
 } from './moodService';
 import CustomFastSVG from '../../Components/CustomFastSVG/CustomFastSVG';
 import {getMoodIconsUrl, MOOD_ICONS} from '../../Constants/constants';
+import Colors from '../../Constants/Colors/Colors';
+import { RubikMedium } from '../../Constants/fonts/Fonts';
 // import { Easing } from 'react-native-reanimated';
 const {height, width} = Dimensions.get('window');
 
@@ -311,6 +313,8 @@ const styles = StyleSheet.create({
     marginRight: 7,
     lineHeight: getLineHeight(fontSize),
     fontSize: fontSize,
+    color: '#4C5980',
+    fontFamily: RubikMedium,
   },
   toolTipImg: {
     height: getFontSize(20),

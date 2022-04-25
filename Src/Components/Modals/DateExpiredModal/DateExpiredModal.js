@@ -13,6 +13,7 @@ import {
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
+import Colors from '../../../Constants/Colors/Colors';
 import {
   RubikBlack,
   RubikBold,
@@ -91,7 +92,7 @@ const DateExpiredModal = ({
             style={{
               fontWeight: '500',
               fontSize: 16,
-              color: '#9C9EB9',
+              color: Colors.greyColorCode,
               textAlign: 'center',
               marginTop: 20,
             }}>
@@ -145,7 +146,7 @@ const DateExpiredModal = ({
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
+                  style={{fontWeight: '500', fontSize: 16, color: Colors.blueTextColor}}>
                   {FitnessPopUp || WeatherPopUp || SleepPopUp
                     ? 'Great!'
                     : 'Okay'}

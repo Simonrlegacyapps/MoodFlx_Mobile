@@ -35,6 +35,7 @@ import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeC
 import UnlockIcon from '../../../assets/profileicons/UnlockIcon';
 import {
   RubikBlack,
+  RubikLight,
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
@@ -49,6 +50,7 @@ import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import FeedBackModal from '../../Components/Modals/FeedBackModal/FeedBackModal';
 import {NoteIcon} from '../../../assets/svg/noteIcon';
 import getStore from '../../redux';
+import Colors from '../../Constants/Colors/Colors';
 
 const FeedbackButton = ({onClick}) => (
   <Pressable
@@ -56,7 +58,7 @@ const FeedbackButton = ({onClick}) => (
     onPress={() => onClick?.(true)}>
     <View style={styles.feedbackButtonContainer}>
       <Text style={styles.feedbackButtonDetails}>
-        We’d love to hear your anonymous feedback {'&'} recommendations!
+        We'd love to hear your anonymous feedback {'&'} recommendations!
       </Text>
       <View style={styles.sendNoteView}>
         <Text style={styles.sendNoteText}>Send a note</Text>
@@ -484,18 +486,17 @@ const Linktocompany = ({ navigation }) => {
       {!UserData.UserDivision && !UserData.UserEmail && (
         <View
           style={{ flex: 1, alignItems: 'center', marginTop: dynamicSize(95) }}>
-          <Text style={{ fontWeight: '500', fontSize: dynamicSize(24) }}>
+          <Text style={{ fontSize: dynamicSize(24), fontFamily: RubikMedium, color: Colors.blackColorCode }}>
             Connect to a company
           </Text>
           <Text
             numberOfLines={4}
             style={{
               lineHeight: 28,
-              fontWeight: '300',
-              fontSize: dynamicSize(14),
+              fontSize: getFontSize(16),
               marginTop: dynamicSize(12),
-              // marginLeft: 62,
-              // marginRight: 62,
+              fontFamily: RubikLight,
+              color: Colors.greyTwo,
               textAlign: 'center',
               width: 270,
             }}>
@@ -508,7 +509,7 @@ const Linktocompany = ({ navigation }) => {
                 marginTop: dynamicSize(48),
                 height: dynamicSize(56),
                 width: dynamicSize(250),
-                backgroundColor: '#7265E3',
+                backgroundColor: Colors.blueTextColor,
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -611,32 +612,6 @@ const Linktocompany = ({ navigation }) => {
               style={{ marginHorizontal: dynamicSize(16), height: 15, width: 15 }}
               source={Constants.Images.DropDown}
             />
-
-            {/* <Picker
-              style={{}}
-              selectedValue={selectedDivisionId}
-              onValueChange={(itemValue, itemIndex) => {
-                setSelectedDivisionId(itemValue);
-                {
-                  console.log(
-                    'selectedLanguage',
-                    selectedDivisionId,
-                    itemIndex,
-                  );
-                }
-              }}>
-              {getDivision &&
-                getDivision.length > 0 &&
-                getDivision.map((item, index) => {
-                  return (
-                    <Picker.Item
-                      label={item.name}
-                      value={item.id}
-                      key={index}
-                    />
-                  );
-                })}
-            </Picker> */}
           </TouchableOpacity>
           <Text
             style={{
@@ -657,7 +632,7 @@ const Linktocompany = ({ navigation }) => {
                 marginTop: dynamicSize(18),
                 height: 56,
                 width: dynamicSize(235),
-                backgroundColor: '#7265E3',
+                backgroundColor: Colors.blueTextColor,
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -671,9 +646,6 @@ const Linktocompany = ({ navigation }) => {
       )}
       {UserData.UserDivision !== null && !route?.params?.email && (
         <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
-          {/* <Text style={{fontWeight: '500', fontSize: 26}}>
-            What division are you in?
-          </Text> */}
           <View style={{}}>
             {console.log(
               'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
@@ -684,15 +656,12 @@ const Linktocompany = ({ navigation }) => {
                   height: dynamicSize(80),
                   width: dynamicSize(122),
                   resizeMode: 'contain',
-                  // backgroundColor: 'grey',
-                  // borderRadius: dynamicSize(40),
                 }}
                 source={{
                   uri:
                     'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
                   // UserData?.NameCompany?.company_logo,
                 }}
-              // style={{backgroundColor: '#4C5980'}}
               />
             ) : CompanyDetails && CompanyDetails?.logo ? (
               <View
@@ -716,7 +685,6 @@ const Linktocompany = ({ navigation }) => {
                     uri: 'https://super.moodflo.com/' + CompanyDetails?.logo,
                     // UserData?.NameCompany?.company_logo,
                   }}
-                // style={{backgroundColor: '#4C5980'}}
                 />
               </View>
             ) : (
@@ -733,7 +701,6 @@ const Linktocompany = ({ navigation }) => {
                   uri: 'https://admin.launchnet.works/images/logo/ic_mood.jpg',
                   // UserData?.NameCompany?.company_logo,
                 }}
-              // style={{backgroundColor: '#4C5980'}}
               />
             )}
           </View>
@@ -773,7 +740,7 @@ const Linktocompany = ({ navigation }) => {
                 // marginTop: 20,
                 height: dynamicSize(56),
                 width: dynamicSize(250),
-                backgroundColor: '#7265E3',
+                backgroundColor: Colors.blueTextColor,
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -792,23 +759,9 @@ const Linktocompany = ({ navigation }) => {
             </View>
           </TouchableOpacity>
           <View style={styles.lineSeperator} />
-          <FeedbackButton onClick={setshowFeedBack} />
-
-          {/* <Text
-            style={{
-              lineHeight: 28,
-              fontWeight: '300',
-              fontSize: 14,
-              marginTop: 12,
-              marginLeft: 62,
-              marginRight: 62,
-              textAlign: 'center',
-              width: 270,
-            }}>
-            E.g. Anonymous in Melbourne is Excited
-          </Text> */}
-        </View>
-      )}
+            <FeedbackButton onClick={setshowFeedBack} />
+          </View>
+        )}
       </ScrollView>
       {Loading && (
         <View
@@ -817,7 +770,6 @@ const Linktocompany = ({ navigation }) => {
             height: '100%',
             width: '100%',
             backgroundColor: 'rgba(0,0,0,0.2)',
-            // opacity: 0.2,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
@@ -826,19 +778,18 @@ const Linktocompany = ({ navigation }) => {
       )}
 
       <FeedBackModal
-      text={setFeedbackText}
+        text={setFeedbackText}
         moodText={'okayy'}
         modalVisible={showFeedBack}
         dismissModalHandler={()=>{setshowFeedBack(false)}}
-        // emotionText={emotionText}
         onClickButtonOne={() => SaveFeedBack()}
       />
 
       <UnlinkConfirmModal
         CompanyName={CompanyDetails?.full_name}
         modalVisible={UnlinkConfirm}
-        dismissModalHandler={() => cancelled()}
-        verifyDone={(value) => VerifyDone(value)}
+        dismissModalHandler={cancelled}
+        verifyDone={VerifyDone}
       />
       <CustomModal
         modalVisible={!Loading && noDivisionMdalVisible}
@@ -873,7 +824,7 @@ const styles = StyleSheet.create({
     marginTop: 48,
     height: 56,
     width: 250,
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -891,16 +842,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0, 0.07)',
   },
   feedbackButtonContainer: {
-    width: dynamicSize(250),
+    width: '60%',
     alignSelf: 'center',
     alignItems: 'center',
+    // backgroundColor: 'red',
     marginBottom: horizontalScale(120),
   },
   feedbackButtonDetails: {
     fontWeight: '400',
-    fontSize: getFontSize(13),
+    fontSize: getFontSize(12),
     textAlign: 'center',
-    color: '#9C9EB9',
+    fontFamily: RubikLight,
+    color: Colors.greyColorCode,
   },
   sendNoteView: {
     flexDirection: 'row',
@@ -908,9 +861,9 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(10),
   },
   sendNoteText: {
-    color: '#7265E3',
+    color: Colors.blueTextColor,
     fontWeight: '500',
-    fontFamily: RubikRegular,
+    fontFamily: RubikMedium,
     fontSize: getFontSize(15),
     marginRight: horizontalScale(8),
   },

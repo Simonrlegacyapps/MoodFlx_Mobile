@@ -61,6 +61,7 @@ import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import { getMyDeviceId } from '../../../services/commonService';
 import { IndicatorHelper } from '../../../Components/CommonComponents/CommonComponents';
 import getStore from '../../../redux';
+import Colors from '../../../Constants/Colors/Colors';
 
 let weatherData = null;
 
@@ -1339,7 +1340,7 @@ const WeatherData = ({
               <BarGraph
                 max={max}
                 min={Lowmin}
-                color={'#7265E3'}
+                color={Colors.blueTextColor}
                 TopLabels
                 ShowPollen={true}
                 RightBar={true}
@@ -1390,7 +1391,7 @@ const WeatherData = ({
               }}>
               <IndicatorHelper color={'#7FE3F0'} text={'Min ºC'} />
               <IndicatorHelper color={'#FC4190'} text={'Max ºC'} />
-              <IndicatorHelper color={'#7265E3'} text={'Rainfall'} />
+              <IndicatorHelper color={Colors.blueTextColor} text={'Rainfall'} />
               <IndicatorHelper color={'#0DDE7A'} text={'Pollen'} />
             </View>
           </View>
@@ -1607,28 +1608,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
   },
-  //   CircularProgressStyle: {
-  //     justifyContent: 'center',
-  //     alignItems: 'center',
-  //     alignSelf: 'center',
-  //   },
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
-    color: '#747690',
+    color: Colors.greyColorCode,
   },
-  //   SmallThinBlackText: {
-  //     fontFamily: RubikLight,
-  //     // color: '#3B456D',
-  //     fontSize: 12.5,
-  //   },
-  //   wrapper: {
-  //     height: 200,
-  //     // backgroundColor: 'lightgreen',
-  //     justifyContent: 'center',
-  //     alignItems: 'center',
-  //     marginBottom: 7,
-  //   },
   swiperText: {
     fontSize: SIZE / 14,
     fontWeight: '500',
@@ -1637,18 +1621,6 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  //   forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
-  //   BigCircleBackgroundImage: {
-  //     height: 140,
-  //     width: 130,
-  //     marginBottom: 16,
-  //     alignItems: 'center',
-  //     justifyContent: 'center',
-  //   },
-  //   absolute: {
-  //     flex: 1,
-  //     position: 'absolute',
-  //   },
   indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
@@ -1657,50 +1629,9 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
 });
 
 export default WeatherData;
-
-// skeleton placeholder
-
-// ) : (
-//   <View
-//     style={{
-//       backgroundColor: '#F4F6FA',
-//       // width: '90%',
-//       alignSelf: 'center',
-//       minHeight: 300,
-//       marginTop: 50,
-//       padding: 20,
-//       borderRadius: 20,
-//     }}>
-//     <SkeletonPlaceholder>
-//       <SkeletonPlaceholder.Item
-//         alignSelf={'center'}
-//         width={SIZE / 1.5}
-//         height={100}
-//         marginTop={40}
-//         borderRadius={10}></SkeletonPlaceholder.Item>
-//       <View
-//         style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-//         <SkeletonPlaceholder.Item
-//           alignSelf={'center'}
-//           width={SIZE / 3.4}
-//           height={80}
-//           marginTop={40}
-//           borderRadius={10}
-//         />
-//         <SkeletonPlaceholder.Item
-//           alignSelf={'center'}
-//           width={SIZE / 3.4}
-//           height={80}
-//           marginTop={40}
-//           borderRadius={10}
-//         />
-//       </View>
-//     </SkeletonPlaceholder>
-//   </View>
-// )}

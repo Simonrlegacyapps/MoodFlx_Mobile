@@ -40,6 +40,7 @@ import {
   PulseConnect,
   PulseSelectDivision,
 } from '../../Components/PulseComponents/PulseConnect';
+import Colors from '../../Constants/Colors/Colors';
 
 const {height, width} = Dimensions.get('window');
 const MicScreen = ({navigation}) => {
@@ -551,7 +552,7 @@ const MicScreen = ({navigation}) => {
                       style={{
                         fontSize: getFontSize(14),
                         fontFamily: RubikMedium,
-                        color: '#7265E3',
+                        color: Colors.blueTextColor,
                         textAlign: 'right',
                         // backgroundColor:'blue'
                       }}>
@@ -880,7 +881,7 @@ const MicScreen = ({navigation}) => {
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
+                  style={{fontFamily: RubikMedium, fontSize: getFontSize(16), color: Colors.blueTextColor}}>
                   Connect
                 </Text>
               </View>
@@ -924,7 +925,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 16,
     fontFamily: RubikRegular,
-    color: '#7265E3',
+    color: Colors.blueTextColor,
   },
   BigText: {
     fontSize: 20,
@@ -941,7 +942,7 @@ const styles = StyleSheet.create({
   Text: {
     fontFamily: RubikLight,
     fontSize: 16,
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
     fontWeight: '300',
     marginVertical: 6,
   },

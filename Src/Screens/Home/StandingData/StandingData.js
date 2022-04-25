@@ -45,6 +45,7 @@ import {ScreenTimePerm} from '../../../redux/actions/actions';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import {getMyDeviceId, getStandGraphData} from '../../../services/commonService';
 import { AppPermissions } from '../../../services/appPermissions';
+import Colors from '../../../Constants/Colors/Colors';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -490,7 +491,7 @@ const styles = StyleSheet.create({
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
-    color: '#747690',
+    color: Colors.greyColorCode,
   },
   swiperText: {
     fontSize: SIZE / 14,
@@ -508,7 +509,7 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
   bottomView: {

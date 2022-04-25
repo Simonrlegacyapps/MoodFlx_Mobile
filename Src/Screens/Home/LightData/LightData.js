@@ -56,6 +56,7 @@ import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousP
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import Skeleton from '../../../Components/Skeleton/Skeleton';
+import Colors from '../../../Constants/Colors/Colors';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -406,7 +407,6 @@ const LightData = ({
             }
             MoodCount={JSON.parse(MoodCount)}
             height={10}
-            // backgroundColor="#CB9866"
           />
           <View style={{ flexDirection: 'row' }}>
             <Text style={[styles.SmallThinText, { flex: 1 }]}>
@@ -420,9 +420,6 @@ const LightData = ({
             </Text>
           </View>
         </View>
-        {/* <View>
-          <Text>hi</Text>
-        </View> */}
         {skeleton && <Skeleton />}
         <View style={styles.subViewTwo}>
           {skeleton === false && (
@@ -692,7 +689,7 @@ const styles = StyleSheet.create({
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
-    color: '#747690',
+    color: Colors.greyColorCode,
   },
   subViewTwo: {
     marginTop: horizontalScale(20),
@@ -713,7 +710,7 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
   bulbImage: {

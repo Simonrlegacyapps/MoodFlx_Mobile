@@ -28,6 +28,7 @@ import {SetAvailableRewards} from '../../redux/actions/actions';
 import {getMyDeviceId} from '../../services/commonService';
 import {useFocusEffect} from '@react-navigation/native';
 import Loader from '../../Components/Loader/Loader';
+import Colors from '../../Constants/Colors/Colors';
 
 function getModalText(pointsToUnlock) {
   if (typeof pointsToUnlock === 'number') {
@@ -502,7 +503,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
           />
         ) : (
           <ProfileCoinModal
-            permission={"Hang in there you'll be able to cash in your Flx soon!"}
+            permission={"Hang in there you'll be able to cash in your flx soon!"}
             // image={Constants.Images.FitnessPopUp}
             dataType={'fitness'}
             modalVisible={openActionSheet}
@@ -570,7 +571,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     width: '80%',
     fontFamily: RubikRegular,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontSize: getFontSize(13.5),
     flex: 1,
   },
@@ -578,7 +579,7 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(4),
     width: '80%',
     fontFamily: RubikLight,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontSize: getFontSize(12),
     flex: 1,
   },
@@ -608,7 +609,7 @@ const styles = StyleSheet.create({
   coinsRequiredText: {
     fontSize: getFontSize(8),
     fontFamily: RubikLight,
-    color: '#7265E3',
+    color: Colors.blueTextColor,
     marginVertical: horizontalScale(3),
     marginLeft: horizontalScale(8),
   },

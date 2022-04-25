@@ -16,6 +16,7 @@ import {
 } from '../../../Constants/fonts/Fonts';
 import { metrics, getFontSize, getLineHeight, horizontalScale } from '../../../Constants/sizeChoose';
 import SkipMood from '../../../../assets/svg/skipMood';
+import Colors from '../../../Constants/Colors/Colors';
 
 const { width } = Dimensions.get('window');
 const SkipMoodInputModal = ({
@@ -122,26 +123,27 @@ const styles = StyleSheet.create({
   },
   textOne: {
     marginTop: horizontalScale(30),
-    fontFamily: RubikRegular,
+    fontFamily: RubikMedium,
     fontSize: fontSize,
+    color: Colors.blackColorCode,
     // textAlign: 'center'
   },
   buttonOne: {
     width: '100%',
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     paddingVertical: horizontalScale(10),
     borderRadius: horizontalScale(15),
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonOneText: {
-    fontFamily: RubikRegular,
+    fontFamily: RubikMedium,
     fontSize: getFontSize(15),
     color: '#FFFFFF'
   },
   buttonTwoText: {
-    fontFamily: RubikRegular,
+    fontFamily: RubikMedium,
     fontSize: getFontSize(15),
-    color: '#9C9EB9'
+    color: Colors.greyColorCode,
   }
 });

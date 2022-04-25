@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {Oval} from '../../../assets/svg/oval';
 import Constants from '../../Constants';
+import Colors from '../../Constants/Colors/Colors';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
 import {
   dynamicSize,
@@ -252,7 +253,7 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   qualitiesText: {
-    color: '#4C5980',
+    color: Colors.greyTwo,
     flex: 1,
     fontSize: getFontSize(12),
     fontFamily: RubikRegular,

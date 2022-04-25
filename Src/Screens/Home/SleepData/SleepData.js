@@ -49,6 +49,7 @@ import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import Skeleton from '../../../Components/Skeleton/Skeleton';
 import getStore from '../../../redux';
 import { getMyDeviceId } from '../../../services/commonService';
+import Colors from '../../../Constants/Colors/Colors';
 
 const sleepInsightsInitialState = {
   dailyInsights: '',
@@ -480,32 +481,6 @@ const SleepData = ({
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
-        {/* <View style={styles.HeaderView}>
-          <TouchableOpacity
-            onPress={async () => {
-              setopenActionSheet(true);
-            }}
-            style={{
-              flexDirection: 'row',
-            }}>
-            <View style={styles.syncButtonView}>
-              <Image
-                style={{ height: 20, width: 20 }}
-                source={Constants.Images.Sync}
-              />
-            </View>
-            <View style={{ alignContent: 'center', paddingHorizontal: 15 }}>
-              <Text style={styles.lightText}>Sync your</Text>
-              <Text style={styles.normalText}>Sleep data</Text>
-            </View>
-          </TouchableOpacity>
-          <View>
-            <CrownBox floCoins={UserData.floCoins}/>
-            </View>
-          <View style={styles.ColoredView}>
-            <Text style={styles.ColoredText}>Anon</Text>
-          </View>
-        </View> */}
         <HomeSyncHeader
           label={'Sleep'}
           isPermissionGiven={
@@ -557,126 +532,25 @@ const SleepData = ({
               onSync={onSync}
             />
           )}
-          {/* {!UserData.SleepPermission ? (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity
-                onPress={() => {
-                  setSleepPopUp(true);
-                }}
-                activeOpacity={1}
-                style={{
-                  alignItems: 'center',
-                  width: '100%',
-                }}>
-                <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-                  SLEEP
-                </Text>
-                <Text style={styles.swiperText}>
-                  You're more likely to be{' '}
-                  <Text style={{ color: '#5947D0' }}>excited</Text> and{' '}
-                  <Text style={{ color: '#5947D0' }}>happy</Text> when you sleep
-                  more than <Text style={{ color: '#5947D0' }}>7.5hrs</Text>
-                </Text>
-                <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-                  Almost there! Try sleep a bit longer
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <DataInsights
-              dailyInsights={insights?.dailyInsights}
-              weeklyInsights={insights?.weeklyInsights}
-              dailySuggestion={insights?.dailySuggestion}
-              dailySuggestionType={insights?.dailySuggestionType}
-              weeklySuggestion={insights?.weeklySuggestion}
-              weeklySuggestionType={insights?.weeklySuggestionType}
-              timeLeft={UserData?.weeklyInsightsTimeLeft}
-              dispatch={dispatch}
-            />
-          )} */}
-          {/* {UserData.SleepPermission && (
-              <View
-                style={{
-                  position: 'absolute',
-                  zIndex: -234234,
-                  justifyContent: 'center',
-                  top: SIZE / 2.6,
-                }}>
-                <Text
-                  style={{
-                    marginTop: -160,
-                    fontWeight: '700',
-                    fontFamily: RubikExtraBold,
-                    fontSize: SIZE / 5.5,
-                    color: '#E0DDED',
-                    transform: [{ rotate: '-15deg' }],
-                  }}>
-                  Demo
-                  </Text>
-              </View>
-            )} */}
-
-          <View style={{ marginBottom: 50 }}>
+          <View style={styles.wrapperTwo}>
             <StarProgress
               sleepMinutes={UserData.SleepPermission ? sleepMinutesToday : 0}
             />
-            <View
-              style={{
-                position: 'absolute',
-                alignSelf: 'center',
-                marginTop: 30,
-              }}>
-            </View>
+            <View style={styles.viewOne} />
           </View>
           <GraphicChart
             isDailyDisabled={true}
             sleepGraphData={sleepGraphData}
             graphType={dataTypes.sleep}
           />
-          {/* {!UserData.SleepPermission && (
-            <View
-              style={{
-                position: 'absolute',
-                top: 420,
-                alignItems: 'center',
-                height: '100%',
-                width: '100%',
-                zIndex: -234234,
-              }}>
-              <Text
-                allowFontScaling={false}
-                style={{
-                  marginTop: dynamicSize(-320),
-                  fontWeight: '700',
-                  fontFamily: RubikExtraBold,
-                  fontSize: SIZE / 3.5,
-                  color: '#E0DDED',
-                  transform: [{ rotate: '-15deg' }],
-                }}>
-                Demo
-              </Text>
-            </View>
-          )} */}
           {!UserData.SleepPermission && (
             <TouchableOpacity
               activeOpacity={0}
-              onPress={async () => {
-                // await AsyncStorage.setItem('GiveSleepPerm', 'true');
+              onPress={() => {
                 setopenActionSheet(true);
               }}
-              style={{
-                position: 'absolute',
-                flex: 1,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'black',
-                opacity: 0,
-              }}></TouchableOpacity>
+              style={styles.buttonOne}
+            />
           )}
         </View>
       </ScrollView>
@@ -688,7 +562,7 @@ const SleepData = ({
         dataType={'sleep'}
         modalVisible={openActionSheet}
         dismissModalHandler={() => setopenActionSheet(false)}
-        verifyDone={() => VerifyDone()}
+        verifyDone={VerifyDone}
       />
 
       <DateExpiredModal
@@ -698,10 +572,10 @@ const SleepData = ({
         verifyDone={() => setSleepPopUp(false)}
       />
 
-<AnonymousPopUp
+      <AnonymousPopUp
         modalVisible={AnonymousClick}
-        dismissModalHandler={() => AnonymousPopUpcancelled()}
-        verifyDone={() => AnonymousPopUpcancelled()}
+        dismissModalHandler={AnonymousPopUpcancelled}
+        verifyDone={AnonymousPopUpcancelled}
       />
     </View>
   );
@@ -716,103 +590,6 @@ const styles = StyleSheet.create({
     height: '100%',
     paddingBottom: 400,
   },
-  WeatherCardMain: {
-    flexDirection: 'row',
-    width: 320,
-    alignSelf: 'center',
-    marginTop: 40,
-    marginBottom: 40,
-    backgroundColor: '#F1F4F9',
-    borderRadius: 18,
-    paddingVertical: 20,
-  },
-  WeatherCard: {
-    width: 320,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: 'center',
-    paddingBottom: 8,
-  },
-  city: {
-    paddingVertical: 0,
-    color: '#3B456D',
-    fontSize: 18,
-    fontFamily: RubikRegular,
-  },
-  CardsView: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-  card2View: {
-    width: 120,
-    backgroundColor: 'white',
-    borderRadius: 15,
-    marginRight: 15,
-  },
-  SmallCardImage: {
-    margin: 5,
-    height: 20,
-    width: 20,
-  },
-  smallCardText: {
-    fontFamily: RubikLight,
-    fontWeight: '300',
-    color: '#8A8BAB',
-    fontSize: 16,
-    marginBottom: 5,
-  },
-
-  ColoredView: {
-    height: 40,
-    marginHorizontal: 10,
-    paddingHorizontal: 20,
-    marginLeft:-10,
-    backgroundColor: '#DED6FE',
-    borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  Card1Text: {
-    fontFamily: RubikLight,
-    fontWeight: '300',
-    color: '#8A8BAB',
-    fontSize: 16,
-    marginTop: 10,
-  },
-  HeaderView: {
-    height: 80,
-    paddingTop: 18,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
-  },
-  syncButtonView: {
-    height: 40,
-    width: 40,
-    backgroundColor: '#DED6FE',
-    borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  lightText: {
-    fontSize: 13,
-    color: '#8A8BAB',
-    fontFamily: RubikLight,
-    // lineHeight: 12,
-    // marginVertical: 5,
-  },
-  normalText: {
-    fontSize: 16,
-    marginTop: 4,
-    // lineHeight: 16,
-    fontFamily: RubikRegular,
-  },
-  ColoredText: {
-    fontSize: 16,
-    color: '#5947D0',
-  },
   ProgressBarView: {
     width: '88%',
     justifyContent: 'center',
@@ -821,20 +598,16 @@ const styles = StyleSheet.create({
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
-    color: '#747690',
+    color: Colors.greyColorCode,
   },
   subViewTwo: {
     marginTop: horizontalScale(20),
   },
-  swiperText: {
-    fontSize: SIZE / 14,
-    fontWeight: '500',
-    width: '70%',
-    textAlign: 'center',
-    fontFamily: RubikMedium,
-    color: '#222432',
+  indicatorHelper: {
+    height: 18,
+    width: 18,
+    borderRadius: 5,
   },
-  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,
@@ -842,8 +615,24 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
+  },
+  wrapperTwo: {
+    marginBottom: 50,
+  },
+  viewOne: {
+    position: 'absolute',
+    alignSelf: 'center',
+    marginTop: 30,
+  },
+  buttonOne: {
+    position: 'absolute',
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'black',
+    opacity: 0,
   },
 });
 

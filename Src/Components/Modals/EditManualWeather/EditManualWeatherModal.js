@@ -15,6 +15,7 @@ import {
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
+import Colors from '../../../Constants/Colors/Colors';
 import {weatherActions, weatherApiDataTypes, weatherTypes} from '../../../Constants/constants';
 import {
   RubikBlack,
@@ -163,7 +164,7 @@ const EditManualWeatherModal = ({
             style={{
               fontWeight: '500',
               fontSize: 16,
-              color: '#9C9EB9',
+              color: Colors.greyColorCode,
               textAlign: 'center',
               marginTop: 20,
             }}>
@@ -403,7 +404,7 @@ const EditManualWeatherModal = ({
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
+                  style={{fontFamily: RubikMedium, fontSize: getFontSize(16), color: Colors.blueTextColor}}>
                   Save
                 </Text>
               </View>

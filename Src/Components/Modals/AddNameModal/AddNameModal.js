@@ -178,7 +178,7 @@ const AddNameModal = ({
                 marginTop: 48,
                 height: dynamicSize(53),
                 width: dynamicSize(220),
-                backgroundColor: '#7265E3',
+                backgroundColor: Colors.blueTextColor,
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',

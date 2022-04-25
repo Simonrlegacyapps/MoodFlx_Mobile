@@ -34,6 +34,7 @@ import GetLocation from 'react-native-get-location';
 import {dataTypes, defaultLocation, isCountryIndia} from '../../../Constants/constants';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Images from '../../../Constants/Images/Images';
+import Colors from '../../../Constants/Colors/Colors';
 let mapStyle = [
   {
     elementType: 'geometry',
@@ -360,7 +361,7 @@ const styles = StyleSheet.create({
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
-    color: '#747690',
+    color: Colors.greyColorCode,
   },
 });
 

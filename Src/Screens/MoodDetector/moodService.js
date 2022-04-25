@@ -196,7 +196,7 @@ let emotionsTextData = {
   "7": {
     "app_priority": 3,
     "color": "#9A9EA3",
-    "confirmation_text": "Hang in there, Flx would like to know if you're ok later",
+    "confirmation_text": "Hang in there, flx would like to know if you're ok later",
     "icon": "mood_icons/1637755034942999699619e289a19259.svg",
     "id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "left": [
@@ -215,7 +215,7 @@ let emotionsTextData = {
   "8": {
     "app_priority": 3,
     "color": "#9A9EA3",
-    "confirmation_text": "Hang in there, Flx would like to know if you're ok later",
+    "confirmation_text": "Hang in there, flx would like to know if you're ok later",
     "icon": "mood_icons/1637755034942999699619e289a19259.svg",
     "id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "left": [
@@ -234,7 +234,7 @@ let emotionsTextData = {
   "9": {
     "app_priority": 3,
     "color": "#9A9EA3",
-    "confirmation_text": "Hang in there, Flx would like to know if you're ok later",
+    "confirmation_text": "Hang in there, flx would like to know if you're ok later",
     "icon": "mood_icons/1637755034942999699619e289a19259.svg",
     "id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "left": [
@@ -424,7 +424,7 @@ let emotionsTextData = {
   "19": {
     "app_priority": 3,
     "color": "#9A9EA3",
-    "confirmation_text": "Hang in there, Flx would like to know if you're ok later",
+    "confirmation_text": "Hang in there, flx would like to know if you're ok later",
     "icon": "mood_icons/1637755034942999699619e289a19259.svg",
     "id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "left": [
@@ -538,7 +538,7 @@ let emotionsTextData = {
   "25": {
     "app_priority": 2,
     "color": "#B88DCC",
-    "confirmation_text": "Thanks - make sure you check in with Flx soon",
+    "confirmation_text": "Thanks - make sure you check in with flx soon",
     "icon": "mood_icons/1637756019132089759619e2c73c3a5d.svg",
     "id": "71c07325-3311-483f-b048-605d834d0661",
     "left": [
@@ -557,7 +557,7 @@ let emotionsTextData = {
   "26": {
     "app_priority": 2,
     "color": "#B88DCC",
-    "confirmation_text": "Thanks - make sure you check in with Flx soon",
+    "confirmation_text": "Thanks - make sure you check in with flx soon",
     "icon": "mood_icons/1637756019132089759619e2c73c3a5d.svg",
     "id": "71c07325-3311-483f-b048-605d834d0661",
     "left": [
@@ -652,7 +652,7 @@ let emotionsTextData = {
   "31": {
     "app_priority": 3,
     "color": "#9A9EA3",
-    "confirmation_text": "Hang in there, Flx would like to know if you're ok later",
+    "confirmation_text": "Hang in there, flx would like to know if you're ok later",
     "icon": "mood_icons/1637755034942999699619e289a19259.svg",
     "id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "left": [
@@ -766,7 +766,7 @@ let emotionsTextData = {
   "37": {
     "app_priority": 2,
     "color": "#B88DCC",
-    "confirmation_text": "Thanks - make sure you check in with Flx soon",
+    "confirmation_text": "Thanks - make sure you check in with flx soon",
     "icon": "mood_icons/1637756019132089759619e2c73c3a5d.svg",
     "id": "71c07325-3311-483f-b048-605d834d0661",
     "left": [
@@ -785,7 +785,7 @@ let emotionsTextData = {
   "38": {
     "app_priority": 2,
     "color": "#B88DCC",
-    "confirmation_text": "Thanks - make sure you check in with Flx soon",
+    "confirmation_text": "Thanks - make sure you check in with flx soon",
     "icon": "mood_icons/1637756019132089759619e2c73c3a5d.svg",
     "id": "71c07325-3311-483f-b048-605d834d0661",
     "left": [
@@ -804,7 +804,7 @@ let emotionsTextData = {
   "39": {
     "app_priority": 2,
     "color": "#B88DCC",
-    "confirmation_text": "Thanks - make sure you check in with Flx soon",
+    "confirmation_text": "Thanks - make sure you check in with flx soon",
     "icon": "mood_icons/1637756019132089759619e2c73c3a5d.svg",
     "id": "71c07325-3311-483f-b048-605d834d0661",
     "left": [
@@ -994,7 +994,7 @@ let emotionsTextData = {
   "49": {
     "app_priority": 9,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755733431173973619e2b553009c.svg",
     "id": "c3d99c75-dd32-437b-a417-5e1654328cb1",
     "left": [
@@ -1013,7 +1013,7 @@ let emotionsTextData = {
   "50": {
     "app_priority": 9,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755733431173973619e2b553009c.svg",
     "id": "c3d99c75-dd32-437b-a417-5e1654328cb1",
     "left": [
@@ -1032,7 +1032,7 @@ let emotionsTextData = {
   "51": {
     "app_priority": 13,
     "color": "#5CCCDA",
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755990895278122619e2c5681ca2.svg",
     "id": "a6b543a4-07d3-4781-8f1a-80ddf7f22808",
     "left": [
@@ -1165,7 +1165,7 @@ let emotionsTextData = {
   "58": {
     "app_priority": 16,
     "color": "#FFC5A5",
-    "confirmation_text": "Cheers! The Flx is real",
+    "confirmation_text": "Cheers! The flx is real",
     "icon": "mood_icons/16377557961066032845619e2b941c0c5.svg",
     "id": "56b4197c-8f6a-48bc-8751-33b16a572da7",
     "left": [
@@ -1184,7 +1184,7 @@ let emotionsTextData = {
   "59": {
     "app_priority": 16,
     "color": "#FFC5A5",
-    "confirmation_text": "Cheers! The Flx is real",
+    "confirmation_text": "Cheers! The flx is real",
     "icon": "mood_icons/16377557961066032845619e2b941c0c5.svg",
     "id": "56b4197c-8f6a-48bc-8751-33b16a572da7",
     "left": [
@@ -1203,7 +1203,7 @@ let emotionsTextData = {
   "60": {
     "app_priority": 16,
     "color": "#FFC5A5",
-    "confirmation_text": "Cheers! The Flx is real",
+    "confirmation_text": "Cheers! The flx is real",
     "icon": "mood_icons/16377557961066032845619e2b941c0c5.svg",
     "id": "56b4197c-8f6a-48bc-8751-33b16a572da7",
     "left": [
@@ -1222,7 +1222,7 @@ let emotionsTextData = {
   "61": {
     "app_priority": 9,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755733431173973619e2b553009c.svg",
     "id": "c3d99c75-dd32-437b-a417-5e1654328cb1",
     "left": [
@@ -1241,7 +1241,7 @@ let emotionsTextData = {
   "62": {
     "app_priority": 13,
     "color": "#5CCCDA",
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755990895278122619e2c5681ca2.svg",
     "id": "a6b543a4-07d3-4781-8f1a-80ddf7f22808",
     "left": [
@@ -1260,7 +1260,7 @@ let emotionsTextData = {
   "63": {
     "app_priority": 13,
     "color": "#5CCCDA",
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755990895278122619e2c5681ca2.svg",
     "id": "a6b543a4-07d3-4781-8f1a-80ddf7f22808",
     "left": [
@@ -1279,7 +1279,7 @@ let emotionsTextData = {
   "64": {
     "app_priority": 10,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755767150699794619e2b77d8901.svg",
     "id": "c52921a3-fc8f-4e8c-9a77-d9ba17a773dd",
     "left": [
@@ -1298,7 +1298,7 @@ let emotionsTextData = {
   "65": {
     "app_priority": 10,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755767150699794619e2b77d8901.svg",
     "id": "c52921a3-fc8f-4e8c-9a77-d9ba17a773dd",
     "left": [
@@ -1336,7 +1336,7 @@ let emotionsTextData = {
   "67": {
     "app_priority": 11,
     "color": null,
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755224886653763619e2958b5009.svg",
     "id": "23bd0192-8d1a-435f-a6b7-8c5fa97c5487",
     "left": [
@@ -1393,7 +1393,7 @@ let emotionsTextData = {
   "70": {
     "app_priority": 12,
     "color": null,
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755625460446087619e2ae9c64a5.svg",
     "id": "88028988-a2d5-4ee3-8912-a4ffac7e9c43",
     "left": [
@@ -1412,7 +1412,7 @@ let emotionsTextData = {
   "71": {
     "app_priority": 16,
     "color": "#FFC5A5",
-    "confirmation_text": "Cheers! The Flx is real",
+    "confirmation_text": "Cheers! The flx is real",
     "icon": "mood_icons/16377557961066032845619e2b941c0c5.svg",
     "id": "56b4197c-8f6a-48bc-8751-33b16a572da7",
     "left": [
@@ -1431,7 +1431,7 @@ let emotionsTextData = {
   "72": {
     "app_priority": 16,
     "color": "#FFC5A5",
-    "confirmation_text": "Cheers! The Flx is real",
+    "confirmation_text": "Cheers! The flx is real",
     "icon": "mood_icons/16377557961066032845619e2b941c0c5.svg",
     "id": "56b4197c-8f6a-48bc-8751-33b16a572da7",
     "left": [
@@ -1450,7 +1450,7 @@ let emotionsTextData = {
   "73": {
     "app_priority": 9,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755733431173973619e2b553009c.svg",
     "id": "c3d99c75-dd32-437b-a417-5e1654328cb1",
     "left": [
@@ -1469,7 +1469,7 @@ let emotionsTextData = {
   "74": {
     "app_priority": 9,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755733431173973619e2b553009c.svg",
     "id": "c3d99c75-dd32-437b-a417-5e1654328cb1",
     "left": [
@@ -1488,7 +1488,7 @@ let emotionsTextData = {
   "75": {
     "app_priority": 13,
     "color": "#5CCCDA",
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755990895278122619e2c5681ca2.svg",
     "id": "a6b543a4-07d3-4781-8f1a-80ddf7f22808",
     "left": [
@@ -1507,7 +1507,7 @@ let emotionsTextData = {
   "76": {
     "app_priority": 10,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755767150699794619e2b77d8901.svg",
     "id": "c52921a3-fc8f-4e8c-9a77-d9ba17a773dd",
     "left": [
@@ -1526,7 +1526,7 @@ let emotionsTextData = {
   "77": {
     "app_priority": 10,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755767150699794619e2b77d8901.svg",
     "id": "c52921a3-fc8f-4e8c-9a77-d9ba17a773dd",
     "left": [
@@ -1545,7 +1545,7 @@ let emotionsTextData = {
   "78": {
     "app_priority": 14,
     "color": "#648DE7",
-    "confirmation_text": "Yes! Get your Flx on",
+    "confirmation_text": "Yes! Get your flx on",
     "icon": "mood_icons/16377561101618845728619e2cce2a3e3.svg",
     "id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "left": [
@@ -1564,7 +1564,7 @@ let emotionsTextData = {
   "79": {
     "app_priority": 11,
     "color": null,
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755224886653763619e2958b5009.svg",
     "id": "23bd0192-8d1a-435f-a6b7-8c5fa97c5487",
     "left": [
@@ -1583,7 +1583,7 @@ let emotionsTextData = {
   "80": {
     "app_priority": 11,
     "color": null,
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755224886653763619e2958b5009.svg",
     "id": "23bd0192-8d1a-435f-a6b7-8c5fa97c5487",
     "left": [
@@ -1602,7 +1602,7 @@ let emotionsTextData = {
   "81": {
     "app_priority": 15,
     "color": "#F2AF57",
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755959552191379619e2c3743b5b.svg",
     "id": "43bd3752-d44b-4309-90f8-b081172461f2",
     "left": [
@@ -1621,7 +1621,7 @@ let emotionsTextData = {
   "82": {
     "app_priority": 12,
     "color": null,
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755625460446087619e2ae9c64a5.svg",
     "id": "88028988-a2d5-4ee3-8912-a4ffac7e9c43",
     "left": [
@@ -1640,7 +1640,7 @@ let emotionsTextData = {
   "83": {
     "app_priority": 12,
     "color": null,
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755625460446087619e2ae9c64a5.svg",
     "id": "88028988-a2d5-4ee3-8912-a4ffac7e9c43",
     "left": [
@@ -1659,7 +1659,7 @@ let emotionsTextData = {
   "84": {
     "app_priority": 16,
     "color": "#FFC5A5",
-    "confirmation_text": "Cheers! The Flx is real",
+    "confirmation_text": "Cheers! The flx is real",
     "icon": "mood_icons/16377557961066032845619e2b941c0c5.svg",
     "id": "56b4197c-8f6a-48bc-8751-33b16a572da7",
     "left": [
@@ -1678,7 +1678,7 @@ let emotionsTextData = {
   "85": {
     "app_priority": 9,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755733431173973619e2b553009c.svg",
     "id": "c3d99c75-dd32-437b-a417-5e1654328cb1",
     "left": [
@@ -1697,7 +1697,7 @@ let emotionsTextData = {
   "86": {
     "app_priority": 9,
     "color": null,
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755733431173973619e2b553009c.svg",
     "id": "c3d99c75-dd32-437b-a417-5e1654328cb1",
     "left": [
@@ -1716,7 +1716,7 @@ let emotionsTextData = {
   "87": {
     "app_priority": 13,
     "color": "#5CCCDA",
-    "confirmation_text": "Awesome Flx, thanks!",
+    "confirmation_text": "Awesome flx, thanks!",
     "icon": "mood_icons/1637755990895278122619e2c5681ca2.svg",
     "id": "a6b543a4-07d3-4781-8f1a-80ddf7f22808",
     "left": [
@@ -1735,7 +1735,7 @@ let emotionsTextData = {
   "88": {
     "app_priority": 14,
     "color": "#648DE7",
-    "confirmation_text": "Yes! Get your Flx on",
+    "confirmation_text": "Yes! Get your flx on",
     "icon": "mood_icons/16377561101618845728619e2cce2a3e3.svg",
     "id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "left": [
@@ -1754,7 +1754,7 @@ let emotionsTextData = {
   "89": {
     "app_priority": 14,
     "color": "#648DE7",
-    "confirmation_text": "Yes! Get your Flx on",
+    "confirmation_text": "Yes! Get your flx on",
     "icon": "mood_icons/16377561101618845728619e2cce2a3e3.svg",
     "id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "left": [
@@ -1773,7 +1773,7 @@ let emotionsTextData = {
   "90": {
     "app_priority": 14,
     "color": "#648DE7",
-    "confirmation_text": "Yes! Get your Flx on",
+    "confirmation_text": "Yes! Get your flx on",
     "icon": "mood_icons/16377561101618845728619e2cce2a3e3.svg",
     "id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "left": [
@@ -1792,7 +1792,7 @@ let emotionsTextData = {
   "91": {
     "app_priority": 11,
     "color": null,
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755224886653763619e2958b5009.svg",
     "id": "23bd0192-8d1a-435f-a6b7-8c5fa97c5487",
     "left": [
@@ -1811,7 +1811,7 @@ let emotionsTextData = {
   "92": {
     "app_priority": 15,
     "color": "#F2AF57",
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755959552191379619e2c3743b5b.svg",
     "id": "43bd3752-d44b-4309-90f8-b081172461f2",
     "left": [
@@ -1830,7 +1830,7 @@ let emotionsTextData = {
   "93": {
     "app_priority": 15,
     "color": "#F2AF57",
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755959552191379619e2c3743b5b.svg",
     "id": "43bd3752-d44b-4309-90f8-b081172461f2",
     "left": [
@@ -1849,7 +1849,7 @@ let emotionsTextData = {
   "94": {
     "app_priority": 12,
     "color": null,
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755625460446087619e2ae9c64a5.svg",
     "id": "88028988-a2d5-4ee3-8912-a4ffac7e9c43",
     "left": [
@@ -1868,7 +1868,7 @@ let emotionsTextData = {
   "95": {
     "app_priority": 12,
     "color": null,
-    "confirmation_text": "Nice, go with your Flx!",
+    "confirmation_text": "Nice, go with your flx!",
     "icon": "mood_icons/1637755625460446087619e2ae9c64a5.svg",
     "id": "88028988-a2d5-4ee3-8912-a4ffac7e9c43",
     "left": [
@@ -1887,7 +1887,7 @@ let emotionsTextData = {
   "96": {
     "app_priority": 16,
     "color": "#FFC5A5",
-    "confirmation_text": "Cheers! The Flx is real",
+    "confirmation_text": "Cheers! The flx is real",
     "icon": "mood_icons/16377557961066032845619e2b941c0c5.svg",
     "id": "56b4197c-8f6a-48bc-8751-33b16a572da7",
     "left": [

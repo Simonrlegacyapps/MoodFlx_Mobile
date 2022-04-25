@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, Dimensions, Image} from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import Colors from '../../Constants/Colors/Colors';
 import {
   RubikBold,
   RubikLight,
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
 });
