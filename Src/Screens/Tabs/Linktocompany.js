@@ -493,7 +493,7 @@ const Linktocompany = ({ navigation }) => {
             numberOfLines={4}
             style={{
               lineHeight: 28,
-              fontSize: getFontSize(16),
+              fontSize: getFontSize(15),
               marginTop: dynamicSize(12),
               fontFamily: RubikLight,
               color: Colors.greyTwo,
@@ -849,7 +849,7 @@ const styles = StyleSheet.create({
     marginBottom: horizontalScale(120),
   },
   feedbackButtonDetails: {
-    fontWeight: '400',
+    fontWeight: '300',
     fontSize: getFontSize(12),
     textAlign: 'center',
     fontFamily: RubikLight,

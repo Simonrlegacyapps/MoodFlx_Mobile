@@ -21,7 +21,7 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import Svg, {Path, SvgUri} from 'react-native-svg';
-import {dynamicSize, getFontSize, horizontalScale, isTablet} from '../../Constants/sizeChoose';
+import {dynamicSize, getFontSize, getLineHeight, horizontalScale, isTablet} from '../../Constants/sizeChoose';
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
@@ -632,6 +632,7 @@ const MicScreen = ({navigation}) => {
                     style={{
                       flexDirection: 'row',
                       marginHorizontal: horizontalScale(10),
+                      color: Colors.blackColorCode,
                       fontFamily: RubikMedium,
                     }}>
                     {i.mood_type ? getMoodType(i.mood_type) : ''}
@@ -809,13 +810,11 @@ const MicScreen = ({navigation}) => {
                   style={{
                     alignSelf: 'center',
                     lineHeight: 28,
-                    fontWeight: '500',
-                    fontSize: dynamicSize(18),
+                    fontFamily: RubikMedium,
+                    fontSize: getFontSize(18),
                     marginTop: dynamicSize(12),
-                    // marginLeft: 62,
-                    // marginRight: 62,
+                    color: Colors.blackColorCode,
                     textAlign: 'center',
-                    // width: dynamicSize(290),
                   }}>
                   Anonymously answer Team Pulses with how you feel.
                 </Text>
@@ -824,14 +823,12 @@ const MicScreen = ({navigation}) => {
                   numberOfLines={4}
                   style={{
                     lineHeight: 28,
-                    fontWeight: '500',
-                    fontSize: dynamicSize(18),
+                    fontFamily: RubikMedium,
+                    fontSize: getFontSize(18),
                     marginTop: dynamicSize(12),
-                    // marginLeft: 62,
-                    // marginRight: 62,
+                    color: Colors.blackColorCode,
                     textAlign: 'center',
                     alignSelf: 'center',
-                    // width: dynamicSize(270),
                   }}>
                   You'll get a notification when a Team Pulse is available, stay
                   tuned!
@@ -843,14 +840,11 @@ const MicScreen = ({navigation}) => {
               numberOfLines={4}
               style={{
                 lineHeight: 28,
-                fontWeight: '500',
-                fontSize: dynamicSize(18),
+                fontFamily: RubikMedium,
+                fontSize: getFontSize(18),
                 marginTop: dynamicSize(12),
-                // backgroundColor: 'blue',
-                // marginLeft: 62,
-                // marginRight: 62,
+                color: Colors.blackColorCode,
                 textAlign: 'center',
-                // width: dynamicSize(250),
               }}>
               Connect with your company to answer Team Pulses anonymously
             </Text>
@@ -881,7 +875,7 @@ const MicScreen = ({navigation}) => {
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontFamily: RubikMedium, fontSize: getFontSize(16), color: Colors.blueTextColor}}>
+                  style={{fontFamily: RubikMedium, fontWeight: '500', fontSize: getFontSize(16), color: Colors.blueTextColor}}>
                   Connect
                 </Text>
               </View>
@@ -922,26 +916,27 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   normalText: {
-    fontSize: 16,
-    lineHeight: 16,
+    fontSize: getFontSize(16),
+    lineHeight: getLineHeight(16),
     fontFamily: RubikRegular,
     color: Colors.blueTextColor,
   },
   BigText: {
-    fontSize: 20,
+    fontSize: getFontSize(20),
     fontWeight: '500',
-    fontFamily: RubikRegular,
+    fontFamily: RubikMedium,
+    color: Colors.blackColorCode,
     marginVertical: 10,
   },
   questionText: {
     fontFamily: RubikLight,
-    fontSize: 17,
+    fontSize: getFontSize(17),
     fontWeight: '300',
     marginVertical: 6,
   },
   Text: {
     fontFamily: RubikLight,
-    fontSize: 16,
+    fontSize: getFontSize(16),
     color: Colors.greyColorCode,
     fontWeight: '300',
     marginVertical: 6,
@@ -955,8 +950,8 @@ const styles = StyleSheet.create({
     // marginHorizontal: 7,
   },
   imageArrow: {
-    height: 15,
-    width: 15,
+    height: horizontalScale(15),
+    width: horizontalScale(15),
     resizeMode: 'contain',
     alignSelf: 'center',
     marginLeft: horizontalScale(20),

@@ -126,11 +126,10 @@ const styles = StyleSheet.create({
   },
   bigText: {
     fontFamily: RubikMedium,
-    fontSize: width / 20,
+    fontSize: getFontSize(20),
     paddingHorizontal: 12,
     marginRight: 12,
     color: Colors.blackColorCode,
-    // width:'80%'
     textAlign: 'center',
     marginTop: horizontalScale(20),
   },
@@ -139,9 +138,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   buttonView: {
-    // marginTop: horizontalScale(24),
-    // height: horizontalScale(56),
-    // width: 250,
     backgroundColor: Colors.blueTextColor,
     borderRadius: horizontalScale(8),
     alignItems: 'center',
@@ -151,7 +147,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     padding: horizontalScale(8),
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: getFontSize(16),
     color: '#FFFFFF',
   },

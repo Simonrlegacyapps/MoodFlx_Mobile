@@ -14,10 +14,11 @@ import {
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import Constants from '../../Constants';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import {dynamicSize, getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import { getMyDeviceId } from '../../services/commonService';
 import Colors from '../../Constants/Colors/Colors';
+import { RubikLight, RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 
 const {width: width} = Dimensions.get('window');
 
@@ -91,8 +92,9 @@ const EmailConfirmation = ({navigation}) => {
         <Text
           style={{
             fontWeight: '300',
+            fontFamily: RubikLight,
             letterSpacing: 0.2,
-            fontSize: 12,
+            fontSize: getFontSize(12),
             marginTop: 12,
             marginLeft: 62,
             marginRight: 62,
@@ -106,8 +108,9 @@ const EmailConfirmation = ({navigation}) => {
         <Text
           style={{
             fontWeight: '300',
+            fontFamily: RubikLight,
             letterSpacing: 0.2,
-            fontSize: width / 29,
+            fontSize: getFontSize(13),
             marginTop: 12,
             marginLeft: 62,
             marginRight: 62,
@@ -118,7 +121,7 @@ const EmailConfirmation = ({navigation}) => {
         </Text>
       )}
       <View style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(40)}}>
-        <Text style={{fontWeight: '500', fontSize: dynamicSize(22)}}>
+        <Text style={{fontWeight: '500', fontFamily: RubikRegular, color: Colors.blackColorCode, fontSize: getFontSize(22)}}>
           Work email
         </Text>
         <Text
@@ -126,13 +129,13 @@ const EmailConfirmation = ({navigation}) => {
           style={{
             fontWeight: '300',
             // letterSpacing: 1,
-            fontSize: dynamicSize(14),
+            fontFamily: RubikLight,
+            fontSize: getFontSize(14),
             marginTop: dynamicSize(12),
-            // marginLeft: 62,
-            // marginRight: 62,
+            color: Colors.greyTwo,
             lineHeight: dynamicSize(25),
             textAlign: 'center',
-            width: dynamicSize(250),
+            width: '70%',
           }}>
           This is just to make sure we connect you with the right company
         </Text>
@@ -147,7 +150,15 @@ const EmailConfirmation = ({navigation}) => {
               paddingHorizontal: 8,
               borderRadius: 10,
               paddingLeft: 15,
-              marginTop: dynamicSize(35),
+              marginVertical: horizontalScale(28),
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 1,
+              },
+              shadowOpacity: 0.05,
+              shadowRadius: 2.22,
+              elevation: 3,
             }}>
             <Image
               style={{ height: 20, width: 20 }}
@@ -187,14 +198,12 @@ const EmailConfirmation = ({navigation}) => {
           numberOfLines={3}
           style={{
             fontWeight: '300',
-            // letterSpacing: 1,
-            fontSize: dynamicSize(14),
-            marginTop: dynamicSize(12),
-            // marginLeft: 62,
-            // marginRight: 62,
+            fontFamily: RubikLight,
+            color: Colors.greyTwo,
+            fontSize: getFontSize(14),
             lineHeight: dynamicSize(25),
             textAlign: 'center',
-            width: dynamicSize(250),
+            width: '70%',
           }}>
           NB: Your email will never be shared with your company, we pinky
           promise! You are completely anonymous
@@ -204,7 +213,7 @@ const EmailConfirmation = ({navigation}) => {
             style={{
               fontWeight: '300',
               letterSpacing: 0.2,
-              fontSize: 12,
+              fontSize: getFontSize(12),
               marginTop: 12,
               marginLeft: 62,
               marginRight: 62,
@@ -212,7 +221,7 @@ const EmailConfirmation = ({navigation}) => {
               width: '60%',
               color: 'red',
             }}>
-            That doesn’t look like an email address.
+            That doesn't look like an email address.
           </Text>
         )}
         <TouchableOpacity
@@ -233,7 +242,7 @@ const EmailConfirmation = ({navigation}) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+            <Text style={{fontWeight: '500', fontFamily: RubikMedium, fontSize: getFontSize(16), color: '#FFFFFF'}}>
               Verify
             </Text>
           </View>

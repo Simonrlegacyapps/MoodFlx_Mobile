@@ -389,10 +389,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 0.5,
     marginVertical: 15,
     borderWidth: 0.6,
-    borderColor: '#cbcbcb',
+    borderColor: Colors.greyFive,
     paddingHorizontal: 9,
     borderRadius: 5,
     overflow: 'hidden',
@@ -423,8 +422,9 @@ const styles = StyleSheet.create({
   textOne: {
     fontFamily: RubikRegular,
     fontSize: fontSize,
-    textAlign:'center',
-    paddingHorizontal:10
+    textAlign: 'center',
+    color: Colors.blackColorCode,
+    paddingHorizontal: 10,
   },
   textTwo: {
     fontFamily: RubikRegular,
@@ -451,11 +451,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonOneText: {
-    fontFamily: RubikRegular,
+    fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: getFontSize(15),
     color: '#FFFFFF',
   },
   buttonTwoText: {
+    fontWeight: '500',
     fontFamily: RubikMedium,
     fontSize: getFontSize(15),
     color: Colors.greyColorCode,
@@ -469,15 +471,16 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   AnonymousButton: {
-    color: '#CBCBCB',
+    color: Colors.greyFive,
     shadowColor: '#000',
+    fontSize: getFontSize(15),
     fontFamily: RubikMedium,
   },
   AnonymousButtonAnnon:{
     fontFamily: RubikMedium,
-    color: '#CBCBCB',
+    color: Colors.greyFive,
     borderWidth: 0.6,
-    borderColor: '#cbcbcb',
+    borderColor: Colors.greyFive,
     paddingHorizontal: 9,
     borderRadius: 5,
     overflow: 'hidden',

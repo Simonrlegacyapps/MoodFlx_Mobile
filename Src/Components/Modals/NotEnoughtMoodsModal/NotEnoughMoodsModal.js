@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
   bigText: {
     fontFamily: RubikMedium,
     fontSize: getFontSize(23),
+    color: Colors.blackColorCode,
   },
   buttonView: {
     alignSelf: 'center',
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: horizontalScale(23),
   },
   buttonText: {
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: getFontSize(16),
     color: '#FFFFFF',
     paddingVertical: horizontalScale(16),

@@ -126,7 +126,6 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     fontSize: fontSize,
     color: Colors.blackColorCode,
-    // textAlign: 'center'
   },
   buttonOne: {
     width: '100%',

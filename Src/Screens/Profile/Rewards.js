@@ -585,7 +585,7 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     marginTop: horizontalScale(4),
-    color: '#D1D1D1',
+    color: Colors.greyFour,
     fontSize: getFontSize(12),
     fontFamily: RubikLight,
   },
@@ -595,7 +595,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
     marginLeft: horizontalScale(20),
-    tintColor: '#D7D7D7',
+    tintColor: Colors.greyThree,
     marginRight: horizontalScale(17),
   },
   coinsRequiredView: {

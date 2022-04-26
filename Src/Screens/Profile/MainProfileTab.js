@@ -231,7 +231,7 @@ const MainProfileTab = ({navigation}) => {
               style={{
                 color: '#FB8D09',
                 fontFamily: RubikLight,
-                fontSize: 14,
+                fontSize: getFontSize(13),
               }}>
               {getPromotionCoinLeft()} until promotion
             </Text>
@@ -268,8 +268,10 @@ const MainProfileTab = ({navigation}) => {
           // style: { height: 30 },
           labelStyle: {
             // marginTop: -10,
-            fontFamily: RubikRegular,
+            fontFamily: RubikMedium,
+            fontWeight: '500',
             color: Colors.blueTextColor,
+            fontSize: getFontSize(13),
             letterSpacing: 1,
           },
           activeTintColor: '#6A6D90',

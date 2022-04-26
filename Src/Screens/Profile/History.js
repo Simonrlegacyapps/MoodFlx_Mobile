@@ -11,9 +11,9 @@ import {useSelector, useDispatch} from 'react-redux';
 import HisotyImage from '../../../assets/svg/historyImage'
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {getPhotoUrl} from '../../Constants/constants';
-import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
+import {RubikLight, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
 import Images from '../../Constants/Images/Images';
-import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
+import {getFontSize, getLineHeight, horizontalScale} from '../../Constants/sizeChoose';
 import getStore from '../../redux';
 import {getMyDeviceId} from '../../services/commonService';
 import {useFocusEffect} from '@react-navigation/native';
@@ -234,20 +234,21 @@ const styles = StyleSheet.create({
     marginTop: 30
   },
   BigText: {
-    fontFamily: RubikRegular,
-    fontSize: 20,
+    fontFamily: RubikMedium,
+    fontSize: getFontSize(19),
+    color: Colors.blackColorCode,
     fontWeight: '500',
-    marginTop: 40,
+    marginTop: horizontalScale(32),
   },
   SmallText: {
     color: Colors.greyColorCode,
     textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-    lineHeight: 22,
+    marginTop: horizontalScale(17),
+    fontSize: getFontSize(14),
+    lineHeight: getLineHeight(14),
   },
   bottomTwo: {
-    marginBottom: 120,
+    marginBottom: horizontalScale(120),
   },
   card: {
     // height: 100,
@@ -295,7 +296,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemPrice: {
-    color: '#D1D1D1',
+    color: Colors.greyFour,
     fontSize: getFontSize(12),
     fontFamily: RubikLight,
   },
@@ -305,7 +306,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
     marginLeft: horizontalScale(20),
-    tintColor: '#D7D7D7',
+    tintColor: Colors.greyThree,
     marginRight: horizontalScale(17),
   },
   coinsRequiredView: {
