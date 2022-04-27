@@ -19,12 +19,12 @@ import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import RewardsModal from '../../Components/Modals/RewardsModal/RewardsModal';
 import ProfileCoinModal from '../../Components/PopUp/profileCoinModal';
 import Constants from '../../Constants';
-import {getPhotoUrl} from '../../Constants/constants';
+import {getApiBaseUrl, getPhotoUrl} from '../../Constants/constants';
 import {RubikLight, RubikRegular} from '../../Constants/fonts/Fonts';
 import Images from '../../Constants/Images/Images';
 import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import getStore from '../../redux';
-import {SetAvailableRewards} from '../../redux/actions/actions';
+import {CompanyName, SetAvailableRewards} from '../../redux/actions/actions';
 import {getMyDeviceId} from '../../services/commonService';
 import {useFocusEffect} from '@react-navigation/native';
 import Loader from '../../Components/Loader/Loader';
@@ -238,10 +238,11 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
   const isHidden = useRef(false);
   const data = useRef(getRewards());
 
-  const userId = useSelector((state) => state.First?.UserId);
-  const userEmail = useSelector((state) => state.First?.UserEmail);
-  const floCoins = useSelector((state) => state.First?.floCoins);
-  const rewardsList = useSelector((state) => state.First?.availableRewards);
+  const userId = useSelector(state => state.First?.UserId);
+  const userEmail = useSelector(state => state.First?.UserEmail);
+  const floCoins = useSelector(state => state.First?.floCoins);
+  const rewardsList = useSelector(state => state.First?.availableRewards);
+  const companyName = useSelector(state => state.First?.NameCompany?.full_name);
   const dispatch = useDispatch();
 
   const callGetRewardsApi = () => {
@@ -342,6 +343,36 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
       isHidden.current = false;
     }
   }, [islevelsHide]);
+
+  useEffect(() => {
+    // console.log(` Rewards useEffect userId - companyName -> ${userId} - ${companyName}`);
+    if (userId && !companyName) {
+      const deviceId = getMyDeviceId();
+      var myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+  
+      var raw = JSON.stringify({
+        device_id: deviceId,
+        user_id: userId,
+      });
+  
+      console.log(`raw of company details`, raw);
+  
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow',
+      };
+      fetch(`${getApiBaseUrl()}getCompanyDetails`, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+          console.log('getting company details', result);
+          dispatch(CompanyName(result.companyData));
+        })
+        .catch(error => console.log('error', error));
+    }
+  }, [userId, companyName]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -454,8 +485,9 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
     );
   };
 
-  let claimRewardsDescription = `To claim your reward, contact Telstra rewards activations on`;
+  let claimRewardsDescription = `To claim your reward, contact ${companyName ?? 'company'} rewards activations`;
   if (Array.isArray(contactEmails) && contactEmails.length > 0) {
+    claimRewardsDescription = `${claimRewardsDescription} on`;
     if (contactEmails.length === 1) {
       claimRewardsDescription = `${claimRewardsDescription} ${contactEmails[0]}`;
     } else {
@@ -470,7 +502,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
       });
     }
   } else {
-    claimRewardsDescription = `${claimRewardsDescription} xxx@telstrahealth.com or ${'\n'} 02 9481 1111`;
+    claimRewardsDescription = `${claimRewardsDescription} team`;
   }
 
   return (
