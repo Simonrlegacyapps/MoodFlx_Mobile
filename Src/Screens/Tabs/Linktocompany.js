@@ -586,7 +586,7 @@ const Linktocompany = ({ navigation }) => {
             style={{
               marginTop: 20,
               height: 50,
-              width: 300,
+              width: '70%',
               backgroundColor: 'white',
               borderRadius: 16,
               alignItems: 'center',
@@ -595,14 +595,14 @@ const Linktocompany = ({ navigation }) => {
               shadowColor: 'black',
               shadowOffset: { height: 2 },
               shadowOpacity: 0.3,
+              elevation: 3,
             }}>
             <Text
               style={{
-                fontWeight: '300',
+                fontWeight: '400',
                 flex: 1,
-                fontSize: 16,
-                // textAlign: 'center',
-                width: 270,
+                color: Colors.blackColorCode,
+                fontSize: getFontSize(15), 
                 marginHorizontal: 18,
               }}>
               {labelShow ? labelShow.name : 'Select division'}
