@@ -137,7 +137,7 @@ const Screen1 = ({onDone}) => {
                   It's time to unleash your untapped!
                 </Text>
                 <Text allowFontScaling={false} style={styles.smallText0}>
-                  Let's take you through Flx’s features
+                  Let's take you through flx's features
                 </Text>
               </View>
               <View style={styles.bottomButtons}>
