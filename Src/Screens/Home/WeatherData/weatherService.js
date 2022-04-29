@@ -37,7 +37,9 @@ export function callWeatherInsightsApi(reset) {
   }
   PostRequestApi('getWeatherInsights', {...params, status: 'daily'})
     .then((res) => {
-      console.log('✅ ✅ ✅ ✅getWeatherInsights daily success✅ ✅ ✅ ✅: ', res?.data);
+      console.log('✅ ✅ ✅ ✅getWeatherInsights daily success✅ ✅ ✅ ✅: ',
+      // res?.data
+      );
       // console.log('getSleepInsights daily res: ', res);
       let dailyInsightsPayload = {};
       dailyInsightsPayload.dailyInsights =
@@ -73,7 +75,10 @@ export function callWeatherInsightsApi(reset) {
     .then((res) => {
       // console.log('getSleepInsights weekly res: ', res);
       let weeklyInsightsPayload = {};
-      console.log('✅ ✅ ✅ ✅getWeatherInsights weekly success✅ ✅ ✅ ✅: ', res?.data);
+      console.log(
+        '✅ ✅ ✅ ✅getWeatherInsights weekly success✅ ✅ ✅ ✅: ',
+        // res?.data
+      );
       weeklyInsightsPayload.weeklyInsights =
         !!res?.data?.insights?.message1 &&
         typeof res.data.insights.message1 === 'string'
@@ -102,7 +107,9 @@ export function callWeatherInsightsApi(reset) {
     .then((res) => {
       // console.log('getSleepInsights weekly res: ', res);
       let monthlyInsightsPayload = {};
-      console.log('✅ ✅ ✅ ✅getWeatherInsights monthly success✅ ✅ ✅ ✅: ', res?.data);
+      console.log('✅ ✅ ✅ ✅getWeatherInsights monthly success✅ ✅ ✅ ✅: ',
+      // res?.data
+      );
       monthlyInsightsPayload.monthlyInsights =
         !!res?.data?.insights?.message1 &&
         typeof res.data.insights.message1 === 'string'

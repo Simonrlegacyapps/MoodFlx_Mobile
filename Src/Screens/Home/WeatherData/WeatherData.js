@@ -267,10 +267,10 @@ const WeatherData = ({
       )
       .then(async (response) => {
         // console.log(`weather day data api success response`, response);
-        console.log(
-          'weather day data api success response',
-          JSON.stringify(response?.data?.hourly),
-        );
+        // console.log(
+        //   'weather day data api success response',
+        //   JSON.stringify(response?.data?.hourly),
+        // );
         console.log(
           'weather day data lenght',
           JSON.stringify(response?.data?.hourly?.length),
@@ -304,10 +304,10 @@ const WeatherData = ({
       })
       .then(async (response) => {
         let todaysHourlyData;
-        console.log(
-          'weather day data api success response',
-          JSON.stringify(response?.data?.hourly),
-        );
+        // console.log(
+        //   'weather day data api success response',
+        //   JSON.stringify(response?.data?.hourly),
+        // );
         console.log(
           'weather day data lenght',
           JSON.stringify(response?.data?.hourly?.length),
@@ -334,7 +334,7 @@ const WeatherData = ({
         }
         // console.log(`weather day data api success response`, response);
         // console.log(`weather day data api success response`, JSON.stringify(response?.data?.hourly));
-        console.log(`TODAYS_HOURLY_DATA: `, JSON.stringify(todaysHourlyData));
+        // console.log(`TODAYS_HOURLY_DATA: `, JSON.stringify(todaysHourlyData));
         if (response?.data) {
           if (Array.isArray(todaysHourlyData)) {
             setAllDayWeather(todaysHourlyData)
@@ -550,7 +550,7 @@ const WeatherData = ({
     });
 
     // const _temp_ = manual_temp ? manual_temp : Math.round(weatherData?.main?.temp ? weatherData.main.temp : '0');
-    console.log('Weather update api params data.temp ------------', data);
+    // console.log('Weather update api params data.temp ------------', data);
     var config = {
       method: 'post',
       url: `${getApiBaseUrl()}updateWeather`,
@@ -660,7 +660,7 @@ const WeatherData = ({
       .then(async (response) => {
         console.log(
           ' ✅ ✅ ✅ ✅ Success CheckForWeather✅ ✅ ✅ ✅ ',
-          response?.data,
+          // response?.data,
         );
         dispatch(DayTemp(response?.data));
         weatherData = response?.data ? response?.data : weatherData;
@@ -700,7 +700,7 @@ const WeatherData = ({
       fetch(`${getApiBaseUrl()}getWeatherReport`, requestOptions)
         .then((response) => response.json())
         .then(async (result) => {
-          console.log('Get weather Graph data', result),
+          // console.log('Get weather Graph data', result),
             console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
           setGraph(result.weatherData);
           data.push({});

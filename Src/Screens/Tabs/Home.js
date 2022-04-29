@@ -1686,24 +1686,24 @@ const styles = StyleSheet.create({
   },
   prevButton: {
     position: 'absolute',
-    left: 10,
+    left: horizontalScale(10),
     top: HEIGHT * 0.3,
   },
   nextButton: {
     position: 'absolute',
-    right: 10,
+    right: horizontalScale(10),
     top: HEIGHT * 0.3,
   },
   prevImage: {
     transform:[{rotate:"180deg"}],
     height: 22,
-    width: 20,
+    width: horizontalScale(20),
     margin: horizontalScale(5),
     resizeMode: 'contain',
   },
   nextImage: {
     height: 22,
-    width: 20,
+    width: horizontalScale(20),
     margin: horizontalScale(5),
     resizeMode: 'contain',
   },
