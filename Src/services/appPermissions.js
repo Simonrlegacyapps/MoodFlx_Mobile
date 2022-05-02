@@ -281,13 +281,13 @@ class MoodFloPermission {
         console.log('error in getCurrentPosition', error);
       }
       setIsGetCurrentLocationCalled(false);
-      const isIndia = isCountryIndia();
-      if (location && isIndia) {
-        location = {
-          latitude: defaultLocation.latitude,
-          longitude: defaultLocation.longitude,
-        };
-      }
+      // const isIndia = isCountryIndia();
+      // if (location && isIndia) {
+      //   location = {
+      //     latitude: defaultLocation.latitude,
+      //     longitude: defaultLocation.longitude,
+      //   };
+      // }
     }
     if (isLocationPermissionGiven) {
       await AsyncStorage.setItem('GiveWeatherPerm', 'true');

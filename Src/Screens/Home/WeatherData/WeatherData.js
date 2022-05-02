@@ -176,13 +176,13 @@ const WeatherData = ({
         })
           .then((location) => {
             setIsGetCurrentLocationCalled(false);
-            const isIndia = isCountryIndia();
-            if (isIndia) {
-              location = {
-                latitude: defaultLocation.latitude,
-                longitude: defaultLocation.longitude
-              };
-            }
+            // const isIndia = isCountryIndia();
+            // if (isIndia) {
+            //   location = {
+            //     latitude: defaultLocation.latitude,
+            //     longitude: defaultLocation.longitude
+            //   };
+            // }
             console.log('Success', location);
             // setlat(location.latitude);
             dispatch(SetLocation({

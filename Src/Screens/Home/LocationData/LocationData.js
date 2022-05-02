@@ -201,16 +201,27 @@ const LocationData = ({
   //   }
   // }, [UserData.lat, UserData.lon]);
 
-  const setLocationData = async (lat, lon) => {
-    let location = {
-      latitude: Number.parseFloat(lat),
-      longitude: Number.parseFloat(lon),
-    };
-    const isIndia = isCountryIndia();
-    if (isIndia) {
-      location.latitude = Number.parseFloat(defaultLocation.latitude);
-      location.longitude = Number.parseFloat(defaultLocation.longitude);
+  const setLocationData = async () => {
+    const userData = getStore?.()?.getState?.()?.First;
+    const lat = userData.lat;
+    const lon = userData.lon;
+    let location;
+    if (lat && lon) {
+      location = {
+        latitude: Number.parseFloat(lat),
+        longitude: Number.parseFloat(lon),
+      };
+    } else {
+      location = {
+        latitude: Number.parseFloat(defaultLocation.latitude),
+        longitude: Number.parseFloat(defaultLocation.longitude),
+      };
     }
+    // const isIndia = isCountryIndia();
+    // if (isIndia) {
+    //   location.latitude = Number.parseFloat(defaultLocation.latitude);
+    //   location.longitude = Number.parseFloat(defaultLocation.longitude);
+    // }
     console.log('getCurrentPosition success', location);
     // setlat(location.latitude);
     let _region = {
@@ -218,7 +229,7 @@ const LocationData = ({
       ...location,
     };
     setRegion(_region);
-    setMarkers([...[{location: {..._region}, icon: 'default'}]]);
+    // setMarkers([...[{location: {..._region}, icon: 'default'}]]);
   };
 
   const getSorteLocationData = l => {
@@ -307,9 +318,12 @@ const LocationData = ({
             setRegion({ ...defaultLoc, ..._markers[0].location });
             setMarkerIndex(0);
           }
+        } else {
+          setLocationData();
         }
       })
       .catch((error) => {
+        setLocationData();
         console.log('❌ ❌ ❌ ❌ Error in getLocationContextData api❌ ❌ ❌ ❌ : ', error);
       });
   };
