@@ -60,13 +60,13 @@ const getInsightsArray = (text) => {
             x !== undefined &&
               typeof x === 'string' &&
               insights.push({text: x.trim(), color: ''});
-            typeof r === 'string' && insights.push({text: r, color: '#7265e3'});
+            typeof r === 'string' && insights.push({text: r.toLowerCase(), color: '#7265e3'});
           } else {
             let x = l?.slice?.(index + 1, idx)?.join?.(' ');
             x !== undefined &&
               typeof x === 'string' &&
               insights.push({text: x.trim(), color: ''});
-            typeof r === 'string' && insights.push({text: r, color: '#7265e3'});
+            typeof r === 'string' && insights.push({text: r.toLowerCase(), color: '#7265e3'});
           }
           index = idx;
         }
