@@ -1050,13 +1050,13 @@ const App: () => Node = () => {
           setIsGetCurrentLocationCalled(false);
           //   console.log('Success', location);
           // setlat(location.latitude);
-          const isIndia = isCountryIndia();
-          if (isIndia) {
-            location = {
-              latitude: defaultLocation.latitude,
-              longitude: defaultLocation.longitude
-            };
-          }
+          // const isIndia = isCountryIndia();
+          // if (isIndia) {
+          //   location = {
+          //     latitude: defaultLocation.latitude,
+          //     longitude: defaultLocation.longitude
+          //   };
+          // }
           console.log(
             '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
             JSON.stringify(location),

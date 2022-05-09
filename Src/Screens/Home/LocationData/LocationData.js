@@ -131,16 +131,6 @@ const defaultLoc = {
 const CustomMarker = ({e, idx, setRef, markerIndex, markers
   // setIsTrackChanges
 }) => {
-  if (
-    idx !== markerIndex &&
-    !Number.isNaN(markerIndex) &&
-    Array.isArray(markers) &&
-    markers.length > 0 &&
-    String(markers?.[markerIndex]?.location?.latitude) === String(e.location.latitude ?? -1) &&
-    String(markers?.[markerIndex]?.location?.longitude) === String(e.location.longitude ?? -1)
-  ) {
-    return null;
-  }
   return (
     <Marker
       key={idx}
@@ -149,9 +139,12 @@ const CustomMarker = ({e, idx, setRef, markerIndex, markers
     // image={Images?.[e?.icon]}
     // title={e?.title}
     // description={marker.description}
+      style={idx === markerIndex ? styles.selectedMarkerStyle : null}
     >
       {!!e?.icon && (
-        <Image source={Images?.[e?.icon]} style={styles.moodIcon} />
+        <View>
+          <Image source={Images?.[e?.icon]} style={styles.moodIcon} />
+        </View>
       )}
       <Callout style={styles.calloutStyle}>
         <View style={styles.labelContainer}>
@@ -534,6 +527,9 @@ const styles = StyleSheet.create({
     borderRadius: horizontalScale(20),
     width: '100%',
     height: '100%',
+  },
+  selectedMarkerStyle: {
+    zIndex: 1,
   },
   calloutStyle: {
     // height: horizontalScale(60),

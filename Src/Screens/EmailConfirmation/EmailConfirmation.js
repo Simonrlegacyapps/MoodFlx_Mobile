@@ -117,7 +117,7 @@ const EmailConfirmation = ({navigation}) => {
             textAlign: 'center',
             color: 'red',
           }}>
-          Sorry, your company hasn't joined MoodFlx yet
+          Sorry, your company hasn't joined moodflx yet
         </Text>
       )}
       <View style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(40)}}>

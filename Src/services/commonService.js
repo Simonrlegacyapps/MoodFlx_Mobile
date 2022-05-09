@@ -1022,4 +1022,4 @@ export function getScreenDataTimeInHoursMin(e) {
     return i > 0 ? `${hr > 0 ? `${hr}hr ` : ''}${min > 0 ? `${min}min` : ''}` : '0min';
   }
   return '0min';
-};
+}
