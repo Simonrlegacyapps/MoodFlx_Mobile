@@ -30,6 +30,8 @@
 		1922D43B2706011A003403BB /* MoodInputWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 1922D43627060118003403BB /* MoodInputWidget.intentdefinition */; };
 		196AD42F281194F900D64A0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 196AD42E281194F900D64A0C /* GoogleService-Info.plist */; };
 		19DCB896267B1B19009C4DC1 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		19ED3130282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 19ED312F282AA5C7003C35B9 /* RCTMoodDataModule.m */; };
+		19ED3131282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 19ED312F282AA5C7003C35B9 /* RCTMoodDataModule.m */; };
 		19F536DD281FD187008A1F82 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F536DC281FD187008A1F82 /* HealthKit.framework */; };
 		7699B88040F8A987B510C191 /* libPods-MoodFlo-MoodFloTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-MoodFlo-MoodFloTests.a */; };
 /* End PBXBuildFile section */
@@ -78,6 +80,8 @@
 		1922D44527060376003403BB /* MoodInputWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MoodInputWidgetExtension.entitlements; sourceTree = "<group>"; };
 		196AD42E281194F900D64A0C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		19A6BB55271733EC00AF40D0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		19ED312E282AA510003C35B9 /* RCTMoodDataModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTMoodDataModule.h; sourceTree = "<group>"; };
+		19ED312F282AA5C7003C35B9 /* RCTMoodDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTMoodDataModule.m; sourceTree = "<group>"; };
 		19F536DC281FD187008A1F82 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-MoodFlo-MoodFloTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MoodFlo-MoodFloTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B4392A12AC88292D35C810B /* Pods-MoodFlo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo.debug.xcconfig"; path = "Target Support Files/Pods-MoodFlo/Pods-MoodFlo.debug.xcconfig"; sourceTree = "<group>"; };
@@ -137,6 +141,8 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				1922D443270602B9003403BB /* SwiftFile.swift */,
 				1922D442270602B8003403BB /* MoodFlo-Bridging-Header.h */,
+				19ED312E282AA510003C35B9 /* RCTMoodDataModule.h */,
+				19ED312F282AA5C7003C35B9 /* RCTMoodDataModule.m */,
 			);
 			name = MoodFlo;
 			sourceTree = "<group>";
@@ -522,6 +528,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19ED3131282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */,
 				00E356F31AD99517003FC87E /* MoodFloTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -532,6 +539,7 @@
 			files = (
 				1922D43B2706011A003403BB /* MoodInputWidget.intentdefinition in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+				19ED3130282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				19DCB896267B1B19009C4DC1 /* (null) in Sources */,
 			);
