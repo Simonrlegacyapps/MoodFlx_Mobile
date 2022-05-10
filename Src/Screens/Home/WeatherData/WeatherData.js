@@ -53,7 +53,7 @@ import {
 } from '../../../Constants/constants';
 import {AppPermissions} from '../../../services/appPermissions';
 import isFunction from 'lodash.isfunction';
-import {callWeatherInsightsApi, findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getTodaysHourlyData} from './weatherService';
+import {callWeatherInsightsApi, findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getSortedWeatherData, getTodaysHourlyData} from './weatherService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox'
@@ -701,9 +701,14 @@ const WeatherData = ({
         .then((response) => response.json())
         .then(async (result) => {
           // console.log('Get weather Graph data', result),
-            console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
-          setGraph(result.weatherData);
-          data.push({});
+          console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
+          if (
+            Array.isArray(result?.weatherData) &&
+            result.weatherData.length > 0
+          ) {
+            setGraph(getSortedWeatherData(result.weatherData));
+            data.push({});
+          }
           // await syncWeatherData();
         })
         .catch((error) => console.log('error', error));

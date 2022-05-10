@@ -30,6 +30,7 @@
 		1922D43B2706011A003403BB /* MoodInputWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 1922D43627060118003403BB /* MoodInputWidget.intentdefinition */; };
 		196AD42F281194F900D64A0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 196AD42E281194F900D64A0C /* GoogleService-Info.plist */; };
 		19DCB896267B1B19009C4DC1 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		19F536DD281FD187008A1F82 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F536DC281FD187008A1F82 /* HealthKit.framework */; };
 		7699B88040F8A987B510C191 /* libPods-MoodFlo-MoodFloTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-MoodFlo-MoodFloTests.a */; };
 /* End PBXBuildFile section */
 
@@ -77,6 +78,7 @@
 		1922D44527060376003403BB /* MoodInputWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MoodInputWidgetExtension.entitlements; sourceTree = "<group>"; };
 		196AD42E281194F900D64A0C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		19A6BB55271733EC00AF40D0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		19F536DC281FD187008A1F82 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-MoodFlo-MoodFloTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MoodFlo-MoodFloTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B4392A12AC88292D35C810B /* Pods-MoodFlo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo.debug.xcconfig"; path = "Target Support Files/Pods-MoodFlo/Pods-MoodFlo.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-MoodFlo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo.release.xcconfig"; path = "Target Support Files/Pods-MoodFlo/Pods-MoodFlo.release.xcconfig"; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C80B921A6F3F58F76C31292 /* libPods-MoodFlo.a in Frameworks */,
+				19F536DD281FD187008A1F82 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +155,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				19F536DC281FD187008A1F82 /* HealthKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-MoodFlo.a */,
 				19F6CBCC0A4E27FBF8BF4A61 /* libPods-MoodFlo-MoodFloTests.a */,
@@ -605,7 +609,7 @@
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
@@ -640,7 +644,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Sir. Conrad Pty Ltd (UV3Z6BTTHA)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -411,3 +411,37 @@ export function getLocalTodaysHourlyData(previousData, currentData) {
   });
   return w;
 }
+
+export function getSortedWeatherData(l) {
+  let result = [];
+  let sortedList = [...l];
+  let weeklyDates = [0, 1, 2, 3, 4, 5, 6];
+  let sortedData = {};
+  weeklyDates = weeklyDates.map(e =>
+    moment().subtract(e, 'days').format('YYYY-MM-DD'),
+  );
+  sortedList.sort(function (a, b) {
+    let itemOneData = a.date ? moment(a.date, 'YYYY-MM-DD') : null;
+    let itemTwoData = b.date ? moment(b.date, 'YYYY-MM-DD') : null;
+    if (!itemOneData || !itemTwoData || itemOneData.isSame(itemTwoData)) {
+      return 0;
+    } else {
+      return itemOneData.isAfter(itemTwoData) ? -1 : 1;
+    }
+  });
+  sortedList.forEach(e => {
+    sortedData[e.date] = e;
+  });
+  weeklyDates.forEach(e => {
+    if (sortedData?.[e]) {
+      result.push(sortedData[e]);
+    } else {
+      result.push({
+        "date": e,
+        "temp_min": null,
+        "temp_max": null
+      });
+    }
+  });
+  return sortedList;
+}
