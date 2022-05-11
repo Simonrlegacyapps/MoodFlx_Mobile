@@ -185,7 +185,7 @@ const SleepData = ({
         const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
         const endDate = e?.end_date ? moment(new Date(e.end_date).getTime()) : null;
         let diff = 0;
-        if (startDate && endDate && startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') && e.type === 'ASLEEP') {
+        if (e.type === 'ASLEEP' && startDate && endDate && (startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') || endDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY'))) {
           diff = endDate.diff(startDate, 'minutes');
           totalMinutes += diff;
           console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
@@ -199,12 +199,14 @@ const SleepData = ({
           const endDate = e?.end_date
             ? moment(new Date(e.end_date).getTime())
             : null;
-        let diff = 0;
+          let diff = 0;
           if (
+            e.type === 'INBED' &&
             startDate &&
-            endDate &&
-            startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') &&
-            e.type === 'INBED'
+            endDate && (
+              startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') ||
+              endDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY')
+            )
           ) {
           diff = endDate.diff(startDate, 'minutes');
           totalMinutes += diff;

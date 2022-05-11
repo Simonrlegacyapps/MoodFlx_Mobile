@@ -206,49 +206,57 @@ export function calculateSleepData(sleepData, onUpdate) {
           duration: moment(asleepEndTime).diff(moment(asleepStartTime), 'minutes')
         } : asleepData;
         if (asleepData && asleepStartTime && asleepEndTime) {
-          if (moment(asleepStartTime).date() !== moment(asleepEndTime).date()) {
-            formattedData.push({
-              start_date: asleepData.start_date,
-              end_date: moment(asleepStartTime).endOf('day').toDate(),
-              type: 'ASLEEP',
-              duration: moment(asleepStartTime).endOf('day').diff(moment(asleepStartTime), 'minutes')
-            });
-            formattedData.push({
-              start_date: moment(asleepEndTime).startOf('day').toDate(),
-              end_date: endDate.toDate(),
-              type: 'ASLEEP',
-              duration: moment(asleepEndTime).diff(moment(asleepEndTime).startOf('day'), 'minutes'),
-            });
-          } else {
-            formattedData.push(asleepData);
-          }
+          formattedData.push(asleepData);
+          // if (moment(asleepStartTime).date() !== moment(asleepEndTime).date()) {
+          //   formattedData.push({
+          //     start_date: asleepData.start_date,
+          //     end_date: moment(asleepStartTime).endOf('day').toDate(),
+          //     type: 'ASLEEP',
+          //     duration: moment(asleepStartTime).endOf('day').diff(moment(asleepStartTime), 'minutes')
+          //   });
+          //   formattedData.push({
+          //     start_date: moment(asleepEndTime).startOf('day').toDate(),
+          //     end_date: endDate.toDate(),
+          //     type: 'ASLEEP',
+          //     duration: moment(asleepEndTime).diff(moment(asleepEndTime).startOf('day'), 'minutes'),
+          //   });
+          // } else {
+          //   formattedData.push(asleepData);
+          // }
         }
       }
       if (startDate && endDate) {
         const type = e?.value ?? 'INBED';
         const startOfToday = moment().startOf('day');
-        if (startDate.clone().date() !== endDate.clone().date()) {
-          formattedData.push({
-            start_date: startDate.clone().toDate(),
-            end_date: moment(startTimeInMillis).endOf('day').toDate(),
-            type,
-            duration: moment(startTimeInMillis).endOf('day').diff(startDate, 'minutes')
-          });
-          formattedData.push({
-            start_date: moment(endTimeInMillis).startOf('day').toDate(),
-            end_date: endDate.clone().toDate(),
-            type,
-            duration: endDate.diff(moment(endTimeInMillis).startOf('day'), 'minutes'),
-          });
-        } else {
-          diff = endDate.diff(startDate, 'minutes');
-          formattedData.push({
-            start_date: startDate.clone().toDate(),
-            end_date: endDate.clone().toDate(),
-            type,
-            duration: diff
-          });
-        }
+        diff = endDate.diff(startDate, 'minutes');
+        formattedData.push({
+          start_date: startDate.clone().toDate(),
+          end_date: endDate.clone().toDate(),
+          type,
+          duration: diff
+        });
+        // if (startDate.clone().date() !== endDate.clone().date()) {
+        //   formattedData.push({
+        //     start_date: startDate.clone().toDate(),
+        //     end_date: moment(startTimeInMillis).endOf('day').toDate(),
+        //     type,
+        //     duration: moment(startTimeInMillis).endOf('day').diff(startDate, 'minutes')
+        //   });
+        //   formattedData.push({
+        //     start_date: moment(endTimeInMillis).startOf('day').toDate(),
+        //     end_date: endDate.clone().toDate(),
+        //     type,
+        //     duration: endDate.diff(moment(endTimeInMillis).startOf('day'), 'minutes'),
+        //   });
+        // } else {
+        //   diff = endDate.diff(startDate, 'minutes');
+        //   formattedData.push({
+        //     start_date: startDate.clone().toDate(),
+        //     end_date: endDate.clone().toDate(),
+        //     type,
+        //     duration: diff
+        //   });
+        // }
       }
     });
     formattedData.sort(function (a, b) {
@@ -404,7 +412,7 @@ export function getSleepGraphData({ weeklyData: { INBED: WeeklyInBed = [], ASLEE
     day = eData.format('dd');
     // INBED
     inBed.forEach((d) => {
-      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      const startDateMillis = d?.end_date ? new Date(d.end_date).getTime() : null;
       if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
         inBedData = {
           x: idx + 1,
@@ -424,7 +432,7 @@ export function getSleepGraphData({ weeklyData: { INBED: WeeklyInBed = [], ASLEE
 
     // ASLEEP
     asleep.forEach((d) => {
-      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      const startDateMillis = d?.end_date ? new Date(d.end_date).getTime() : null;
       if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
         asleepData = {
           x: idx + 1,
