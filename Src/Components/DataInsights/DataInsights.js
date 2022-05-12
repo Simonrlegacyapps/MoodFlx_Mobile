@@ -155,6 +155,11 @@ function DataInsights({
     return fn;
   }, []);
 
+  const onDailyTabPress = useCallback(() => {
+    setInsightsDuration(insightsDurationFlags.daily);
+    ShowTarget && setShowTarget(false);
+  }, [ShowTarget]);
+
   const onSyncButtonClick = useCallback(() => {
     setShowNotEnoughData(false);
     if (isFunction(onSync)) {
@@ -196,6 +201,7 @@ function DataInsights({
       setModalDuration(insightsDurationFlags.monthly);
       if (!!monthlyInsights) {
         setInsightsDuration(insightsDurationFlags.monthly);
+        ShowTarget && setShowTarget(false);
       } else if (getTotalMood() < 16 || !isFunction(onSync)) {
         setShowNotEnoughMoodsModal(true);
       } else {
@@ -276,7 +282,7 @@ function DataInsights({
                 ? styles.activeTabHeader
                 : styles.inactiveTabHeader
             }
-            onPress={() => setInsightsDuration(insightsDurationFlags.daily)}>
+            onPress={onDailyTabPress}>
             <Text
               style={
                 insightsDuration === insightsDurationFlags.daily
@@ -388,6 +394,7 @@ function DataInsights({
           </Text>
         </Pressable>
         {insightsDuration === insightsDurationFlags.weekly && (
+          <>
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setShowTarget((e) => !e)}
@@ -403,6 +410,22 @@ function DataInsights({
             </Text>
           </View>
         </TouchableOpacity>
+
+            {ShowTarget && (
+              <>
+                <ProgressDay color={'#6FD691'} label={"M"} label2={MoodCountData[1].mood_count} progress={MoodCountData[0].mood_count} />
+                <View style={styles.borderLine} />
+                <ProgressDay color={'#B88DCC'} label={"T"} label2={MoodCountData[2].mood_count} progress={MoodCountData[1].mood_count} />
+                <View style={styles.borderLine} />
+                <ProgressDay color={'#4C5F79'} label={"W"} label2={MoodCountData[3].mood_count} progress={MoodCountData[2].mood_count} />
+                <View style={styles.borderLine} />
+                <ProgressDay color={Colors.blueTextColor} label={"T"} label2={MoodCountData[4].mood_count} progress={MoodCountData[3].mood_count} />
+                <View style={styles.borderLine} />
+                <ProgressDay color={'#7FE3F0'} label={"F"} label2={MoodCountData[5].mood_count} progress={MoodCountData[4].mood_count} />
+                {/* <View style={styles.borderLine} /> */}
+              </>
+            )}
+          </>
         )}
 
         {/* <View
@@ -419,20 +442,6 @@ function DataInsights({
             2/3
           </Text>
         </View> */}
-        {ShowTarget && (
-          <>
-            <ProgressDay color={'#6FD691'} label={"M"} label2={MoodCountData[1].mood_count} progress={MoodCountData[0].mood_count} />
-            <View style={styles.borderLine} />
-            <ProgressDay color={'#B88DCC'} label={"T"} label2={MoodCountData[2].mood_count} progress={MoodCountData[1].mood_count} />
-            <View style={styles.borderLine} />
-            <ProgressDay color={'#4C5F79'} label={"W"} label2={MoodCountData[3].mood_count} progress={MoodCountData[2].mood_count} />
-            <View style={styles.borderLine} />
-            <ProgressDay color={Colors.blueTextColor} label={"T"} label2={MoodCountData[4].mood_count} progress={MoodCountData[3].mood_count} />
-            <View style={styles.borderLine} />
-            <ProgressDay color={'#7FE3F0'} label={"F"} label2={MoodCountData[5].mood_count} progress={MoodCountData[4].mood_count} />
-            {/* <View style={styles.borderLine} /> */}
-          </>
-        )}
 
         {suggestion ? (
           <View style={styles.suggestionView}>
