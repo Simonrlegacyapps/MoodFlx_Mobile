@@ -16,7 +16,7 @@ import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
 import Colors from '../../../Constants/Colors/Colors';
-import {weatherActions, weatherApiDataTypes, weatherTypes} from '../../../Constants/constants';
+import {pollenValues, weatherActions, weatherApiDataTypes, weatherTypes} from '../../../Constants/constants';
 import {
   RubikBlack,
   RubikBold,
@@ -27,11 +27,8 @@ import {
 import {dynamicSize, getFontSize, horizontalScale} from '../../../Constants/sizeChoose';
 import ProfileGenderModal from '../ProfileGender/ProfileGenderModal';
 
-let data = [
-  {name: 'Low', id: 'Low'},
-  {name: 'Medium', id: 'Medium'},
-  {name: 'High', id: 'High'},
-];
+let data = pollenValues;
+
 let Weatherdata = [
   {name: weatherTypes.Rainy, id: weatherTypes.Rainy},
   {name: weatherTypes.Sunny, id: weatherTypes.Sunny},
@@ -72,9 +69,7 @@ const EditManualWeatherModal = ({
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   const [OpenPollen, setOpenPollen] = useState(false);
-  const [pollenValue, setPollenValue] = useState(
-    Pollen ? String(Pollen) : data?.[0]?.name ?? 'Low',
-  );
+  const [pollenValue, setPollenValue] = useState(Pollen ? String(Pollen) : data[0].name);
   const [hourValue, setHourValue] = useState(Hour ? String(Hour) : '0');
   const [tempValue, setTempValue] = useState(Temp ? String(Temp) : '0');
   const [weatherTypeValue, setWeatherTypeValue] = useState(WeatherType);
@@ -317,8 +312,7 @@ const EditManualWeatherModal = ({
                               marginTop: 2,
                             },
                           ]}>
-                          {' '}
-                          hr
+                          {` hr`}
                         </Text>
                       </View>
                     </View>

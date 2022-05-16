@@ -47,6 +47,7 @@ import {
   getIsGetCurrentLocationCalled,
   getWeeklyInsightsAvailable,
   isCountryIndia,
+  pollenValues,
   setIsGetCurrentLocationCalled,
   weatherActions,
   weatherTypes,
@@ -134,7 +135,7 @@ const WeatherData = ({
   const [EditManualWeather, setEditManualWeather] = useState(false);
   const [ManualTemp, setManualTemp] = useState(null);
   const [ManulHours, setManulHours] = useState(null);
-  const [ManulPollen, setManulPollen] = useState(null);
+  const [ManulPollen, setManulPollen] = useState(pollenValues[0].name);
   const [ManualWeatherType, setManualWeatherType] = useState(null);
   const [AllDayWeather, setAllDayWeather] = useState(null);
   const [Graph, setGraph] = useState(null);
@@ -358,10 +359,10 @@ const WeatherData = ({
                   ?.description
               ) {
                 value = value + 1;
-                sethours(value);
                 valueHours = value;
               }
             }
+            sethours(value);
           }
         } else {
           CheckForWeather(loc_lat, loc_long);
@@ -535,7 +536,7 @@ const WeatherData = ({
         ? manual_weather_type
         : findWeather(weatherData?.weather?.[0]?.main),
       pollen: null,
-      pollen_type: manul_pollen ? manul_pollen : 'Low',
+      pollen_type: manul_pollen === pollenValues[0].name ? '' : manul_pollen,
       temp_min: weatherData?.main?.temp_min,
       temp_max: weatherData?.main?.temp_max,
       temp: manual_temp
@@ -550,7 +551,7 @@ const WeatherData = ({
     });
 
     // const _temp_ = manual_temp ? manual_temp : Math.round(weatherData?.main?.temp ? weatherData.main.temp : '0');
-    // console.log('Weather update api params data.temp ------------', data);
+    // console.log('Weather update api params  ------------', data);
     var config = {
       method: 'post',
       url: `${getApiBaseUrl()}updateWeather`,
@@ -1259,7 +1260,7 @@ const WeatherData = ({
                                 fontSize: dynamicSize(15),
                               },
                             ]}>
-                            {ManulHours ? ManulHours : hours ? hours : 1}hr
+                            {`${ManulHours ? ManulHours : hours ? hours : 1} hr`}
                           </Text>
                         </View>
                       </View>
@@ -1300,16 +1301,27 @@ const WeatherData = ({
                             marginRight: 10,
                           }}
                         />
-                        <View>
+                        <View
+                          style={
+                            !ManulPollen
+                              ? {
+                                  borderBottomColor: Colors.greyFive,
+                                  borderBottomWidth: 1,
+                                  alignItems: 'center'
+                                }
+                              : undefined
+                          }
+                          >
                           <Text style={[, styles.smallCardText]}>Pollen</Text>
                           <Text
                             style={[
                               {
                                 fontFamily: RubikMedium,
                                 fontSize: dynamicSize(14.5),
+                                alignSelf: 'center'
                               },
                             ]}>
-                            {ManulPollen ? ManulPollen : 'Low'}
+                            {ManulPollen}
                           </Text>
                         </View>
                       </View>
