@@ -268,7 +268,7 @@ export function calculateSleepData(sleepData, onUpdate) {
       return aDateMillis - bDateMillis;
     });
     setSleepDataLastThirtyDays(formattedData);
-    // console.log('calculateSleepData: ', JSON.stringify(formattedData));
+    // console.log('calculateSleepData: ', formattedData);
     onUpdate?.({
       sleepData: formattedData,
       isPermissionAsked: true
@@ -517,32 +517,30 @@ export function getSleepDataForUpdateApi() {
     return null;
   }
   let formatData = [];
-  let weekDates = [];
-  let dates = [
-    moment().startOf('days').subtract(1, 'days').toDate().getTime(),
-    moment().startOf('days').toDate().getTime(),
-  ];
-  dates.forEach((e, idx) => {
-    const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
-    weekDates.push(d);
-  });
-  if (dates.length > 0 && sleepDataLastThirtyDays.length > 0) {
-    dates.forEach((e, idx) => {
-      const eData = moment(e);
-      let data = null;
-      sleepDataLastThirtyDays.forEach((d, idx) => {
-        const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
-        const endDateMillis = d?.end_date ? new Date(d.end_date).getTime() : null;
-        if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
-          data = {
-            "start_date": moment(startDateMillis).format("YYYY-MM-DD HH:mm:ss"),
-            "end_date": moment(endDateMillis).format("YYYY-MM-DD HH:mm:ss"),
-            "type": (d?.type?.toLowerCase() === "inbed" || d?.type?.toLowerCase() === "asleep") ? d.type?.toUpperCase?.() : "INBED"
-          };
-          formatData.push(data);
-        }
-      });
-    })
+  let currentDt = moment().date();
+  let previousDt = currentDt - 1;
+  if (sleepDataLastThirtyDays.length > 0) {
+    let data = null;
+    sleepDataLastThirtyDays.forEach((d, idx) => {
+      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      const endDateMillis = d?.end_date ? new Date(d.end_date).getTime() : null;
+      if (
+        (endDateMillis !== null && endDateMillis !== null) &&
+        (moment(endDateMillis).date() === previousDt ||
+          moment(endDateMillis).date() === currentDt)
+      ) {
+        data = {
+          start_date: moment(startDateMillis).format('YYYY-MM-DD HH:mm:ss'),
+          end_date: moment(endDateMillis).format('YYYY-MM-DD HH:mm:ss'),
+          type: (
+            d?.type?.toLowerCase() === 'inbed' ||
+            d?.type?.toLowerCase() === 'asleep')
+            ? d.type?.toUpperCase?.()
+            : 'INBED',
+        };
+        formatData.push(data);
+      }
+    });
   }
   formatData.sort(function (a, b) {
     const aDateMillis = a?.start_date ? new Date(a.start_date).getTime() : null;
