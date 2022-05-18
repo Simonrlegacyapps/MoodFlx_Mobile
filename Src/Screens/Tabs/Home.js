@@ -1147,12 +1147,21 @@ const App = (props) => {
           console.log('totalCalories', mainCalories);
         }
       }
+      let heartRateCounter = 0;
       for (let m in HeartRate) {
         let iteratedate = moment(HeartRate[m].startDate).format('DD-MMM-YYYY');
-        if (dates[i] === iteratedate) {
-          totalHeartRate = totalHeartRate + HeartRate[m].value;
+        const heartRateValue = HeartRate[m].value;
+        if (
+          dates[i] === iteratedate &&
+          !Number.isNaN(heartRateValue) &&
+          heartRateValue > 0 &&
+          heartRateValue <= 350
+        ) {
+          heartRateCounter++;
+          totalHeartRate = totalHeartRate + heartRateValue;
         }
       }
+      totalHeartRate = Math.round(totalHeartRate / heartRateCounter);
       for (let n in BP) {
         let iteratedate = moment(BP[n].startDate).format('DD-MMM-YYYY');
         if (dates[i] === iteratedate) {
@@ -1272,7 +1281,7 @@ const App = (props) => {
         age: dateOfBirth?.age ?? 0,
         email: UserData.UserEmail ?? '',
       });
-      console.log(`data1111`, _data);
+      // console.log(`health Update Request body`, _data);
 
       var config = {
         method: 'post',
