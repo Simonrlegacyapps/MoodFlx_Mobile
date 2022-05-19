@@ -17,7 +17,7 @@ import {
   GET_DAY_STEPS,
   GET_WEATHER_HOUR,
   GET_WEATHER_PERM,
-  GET_DAY_TEMP,
+  CURRENT_WEATHER,
   SET_STEPS,
   SET_CALORIES,
   SET_DISTANCE,
@@ -184,9 +184,9 @@ export const WeatherTypehours = (data) => {
     payload: data,
   };
 };
-export const DayTemp = (data) => {
+export const CurrentWeather = (data) => {
   return {
-    type: GET_DAY_TEMP,
+    type: CURRENT_WEATHER,
     payload: data,
   };
 };

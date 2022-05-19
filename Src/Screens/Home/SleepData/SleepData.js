@@ -18,15 +18,11 @@ import {
 } from '../../../Constants/fonts/Fonts';
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
-import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
-import BarGraph from '../../../Components/BarChart/BarGraph';
-import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
 import axios from 'axios';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
 import StarProgress from '../../../Components/StarProgress/StarProgress';
 import PopUp from '../../../Components/PopUp/PopUp';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
-import AsyncStorage from '@react-native-community/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 // import AppleHealthKit from 'rn-apple-healthkit';
 import moment from 'moment';
@@ -43,7 +39,6 @@ import {
 import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
-import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import Skeleton from '../../../Components/Skeleton/Skeleton';

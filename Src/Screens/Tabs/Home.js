@@ -44,7 +44,6 @@ import SleepData from '../Home/SleepData/SleepData';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   DaySteps,
-  DayTemp,
   GetCalories,
   GetDistance,
   GetDOB,
@@ -1281,7 +1280,7 @@ const App = (props) => {
         age: dateOfBirth?.age ?? 0,
         email: UserData.UserEmail ?? '',
       });
-      // console.log(`health Update Request body`, _data);
+      console.log('health Update Request body', _data);
 
       var config = {
         method: 'post',

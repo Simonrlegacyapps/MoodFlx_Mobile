@@ -176,16 +176,7 @@ export async function syncWeatherData() {
   } catch (error) {
     console.log('error getting email from Async storage');
   }
-  if (WeatherP && isIndia) {
-    lat = defaultLocation.latitude;
-    lng = defaultLocation.longitude;
-    city_info = defaultLocation.city;
-    state_info = defaultLocation.state;
-    country_info = defaultLocation.country;
-    console.log(
-      'Weather update api called with default location because country is India.',
-    );
-  } else if (WeatherP && getIsGetCurrentLocationCalled() === false) {
+  if (WeatherP && getIsGetCurrentLocationCalled() === false) {
     setIsGetCurrentLocationCalled(true);
     try {
       location = await GetLocation.getCurrentPosition({
@@ -260,17 +251,22 @@ export async function syncWeatherData() {
   }
   if (weatherRes?.data?.hourly && weatherResTwo?.data?.hourly) {
     let hourlyData = [];
-    if (isIndia || !WeatherP) {
-      hourlyData = getDefaultTodaysHourlyData(weatherRes?.data?.hourly, weatherResTwo?.data?.hourly)
-    } else {
-      hourlyData = getLocalTodaysHourlyData(weatherRes?.data?.hourly, weatherResTwo?.data?.hourly)
-    }
+    // if (isIndia || !WeatherP) {
+    //   hourlyData = getDefaultTodaysHourlyData(weatherRes?.data?.hourly, weatherResTwo?.data?.hourly)
+    // } else {
+    //   hourlyData = getLocalTodaysHourlyData(weatherRes?.data?.hourly, weatherResTwo?.data?.hourly, weatherResTwo.data.timezone_offset)
+    // }
+    hourlyData = getLocalTodaysHourlyData(
+      weatherRes?.data?.hourly,
+      weatherResTwo?.data?.hourly,
+      weatherResTwo.data.timezone_offset,
+    );
     weatherData = Object.assign({}, weatherResTwo.data, {
       hourly: Array.isArray(hourlyData) ? [...hourlyData] : [],
     });
-    if (weatherRes?.data) {
-      // console.log('allDayWeatherData api call success', JSON.stringify(weatherData));
-    }
+    // if (weatherRes?.data) {
+    //  console.log('allDayWeatherData api call success', JSON.stringify(weatherData));
+    // }
     if (weatherData?.hourly) {
       for (let i in weatherData.hourly) {
         if (
@@ -285,16 +281,20 @@ export async function syncWeatherData() {
   let dailyWeatherRes;
   try {
     dailyWeatherRes = await axios.get(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
     );
   } catch (error) {
     console.log('error getting current day weather: ', error);
   }
   // console.log('weatherService dailyWeatherRes: ', dailyWeatherRes?.data);
-  if (dailyWeatherRes?.data?.main) {
-    temp_min = dailyWeatherRes.data.main?.temp_min;
-    temp_max = dailyWeatherRes.data.main?.temp_max;
-    temp = dailyWeatherRes.data.main?.temp;
+  if (dailyWeatherRes?.data?.current) {
+    // console.log('response.data.daily =============--->', JSON.stringify(response.data.daily));
+    const timezoneOffset = dailyWeatherRes.data.timezone_offset
+    const currentWeather = dailyWeatherRes?.data?.daily?.filter?.((e, idx) => moment.utc(((e.dt + timezoneOffset) * 1000)).date() === moment().date());
+    // console.log('WeatherType ===========>>>>>>>>', response?.data?.current?.weather?.[0]?.main);
+    temp_min = currentWeather?.[0]?.temp?.min ?? temp_min;
+    temp_max = currentWeather?.[0]?.temp?.max ?? temp_max;
+    temp = dailyWeatherRes.data?.current?.temp ?? temp;
     console.log('weatherService temp_min: ', temp_min);
     console.log('weatherService temp_max: ', temp_max);
     console.log('weatherService temp: ', temp);
@@ -308,7 +308,7 @@ export async function syncWeatherData() {
     hours,
     weather_type: findWeather(weatherData?.current?.weather?.[0]?.main) ?? null,
     pollen: null,
-    pollen_type: 'Low',
+    pollen_type: null,
     weather_data: weatherData ?? null,
     temp_min,
     temp_max,
@@ -380,26 +380,40 @@ export function getDefaultTodaysHourlyData(previousData, currentData) {
     if (a?.dt && b?.dt) {
       return a.dt - b.dt;
     }
-    return -1;
+    return 0;
   });
   // console.log('w length ===== ', w.length);
   // console.log('w map to string =====', w.map(e => moment.utc(e.dt * 1000).toString()));
   return w;
 }
 
-export function getLocalTodaysHourlyData(previousData, currentData) {
+export function getLocalTodaysHourlyData(
+  previousData,
+  currentData,
+  timezone_offset = 0,
+) {
   if (!(Array.isArray(previousData) && Array.isArray(currentData))) {
     return [];
   }
-  let w = [...previousData, currentData];
+  let w = [...previousData, ...currentData];
   if (w.length <= 0) {
     return [];
   }
-  w.filter(e => {
-    const start = moment().startOf('day').utc();
-    const end = moment().endOf('day').utc();
-    if (e?.dt) {
-      return moment.utc(e.dt).isBetween(start, end, undefined, '[]');
+  let z = w.map(e => ({dt: e.dt}));
+  console.log('w ----->>>>>>>>>', JSON.stringify(z));
+  w = w.filter(e => {
+    const start = moment.utc(
+      moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+      'YYYY-MM-DD HH:mm:ss',
+    );
+    const end = moment.utc(
+      moment().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+      'YYYY-MM-DD HH:mm:ss',
+    );
+    if (e.dt) {
+      return moment
+        .utc((e.dt + timezone_offset) * 1000)
+        .isBetween(start, end, undefined, '[]');
     }
     return false;
   });
@@ -407,8 +421,9 @@ export function getLocalTodaysHourlyData(previousData, currentData) {
     if (a?.dt && b?.dt) {
       return a.dt - b.dt;
     }
-    return -1;
+    return 0;
   });
+  // console.log('currentDay Hourly ---===========>>>>>>> ', timezone_offset, ' --- ', JSON.stringify(w));
   return w;
 }
 
@@ -420,28 +435,43 @@ export function getSortedWeatherData(l) {
   weeklyDates = weeklyDates.map(e =>
     moment().subtract(e, 'days').format('YYYY-MM-DD'),
   );
-  sortedList.sort(function (a, b) {
+  sortedList.forEach(e => {
+    sortedData[e.date] = e;
+  });
+  weeklyDates.forEach(e => {
+    const label = moment(e, 'YYYY-MM-DD').format('dd');
+    if (sortedData?.[e]) {
+      result.push({
+        ...sortedData[e],
+        rainfall: sortedData[e].rainfall && !isNaN(sortedData[e].rainfall) ? Number(sortedData[e].rainfall) : 0,
+        label,
+      });
+    } else {
+      result.push({
+        "date": e,
+        "temp_min": null,
+        "temp_max": null,
+        "pollen": null,
+        "pollen_type": null,
+        "rainfall": 0,
+        "label": label,
+      });
+    }
+  });
+  result.sort(function (a, b) {
     let itemOneData = a.date ? moment(a.date, 'YYYY-MM-DD') : null;
     let itemTwoData = b.date ? moment(b.date, 'YYYY-MM-DD') : null;
     if (!itemOneData || !itemTwoData || itemOneData.isSame(itemTwoData)) {
       return 0;
     } else {
-      return itemOneData.isAfter(itemTwoData) ? -1 : 1;
+      return itemOneData.isAfter(itemTwoData) ? 1 : -1;
     }
   });
-  sortedList.forEach(e => {
-    sortedData[e.date] = e;
-  });
-  weeklyDates.forEach(e => {
-    if (sortedData?.[e]) {
-      result.push(sortedData[e]);
-    } else {
-      result.push({
-        "date": e,
-        "temp_min": null,
-        "temp_max": null
-      });
-    }
-  });
-  return sortedList;
+  return result;
+}
+
+export function getRainHrsFromHourlyWeather(hourlyWeather) {
+  // console.log('hourlyWeather ===================>>>>>>>>>', JSON.stringify(hourlyWeather));
+  let rainHrs = hourlyWeather?.filter?.(e => !!e.rain)?.length ?? 0;
+  return rainHrs;
 }

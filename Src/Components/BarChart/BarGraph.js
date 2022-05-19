@@ -10,6 +10,7 @@ import CustomProgressBar from '../ProgressBar/ProgressBarCustom';
 import moment from 'moment';
 import GraphBar from '../GraphBar/GraphBar';
 import Colors from '../../Constants/Colors/Colors';
+import { pollenValues } from '../../Constants/constants';
 
 const BarGraph = ({
   ShowPollen,
@@ -20,6 +21,7 @@ const BarGraph = ({
   width,
   barsWidth,
   BarsMarginLeft,
+  rainPollenData,
   max,
   min,
 }) => {
@@ -39,30 +41,30 @@ const BarGraph = ({
         {value: max > 0 ? Math.round(min) : 0, hours: 0}, //5
       ];
 
-  const g = moment().subtract(0, 'days').startOf('day').format('dddd');
-  const f = moment().subtract(1, 'days').startOf('day').format('dddd');
-  const e = moment().subtract(2, 'days').startOf('day').format('dddd');
-  const d = moment().subtract(3, 'days').startOf('day').format('dddd');
-  const c = moment().subtract(4, 'days').startOf('day').format('dddd');
-  const b = moment().subtract(5, 'days').startOf('day').format('dddd');
-  const a = moment().subtract(6, 'days').startOf('day').format('dddd');
+  const g = moment().subtract(0, 'days').startOf('day').format('dd');
+  const f = moment().subtract(1, 'days').startOf('day').format('dd');
+  const e = moment().subtract(2, 'days').startOf('day').format('dd');
+  const d = moment().subtract(3, 'days').startOf('day').format('dd');
+  const c = moment().subtract(4, 'days').startOf('day').format('dd');
+  const b = moment().subtract(5, 'days').startOf('day').format('dd');
+  const a = moment().subtract(6, 'days').startOf('day').format('dd');
   // console.log(`a`, a);
 
   const bars = [
-    {label: a.substr(0, 2), value: 6, pollen: 'Low'},
-    {label: b.substr(0, 2), value: 8, pollen: 'Normal'},
-    {label: c.substr(0, 2), value: 7, pollen: 'High'},
-    {label: d.substr(0, 2), value: 12, pollen: 'Normal'},
-    {label: e.substr(0, 2), value: 5, pollen: 'Low'},
-    {label: f.substr(0, 2), value: 6, pollen: 'Low'},
-    {label: g.substr(0, 2), value: 7, pollen: 'High'},
+    {label: a, value: 8, pollen: 'Low'},
+    {label: b, value: 8, pollen: 'Normal'},
+    {label: c, value: 6, pollen: 'High'},
+    {label: d, value: 8, pollen: 'Normal'},
+    {label: e, value: 5, pollen: 'Low'},
+    {label: f, value: 6, pollen: 'Low'},
+    {label: g, value: 7, pollen: 'High'},
   ];
-
-  const totalValue = 12;
-  const barHeight = 180;
+  
+  const totalValue = 8;
+  const barHeight = 185;
   const barWidth = 8;
 
-  // console.log(`RightBar`, RightBar);
+  // console.log(`rainPollenData`, rainPollenData);
 
   return (
     <View
@@ -178,7 +180,7 @@ const BarGraph = ({
                           fontFamily: item.bold ? RubikMedium : RubikLight,
                           color: item.bold ? '#000' : Colors.greyColorCode,
                         }}>
-                        {item.hours}
+                        {`${index === 0 ? '+' : ''}${item.hours}`}
                       </Text>
                     )}
                   </View>
@@ -220,12 +222,12 @@ const BarGraph = ({
               : dynamicSize(270),
             alignSelf: 'center',
             height: 260,
-            marginTop: 20,
+            marginTop: 5,
             marginLeft: BarsMarginLeft ? BarsMarginLeft : !RightBar ? 35 : 45,
           }}>
-          {bars &&
-            bars.length > 0 &&
-            bars.map((item, index) => {
+          {Array.isArray(rainPollenData) &&
+            rainPollenData.length > 0 &&
+            rainPollenData.map((item, index) => {
               return (
                 <View
                   key={String(index)}
@@ -236,7 +238,7 @@ const BarGraph = ({
                     alignSelf: 'center',
                   }}>
                   <GraphBar
-                    value={item.value}
+                    value={item.rainfall > 8 ? 8 : item.rainfall}
                     totalValue={totalValue}
                     height={barHeight}
                     width={barWidth}
@@ -274,16 +276,18 @@ const BarGraph = ({
                           bottom: -140,
                           right: -4,
                           height: 10,
-                          borderWidth: 1,
+                          borderWidth: item.pollen_type ? 1 : undefined,
                           borderRadius: 10,
-                          borderColor: '#0DDE7A',
+                          borderColor: item.pollen_type ? '#0DDE7A' : undefined,
                           width: 10,
                           backgroundColor:
-                            item.pollen === 'Normal'
+                          item.pollen_type ?
+                            item.pollen_type === pollenValues[3].name
                               ? '#0DDE7A'
-                              : item.pollen === 'Low'
+                              : item.pollen_type === pollenValues[1].name
                               ? '#fff'
-                              : '#CDF8E3',
+                              : '#CDF8E3'
+                              : 'transparent',
                         }}
                       />
                     )}

@@ -1,11 +1,11 @@
 import isEmpty from 'lodash.isempty';
-import {defaultNegativeMoodModalData} from '../../Constants/constants';
+import {defaultNegativeMoodModalData, defaultWeatherDetails} from '../../Constants/constants';
 import {
   COMPANY_NAME,
   FIRST_ACTION_TYPE,
   GET_ALL_MOODS,
   GET_DAY_STEPS,
-  GET_DAY_TEMP,
+  CURRENT_WEATHER,
   GET_DIVISION,
   GET_EMAIL,
   GET_HEALTH_PERM,
@@ -75,7 +75,7 @@ const intializedState = {
   lon: null,
   TodayAllSteps: null,
   WeatherHours: 0,
-  DayTemperature: null,
+  CurrentWeatherData: {...defaultWeatherDetails},
   MainSteps: null,
   MainCalories: null,
   MainDistance: null,
@@ -203,9 +203,9 @@ export const First = (state = intializedState, action) => {
       return Object.assign({}, state, {
         WeatherPermission: action.payload,
       });
-    case GET_DAY_TEMP:
+    case CURRENT_WEATHER:
       return Object.assign({}, state, {
-        DayTemperature: action.payload,
+        CurrentWeatherData: action.payload,
       });
     case SET_STEPS:
       return Object.assign({}, state, {

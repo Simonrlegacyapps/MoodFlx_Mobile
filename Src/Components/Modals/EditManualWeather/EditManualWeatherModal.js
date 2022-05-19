@@ -116,7 +116,7 @@ const EditManualWeatherModal = ({
   const _weatherType = weatherTypeValue
     ? weatherTypeValue
     : Weather
-    ? findWeather(Weather?.weather?.[0]?.main)
+    ? Weather.weatherType
     : weatherTypes.Cloudy;
 
   const _weatherAction =
