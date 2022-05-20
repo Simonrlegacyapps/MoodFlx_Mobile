@@ -50,6 +50,7 @@ import {IndicatorHelper} from '../../Components/CommonComponents/CommonComponent
 import {getSleepGraphData} from '../Home/SleepData/sleepDataService';
 import {RubikExtraBold, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
 import Colors from '../../Constants/Colors/Colors';
+import { getSortedWeatherData } from '../Home/WeatherData/weatherService';
 // const characterData = [
 //   { x: 'Monday', y: 18, fill: '#E74C3C' },
 //   { x: 'Tuesday', y: 24, fill: '#CDE73C' },
@@ -583,8 +584,11 @@ export function WeatherTab(props) {
       .then(async (result) => {
         console.log('Get weather Graph data', result);
         console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
-        if(Array.isArray(result.weatherData) && result.weatherData.length > 0) {
-          setGraph(result.weatherData);
+        if (
+          Array.isArray(result.weatherData) &&
+          result.weatherData.length > 0
+        ) {
+          setGraph(getSortedWeatherData(result.weatherData));
         } else {
           setGraph(null);
         }
@@ -603,132 +607,62 @@ export function WeatherTab(props) {
   const data = [
     {
       x: 1,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[6]?.temp_max
-            ? 0
-            : Graph[6] && Graph[6].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[0]?.temp_max ?? 0) : 0,
     },
     {
       x: 2,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[5]?.temp_max
-            ? 0
-            : Graph[5].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[1]?.temp_max ?? 0) : 0,
     },
     {
       x: 3,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[4]?.temp_max
-            ? 0
-            : Graph[4].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[2]?.temp_max ?? 0) : 0,
     },
     {
       x: 4,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[3]?.temp_max
-            ? 0
-            : Graph[3].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[3]?.temp_max ?? 0) : 0,
     },
     {
       x: 5,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[2]?.temp_max
-            ? 0
-            : Graph[2].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[4]?.temp_max ?? 0) : 0,
     },
     {
       x: 6,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[1]?.temp_max
-            ? 0
-            : Graph[1].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[5]?.temp_max ?? 0) : 0,
     },
     {
       x: 7,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[0]?.temp_max
-            ? 0
-            : Graph[0].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[6]?.temp_max ?? 0) : 0,
     },
   ];
 
   const dataLow = [
     {
       x: 1,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[6]?.temp_min
-            ? 0
-            : Graph[6] && Graph[6].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[0]?.temp_min ?? 0) : 0,
     },
     {
       x: 2,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[5]?.temp_min
-            ? 0
-            : Graph[5].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[1]?.temp_min ?? 0) : 0,
     },
     {
       x: 3,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[4]?.temp_min
-            ? 0
-            : Graph[4].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[2]?.temp_min ?? 0) : 0,
     },
     {
       x: 4,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[3]?.temp_min
-            ? 0
-            : Graph[3].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[3]?.temp_min ?? 0) : 0,
     },
     {
       x: 5,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[2]?.temp_min
-            ? 0
-            : Graph[2].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[4]?.temp_min ?? 0) : 0,
     },
     {
       x: 6,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[1]?.temp_min
-            ? 0
-            : Graph[1].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[5]?.temp_min ?? 0) : 0,
     },
     {
       x: 7,
-      y:
-        Graph && weatherDuration === 'Week'
-          ? !Graph[0]?.temp_min
-            ? 0
-            : Graph[0].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[6]?.temp_min ?? 0) : 0,
     },
   ];
 

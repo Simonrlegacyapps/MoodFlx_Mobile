@@ -143,7 +143,7 @@ const WeatherData = ({
   const [WeatherPopUp, setWeatherPopUp] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
   const [WeatherDurationModal, setWeatherDurationModal] = useState(false);
-  const [WeatherDuration, setWeatherDuration] = useState('Week');
+  const [weatherDuration, setWeatherDuration] = useState('Week');
   const [minMaxGraphHeight, setMinMaxGraphHeight] = useState(horizontalScale(200));
   // const [insights, setInsights] = useReducer(
   //   weatherInsightsReducer,
@@ -778,132 +778,62 @@ const WeatherData = ({
   const data = [
     {
       x: 1,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[0]?.temp_max
-            ? 0
-            : Graph[0] && Graph[6].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[0]?.temp_max ?? 0) : 0,
     },
     {
       x: 2,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[1]?.temp_max
-            ? 0
-            : Graph[1].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[1]?.temp_max ?? 0) : 0,
     },
     {
       x: 3,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[2]?.temp_max
-            ? 0
-            : Graph[2].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[2]?.temp_max ?? 0) : 0,
     },
     {
       x: 4,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[3]?.temp_max
-            ? 0
-            : Graph[3].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[3]?.temp_max ?? 0) : 0,
     },
     {
       x: 5,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[4]?.temp_max
-            ? 0
-            : Graph[4].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[4]?.temp_max ?? 0) : 0,
     },
     {
       x: 6,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[5]?.temp_max
-            ? 0
-            : Graph[5].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[5]?.temp_max ?? 0) : 0,
     },
     {
       x: 7,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[6]?.temp_max
-            ? 0
-            : Graph[6].temp_max
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[6]?.temp_max ?? 0) : 0,
     },
   ];
 
   const dataLow = [
     {
       x: 1,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[0]?.temp_min
-            ? 0
-            : Graph[0] && Graph[6].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[0]?.temp_min ?? 0) : 0,
     },
     {
       x: 2,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[1]?.temp_min
-            ? 0
-            : Graph[1].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[1]?.temp_min ?? 0) : 0,
     },
     {
       x: 3,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[2]?.temp_min
-            ? 0
-            : Graph[2].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[2]?.temp_min ?? 0) : 0,
     },
     {
       x: 4,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[3]?.temp_min
-            ? 0
-            : Graph[3].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[3]?.temp_min ?? 0) : 0,
     },
     {
       x: 5,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[4]?.temp_min
-            ? 0
-            : Graph[4].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[4]?.temp_min ?? 0) : 0,
     },
     {
       x: 6,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[5]?.temp_min
-            ? 0
-            : Graph[5].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[5]?.temp_min ?? 0) : 0,
     },
     {
       x: 7,
-      y:
-        Graph && WeatherDuration === 'Week'
-          ? !Graph[6]?.temp_min
-            ? 0
-            : Graph[6].temp_min
-          : 0,
+      y: Graph && weatherDuration === 'Week' ? (Graph?.[6]?.temp_min ?? 0) : 0,
     },
   ];
 
@@ -1396,7 +1326,7 @@ const WeatherData = ({
           {/* <ProgressBarCustom /> */}
           <HomeHeader
             // click={() => setWeatherDurationModal(true)}
-            // value={WeatherDuration}
+            // value={weatherDuration}
           />
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
             {/* {swiperIndex == index && ( */}
