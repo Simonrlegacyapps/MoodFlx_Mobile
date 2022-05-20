@@ -254,12 +254,12 @@ const BarGraph = ({
                     <Text
                       style={{
                         flex: 1,
-                        alignSelf: 'flex-end',
+                        alignSelf: 'center',
                         position: 'absolute',
                         justifyContent: 'flex-end',
                         textAlignVertical: 'bottom',
                         bottom: -120,
-                        right: -8,
+                        // right: -8,
                         fontFamily: RubikRegular,
                         color: Colors.greyColorCode,
                       }}>
@@ -269,12 +269,12 @@ const BarGraph = ({
                       <View
                         style={{
                           flex: 1,
-                          // alignSelf: 'flex-end',
+                          alignSelf: 'center',
                           position: 'absolute',
                           // justifyContent: 'flex-end',
                           // textAlignVertical: 'bottom',
                           bottom: -140,
-                          right: -4,
+                          // right: -4,
                           height: 10,
                           borderWidth: item.pollen_type ? 1 : undefined,
                           borderRadius: 10,
