@@ -253,3 +253,9 @@ export const defaultWeatherDetails = {
   weatherType: null,
   place: null,
 };
+
+export const insightsDurationFlags = {
+  daily: 'daily',
+  weekly: 'weekly',
+  monthly: 'monthly',
+};

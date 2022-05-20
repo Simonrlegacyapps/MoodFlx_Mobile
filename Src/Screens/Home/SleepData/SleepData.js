@@ -36,7 +36,7 @@ import {
   fetchSleepDataForLastThirtyDays,
   getSleepDataForUpdateApi,
 } from './sleepDataService';
-import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable, insightsDurationFlags } from '../../../Constants/constants';
 import PostRequestApi, { GetStaffUserData } from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
@@ -46,16 +46,23 @@ import getStore from '../../../redux';
 import { getMyDeviceId } from '../../../services/commonService';
 import Colors from '../../../Constants/Colors/Colors';
 
+const defaultSleepDuration = {
+  [insightsDurationFlags.daily]: 0,
+  [insightsDurationFlags.weekly]: 0,
+  [insightsDurationFlags.monthly]: 0,
+};
+
 const sleepInsightsInitialState = {
   dailyInsights: '',
-  weeklyInsights: '',
   dailySuggestion: '',
   dailySuggestionType: '',
+  weeklyInsights: '',
   weeklySuggestion: '',
   weeklySuggestionType: '',
   monthlyInsights: '',
   monthlySuggestion: '',
   monthlySuggestionType: '',
+  duration: {...defaultSleepDuration},
 };
 
 const sleepInsightsTypes = {
@@ -94,7 +101,8 @@ const SleepData = ({
 }) => {
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [SleepPopUp, setSleepPopUp] = useState(false);
-  const [sleepMinutesToday, setSleepMinutesToday] = useState(0);
+  // const [sleepMinutes, setSleepMinutes] = useState(0);
+  const [dataDuration, setDataDuration] = useState(insightsDurationFlags.daily);
   const [lastThirtyDaySleepData, setLastThirtyDaySleepData] = useState(null);
   const [weeklySleepData, setWeeklySleepData] = useState(null);
   const [weeklyInBedData, setWeeklyInBedData] = useState(null);
@@ -169,48 +177,48 @@ const SleepData = ({
     });
   }, [UserData.SleepPermission]);
 
-  useEffect(() => {
-    //sleep data for current day
-    if (
-      Array.isArray(lastThirtyDaySleepData) &&
-      lastThirtyDaySleepData.length > 0
-    ) {
-      let totalMinutes = 0;
-      lastThirtyDaySleepData.forEach((e, idx) => {
-        const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
-        const endDate = e?.end_date ? moment(new Date(e.end_date).getTime()) : null;
-        let diff = 0;
-        if (e.type === 'ASLEEP' && startDate && endDate && (startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') || endDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY'))) {
-          diff = endDate.diff(startDate, 'minutes');
-          totalMinutes += diff;
-          console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
-        }
-      });
-      totalMinutes === 0 &&
-        lastThirtyDaySleepData.forEach((e, idx) => {
-          const startDate = e?.start_date
-            ? moment(new Date(e.start_date).getTime())
-            : null;
-          const endDate = e?.end_date
-            ? moment(new Date(e.end_date).getTime())
-            : null;
-          let diff = 0;
-          if (
-            e.type === 'INBED' &&
-            startDate &&
-            endDate && (
-              startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') ||
-              endDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY')
-            )
-          ) {
-          diff = endDate.diff(startDate, 'minutes');
-          totalMinutes += diff;
-          console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
-        }
-      });
-      setSleepMinutesToday(totalMinutes);
-    }
-  }, [lastThirtyDaySleepData]);
+  // useEffect(() => {
+  //   //sleep data for current day
+  //   if (
+  //     Array.isArray(lastThirtyDaySleepData) &&
+  //     lastThirtyDaySleepData.length > 0
+  //   ) {
+  //     let totalMinutes = 0;
+  //     lastThirtyDaySleepData.forEach((e, idx) => {
+  //       const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
+  //       const endDate = e?.end_date ? moment(new Date(e.end_date).getTime()) : null;
+  //       let diff = 0;
+  //       if (e.type === 'ASLEEP' && startDate && endDate && (startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') || endDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY'))) {
+  //         diff = endDate.diff(startDate, 'minutes');
+  //         totalMinutes += diff;
+  //         console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
+  //       }
+  //     });
+  //     totalMinutes === 0 &&
+  //       lastThirtyDaySleepData.forEach((e, idx) => {
+  //         const startDate = e?.start_date
+  //           ? moment(new Date(e.start_date).getTime())
+  //           : null;
+  //         const endDate = e?.end_date
+  //           ? moment(new Date(e.end_date).getTime())
+  //           : null;
+  //         let diff = 0;
+  //         if (
+  //           e.type === 'INBED' &&
+  //           startDate &&
+  //           endDate && (
+  //             startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') ||
+  //             endDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY')
+  //           )
+  //         ) {
+  //         diff = endDate.diff(startDate, 'minutes');
+  //         totalMinutes += diff;
+  //         console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
+  //       }
+  //     });
+  //     setSleepMinutes(totalMinutes);
+  //   }
+  // }, [lastThirtyDaySleepData]);
 
   useEffect(() => {
     //sleep data for last 7 days
@@ -247,6 +255,7 @@ const SleepData = ({
     };
 
     console.log(`Sleep Insights Api Params`, params);
+    let _sleepDuration = {...insights.duration};
     PostRequestApi('getSleepInsights', {...params, status: 'daily'})
       .then((res) => {
         console.log('✅ ✅ ✅ ✅ getSleepInsights daily: ✅ ✅ ✅ ✅ ', res?.data);
@@ -267,6 +276,15 @@ const SleepData = ({
           res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
+        dailyInsightsPayload.duration = _sleepDuration =
+          res?.data?.sleepData?.duration && !isNaN(res.data.sleepData.duration)
+            ? {
+                ..._sleepDuration,
+                [insightsDurationFlags.daily]: Number(
+                  res.data.sleepData.duration,
+                ),
+              }
+            : {..._sleepDuration};
         setInsights({
           type: sleepInsightsTypes.SET_INSIGHTS,
           payload: dailyInsightsPayload,
@@ -291,19 +309,28 @@ const SleepData = ({
         console.log('✅ ✅ ✅ ✅ getSleepInsights weekly: ✅ ✅ ✅ ✅ ', res?.data);
         weeklyInsightsPayload.weeklyInsights =
           res?.data?.insights?.message1 &&
-            typeof res.data.insights.message1 === 'string'
+          typeof res.data.insights.message1 === 'string'
             ? res.data.insights.message1
             : '';
         weeklyInsightsPayload.weeklySuggestion =
           res?.data?.insights?.message2 &&
-            typeof res.data.insights.message2 === 'string'
+          typeof res.data.insights.message2 === 'string'
             ? res.data.insights.message2
             : '';
         weeklyInsightsPayload.weeklySuggestionType =
           res?.data?.insights?.message2Type &&
-            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
+        weeklyInsightsPayload.duration = _sleepDuration =
+          res?.data?.sleepData?.duration && !isNaN(res.data.sleepData.duration)
+            ? {
+                ..._sleepDuration,
+                [insightsDurationFlags.weekly]: Number(
+                  res.data.sleepData.duration,
+                ),
+              }
+            : {..._sleepDuration};
         setInsights({
           type: sleepInsightsTypes.SET_INSIGHTS,
           payload: weeklyInsightsPayload,
@@ -324,19 +351,28 @@ const SleepData = ({
         console.log('✅ ✅ ✅ ✅  getSleepInsights monthly: ✅ ✅ ✅ ✅ ', res?.data);
         monthlyInsightsPayload.monthlyInsights =
           res?.data?.insights?.message1 &&
-            typeof res.data.insights.message1 === 'string'
+          typeof res.data.insights.message1 === 'string'
             ? res.data.insights.message1
             : '';
         monthlyInsightsPayload.monthlySuggestion =
           res?.data?.insights?.message2 &&
-            typeof res.data.insights.message2 === 'string'
+          typeof res.data.insights.message2 === 'string'
             ? res.data.insights.message2
             : '';
         monthlyInsightsPayload.monthlySuggestionType =
           res?.data?.insights?.message2Type &&
-            res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
+          res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
+        monthlyInsightsPayload.duration = _sleepDuration =
+          res?.data?.sleepData?.duration && !isNaN(res.data.sleepData.duration)
+            ? {
+                ..._sleepDuration,
+                [insightsDurationFlags.monthly]: Number(
+                  res.data.sleepData.duration,
+                ),
+              }
+            : {..._sleepDuration};
         setInsights({
           type: sleepInsightsTypes.SET_INSIGHTS,
           payload: monthlyInsightsPayload,
@@ -525,13 +561,18 @@ const SleepData = ({
               monthlySuggestionType={!UserData.SleepPermission ? "warning" : insights?.monthlySuggestionType}
               timeLeft={UserData?.weeklyInsightsTimeLeft}
               isPermissionGiven={UserData.SleepPermission}
+              setDataDuration={setDataDuration}
               dispatch={dispatch}
               onSync={onSync}
             />
           )}
           <View style={styles.wrapperTwo}>
             <StarProgress
-              sleepMinutes={UserData.SleepPermission ? sleepMinutesToday : 0}
+              sleepMinutes={
+                UserData.SleepPermission
+                  ? (insights?.duration?.[dataDuration] ?? 0)
+                  : 0
+              }
             />
             <View style={styles.viewOne} />
           </View>

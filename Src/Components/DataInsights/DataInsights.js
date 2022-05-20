@@ -18,8 +18,17 @@ import {
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import {SetShowMonthlyInsightsModal, SetShowWeeklyInsightsModal} from '../../redux/actions/actions';
-import {getMonthlyInsightsAvailable, getMonthlyInsightsDaysLeft, getMonthlyInsightsStartEndTime, getWeeklyInsightsAvailable} from '../../Constants/constants';
+import {
+  SetShowMonthlyInsightsModal,
+  SetShowWeeklyInsightsModal,
+} from '../../redux/actions/actions';
+import {
+  getMonthlyInsightsAvailable,
+  getMonthlyInsightsDaysLeft,
+  getMonthlyInsightsStartEndTime,
+  getWeeklyInsightsAvailable,
+  insightsDurationFlags,
+} from '../../Constants/constants';
 import {getMoodsArray, getMyDeviceId} from '../../services/commonService';
 import NotEnoughMoodsModal from '../Modals/NotEnoughtMoodsModal/NotEnoughMoodsModal';
 import Images from '../../Constants/Images/Images';
@@ -31,12 +40,6 @@ import PostRequestApi from '../../apirequest/PostRequestApi'
 import isFunction from 'lodash.isfunction';
 import ProgressDay from './ProgressDay';
 import Colors from '../../Constants/Colors/Colors';
-
-const insightsDurationFlags = {
-  daily: 'daily',
-  weekly: 'weekly',
-  monthly: 'monthly',
-};
 
 const getInsightsArray = (text) => {
   let insights = [];
@@ -100,6 +103,7 @@ function DataInsights({
   dispatch,
   onPressInsights,
   onSync,
+  setDataDuration,
 }) {
   const getInsightsDuration = (weekInsights, monthInsights, isPermGiven) => {
     if (!!isPermGiven === false) {
@@ -132,6 +136,7 @@ function DataInsights({
   const prevWeeklyInsights = useRef(
     getInsightsDuration(weeklyInsights, monthlyInsights, isPermissionGiven),
   );
+  const prevInsightsDuration = useRef(null);
 
   useEffect(() => {
     const currentFlag = getInsightsDuration(
@@ -144,6 +149,13 @@ function DataInsights({
       setInsightsDuration(currentFlag);
     }
   }, [weeklyInsights, monthlyInsights, isPermissionGiven]);
+
+  useEffect(() => {
+    if (setDataDuration && prevInsightsDuration.current !== insightsDuration) {
+      setDataDuration(insightsDuration);
+      prevInsightsDuration.current = insightsDuration;
+    }
+  }, [insightsDuration, setDataDuration]);
 
   const openCloseShowNotEnoughMoodsModal = useCallback((flag) => {
     const fn = () => setShowNotEnoughMoodsModal(flag);
