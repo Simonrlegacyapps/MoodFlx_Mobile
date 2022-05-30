@@ -21,22 +21,15 @@ import {
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
 import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
-import BarGraph from '../../../Components/BarChart/BarGraph';
-import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
-import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
-import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
-import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import PopUp from '../../../Components/PopUp/PopUp';
 import Toast from 'react-native-toast-message';
 import moment from 'moment';
-import CrownBox from '../../../Components/crownBox/crownBox';
 import {useSelector, useDispatch} from 'react-redux';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import ScreenTimeBarGraph from '../../../Components/ScreenTimeGraph/ScreenTimeBarGraph';
-import ScreenTimeLineGraph from '../../../Components/ScreenTimeGraph/ScreenTimeLineGraph';
 import { horizontalScale } from '../../../Constants/sizeChoose';
 import isEmpty from 'lodash.isempty';
 import getStore from '../../../redux';
@@ -51,15 +44,6 @@ const {UsageStats} = NativeModules;
 // import AddManualScreenTimeModal from '../../../Components/Modals/AddManualScreenTime/AddManualScreenTimeModal';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
-
-const IndicatorHelper = ({ color, text }) => {
-  return (
-    <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
-      <Text style={styles.indicatorText}>{text}</Text>
-    </View>
-  );
-};
 
 const screenInsightsInitialState = {
   dailyInsights: '',
