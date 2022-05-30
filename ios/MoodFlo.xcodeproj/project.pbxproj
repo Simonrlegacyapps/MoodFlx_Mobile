@@ -291,7 +291,6 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
-						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -617,7 +616,7 @@
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
@@ -652,7 +651,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Sir. Conrad Pty Ltd (UV3Z6BTTHA)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
