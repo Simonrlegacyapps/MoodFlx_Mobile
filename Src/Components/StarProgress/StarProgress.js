@@ -47,7 +47,7 @@ const StarProgress = ({ sleepMinutes }) => {
   // console.log('sleepMinutes: ', sleepMinutes);
 
   useEffect(() => {
-    const hours = Number.parseInt(String(sleepMinutes / 60));
+    const hours = Math.round(Number.parseInt(String(sleepMinutes / 60)));
     let s = sleepMinutes > 600 ? 600 : sleepMinutes;
     s = Math.round((s * 5) / 600);
     // console.log('calculated step: ', s);
