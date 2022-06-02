@@ -1023,3 +1023,14 @@ export function getScreenDataTimeInHoursMin(e) {
   }
   return '0min';
 }
+
+export function capitalizeFirstLetter(v) {
+  if (typeof v === 'string' && v.length > 1) {
+    return v.charAt(0).toUpperCase() + v.slice(1);
+  }
+  return v;
+}
+
+export function isNonEmptyString(v) {
+  return typeof v === 'string' && v.length > 0;
+}

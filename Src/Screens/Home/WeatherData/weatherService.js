@@ -7,6 +7,7 @@ import {
   getMonthlyInsightsAvailable,
   getWeeklyInsightsAvailable,
   isCountryIndia,
+  pollenValues,
   setIsGetCurrentLocationCalled,
   weatherApiDataTypes,
   weatherTypes,
@@ -300,7 +301,6 @@ export async function syncWeatherData() {
     console.log('weatherService temp: ', temp);
   }
 
-  const deviceId = getMyDeviceId();
   const data = JSON.stringify({
     user_id,
     email,
@@ -308,7 +308,7 @@ export async function syncWeatherData() {
     hours,
     weather_type: findWeather(weatherData?.current?.weather?.[0]?.main) ?? null,
     pollen: null,
-    pollen_type: null,
+    // pollen_type,
     weather_data: weatherData ?? null,
     temp_min,
     temp_max,
@@ -474,4 +474,17 @@ export function getRainHrsFromHourlyWeather(hourlyWeather) {
   // console.log('hourlyWeather ===================>>>>>>>>>', JSON.stringify(hourlyWeather));
   let rainHrs = hourlyWeather?.filter?.(e => !!e.rain)?.length ?? 0;
   return rainHrs;
+}
+
+export function getPollenTypeFromWeatherData(d) {
+  if (Array.isArray(d) && d.length > 0) {
+    const currentDate = moment().format('YYYY-MM-DD');
+    const currentDayPollenType = d.filter(e => e?.date === currentDate)?.[0]?.pollen_type ?? null;
+    const v = pollenValues.filter(e => e?.name?.toLowerCase?.() === currentDayPollenType?.toLowerCase?.())?.[0]?.name ?? null;
+    if (v) {
+      // console.log('setManualPollen ---->>>>>>', v);
+      return v;
+    }
+  }
+  return '';
 }

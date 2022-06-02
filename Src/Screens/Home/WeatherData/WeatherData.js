@@ -55,7 +55,7 @@ import {
 } from '../../../Constants/constants';
 import {AppPermissions} from '../../../services/appPermissions';
 import isFunction from 'lodash.isfunction';
-import {callWeatherInsightsApi, findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getRainHrsFromHourlyWeather, getSortedWeatherData, getTodaysHourlyData} from './weatherService';
+import {callWeatherInsightsApi, findWeather, getDefaultTodaysHourlyData, getLocalTodaysHourlyData, getPollenTypeFromWeatherData, getRainHrsFromHourlyWeather, getSortedWeatherData, getTodaysHourlyData} from './weatherService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import CrownBox from '../../../Components/crownBox/crownBox'
@@ -243,9 +243,11 @@ const WeatherData = ({
   }, []);
 
   useEffect(() => {
-    if (UserData.WeatherPermission) {
-      getUserLocation();
-    }
+    getWeather(function (_pollenType) {
+      if (UserData.WeatherPermission) {
+        getUserLocation();
+      }
+    });
     return () => {
       weatherData = null;
     }
@@ -385,95 +387,6 @@ const WeatherData = ({
         console.log(`error for weather here`, error);
       });
   };
-
-  // const findWeather = (value) => {
-  //   const v = value?.toLowerCase?.() ?? value;
-  //   return weatherApiDataTypes?.[v] ?? weatherTypes.Cloudy;
-  // };
-  // console.log('UserData?.CurrentWeatherData?.weather', UserData?.CurrentWeatherData)
-
-  // const callInsightsApi = () => {
-  //   const deviceId = getMyDeviceId();
-  //   var myHeaders = new Headers();
-  //   myHeaders.append('Content-Type', 'application/json');
-
-  //   var params = {
-  //     device_id: deviceId,
-  //     email: UserData?.UserEmail ?? '',
-  //     user_id: UserData?.UserId ?? '',
-  //   };
-
-  //   console.log(`Weather Insights Api Params`, params);
-  //   PostRequestApi('getWeatherInsights', {...params, status: 'daily'})
-  //     .then((res) => {
-  //       console.log('getWeatherInsights daily: ', res?.data);
-  //       // console.log('getSleepInsights daily res: ', res);
-  //       let dailyInsightsPayload = {};
-  //       dailyInsightsPayload.dailyInsights =
-  //         !!res?.data?.insights?.message1 &&
-  //         typeof res.data.insights.message1 === 'string'
-  //           ? res.data.insights.message1
-  //           : '';
-  //       dailyInsightsPayload.dailySuggestion =
-  //         !!res?.data?.insights?.message2 &&
-  //         typeof res.data.insights.message2 === 'string'
-  //           ? res.data.insights.message2
-  //           : '';
-  //       dailyInsightsPayload.dailySuggestionType =
-  //         !!res?.data?.insights?.message2Type &&
-  //         res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
-  //           ? res.data.insights.message2Type
-  //           : '';
-  //       setInsights({
-  //         type: weatherInsightsTypes.SET_INSIGHTS,
-  //         payload: dailyInsightsPayload,
-  //       });
-  //       /*
-  //       Weekly api should be called between
-  //       Friday @ 12pm until Saturday 6pm
-  //       */
-  //       if (getWeeklyInsightsAvailable() === true) {
-  //         return PostRequestApi('getWeatherInsights', {
-  //           ...params,
-  //           status: 'weekly',
-  //         });
-  //       } else {
-  //         return new Promise((resolve, reject) => resolve(null));
-  //       }
-  //     })
-  //     .then((res) => {
-  //       // console.log('getSleepInsights weekly res: ', res);
-  //       let weeklyInsightsPayload = {};
-  //       console.log('getWeatherInsights weekly: ', res?.data);
-  //       weeklyInsightsPayload.weeklyInsights =
-  //         !!res?.data?.insights?.message1 &&
-  //         typeof res.data.insights.message1 === 'string'
-  //           ? res.data.insights.message1
-  //           : '';
-  //       weeklyInsightsPayload.weeklySuggestion =
-  //         !!res?.data?.insights?.message2 &&
-  //         typeof res.data.insights.message2 === 'string'
-  //           ? res.data.insights.message2
-  //           : '';
-  //       weeklyInsightsPayload.weeklySuggestionType =
-  //         !!res?.data?.insights?.message2Type &&
-  //         res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
-  //           ? res.data.insights.message2Type
-  //           : '';
-  //       setInsights({
-  //         type: weatherInsightsTypes.SET_INSIGHTS,
-  //         payload: weeklyInsightsPayload,
-  //       });
-  //     })
-  //     .catch(function (error) {
-  //       console.log(
-  //         '❌❌❌❌Fail Get Weather Insights ❌❌❌❌',
-  //         error,
-  //         params,
-  //       );
-  //     });
-  // };
-
 
   const syncWeatherData = async (lat, lng) => {
     let Wp = await AsyncStorage.getItem('GiveWeatherPerm');
@@ -618,16 +531,6 @@ const WeatherData = ({
     // dispatch(WeatherPerm(WeatherP));
   };
 
-  // useEffect(() => {
-  //   let lat = UserData.lat;
-  //   let lng = UserData.lon;
-  //   if (!UserData.WeatherPermission){
-  //     lat = defaultLocation.latitude;
-  //     lng = defaultLocation.longitude;
-  //   }
-  //   th(lat, lng);
-  // }, []);
-
   useEffect(() => {
     let lat = UserData.lat;
     let lng = UserData.lon;
@@ -723,7 +626,7 @@ const WeatherData = ({
     // }
   };
 
-  const getWeather = () => {
+  const getWeather = onFinish => {
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -756,6 +659,14 @@ const WeatherData = ({
           ) {
             setGraph(getSortedWeatherData(result.weatherData));
             data.push({});
+            if (isFunction(onFinish)) {
+              let v = getPollenTypeFromWeatherData(result.weatherData);
+              if (v) {
+                console.log('setManualPollen ---->>>>>>', v);
+                setManulPollen(v);
+              }
+              onFinish(v);
+            }
           }
           // await syncWeatherData();
         })
@@ -771,9 +682,9 @@ const WeatherData = ({
     };
   };
 
-  useEffect(() => {
-    getWeather();
-  }, []);
+  // useEffect(() => {
+  //   getWeather();
+  // }, []);
 
   const data = [
     {
@@ -1417,21 +1328,23 @@ const WeatherData = ({
           )}
         </View>
       </ScrollView>
-      <EditManualWeatherModal
-        modalVisible={EditManualWeather}
-        dismissModalHandler={() => cancelled()}
-        verifyDone={EditDone}
-        Weather={Weather}
-        hours={hours}
-        Temp={currentTemp}
-        EditTemp={setManualTemp}
-        Hour={ManulHours ? ManulHours : hours ? hours : 1}
-        EditHour={setManulHours}
-        Pollen={ManulPollen}
-        EditPollen={setManulPollen}
-        WeatherType={ManualWeatherType}
-        EditWeatherType={setManualWeatherType}
-      />
+      {EditManualWeather && (
+        <EditManualWeatherModal
+          modalVisible={EditManualWeather}
+          dismissModalHandler={() => cancelled()}
+          verifyDone={EditDone}
+          Weather={Weather}
+          hours={hours}
+          Temp={currentTemp}
+          EditTemp={setManualTemp}
+          Hour={ManulHours ? ManulHours : hours ? hours : 1}
+          EditHour={setManulHours}
+          Pollen={ManulPollen}
+          EditPollen={setManulPollen}
+          WeatherType={ManualWeatherType}
+          EditWeatherType={setManualWeatherType}
+        />
+      )}
       <PopUp
         permission={UserData.WeatherPermission}
         image={Constants.Images.WeatherPopUp}
