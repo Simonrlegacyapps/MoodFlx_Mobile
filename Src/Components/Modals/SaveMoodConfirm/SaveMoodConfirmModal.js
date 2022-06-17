@@ -223,7 +223,7 @@ const SaveMoodConfirmModal = ({
           onStartShouldSetResponder={Keyboard.dismiss}
           style={[styles.upperContainer]}>
           <Text style={styles.textOne}>{moodText?.confirmation_text}</Text>
-          {/* <Text style={styles.textTwo}>Flx feels you</Text> */}
+          {/* <Text style={styles.textTwo}>flx feels you</Text> */}
           {/* <Text style={styles.textTwo}>{moodText?.confirmation_text}</Text> */}
           <Text style={styles.textThree}>
             Feeling{' '}
@@ -271,7 +271,7 @@ const SaveMoodConfirmModal = ({
           <View
             style={[
               styles.inputBox,
-              {borderWidth: 0.6, borderColor: ShowPurple ? '#7265E3' : 'white'},
+              {borderWidth: 0.6, borderColor: ShowPurple ? Colors.blueTextColor : 'white'},
             ]}>
             <TextInput
               value={note}
@@ -389,10 +389,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 0.5,
     marginVertical: 15,
     borderWidth: 0.6,
-    borderColor: '#cbcbcb',
+    borderColor: Colors.greyFive,
     paddingHorizontal: 9,
     borderRadius: 5,
     overflow: 'hidden',
@@ -401,7 +400,7 @@ const styles = StyleSheet.create({
   imageView: {
     height: horizontalScale(20),
     width: horizontalScale(20),
-    backgroundColor: '#4C5980',
+    backgroundColor: Colors.greyTwo,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
@@ -414,7 +413,8 @@ const styles = StyleSheet.create({
   },
   fullNameText: {
     color: 'white',
-    fontSize: Platform.OS === 'ios' ? getFontSize(13) : getFontSize(15),
+    // fontSize: Platform.OS === 'ios' ? getFontSize(13) : getFontSize(15),
+    fontSize: getFontSize(13),
     fontFamily: RubikRegular,
     alignSelf: 'center',
     justifyContent: 'center',
@@ -422,42 +422,45 @@ const styles = StyleSheet.create({
   textOne: {
     fontFamily: RubikRegular,
     fontSize: fontSize,
-    textAlign:'center',
-    paddingHorizontal:10
+    textAlign: 'center',
+    color: Colors.blackColorCode,
+    paddingHorizontal: 10,
   },
   textTwo: {
     fontFamily: RubikRegular,
     fontSize: getFontSize(16),
     marginTop: 7,
-    color:"#9C9EB9"
+    color: Colors.greyColorCode,
   },
   textThree: {
     fontFamily: RubikLight,
     fontSize: getFontSize(13),
     marginTop: 15,
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
   },
   textThreeBold: {
     fontFamily: RubikMedium,
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
   },
   buttonOne: {
     width: '50%',
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     paddingVertical: horizontalScale(10),
     borderRadius: horizontalScale(15),
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonOneText: {
-    fontFamily: RubikRegular,
+    fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: getFontSize(15),
     color: '#FFFFFF',
   },
   buttonTwoText: {
+    fontWeight: '500',
     fontFamily: RubikMedium,
     fontSize: getFontSize(15),
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
   },
   purpleBackground: {
     position: 'absolute',
@@ -468,16 +471,16 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   AnonymousButton: {
-    color: '#CBCBCB',
+    color: Colors.greyFive,
     shadowColor: '#000',
-    fontFamily:RubikMedium
+    fontSize: getFontSize(15),
+    fontFamily: RubikMedium,
   },
   AnonymousButtonAnnon:{
-    fontFamily:RubikMedium,
-    color: '#CBCBCB',
-    paddingVertical: 4,
+    fontFamily: RubikMedium,
+    color: Colors.greyFive,
     borderWidth: 0.6,
-    borderColor: '#cbcbcb',
+    borderColor: Colors.greyFive,
     paddingHorizontal: 9,
     borderRadius: 5,
     overflow: 'hidden',

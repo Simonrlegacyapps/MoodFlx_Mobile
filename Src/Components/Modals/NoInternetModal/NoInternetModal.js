@@ -14,6 +14,7 @@ import {
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
 import { NoInternetImage } from '../../../../assets/svg/NoInternetImage';
+import Colors from '../../../Constants/Colors/Colors';
 
 type props = {
   modalVisible: Boolean,
@@ -94,7 +95,6 @@ const styles = StyleSheet.create({
   },
   upperContainer: {
     backgroundColor: 'white',
-    // borderRadius: 20,
     marginHorizontal: 10,
     paddingHorizontal: 20,
     width: '100%',
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: RubikRegular,
     marginTop: horizontalScale(12),
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
     fontSize: getFontSize(16),
   },
   bigText: {
@@ -117,12 +117,13 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(20),
     fontFamily: RubikMedium,
     fontSize: getFontSize(23),
+    color: Colors.blackColorCode,
   },
   buttonView: {
     alignSelf: 'center',
     marginTop: horizontalScale(40),
     width: '70%',
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: horizontalScale(16),
     alignItems: 'center',
     justifyContent: 'center',
@@ -130,6 +131,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: getFontSize(16),
     color: '#FFFFFF',
     paddingVertical: horizontalScale(16),

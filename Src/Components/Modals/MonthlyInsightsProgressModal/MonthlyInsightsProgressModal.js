@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { MonthlyInsightsProgressImage } from '../../../../assets/svg/monthlyInsightsProgress';
+import Colors from '../../../Constants/Colors/Colors';
 import { getMonthlyInsightsDaysLeft, getMonthlyInsightsStartEndTime } from '../../../Constants/constants';
 import {RubikMedium, RubikRegular} from '../../../Constants/fonts/Fonts';
 import { getFontSize, horizontalScale } from '../../../Constants/sizeChoose';
@@ -54,14 +54,6 @@ const MonthlyInsightsProgress = ({
           <Text style={styles.bigText}>
             {`Monthly insight will be ready on ${getMonthlyInsightsStartEndTime().startTime.format('Do MMM YYYY')}`}
           </Text>
-          {/* <View style={styles.imageContainer}>
-            <MonthlyInsightsProgressImage
-            // width={220}
-            // height={220}
-            // stroke={getBulbColorFromLux(lux)}
-            timeLeft={getProgressWidth()}
-            />
-          </View> */}
           <TouchableOpacity style={styles.buttonView} onPress={verifyDone}>
             <Text style={styles.buttonText}>Got it!</Text>
           </TouchableOpacity>
@@ -114,11 +106,10 @@ const styles = StyleSheet.create({
   },
   bigText: {
     fontFamily: RubikMedium,
-    fontSize: width / 20,
-    paddingHorizontal: 12,
-    marginRight: 12,
-    color: '#2D3142',
-    // width:'80%'
+    fontSize: getFontSize(18),
+    paddingHorizontal: horizontalScale(12),
+    marginRight: horizontalScale(12),
+    color: Colors.blackColorCode,
     textAlign: 'center',
     marginTop: horizontalScale(20),
   },
@@ -130,7 +121,7 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(24),
     // height: horizontalScale(56),
     // width: 250,
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: horizontalScale(8),
     alignItems: 'center',
     justifyContent: 'center',
@@ -139,7 +130,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     padding: horizontalScale(8),
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: getFontSize(16),
     color: '#FFFFFF',
   },

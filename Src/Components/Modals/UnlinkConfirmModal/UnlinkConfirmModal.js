@@ -13,6 +13,7 @@ import {
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
+import Colors from '../../../Constants/Colors/Colors';
 import {
   RubikBlack,
   RubikBold,
@@ -20,7 +21,7 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-import {dynamicSize} from '../../../Constants/sizeChoose';
+import {dynamicSize, getFontSize} from '../../../Constants/sizeChoose';
 
 type props = {
   modalVisible: Boolean,
@@ -107,7 +108,7 @@ const UnlinkConfirmModal = ({
             style={{
               fontWeight: '500',
               fontSize: 16,
-              color: '#9C9EB9',
+              color: Colors.greyColorCode,
               textAlign: 'center',
               marginTop: dynamicSize(25),
             }}>
@@ -152,7 +153,7 @@ const UnlinkConfirmModal = ({
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
+                  style={{fontFamily: RubikMedium, fontSize: getFontSize(16), color: Colors.blueTextColor}}>
                   Yes
                 </Text>
               </View>
@@ -167,14 +168,14 @@ const UnlinkConfirmModal = ({
                   marginTop: 48,
                   height: dynamicSize(53),
                   width: dynamicSize(130),
-                  backgroundColor: '#7265E3',
+                  backgroundColor: Colors.blueTextColor,
                   borderRadius: 16,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#FFFFFF'}}>
+                  style={{fontFamily: RubikMedium, fontSize: getFontSize(16), color: '#FFFFFF'}}>
                   No
                 </Text>
               </View>

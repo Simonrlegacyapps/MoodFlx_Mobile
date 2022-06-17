@@ -9,6 +9,7 @@ import {
 } from "react-native-chart-kit";
 import { getFontSize, horizontalScale, metrics } from '../../Constants/sizeChoose';
 import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
+import Colors from '../../Constants/Colors/Colors';
 
 export default function LightGraph({
   yAxisLabel,
@@ -105,7 +106,7 @@ export default function LightGraph({
       />
       <View style={styles.rightLabelsView}>
         <Text style={[styles.rightLabelsText, {color: '#A5ABBF'}]}>High</Text>
-        <Text style={[styles.rightLabelsText, {color: '#4C5980'}]}>Ideal</Text>
+        <Text style={[styles.rightLabelsText, {color: Colors.greyTwo}]}>Ideal</Text>
         <Text style={[styles.rightLabelsText, {color: '#A5ABBF'}]}>Low</Text>
       </View>
     </View>
@@ -133,6 +134,6 @@ const styles = StyleSheet.create({
   rightLabelsText: {
     fontSize: getFontSize(13),
     fontFamily: RubikRegular,
-    color: '#4C5980',
+    color: Colors.greyTwo,
   },
 });

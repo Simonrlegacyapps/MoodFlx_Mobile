@@ -19,6 +19,7 @@ import { FloCoinIcon } from '../../../assets/svg/floCoinIcon';
 import { getFloCoins, getMyDeviceId, getPrevFloCoins } from '../../services/commonService';
 import CustomSwitch from '../CustomSwitch/CustomSwitch';
 import AnimatedNumber from '../AnimatedNumber/AnimatedNumber';
+import Colors from '../../Constants/Colors/Colors';
 
 const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
   const UserData = useSelector((state) => state.First);
@@ -160,7 +161,7 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
             animateToNumber={isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins}
             fontStyle={styles.floCoinsTextOne}
           />
-          <Text style={styles.floCoinsTextTwo}>Flx Coins</Text>
+          <Text style={styles.floCoinsTextTwo}>flx Coins</Text>
         </View>
         <View style={styles.verifcalBarView} />
         <View
@@ -273,17 +274,20 @@ const styles = StyleSheet.create({
     marginRight: horizontalScale(10)
   },
   floCoinsTextOne: {
-    fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
+    // fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
+    fontSize: getFontSize(14),
     fontWeight: '500',
+    color: Colors.blackColorCode,
     // marginBottom: 5,
     fontFamily: RubikMedium,
   },
   floCoinsTextTwo: {
     marginTop: horizontalScale(3),
-    fontSize: Platform.OS === 'ios' ? getFontSize(12) : getFontSize(14),
+    // fontSize: Platform.OS === 'ios' ? getFontSize(12) : getFontSize(14),
+    fontSize: getFontSize(12),
     fontWeight: '400',
-    color: 'grey',
-    fontFamily: RubikLight,
+    color: Colors.greyColorCode,
+    fontFamily: RubikRegular,
   },
   verifcalBarView: {
     height: '80%',
@@ -294,7 +298,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: horizontalScale(30),
     width: horizontalScale(30),
-    backgroundColor: '#4C5980',
+    backgroundColor: Colors.greyTwo,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
@@ -307,22 +311,26 @@ const styles = StyleSheet.create({
   },
   fullNameText: {
     color: 'white',
-    fontSize: Platform.OS === 'ios' ? getFontSize(23) : getFontSize(25),
+    // fontSize: Platform.OS === 'ios' ? getFontSize(23) : getFontSize(25),
+    fontSize: getFontSize(23),
     fontFamily: RubikRegular,
     alignSelf: 'center',
     justifyContent: 'center',
   },
   fullNameTextTwo: {
-    fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
+    // fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
+    fontSize: getFontSize(14),
     fontWeight: '500',
+    color: Colors.blackColorCode,
     marginBottom: 5,
     fontFamily: RubikMedium,
   },
   detailsText: {
-    fontSize: Platform.OS === 'ios' ? getFontSize(11) : getFontSize(13),
+    // fontSize: Platform.OS === 'ios' ? getFontSize(11) : getFontSize(13),
+    fontSize: getFontSize(11),
     fontWeight: '400',
-    color: 'grey',
-    fontFamily: RubikLight,
+    color: Colors.greyColorCode,
+    fontFamily: RubikRegular,
     // backgroundColor:'blue'
   },
 });

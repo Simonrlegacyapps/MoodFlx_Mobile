@@ -5,14 +5,11 @@ import {
   ScrollView,
   Dimensions,
   StyleSheet,
-  Image,
   TouchableOpacity,
   Platform,
-  AppState,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
-  RubikExtraBold,
   RubikLight,
   RubikMedium,
   RubikRegular,
@@ -21,30 +18,21 @@ import {
 import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
 import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
 import AppleHealthKit from 'react-native-health';
-import BarGraph from '../../../Components/BarChart/BarGraph';
-import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
-import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
-import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
-import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
 import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
 import PopUp from '../../../Components/PopUp/PopUp';
-import Toast from 'react-native-toast-message';
-import UsageStats from 'react-native-usage-stats';
 import moment from 'moment';
-import CrownBox from '../../../Components/crownBox/crownBox';
 import {useSelector, useDispatch} from 'react-redux';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
 import ScreenTimeBarGraph from '../../../Components/ScreenTimeGraph/ScreenTimeBarGraph';
-import ScreenTimeLineGraph from '../../../Components/ScreenTimeGraph/ScreenTimeLineGraph';
 import { horizontalScale } from '../../../Constants/sizeChoose';
 import isEmpty from 'lodash.isempty';
 import getStore from '../../../redux';
-import {ScreenTimePerm} from '../../../redux/actions/actions';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import {getMyDeviceId, getStandGraphData} from '../../../services/commonService';
 import { AppPermissions } from '../../../services/appPermissions';
+import Colors from '../../../Constants/Colors/Colors';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
@@ -291,7 +279,6 @@ const StandingData = ({
           <View style={{ marginBottom: 50, alignItems: 'center' }}>
             {/* {swiperIndex == index && ( */}
             {true && (
-              // <BarGraph color={'#16B7C7'} ShowPollen={false} RightBar={false} />
               <ScreenTimeBarGraph graphWidth={SIZE} data={graphData} />
             )}
           </View>
@@ -490,7 +477,7 @@ const styles = StyleSheet.create({
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
-    color: '#747690',
+    color: Colors.greyColorCode,
   },
   swiperText: {
     fontSize: SIZE / 14,
@@ -508,7 +495,7 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
   bottomView: {

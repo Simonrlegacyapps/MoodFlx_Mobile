@@ -27,9 +27,10 @@ import {getFloCoins} from '../../services/commonService';
 import Rings from '../../../assets/svg/rings';
 import GoldMedal from '../../../assets/svg/goldMedal';
 import Medal from '../../../assets/svg/medal';
-import {dynamicSize} from '../../Constants/sizeChoose';
+import {dynamicSize, getFontSize} from '../../Constants/sizeChoose';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import ProfileCoinModal from '../../Components/PopUp/profileCoinModal';
+import Colors from '../../Constants/Colors/Colors';
 
 const Tab = createMaterialTopTabNavigator();
 const {width} = Dimensions.get('screen');
@@ -230,7 +231,7 @@ const MainProfileTab = ({navigation}) => {
               style={{
                 color: '#FB8D09',
                 fontFamily: RubikLight,
-                fontSize: 14,
+                fontSize: getFontSize(13),
               }}>
               {getPromotionCoinLeft()} until promotion
             </Text>
@@ -258,20 +259,6 @@ const MainProfileTab = ({navigation}) => {
             />
           </View>
         </View>
-        {/* <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <LinearGradient
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            colors={['#7265E3', '#58A0E3']}
-            style={styles.linearGradient}>
-            <View style={{ marginHorizontal: 15, flexDirection: 'row', alignItems: 'center' }}>
-              <Crown />
-              <Text style={{ color: 'white', fontFamily: RubikRegular, marginLeft: 10 }}>
-                {getFloCoins(UserData.floCoins)}
-              </Text>
-            </View>
-          </LinearGradient>
-        </View> */}
       </View>
         {/* </View>} */}
         {/* <ScrollView> */}
@@ -281,13 +268,15 @@ const MainProfileTab = ({navigation}) => {
           // style: { height: 30 },
           labelStyle: {
             // marginTop: -10,
-            fontFamily: RubikRegular,
-            color: '#7265E3',
+            fontFamily: RubikMedium,
+            fontWeight: '500',
+            color: Colors.blueTextColor,
+            fontSize: getFontSize(13),
             letterSpacing: 1,
           },
           activeTintColor: '#6A6D90',
           inactiveTintColor: '#6A6D90',
-          indicatorStyle: { borderColor: '#7265E3', borderWidth: 1.5 },
+          indicatorStyle: { borderColor: Colors.blueTextColor, borderWidth: 1.5 },
           // tabStyle: { borderWidth: 0 }
         }}>
         <Tab.Screen name="Rewards" component={rewards} />
@@ -297,7 +286,7 @@ const MainProfileTab = ({navigation}) => {
       {/* </ScrollView> */}
       <ProfileCoinModal
         title={lvlName}
-        permission={`${CoinLevel} Flx coins`}
+        permission={`${CoinLevel} flx coins`}
         // image={Constants.Images.FitnessPopUp}
         dataType={'fitness'}
         smallText={CoinComment}
@@ -330,7 +319,8 @@ const styles = StyleSheet.create({
   },
   name: {
     fontFamily: RubikMedium,
-    fontSize: 17,
+    color: Colors.blackTwo,
+    fontSize: getFontSize(17),
     marginTop: 4,
   },
   edit: {

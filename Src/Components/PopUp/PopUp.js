@@ -13,6 +13,7 @@ import {
 import Modal from 'react-native-modal';
 import {useSelector} from 'react-redux';
 import Constants from '../../Constants';
+import Colors from '../../Constants/Colors/Colors';
 import { PRIVACY_POLICY_URL, TERMS_OF_USE_URL } from '../../Constants/constants';
 import {
   RubikLight,
@@ -96,7 +97,7 @@ const PopUp = ({
                 marginTop: 24,
                 height: 56,
                 width: 250,
-                backgroundColor: '#7265E3',
+                backgroundColor: Colors.blueTextColor,
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',

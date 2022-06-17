@@ -45,10 +45,10 @@ const Screen1 = ({onDone}) => {
     {
       img1: <Lock />,
       label:"Anonymity",
-      t1: 'We really don’t care who you are.',
+      t1: "We really don't care who you are.",
       t2: 'We really care how you feel.',
       t3: 'Feel Secure',
-      t4: 'You’re completely anonymous unless you say otherwise',
+      t4: "You're completely anonymous unless you say otherwise",
       button: "Next"
     },
     {
@@ -64,7 +64,7 @@ const Screen1 = ({onDone}) => {
     {
       img1: <Lock />,
       label:"Anonymity",
-      t1: 'Flx creates a unified voice for you & your team ',
+      t1: 'flx creates a unified voice for you & your team ',
       t2: 'via Team Pulses.',
       t3: '',
       t4: 'This is what the boss sees',
@@ -74,10 +74,10 @@ const Screen1 = ({onDone}) => {
     {
       img1: <ScienceG />,
       label:"The Science",
-      t1: 'Flx can use your data. ',
+      t1: 'flx can use your data. ',
       t2: 'The more data, the more smarter!',
       t3: '',
-      t4: 'Let Flx understand your environment and how it impacts your mood',
+      t4: 'Let flx understand your environment and how it impacts your mood',
       button: "Next"
     },
     {
@@ -86,7 +86,7 @@ const Screen1 = ({onDone}) => {
       t1: 'More data = more accurate insights + ',
       t2: 'more rewards.',
       t3: 'Get Rewarded!',
-      t4: 'Spend your Flx coins on things that make you feel good',
+      t4: 'Spend your flx coins on things that make you feel good',
       button: "Done"
     },
   ];
@@ -134,10 +134,10 @@ const Screen1 = ({onDone}) => {
               </View>
               <View style={{width: '100%', paddingHorizontal: dynamicSize(13)}}>
                 <Text allowFontScaling={false} style={styles.bigText}>
-                  It’s time to unleash your untapped!
+                  It's time to unleash your untapped!
                 </Text>
                 <Text allowFontScaling={false} style={styles.smallText0}>
-                  Let’s take you through Flx’s features
+                  Let's take you through flx's features
                 </Text>
               </View>
               <View style={styles.bottomButtons}>
@@ -148,7 +148,7 @@ const Screen1 = ({onDone}) => {
                   onPress={() => {
                     setnumber(number + 1);
                   }}
-                  style={{backgroundColor: '#7265E3', borderRadius: 7}}>
+                  style={{backgroundColor: Colors.blueTextColor, borderRadius: 7}}>
                   <Text allowFontScaling={false} style={styles.next}>Next</Text>
                 </TouchableOpacity>
               </View>
@@ -161,11 +161,11 @@ const Screen1 = ({onDone}) => {
                 </TouchableOpacity>
                 <Text allowFontScaling={false}
                   style={{
-                    fontSize: 16,
-                    fontFamily: RubikRegular,
+                    fontSize: getFontSize(22),
+                    fontFamily: RubikMedium,
                     color:
                       number <= 3
-                        ? '#7265E3'
+                        ? Colors.blueTextColor
                         : number === 4
                         ? '#3FD7C8'
                         : '#EE64DB',
@@ -178,9 +178,9 @@ const Screen1 = ({onDone}) => {
                     {data[number - 1].label}
                 </Text>
                 <View style={styles.rewardsTypes}>
-                  <Anonimity color={ data[number - 1].label === "Anonymity"? '#7265E3' : '#9C9EB9'} />
-                  <Science color={data[number - 1].label === "The Science" ? '#3FD7C8' : '#9C9EB9'} />
-                  <Rewards color={data[number - 1].label === "Rewards" ? '#EE64DB' : '#9C9EB9'} />
+                  <Anonimity color={ data[number - 1].label === "Anonymity"? Colors.blueTextColor : Colors.greyColorCode} />
+                  <Science color={data[number - 1].label === "The Science" ? '#3FD7C8' : Colors.greyColorCode} />
+                  <Rewards color={data[number - 1].label === "Rewards" ? '#EE64DB' : Colors.greyColorCode} />
                 </View>
                 {console.log(`number`, number)}
               </View>
@@ -215,17 +215,7 @@ const Screen1 = ({onDone}) => {
 
               {/* // bottom buttons */}
               <View style={styles.bottomButtons}>
-                {/* <TouchableOpacity onPress={onDone} style={{flex: 1}}>
-                  <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
-                </TouchableOpacity> */}
                 {(isHowMoodFloWorksPtsGiven === false && data[number - 1].button === "Done") ? (
-                  // <TouchableOpacity
-                  //   onPress={() => onDone()}
-                  //   style={{ backgroundColor: '#7265E3', borderRadius: 7 }}>
-                  //   <Text allowFontScaling={false} style={styles.next}>
-                  //     {data[number - 1].button}
-                  //   </Text>
-                  // </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => onDone()}
                     style={styles.bottomFlatlistContainer}>
@@ -273,14 +263,14 @@ const styles = StyleSheet.create({
   next: {
     color: 'white',
     fontFamily: RubikRegular,
-    fontSize: 16,
+    fontSize: getFontSize(16),
     paddingVertical: 6,
     paddingHorizontal: 17,
   },
   skip: {
     color: 'white',
     fontFamily: RubikRegular,
-    fontSize: 16,
+    fontSize: getFontSize(16),
   },
   bottomButtons: {
     width: '100%',
@@ -295,7 +285,7 @@ const styles = StyleSheet.create({
     paddingTop: horizontalScale(15),
     marginTop: dynamicSize(10),
     marginBottom: dynamicSize(20),
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: 7,
     alignItems: 'center',
   },
@@ -344,7 +334,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikRegular,
   },
   nextButton: {
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: 7,
   },
   smallText0: {
@@ -382,28 +372,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 30,
     borderRadius: 12,
-    paddingHorizontal: 40,
+    paddingHorizontal: horizontalScale(30),
   },
   blackText: {
     textAlign: 'center',
-    fontSize: height/30,
-    fontFamily: RubikRegular,
+    fontSize: getFontSize(28),
+    color: Colors.blackColorCode,
+    fontFamily: RubikMedium,
   },
-  purpleText: {color: '#7265E3', marginTop: 0},
+  purpleText: {
+    color: Colors.blueTextColor,
+    marginTop: 0,
+  },
   smallText: {
     textAlign: 'center',
-    fontSize: height/45,
+    fontSize: getFontSize(20),
     fontFamily: RubikMedium,
+    color: Colors.blackColorCode,
     marginTop: 19,
-    paddingHorizontal: 40,
   },
   smallGrey: {
-    color: '#9C9EB9',
+    color: Colors.greyColorCode,
     textAlign: 'center',
-    fontSize: height/50,
-    fontFamily: RubikLight,
-    marginTop: 9,
-    paddingHorizontal: 40,
+    fontSize: getFontSize(16),
+    fontFamily: RubikRegular,
+    marginTop: horizontalScale(9),
+    paddingHorizontal: horizontalScale(20),
   },
 });
 

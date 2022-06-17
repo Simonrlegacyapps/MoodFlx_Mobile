@@ -24,6 +24,7 @@ import {dynamicSize} from '../../Constants/sizeChoose';
 import AsyncStorage from '@react-native-community/async-storage';
 import messaging, {firebase} from '@react-native-firebase/messaging';
 import NotifService from '../../services/notifService';
+import Colors from '../../Constants/Colors/Colors';
 
 const VerifyEmail = ({navigation}) => {
   const [value, onChangeText] = React.useState('');
@@ -219,7 +220,7 @@ const VerifyEmail = ({navigation}) => {
               marginTop: dynamicSize(42),
               height: 56,
               width: 250,
-              backgroundColor: '#7265E3',
+              backgroundColor: Colors.blueTextColor,
               borderRadius: 16,
               alignItems: 'center',
               justifyContent: 'center',

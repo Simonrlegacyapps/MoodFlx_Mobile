@@ -1,4 +1,5 @@
 import * as React from "react"
+import Colors from "../../Src/Constants/Colors/Colors"
 import Svg, { Defs, G, Path },  from 'react-native-svg'
 
 function AddCoinsPopup({w, h}) {
@@ -14,7 +15,7 @@ function AddCoinsPopup({w, h}) {
         <G filter="url(#prefix__filter0_d)">
           <Path
             d="M8 4a2 2 0 012-2h52a2 2 0 012 2v16a2 2 0 01-2 2H45.273a8 8 0 00-4.84 1.63l-3.223 2.45a2 2 0 01-2.42 0l-3.223-2.45a8 8 0 00-4.84-1.63H10a2 2 0 01-2-2V4z"
-            fill="#7265E3"
+            fill={Colors.blueTextColor}
           />
         </G>
         <Defs>

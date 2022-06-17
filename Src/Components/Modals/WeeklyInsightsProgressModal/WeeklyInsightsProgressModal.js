@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { WeeklyInsightsProgressImage } from '../../../../assets/svg/weeklyInsightsProgress';
+import Colors from '../../../Constants/Colors/Colors';
 import {RubikMedium, RubikRegular} from '../../../Constants/fonts/Fonts';
 import { getFontSize, horizontalScale } from '../../../Constants/sizeChoose';
 
@@ -125,11 +126,10 @@ const styles = StyleSheet.create({
   },
   bigText: {
     fontFamily: RubikMedium,
-    fontSize: width / 20,
+    fontSize: getFontSize(20),
     paddingHorizontal: 12,
     marginRight: 12,
-    color: '#2D3142',
-    // width:'80%'
+    color: Colors.blackColorCode,
     textAlign: 'center',
     marginTop: horizontalScale(20),
   },
@@ -138,10 +138,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   buttonView: {
-    // marginTop: horizontalScale(24),
-    // height: horizontalScale(56),
-    // width: 250,
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: horizontalScale(8),
     alignItems: 'center',
     justifyContent: 'center',
@@ -150,7 +147,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     padding: horizontalScale(8),
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: getFontSize(16),
     color: '#FFFFFF',
   },

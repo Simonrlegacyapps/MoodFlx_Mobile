@@ -45,6 +45,7 @@ import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 import { activityHealthKitOptions } from '../../services/appPermissions';
 import getStore from '../../redux';
 import Skeleton from '../../Components/Skeleton/Skeleton';
+import Colors from '../../Constants/Colors/Colors';
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -483,7 +484,6 @@ const FitnessData = ({
             }
             MoodCount={UserMoodCount}
             height={10}
-            // backgroundColor="#CB9866"
           />
           <View style={{ flexDirection: 'row' }}>
             <Text numberOfLines={1} style={[styles.SmallThinText, { flex: 1 }]}>
@@ -521,75 +521,7 @@ const FitnessData = ({
               onSync={onSync}
             />
           )}
-          {/* {!UserData.HealthPermission ? (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text style={[styles.SmallThinText, { paddingVertical: 9 }]}>
-                ACTIVITY
-              </Text>
-              <TouchableOpacity
-                activeOpacity={1}
-                style={{
-                  alignItems: 'center',
-                  width: '100%',
-                }}
-                onPress={() => setFitnessPopUp(true)}>
-                <Text style={styles.swiperText}>
-                  You are the <Text style={{ color: '#5947D0' }}>happiest</Text>{' '}
-                  when you walk over <Text style={{ color: '#5947D0' }}>5000</Text>{' '}
-                  steps before <Text style={{ color: '#5947D0' }}>2PM</Text>
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <DataInsights
-              dailyInsights={insights?.dailyInsights}
-              weeklyInsights={insights?.weeklyInsights}
-              dailySuggestion={insights?.dailySuggestion}
-              dailySuggestionType={insights?.dailySuggestionType}
-              weeklySuggestion={insights?.weeklySuggestion}
-              weeklySuggestionType={insights?.weeklySuggestionType}
-              timeLeft={UserData?.weeklyInsightsTimeLeft}
-              dispatch={dispatch}
-            />
-          )} */}
-          {/* {UserData.HealthPermission && (
-              <View
-                style={{
-                  position: 'absolute',
-                  zIndex: -234234,
-                  justifyContent: 'center',
-                  top: SIZE / 2.6,
-                }}>
-                <Text
-                  style={{
-                    marginTop: -160,
-                    fontWeight: '700',
-                    fontFamily: RubikExtraBold,
-                    fontSize: SIZE / 5.5,
-                    color: '#E0DDED',
-                    transform: [{ rotate: '-15deg' }],
-                  }}>
-                  Demo
-                </Text>
-              </View>
-            )} */}
-          {/* {UserData.TodayAllSteps !== null &&
-          !Loading &&
-          UserData.UserMoodCount !== null &&
-          UserData.UserSteps !== null &&
-          UserData.UserCalories !== null &&
-          UserData.UserDistance !== null &&
-          UserData.UserMoveTime !== null && ( */}
           <View style={[styles.forCircle, { marginTop: 30 }]}>
-            {/* {setTimeout(() => {
-                
-              }, timeout)} */}
-            {/* {checkThis()} */}
             <AnimatedCircularProgress
               duration={1500}
               style={styles.CircularProgressStyle}
@@ -617,7 +549,6 @@ const FitnessData = ({
                 />
                 <Text
                   style={[styles.swiperText, { fontSize: 24, marginTop: 10 }]}>
-                  {/* {(TodayStep * 100).toFixed(0)} */}
                   {UserSteps.toFixed(0)}
                 </Text>
                 <Text
@@ -912,7 +843,7 @@ const styles = StyleSheet.create({
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
-    color: '#747690',
+    color: Colors.greyColorCode,
   },
   subViewTwo: {
     marginTop: horizontalScale(20),
@@ -963,7 +894,7 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
 

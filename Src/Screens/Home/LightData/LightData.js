@@ -29,21 +29,12 @@ import {
 } from '../../../Constants/fonts/Fonts';
 // import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
-import HomeHeader from '../../../Components/HomeHeader/HomeHeader';
-import BezierGraphAuto from '../../../Components/BezierGraphAuto/BezierGraphAuto';
-import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
-import WeatherGraphDurationModal from '../../../Components/Modals/WeatherGraphDurationModal/WeatherGraphDurationModal';
-import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
-import ScreenCircleBar from '../../../Components/ScreenCircleBar/ScreenCircleBar';
-import BarGraph from '../../../Components/BarChart/BarGraph';
 import PopUp from '../../../Components/PopUp/PopUp';
 import { dynamicSize, getFontSize, getLineHeight, horizontalScale, verticalScale } from '../../../Constants/sizeChoose';
-import { LightPerm } from '../../../redux/actions/actions';
 const { SensorManager } = NativeModules;
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import moment from 'moment';
-import AsyncStorage from '@react-native-community/async-storage';
 import LightGraph from '../../../Components/LightGraph/LightGraph';
 import { getLightDataIOS } from '../../../services/moodDataModuleService';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
@@ -51,11 +42,10 @@ import DataInsights from '../../../Components/DataInsights/DataInsights';
 import BulbIcon from '../../../../assets/commonicons/BulbIcon';
 import { getBulbColorFromLux, getLightGraphData, getMyDeviceId } from '../../../services/commonService';
 import { getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
-import CrownBox from '../../../Components/crownBox/crownBox';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import Skeleton from '../../../Components/Skeleton/Skeleton';
+import Colors from '../../../Constants/Colors/Colors';
 let lightData = null;
 let getLightTimeoutIdIOS = null;
 let isStopLightTimeout = true;
@@ -406,7 +396,6 @@ const LightData = ({
             }
             MoodCount={JSON.parse(MoodCount)}
             height={10}
-            // backgroundColor="#CB9866"
           />
           <View style={{ flexDirection: 'row' }}>
             <Text style={[styles.SmallThinText, { flex: 1 }]}>
@@ -420,9 +409,6 @@ const LightData = ({
             </Text>
           </View>
         </View>
-        {/* <View>
-          <Text>hi</Text>
-        </View> */}
         {skeleton && <Skeleton />}
         <View style={styles.subViewTwo}>
           {skeleton === false && (
@@ -692,7 +678,7 @@ const styles = StyleSheet.create({
   SmallThinText: {
     paddingVertical: 12,
     fontFamily: RubikLight,
-    color: '#747690',
+    color: Colors.greyColorCode,
   },
   subViewTwo: {
     marginTop: horizontalScale(20),
@@ -713,7 +699,7 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
   bulbImage: {

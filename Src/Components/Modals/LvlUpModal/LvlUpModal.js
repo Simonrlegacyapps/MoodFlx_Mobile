@@ -12,6 +12,7 @@ import MedalPopUp from '../../../../assets/svg/medalPopUp';
 import {getFontSize, horizontalScale} from '../../../Constants/sizeChoose';
 import {RubikLight, RubikMedium} from '../../../Constants/fonts/Fonts';
 import {getLvlName} from '../../../services/commonService';
+import Colors from '../../../Constants/Colors/Colors';
 type props = {
   modalVisible: Boolean,
   dismissModalHandler: Object,
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontFamily: RubikMedium,
     fontSize: getFontSize(30),
-    color: '#7265E3',
+    color: Colors.blueTextColor,
     marginTop: horizontalScale(30),
     textAlign: 'center',
   },
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     fontSize: getFontSize(22),
     marginTop: horizontalScale(7),
-    color: '#2D3142',
+    color: Colors.blackColorCode,
     textAlign: 'center',
   },
   smallText: {
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     marginBottom: horizontalScale(40),
     paddingVertical: horizontalScale(12),
     paddingHorizontal: horizontalScale(18),
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: horizontalScale(10),
     alignItems: 'center',
     justifyContent: 'center',

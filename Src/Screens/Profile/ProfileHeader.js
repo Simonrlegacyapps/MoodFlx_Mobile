@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity, Platform} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
 import {
@@ -17,6 +17,7 @@ import {getFloCoins} from '../../services/commonService';
 import {FloCoinIcon} from '../../../assets/svg/floCoinIcon';
 import Edit from '../../../assets/svg/Edit';
 import { getPhotoUrl } from '../../Constants/constants';
+import Colors from '../../Constants/Colors/Colors';
 
 const ProfileHeader = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
@@ -74,7 +75,7 @@ const ProfileHeader = ({navigation}) => {
           <Text style={styles.floCoinsTextOne}>
             {getFloCoins(UserData.floCoins)}
           </Text>
-          <Text style={styles.floCoinsTextTwo}>Flx Coins</Text>
+          <Text style={styles.floCoinsTextTwo}>flx Coins</Text>
         </View>
       </View>
     </View>
@@ -111,25 +112,35 @@ const styles = StyleSheet.create({
   since: {
     fontFamily: RubikLight,
     color: Constants.Colors.greyColorCode,
-    fontSize: 12,
+    // fontSize: Platform.OS === 'ios' ? getFontSize(12) : getFontSize(14),
+    fontSize: getFontSize(12),
   },
-  name: {fontFamily: RubikMedium, fontSize: 13, marginTop: 4},
+  name: {
+    fontFamily: RubikMedium,
+    // fontSize: Platform.OS === 'ios' ? getFontSize(13) : getFontSize(15),
+    fontSize: getFontSize(13),
+    marginTop: 4,
+    color: Colors.blackColorCode
+  },
   edit: {justifyContent: 'flex-end', marginRight: 5},
   floIconView: {
     marginLeft: horizontalScale(14),
     marginRight: horizontalScale(10),
   },
   floCoinsTextOne: {
-    fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
+    // fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
+    fontSize: getFontSize(14),
     fontWeight: '500',
+    color: Colors.blackColorCode,
     // marginBottom: 5,
     fontFamily: RubikMedium,
   },
   floCoinsTextTwo: {
     marginTop: horizontalScale(3),
-    fontSize: Platform.OS === 'ios' ? getFontSize(12) : getFontSize(14),
+    // fontSize: Platform.OS === 'ios' ? getFontSize(12) : getFontSize(14),
+    fontSize: getFontSize(12),
     fontWeight: '400',
-    color: 'grey',
+    color: Colors.greyColorCode,
     fontFamily: RubikLight,
   },
   topCoins: {

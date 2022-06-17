@@ -18,8 +18,17 @@ import {
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import {SetShowMonthlyInsightsModal, SetShowWeeklyInsightsModal} from '../../redux/actions/actions';
-import {getMonthlyInsightsAvailable, getMonthlyInsightsDaysLeft, getMonthlyInsightsStartEndTime, getWeeklyInsightsAvailable} from '../../Constants/constants';
+import {
+  SetShowMonthlyInsightsModal,
+  SetShowWeeklyInsightsModal,
+} from '../../redux/actions/actions';
+import {
+  getMonthlyInsightsAvailable,
+  getMonthlyInsightsDaysLeft,
+  getMonthlyInsightsStartEndTime,
+  getWeeklyInsightsAvailable,
+  insightsDurationFlags,
+} from '../../Constants/constants';
 import {getMoodsArray, getMyDeviceId} from '../../services/commonService';
 import NotEnoughMoodsModal from '../Modals/NotEnoughtMoodsModal/NotEnoughMoodsModal';
 import Images from '../../Constants/Images/Images';
@@ -30,12 +39,7 @@ import { useSelector } from 'react-redux';
 import PostRequestApi from '../../apirequest/PostRequestApi'
 import isFunction from 'lodash.isfunction';
 import ProgressDay from './ProgressDay';
-
-const insightsDurationFlags = {
-  daily: 'daily',
-  weekly: 'weekly',
-  monthly: 'monthly',
-};
+import Colors from '../../Constants/Colors/Colors';
 
 const getInsightsArray = (text) => {
   let insights = [];
@@ -59,13 +63,13 @@ const getInsightsArray = (text) => {
             x !== undefined &&
               typeof x === 'string' &&
               insights.push({text: x.trim(), color: ''});
-            typeof r === 'string' && insights.push({text: r, color: '#7265e3'});
+            typeof r === 'string' && insights.push({text: r.toLowerCase(), color: '#7265e3'});
           } else {
             let x = l?.slice?.(index + 1, idx)?.join?.(' ');
             x !== undefined &&
               typeof x === 'string' &&
               insights.push({text: x.trim(), color: ''});
-            typeof r === 'string' && insights.push({text: r, color: '#7265e3'});
+            typeof r === 'string' && insights.push({text: r.toLowerCase(), color: '#7265e3'});
           }
           index = idx;
         }
@@ -99,6 +103,7 @@ function DataInsights({
   dispatch,
   onPressInsights,
   onSync,
+  setDataDuration,
 }) {
   const getInsightsDuration = (weekInsights, monthInsights, isPermGiven) => {
     if (!!isPermGiven === false) {
@@ -131,6 +136,7 @@ function DataInsights({
   const prevWeeklyInsights = useRef(
     getInsightsDuration(weeklyInsights, monthlyInsights, isPermissionGiven),
   );
+  const prevInsightsDuration = useRef(null);
 
   useEffect(() => {
     const currentFlag = getInsightsDuration(
@@ -144,6 +150,13 @@ function DataInsights({
     }
   }, [weeklyInsights, monthlyInsights, isPermissionGiven]);
 
+  useEffect(() => {
+    if (setDataDuration && prevInsightsDuration.current !== insightsDuration) {
+      setDataDuration(insightsDuration);
+      prevInsightsDuration.current = insightsDuration;
+    }
+  }, [insightsDuration, setDataDuration]);
+
   const openCloseShowNotEnoughMoodsModal = useCallback((flag) => {
     const fn = () => setShowNotEnoughMoodsModal(flag);
     return fn;
@@ -153,6 +166,11 @@ function DataInsights({
     const fn = () => setShowNotEnoughData(flag);
     return fn;
   }, []);
+
+  const onDailyTabPress = useCallback(() => {
+    setInsightsDuration(insightsDurationFlags.daily);
+    ShowTarget && setShowTarget(false);
+  }, [ShowTarget]);
 
   const onSyncButtonClick = useCallback(() => {
     setShowNotEnoughData(false);
@@ -195,6 +213,7 @@ function DataInsights({
       setModalDuration(insightsDurationFlags.monthly);
       if (!!monthlyInsights) {
         setInsightsDuration(insightsDurationFlags.monthly);
+        ShowTarget && setShowTarget(false);
       } else if (getTotalMood() < 16 || !isFunction(onSync)) {
         setShowNotEnoughMoodsModal(true);
       } else {
@@ -275,7 +294,7 @@ function DataInsights({
                 ? styles.activeTabHeader
                 : styles.inactiveTabHeader
             }
-            onPress={() => setInsightsDuration(insightsDurationFlags.daily)}>
+            onPress={onDailyTabPress}>
             <Text
               style={
                 insightsDuration === insightsDurationFlags.daily
@@ -315,7 +334,7 @@ function DataInsights({
                   width={2.5}
                   fill={(timeLeft / 5) * 100}
                   rotation={0}
-                  tintColor="#7265E3"
+                  tintColor={Colors.blueTextColor}
                   lineCap={'round'}
                   backgroundColor="#CFF9ED">
                   {(fill) => (
@@ -355,7 +374,7 @@ function DataInsights({
                   width={2.5}
                   fill={(getMonthlyInsightsDaysLeft() / getMonthlyInsightsStartEndTime().startTime.date()) * 100}
                   rotation={0}
-                  tintColor="#7265E3"
+                  tintColor={Colors.blueTextColor}
                   lineCap={'round'}
                   backgroundColor="#CFF9ED">
                   {(fill) => (
@@ -387,6 +406,7 @@ function DataInsights({
           </Text>
         </Pressable>
         {insightsDuration === insightsDurationFlags.weekly && (
+          <>
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setShowTarget((e) => !e)}
@@ -402,6 +422,22 @@ function DataInsights({
             </Text>
           </View>
         </TouchableOpacity>
+
+            {ShowTarget && (
+              <>
+                <ProgressDay color={'#6FD691'} label={"M"} label2={MoodCountData[1].mood_count} progress={MoodCountData[0].mood_count} />
+                <View style={styles.borderLine} />
+                <ProgressDay color={'#B88DCC'} label={"T"} label2={MoodCountData[2].mood_count} progress={MoodCountData[1].mood_count} />
+                <View style={styles.borderLine} />
+                <ProgressDay color={'#4C5F79'} label={"W"} label2={MoodCountData[3].mood_count} progress={MoodCountData[2].mood_count} />
+                <View style={styles.borderLine} />
+                <ProgressDay color={Colors.blueTextColor} label={"T"} label2={MoodCountData[4].mood_count} progress={MoodCountData[3].mood_count} />
+                <View style={styles.borderLine} />
+                <ProgressDay color={'#7FE3F0'} label={"F"} label2={MoodCountData[5].mood_count} progress={MoodCountData[4].mood_count} />
+                {/* <View style={styles.borderLine} /> */}
+              </>
+            )}
+          </>
         )}
 
         {/* <View
@@ -418,20 +454,6 @@ function DataInsights({
             2/3
           </Text>
         </View> */}
-        {ShowTarget && (
-          <>
-            <ProgressDay color={'#6FD691'} label={"M"} label2={MoodCountData[1].mood_count} progress={MoodCountData[0].mood_count} />
-            <View style={styles.borderLine} />
-            <ProgressDay color={'#B88DCC'} label={"T"} label2={MoodCountData[2].mood_count} progress={MoodCountData[1].mood_count} />
-            <View style={styles.borderLine} />
-            <ProgressDay color={'#4C5F79'} label={"W"} label2={MoodCountData[3].mood_count} progress={MoodCountData[2].mood_count} />
-            <View style={styles.borderLine} />
-            <ProgressDay color={'#7265E3'} label={"T"} label2={MoodCountData[4].mood_count} progress={MoodCountData[3].mood_count} />
-            <View style={styles.borderLine} />
-            <ProgressDay color={'#7FE3F0'} label={"F"} label2={MoodCountData[5].mood_count} progress={MoodCountData[4].mood_count} />
-            {/* <View style={styles.borderLine} /> */}
-          </>
-        )}
 
         {suggestion ? (
           <View style={styles.suggestionView}>
@@ -567,12 +589,12 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: getFontSize(18),
     fontFamily: RubikMedium,
-    color: '#7265E3',
+    color: Colors.blueTextColor,
   },
   monthlyProgressText: {
     fontSize: getFontSize(13),
     fontFamily: RubikMedium,
-    color: '#7265E3',
+    color: Colors.blueTextColor,
   },
   progressView: {
     width: '50%',
@@ -583,7 +605,7 @@ const styles = StyleSheet.create({
   },
   borderLine:{height: 1, width: '75%', backgroundColor: '#D6D6D6'},
   TargetView:{
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,

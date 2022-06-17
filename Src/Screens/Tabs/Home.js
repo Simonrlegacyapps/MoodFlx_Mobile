@@ -44,7 +44,6 @@ import SleepData from '../Home/SleepData/SleepData';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   DaySteps,
-  DayTemp,
   GetCalories,
   GetDistance,
   GetDOB,
@@ -64,11 +63,10 @@ import {
 import messaging, { firebase } from '@react-native-firebase/messaging';
 import LightData from '../Home/LightData/LightData';
 import GoogleFit, { Scopes } from 'react-native-google-fit';
-import {
-  AppInstalledChecker,
-  CheckPackageInstallation,
-} from 'react-native-check-app-install';
-import RNAndroidInstalledApps from 'react-native-android-installed-apps';
+// import {
+//   AppInstalledChecker,
+//   CheckPackageInstallation,
+// } from 'react-native-check-app-install';
 import InstallGoogleFitModal from '../../Components/Modals/InstallGoogleFitModal/InstallGoogleFitModal';
 import {
   googleFitScopes,
@@ -82,6 +80,8 @@ import Constants from '../../Constants';
 import { horizontalScale } from '../../Constants/sizeChoose';
 import StandingData from '../Home/StandingData/StandingData';
 import LocationData from '../Home/LocationData/LocationData';
+import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
+import Colors from '../../Constants/Colors/Colors';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
@@ -1146,12 +1146,21 @@ const App = (props) => {
           console.log('totalCalories', mainCalories);
         }
       }
+      let heartRateCounter = 0;
       for (let m in HeartRate) {
         let iteratedate = moment(HeartRate[m].startDate).format('DD-MMM-YYYY');
-        if (dates[i] === iteratedate) {
-          totalHeartRate = totalHeartRate + HeartRate[m].value;
+        const heartRateValue = HeartRate[m].value;
+        if (
+          dates[i] === iteratedate &&
+          !Number.isNaN(heartRateValue) &&
+          heartRateValue > 0 &&
+          heartRateValue <= 350
+        ) {
+          heartRateCounter++;
+          totalHeartRate = totalHeartRate + heartRateValue;
         }
       }
+      totalHeartRate = Math.round(totalHeartRate / heartRateCounter);
       for (let n in BP) {
         let iteratedate = moment(BP[n].startDate).format('DD-MMM-YYYY');
         if (dates[i] === iteratedate) {
@@ -1271,7 +1280,7 @@ const App = (props) => {
         age: dateOfBirth?.age ?? 0,
         email: UserData.UserEmail ?? '',
       });
-      console.log(`data1111`, _data);
+      console.log('health Update Request body', _data);
 
       var config = {
         method: 'post',
@@ -1685,24 +1694,24 @@ const styles = StyleSheet.create({
   },
   prevButton: {
     position: 'absolute',
-    left: 10,
+    left: horizontalScale(10),
     top: HEIGHT * 0.3,
   },
   nextButton: {
     position: 'absolute',
-    right: 10,
+    right: horizontalScale(10),
     top: HEIGHT * 0.3,
   },
   prevImage: {
     transform:[{rotate:"180deg"}],
     height: 22,
-    width: 20,
+    width: horizontalScale(20),
     margin: horizontalScale(5),
     resizeMode: 'contain',
   },
   nextImage: {
     height: 22,
-    width: 20,
+    width: horizontalScale(20),
     margin: horizontalScale(5),
     resizeMode: 'contain',
   },
@@ -1830,7 +1839,7 @@ const styles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
 });

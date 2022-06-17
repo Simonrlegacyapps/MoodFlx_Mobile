@@ -7,7 +7,6 @@
  import {
    Text,
    View,
-   ViewPropTypes,
    ScrollView,
    Dimensions,
    TouchableOpacity,

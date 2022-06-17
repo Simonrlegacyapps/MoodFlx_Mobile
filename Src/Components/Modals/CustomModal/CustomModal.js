@@ -10,12 +10,14 @@ import {
 import Modal from 'react-native-modal';
 import PropTypes from 'prop-types';
 import {
+  RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
 import {
   getFontSize,
   horizontalScale,
 } from '../../../Constants/sizeChoose';
+import Colors from '../../../Constants/Colors/Colors';
 
 const {width} = Dimensions.get('window');
 const CustomModal = ({
@@ -120,6 +122,7 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(30),
     fontFamily: RubikRegular,
     fontSize: fontSize,
+    color: Colors.blackColorCode,
     textAlign: 'center',
   },
   buttonsContainer: {
@@ -130,19 +133,16 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(30),
   },
   buttonOne: {
-    // marginTop: horizontalScale(40),
-    // marginBottom: horizontalScale(30),
-    // width: '100%',
     flex: 0.4,
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     paddingVertical: horizontalScale(8),
     borderRadius: horizontalScale(5),
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonOneText: {
-    fontFamily: RubikRegular,
-    fontSize: getFontSize(18),
+    fontFamily: RubikMedium,
+    fontSize: getFontSize(16),
     color: '#FFFFFF',
   },
 });

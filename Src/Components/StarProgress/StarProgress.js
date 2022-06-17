@@ -9,13 +9,13 @@ import {
 } from 'react-native';
 import {Oval} from '../../../assets/svg/oval';
 import Constants from '../../Constants';
+import Colors from '../../Constants/Colors/Colors';
 import {RubikRegular} from '../../Constants/fonts/Fonts';
 import {
   dynamicSize,
   getFontSize,
   horizontalScale,
 } from '../../Constants/sizeChoose';
-import {convertMinutesToTime} from '../../Screens/Home/SleepData/sleepDataService';
 const {width} = Dimensions.get('window');
 const wid = horizontalScale(300);
 
@@ -31,7 +31,13 @@ const StarProgress = ({ sleepMinutes }) => {
   const [currentFont, setCurrentFont] = useState(17);
   const starSize = 32;
   const toolTipSize = 70;
-  const toolTipText = convertMinutesToTime(sleepMinutes);
+  let sleepHours = 0;
+  let toolTipText = 'N/A';
+
+  if (!isNaN(sleepMinutes)) {
+    sleepHours = Math.floor(Number(sleepMinutes) / 60);
+    toolTipText = `${sleepHours}${Number(sleepHours) > 1 ? 'hrs' : 'hr'}`;
+  }
 
   // useEffect(() => {
   //   if(toolTipPosition <= 0) {
@@ -46,9 +52,8 @@ const StarProgress = ({ sleepMinutes }) => {
   // console.log('sleepMinutes: ', sleepMinutes);
 
   useEffect(() => {
-    const hours = Number.parseInt(String(sleepMinutes / 60));
-    let s = sleepMinutes > 600 ? 600 : sleepMinutes;
-    s = Math.round((s * 5) / 600);
+    let s = sleepHours > 8 ? 8 : sleepHours;
+    s = Math.round((s * 5) / 8);
     // console.log('calculated step: ', s);
     setStep(s);
     const timeoutId = setTimeout(() => {
@@ -252,7 +257,7 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   qualitiesText: {
-    color: '#4C5980',
+    color: Colors.greyTwo,
     flex: 1,
     fontSize: getFontSize(12),
     fontFamily: RubikRegular,

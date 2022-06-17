@@ -237,3 +237,25 @@ export const defaultNegativeMoodModalData = {
   eap_text: 'Would you like to talk to someone?',
   eap_link: 'https://findahelpline.com/',
 };
+
+export const pollenValues = [
+  {name: 'None', id: 'None'},
+  {name: 'Low', id: 'Low'},
+  {name: 'Medium', id: 'Medium'},
+  {name: 'High', id: 'High'},
+];
+
+export const defaultWeatherDetails = {
+  currentTemp: null,
+  minTemp: null,
+  maxTemp: null,
+  rainHrs: null,
+  weatherType: null,
+  place: null,
+};
+
+export const insightsDurationFlags = {
+  daily: 'daily',
+  weekly: 'weekly',
+  monthly: 'monthly',
+};

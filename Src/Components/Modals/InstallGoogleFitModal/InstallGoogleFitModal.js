@@ -15,6 +15,7 @@ import {
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
 import {metrics, getFontSize, getLineHeight, horizontalScale} from '../../../Constants/sizeChoose';
+import Colors from '../../../Constants/Colors/Colors';
 
 const {width} = Dimensions.get('window');
 const InstallGoogleFitModal = ({
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(40),
     marginBottom: horizontalScale(30),
     width: '100%',
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     paddingVertical: horizontalScale(20),
     borderRadius: horizontalScale(16),
     justifyContent: 'center',

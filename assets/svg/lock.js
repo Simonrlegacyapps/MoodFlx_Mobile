@@ -1,5 +1,6 @@
 import * as React from "react"
 import Svg, { Circle, Path } from 'react-native-svg'
+import Colors from "../../Src/Constants/Colors/Colors"
 
 function Lock({w,h, color}) {
     return (
@@ -11,7 +12,7 @@ function Lock({w,h, color}) {
         xmlns="http://www.w3.org/2000/Svg"
         
       >
-        <Circle cx={36} cy={36} r={36} fill="#4C5980" />
+        <Circle cx={36} cy={36} r={36} fill={Colors.greyTwo} />
         <Path
           d="M26.5 32.833v-3.166c0-5.241 1.583-9.5 9.5-9.5s9.5 4.259 9.5 9.5v3.166M36 46.292a3.958 3.958 0 100-7.917 3.958 3.958 0 000 7.917z"
           stroke="#fff"

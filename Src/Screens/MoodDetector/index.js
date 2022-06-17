@@ -610,9 +610,9 @@ export default function MoodDetector({ navigation }) {
   };
 
   useEffect(() => {
-    AppState.addEventListener("change", _handleAppStateChange);
+    const subscription = AppState.addEventListener("change", _handleAppStateChange);
     return () => {
-      AppState.removeEventListener("change", _handleAppStateChange);
+      subscription?.remove?.();
     };
   }, []);
 
@@ -984,13 +984,13 @@ export default function MoodDetector({ navigation }) {
         })
           .then((location) => {
             setIsGetCurrentLocationCalled(false);
-            const isIndia = isCountryIndia();
-            if (isIndia) {
-              location = {
-                latitude: defaultLocation.latitude,
-                longitude: defaultLocation.longitude,
-              };
-            }
+            // const isIndia = isCountryIndia();
+            // if (isIndia) {
+            //   location = {
+            //     latitude: defaultLocation.latitude,
+            //     longitude: defaultLocation.longitude,
+            //   };
+            // }
             console.log('Success', location);
             setlat(location.latitude);
             dispatch(Lat(location.latitude));
@@ -1933,7 +1933,9 @@ const styles = StyleSheet.create({
   },
   saveText: {
     textAlign: 'center',
-    fontSize: getFontSize(18),
+    fontSize: getFontSize(16),
+    fontFamily: RubikMedium,
+    color: Colors.blackColorCode,
   },
   ErrorText: {
     fontWeight: '300',

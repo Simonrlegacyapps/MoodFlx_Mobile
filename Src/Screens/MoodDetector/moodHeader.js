@@ -13,6 +13,7 @@
    ProgressViewIOSComponent,
  } from 'react-native';
  import { Switch } from 'react-native-switch';
+import Colors from '../../Constants/Colors/Colors';
 //  import imagePath from '../../assets/images';
 import { horizontalScale } from '../../Constants/sizeChoose';
  
@@ -84,7 +85,7 @@ import { horizontalScale } from '../../Constants/sizeChoose';
      borderRadius: horizontalScale(40) / 2,
      justifyContent: 'center',
      alignItems: 'center',,
-     backgroundColor: '#4C5980',
+     backgroundColor: Colors.greyTwo,
    },
    cognitoImage: {
      height: horizontalScale(20),
@@ -98,12 +99,12 @@ import { horizontalScale } from '../../Constants/sizeChoose';
    textOne: {
      fontSize: horizontalScale(16),
      fontWeight: 500,
-     color: '#2D3142',
+     color: Colors.blackColorCode,
      lineHeight: horizontalScale(24)
    },
    textTwo: {
      fontSize: horizontalScale(12),
-     color: '#9C9EB9',
+     color: Colors.greyColorCode,
    },
  
  })

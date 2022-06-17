@@ -8,6 +8,7 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
+import Colors from '../../Constants/Colors/Colors';
 import { RubikRegular } from '../../Constants/fonts/Fonts';
 
 const indicatorHelperStyles = StyleSheet.create({
@@ -23,7 +24,7 @@ const indicatorHelperStyles = StyleSheet.create({
   },
   indicatorText: {
     marginHorizontal: 10,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
   },
 });

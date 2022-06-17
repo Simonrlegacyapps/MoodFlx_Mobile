@@ -107,14 +107,13 @@ const AddNameModal = ({
           <Text
             // numberOfLines={3}
             style={{
-              fontWeight: '300',
+              fontFamily: RubikLight,
               letterSpacing: 1,
-              fontSize: Platform.OS === 'android' ? getFontSize(16) : dynamicSize(14),
+              fontSize: getFontSize(16),
+              color: Colors.greyTwo,
               marginTop: 12,
-              // marginLeft: 62,
-              // marginRight: 62,
               textAlign: 'center',
-              width: '80%',
+              width: '77%',
               lineHeight: dynamicSize(26),
             }}>
             {description}
@@ -147,13 +146,13 @@ const AddNameModal = ({
               autoCapitalize={'words'}
               autoCompleteType={'off'}
               placeholder={'Eg. John Doe'}
-              placeholderTextColor={'#8A8BAB'}
+              placeholderTextColor={Colors.greyColorCode}
               style={{
                 fontFamily: RubikRegular,
                 height: dynamicSize(50),
                 width: dynamicSize(220),
                 backgroundColor: 'white',
-                fontSize: 18,
+                fontSize: getFontSize(16),
                 // color: 'blue',
                 // borderColor: 'transparent',
                 // fontWeight: '700',
@@ -178,14 +177,14 @@ const AddNameModal = ({
                 marginTop: 48,
                 height: dynamicSize(53),
                 width: dynamicSize(220),
-                backgroundColor: '#7265E3',
+                backgroundColor: Colors.blueTextColor,
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginBottom: 50,
                 flexDirection: 'row',
               }}>
-              <Text style={{fontWeight: '500', fontSize: 14, color: '#FFFFFF'}}>
+              <Text style={{fontFamily: RubikMedium, fontSize: getFontSize(16), color: '#FFFFFF'}}>
                 {buttonText}
               </Text>
               {isLoading && <View style={styles.loadingView}><ActivityIndicator size="small" color={Colors.loaderColor} /></View>}

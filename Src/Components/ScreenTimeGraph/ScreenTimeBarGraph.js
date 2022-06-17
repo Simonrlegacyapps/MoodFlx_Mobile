@@ -12,6 +12,7 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import LinearGradient from 'react-native-linear-gradient';
+import Colors from '../../Constants/Colors/Colors';
 
 export default function ScreenTimeBarGraph({
   graphHeight,
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
     marginLeft: horizontalScale(37),
     fontSize: getFontSize(14),
     fontFamily: RubikMedium,
-    color: '#4C5980',
+    color: Colors.greyTwo,
     marginBottom: 15,
   },
 });

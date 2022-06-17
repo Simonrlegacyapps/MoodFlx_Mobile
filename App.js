@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
+import type {Node} from 'react';
 import {
   View,
   SafeAreaView,
@@ -171,7 +172,7 @@ const toastConfig = {
   ),
 };
 
-const App: () => React$Node = () => {
+const App: () => Node = () => {
   const [screenName, setScreenName] = useState(false);
   const [ShowWelcome, setShowWelcome] = useState(false);
   const notifService = useRef(new NotifService()).current;
@@ -825,11 +826,11 @@ const App: () => React$Node = () => {
   };
 
   useEffect(() => {
-    AppState.addEventListener("change", _handleAppStateChange);
+    const subscription = AppState.addEventListener("change", _handleAppStateChange);
     NotifService.cancelMoodFloSheduledNotifications();
     dispatch(SetWeeklyInsightsTimeLeft(getWeeklyInsightsDaysLeft()));
     return () => {
-      AppState.removeEventListener("change", _handleAppStateChange);
+      subscription?.remove?.();
     };
   }, []);
 
@@ -1049,13 +1050,13 @@ const App: () => React$Node = () => {
           setIsGetCurrentLocationCalled(false);
           //   console.log('Success', location);
           // setlat(location.latitude);
-          const isIndia = isCountryIndia();
-          if (isIndia) {
-            location = {
-              latitude: defaultLocation.latitude,
-              longitude: defaultLocation.longitude
-            };
-          }
+          // const isIndia = isCountryIndia();
+          // if (isIndia) {
+          //   location = {
+          //     latitude: defaultLocation.latitude,
+          //     longitude: defaultLocation.longitude
+          //   };
+          // }
           console.log(
             '✅ ✅ ✅ ✅ Success GeoLocation Api ✅ ✅ ✅ ✅',
             JSON.stringify(location),
@@ -1215,30 +1216,18 @@ const App: () => React$Node = () => {
       {ShowWelcome === false ? (
         <NavigationContainer
           ref={RootNavigation.navigationRef}
-          onReady={onNavigationReady}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
+          onReady={onNavigationReady}>
+          <SafeAreaView style={styles.container}>
             <View style={styles.container}>
               <StackNavigation />
             </View>
           </SafeAreaView>
-          <Toast
-            config={toastConfig}
-            ref={(ref) => Toast.setRef(ref)} />
+          <Toast config={toastConfig} ref={ref => Toast.setRef(ref)} />
         </NavigationContainer>
       ) : (
         <>
-        <Screen1 onDone={_onDone}/>
-          {/* <AppIntroSlider
-            renderItem={renderItems}
-            data={Images}
-            onDone={_onDone}
-            showSkipButton={true}
-            onSkip={_onDone}
-          /> */}
-          <Toast
-            config={toastConfig}
-            ref={(ref) => Toast.setRef(ref)} />
+          <Screen1 onDone={_onDone} />
+          <Toast config={toastConfig} ref={ref => Toast.setRef(ref)} />
         </>
       )}
       <LvlUpModal
@@ -1247,7 +1236,7 @@ const App: () => React$Node = () => {
         dismissModalHandler={closeLvlUpModal}
         buttonText="Let's Go!"
         verifyDone={closeLvlUpModal}
-        smallText="Check out what rewards you’ve unlocked"
+        smallText="Check out what rewards you've unlocked"
       />
       <CustomModal
         modalVisible={!!linkModalText && isLinkModalVisible}
@@ -1284,72 +1273,6 @@ const styles = ScaledSheet.create({
   container: {
     flex: 1,
   },
-  messageStyle: {
-    color: 'white',
-    fontSize: 16,
-  },
-  containerStyle: {
-    backgroundColor: 'black',
-    paddingBottom: 8,
-  },
-  errorStyle: {
-    backgroundColor: 'red',
-    paddingBottom: 8,
-  },
-  welcomeLogoStyle: {
-    position: 'absolute',
-    bottom: '15%',
-    left: '50%',
-    right: '50%',
-    alignItems: 'center',
-  },
-  welcomeDotStyle: {
-    backgroundColor: 'gray',
-    height: '14@ms',
-    width: '14@ms',
-    borderRadius: '7@ms',
-    borderColor: 'red',
-    borderWidth: 1,
-  },
-  activeWelcomeDotStyle: {
-    backgroundColor: 'red',
-    height: '14@ms',
-    width: '14@ms',
-    borderRadius: '7@ms',
-  },
-  welcometextStyle: {
-    fontSize: 28,
-    fontWeight: '600',
-    color: 'white',
-  },
-  welcomeTextWrapper: {position: 'absolute', top: '15%', alignSelf: 'center'},
-  welRenderWrapper: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    paddingHorizontal: '25@ms',
-  },
-  welTitletext: {
-    fontSize: 18,
-    color: 'green',
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  sliderImage: {
-    alignSelf: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    width: '100%',
-    resizeMode: 'cover',
-    borderRadius: '10@ms',
-    marginLeft: 40,
-  },
-  sliderContentContainer: {
-    alignSelf: 'center',
-    justifyContent: 'center',
-    // paddingHorizontal:15,
-    // paddingVertical: '10@ms', // for custom animation
-  },
   toastText: {
     fontSize: getFontSize(15),
     color: '#B56873',
@@ -1357,9 +1280,7 @@ const styles = ScaledSheet.create({
   },
   toastInfoText: {
     fontSize: getFontSize(13),
-    // color: '#9C9EB9',
     color: 'rgb(66,66,66)',
-    // fontWeight: 'bold',
   },
 });
 

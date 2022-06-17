@@ -14,6 +14,7 @@ import Modal from 'react-native-modal';
 import { useSelector } from 'react-redux';
 import MedalPopUp from '../../../assets/svg/medalPopUp';
 import Constants from '../../Constants';
+import Colors from '../../Constants/Colors/Colors';
 import {
     RubikLight,
     RubikMedium,
@@ -92,17 +93,17 @@ const ProfileCoinModal = ({
                     {title &&<Text style={styles.titleText}>
                         {title
                             ? title
-                            : "Hang in there you'll be able to cash in your Flx soon!"}
+                            : "Hang in there you'll be able to cash in your flx soon!"}
                     </Text>}
                     <Text style={styles.bigText}>
                         {permission
                             ? permission
-                            : "Hang in there you'll be able to cash in your Flx soon!"}
+                            : "Hang in there you'll be able to cash in your flx soon!"}
                     </Text>
                     {smallText && <Text style={styles.smallText}>
                         {smallText
                             ? smallText
-                            : "Hang in there you'll be able to cash in your Flx soon!"}
+                            : "Hang in there you'll be able to cash in your flx soon!"}
                     </Text>}
                     <TouchableOpacity style={{ alignSelf: 'center' }} onPress={verifyDone}>
                         <View
@@ -111,7 +112,7 @@ const ProfileCoinModal = ({
                                 height: 56,
                                 // width: title==="Mood Navigator"? 150: 250,
                                 paddingHorizontal: horizontalScale(18),
-                                backgroundColor: '#7265E3',
+                                backgroundColor: Colors.blueTextColor,
                                 borderRadius: 16,
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -243,7 +244,7 @@ const styles = StyleSheet.create({
     titleText: {
         fontFamily: RubikMedium,
         fontSize: width / 16,
-        color:"#7265E3",
+        color: Colors.blueTextColor,
         // paddingHorizontal: 12,
         // marginRight: 12,
         marginTop: 20,
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
         paddingHorizontal:15,
         textAlign:'center',
         fontFamily:RubikLight,
-        color:"#9C9EB9",
+        color: Colors.greyColorCode,
         marginTop:15
     }
 });

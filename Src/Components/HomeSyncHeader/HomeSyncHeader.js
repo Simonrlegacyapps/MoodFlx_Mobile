@@ -17,6 +17,7 @@ import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getPrevFloCoins, setPrevFloCoins } from '../../services/commonService';
 import getStore from '../../redux';
+import Colors from '../../Constants/Colors/Colors';
 
 const {height} = Dimensions.get('screen');
 
@@ -85,27 +86,13 @@ const HomeSyncHeader = ({
         <TouchableOpacity onPress={()=>{navigation.navigate("MainProfileTab")}}>
           <CrownBox floCoins={isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins} />
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          onPress={() => setAnonymousClick(true)}
-          style={styles.ColoredView}>
-          <Text allowFontScaling={false} style={styles.ColoredText}>
-            Anon
-          </Text>
-        </TouchableOpacity> */}
       </View>
       {UserData.UserMoodCount >= 3 && !isAnimationFinished && (
         <LottieView
           source={require('../../../assets/json/c2.json')}
           autoPlay={true}
           loop={false}
-          style={{
-            height: 500,
-            width: 400,
-            top: 0,
-            position: 'absolute',
-            right: 0,
-            zIndex:9999
-          }}
+          style={styles.lottieViewStyle}
           onAnimationFinish={onAnimationFinished}
         />
        )} 
@@ -149,20 +136,25 @@ const styles = StyleSheet.create({
   },
   lightText: {
     fontSize: dynamicSize(14),
-    color: '#8A8BAB',
+    color: Colors.greyColorCode,
     fontFamily: RubikLight,
-    // lineHeight: 12,
-    // marginVertical: 5,
   },
   normalText: {
     fontSize: dynamicSize(16),
     marginTop: dynamicSize(4),
-    // lineHeight: 16,
     fontFamily: RubikMedium,
+    color: Colors.blackColorCode,
   },
   buttons: {
     flexDirection: 'row',
-    // backgroundColor:'blue'
+  },
+  lottieViewStyle: {
+    height: 500,
+    width: 400,
+    top: 0,
+    position: 'absolute',
+    right: 0,
+    zIndex: 9999,
   },
 });
 

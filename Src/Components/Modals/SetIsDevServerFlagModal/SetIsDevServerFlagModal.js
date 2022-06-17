@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { RubikRegular } from '../../../Constants/fonts/Fonts';
+import { RubikMedium, RubikRegular } from '../../../Constants/fonts/Fonts';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   dynamicSize,
@@ -164,17 +164,18 @@ const styles = StyleSheet.create({
   },
   name: {
     textAlign: 'center',
-    // marginTop: horizontalScale(40),
     marginBottom: horizontalScale(10),
     fontSize: getFontSize(18),
+    color: Colors.blackColorCode,
     fontFamily: RubikRegular,
   },
   selectContainer: {
     //
   },
   serverText: {
-    fontSize: getFontSize(18),
+    fontSize: getFontSize(16),
     fontFamily: RubikRegular,
+    color: Colors.blackColorCode,
   },
   rowItem: {
     flexDirection: 'row',
@@ -189,14 +190,14 @@ const styles = StyleSheet.create({
     width: '80%',
     marginTop: horizontalScale(35),
     padding: dynamicSize(10),
-    backgroundColor: '#7265E3',
+    backgroundColor: Colors.blueTextColor,
     borderRadius: horizontalScale(8),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: horizontalScale(15),
   },
   submitText: {
-    fontWeight: '500',
+    fontFamily: RubikMedium,
     fontSize: getFontSize(16),
     color: '#FFFFFF',
   },

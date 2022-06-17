@@ -206,49 +206,57 @@ export function calculateSleepData(sleepData, onUpdate) {
           duration: moment(asleepEndTime).diff(moment(asleepStartTime), 'minutes')
         } : asleepData;
         if (asleepData && asleepStartTime && asleepEndTime) {
-          if (moment(asleepStartTime).date() !== moment(asleepEndTime).date()) {
-            formattedData.push({
-              start_date: asleepData.start_date,
-              end_date: moment(asleepStartTime).endOf('day').toDate(),
-              type: 'ASLEEP',
-              duration: moment(asleepStartTime).endOf('day').diff(moment(asleepStartTime), 'minutes')
-            });
-            formattedData.push({
-              start_date: moment(asleepEndTime).startOf('day').toDate(),
-              end_date: endDate.toDate(),
-              type: 'ASLEEP',
-              duration: moment(asleepEndTime).diff(moment(asleepEndTime).startOf('day'), 'minutes'),
-            });
-          } else {
-            formattedData.push(asleepData);
-          }
+          formattedData.push(asleepData);
+          // if (moment(asleepStartTime).date() !== moment(asleepEndTime).date()) {
+          //   formattedData.push({
+          //     start_date: asleepData.start_date,
+          //     end_date: moment(asleepStartTime).endOf('day').toDate(),
+          //     type: 'ASLEEP',
+          //     duration: moment(asleepStartTime).endOf('day').diff(moment(asleepStartTime), 'minutes')
+          //   });
+          //   formattedData.push({
+          //     start_date: moment(asleepEndTime).startOf('day').toDate(),
+          //     end_date: endDate.toDate(),
+          //     type: 'ASLEEP',
+          //     duration: moment(asleepEndTime).diff(moment(asleepEndTime).startOf('day'), 'minutes'),
+          //   });
+          // } else {
+          //   formattedData.push(asleepData);
+          // }
         }
       }
       if (startDate && endDate) {
         const type = e?.value ?? 'INBED';
         const startOfToday = moment().startOf('day');
-        if (startDate.clone().date() !== endDate.clone().date()) {
-          formattedData.push({
-            start_date: startDate.clone().toDate(),
-            end_date: moment(startTimeInMillis).endOf('day').toDate(),
-            type,
-            duration: moment(startTimeInMillis).endOf('day').diff(startDate, 'minutes')
-          });
-          formattedData.push({
-            start_date: moment(endTimeInMillis).startOf('day').toDate(),
-            end_date: endDate.clone().toDate(),
-            type,
-            duration: endDate.diff(moment(endTimeInMillis).startOf('day'), 'minutes'),
-          });
-        } else {
-          diff = endDate.diff(startDate, 'minutes');
-          formattedData.push({
-            start_date: startDate.clone().toDate(),
-            end_date: endDate.clone().toDate(),
-            type,
-            duration: diff
-          });
-        }
+        diff = endDate.diff(startDate, 'minutes');
+        formattedData.push({
+          start_date: startDate.clone().toDate(),
+          end_date: endDate.clone().toDate(),
+          type,
+          duration: diff
+        });
+        // if (startDate.clone().date() !== endDate.clone().date()) {
+        //   formattedData.push({
+        //     start_date: startDate.clone().toDate(),
+        //     end_date: moment(startTimeInMillis).endOf('day').toDate(),
+        //     type,
+        //     duration: moment(startTimeInMillis).endOf('day').diff(startDate, 'minutes')
+        //   });
+        //   formattedData.push({
+        //     start_date: moment(endTimeInMillis).startOf('day').toDate(),
+        //     end_date: endDate.clone().toDate(),
+        //     type,
+        //     duration: endDate.diff(moment(endTimeInMillis).startOf('day'), 'minutes'),
+        //   });
+        // } else {
+        //   diff = endDate.diff(startDate, 'minutes');
+        //   formattedData.push({
+        //     start_date: startDate.clone().toDate(),
+        //     end_date: endDate.clone().toDate(),
+        //     type,
+        //     duration: diff
+        //   });
+        // }
       }
     });
     formattedData.sort(function (a, b) {
@@ -260,7 +268,7 @@ export function calculateSleepData(sleepData, onUpdate) {
       return aDateMillis - bDateMillis;
     });
     setSleepDataLastThirtyDays(formattedData);
-    // console.log('calculateSleepData: ', JSON.stringify(formattedData));
+    // console.log('calculateSleepData: ', formattedData);
     onUpdate?.({
       sleepData: formattedData,
       isPermissionAsked: true
@@ -404,7 +412,7 @@ export function getSleepGraphData({ weeklyData: { INBED: WeeklyInBed = [], ASLEE
     day = eData.format('dd');
     // INBED
     inBed.forEach((d) => {
-      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      const startDateMillis = d?.end_date ? new Date(d.end_date).getTime() : null;
       if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
         inBedData = {
           x: idx + 1,
@@ -424,7 +432,7 @@ export function getSleepGraphData({ weeklyData: { INBED: WeeklyInBed = [], ASLEE
 
     // ASLEEP
     asleep.forEach((d) => {
-      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      const startDateMillis = d?.end_date ? new Date(d.end_date).getTime() : null;
       if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
         asleepData = {
           x: idx + 1,
@@ -469,25 +477,6 @@ export function getSleepGraphData({ weeklyData: { INBED: WeeklyInBed = [], ASLEE
   return graphData;
 }
 
-export function convertMinutesToTime(minutes) {
-  if (isNaN(minutes)) {
-    return 'N/A';
-  }
-  let hours = Number.parseInt(String(minutes / 60));
-  const min = minutes % 60;
-  if (min > 0) {
-    const hoursOffset = (((min * 10) / 60) / 10)
-    if (hoursOffset >= 0.1) {
-      hours += hoursOffset;
-      hours = hours.toFixed(1);
-    }
-  }
-  if (minutes === 0) {
-    return 'N/A';
-  }
-  return `${hours}${Number(hours) > 1 ? 'hrs' : 'hr'}`;
-}
-
 export function convertMinutesToHours(minutes) {
   if (isNaN(minutes)) {
     return 0;
@@ -509,32 +498,30 @@ export function getSleepDataForUpdateApi() {
     return null;
   }
   let formatData = [];
-  let weekDates = [];
-  let dates = [
-    moment().startOf('days').subtract(1, 'days').toDate().getTime(),
-    moment().startOf('days').toDate().getTime(),
-  ];
-  dates.forEach((e, idx) => {
-    const d = moment().startOf('day').subtract(e, 'days').toDate().getTime();
-    weekDates.push(d);
-  });
-  if (dates.length > 0 && sleepDataLastThirtyDays.length > 0) {
-    dates.forEach((e, idx) => {
-      const eData = moment(e);
-      let data = null;
-      sleepDataLastThirtyDays.forEach((d, idx) => {
-        const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
-        const endDateMillis = d?.end_date ? new Date(d.end_date).getTime() : null;
-        if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
-          data = {
-            "start_date": moment(startDateMillis).format("YYYY-MM-DD HH:mm:ss"),
-            "end_date": moment(endDateMillis).format("YYYY-MM-DD HH:mm:ss"),
-            "type": (d?.type?.toLowerCase() === "inbed" || d?.type?.toLowerCase() === "asleep") ? d.type?.toUpperCase?.() : "INBED"
-          };
-          formatData.push(data);
-        }
-      });
-    })
+  let currentDt = moment().date();
+  let previousDt = currentDt - 1;
+  if (sleepDataLastThirtyDays.length > 0) {
+    let data = null;
+    sleepDataLastThirtyDays.forEach((d, idx) => {
+      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+      const endDateMillis = d?.end_date ? new Date(d.end_date).getTime() : null;
+      if (
+        (endDateMillis !== null && endDateMillis !== null) &&
+        (moment(endDateMillis).date() === previousDt ||
+          moment(endDateMillis).date() === currentDt)
+      ) {
+        data = {
+          start_date: moment(startDateMillis).format('YYYY-MM-DD HH:mm:ss'),
+          end_date: moment(endDateMillis).format('YYYY-MM-DD HH:mm:ss'),
+          type: (
+            d?.type?.toLowerCase() === 'inbed' ||
+            d?.type?.toLowerCase() === 'asleep')
+            ? d.type?.toUpperCase?.()
+            : 'INBED',
+        };
+        formatData.push(data);
+      }
+    });
   }
   formatData.sort(function (a, b) {
     const aDateMillis = a?.start_date ? new Date(a.start_date).getTime() : null;

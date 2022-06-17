@@ -1,5 +1,6 @@
 import * as React from "react"
 import Svg, {Circle, Path, Text} from 'react-native-svg';
+import Colors from "../../Src/Constants/Colors/Colors";
 import {getFontSize} from '../../Src/Constants/sizeChoose';
 
 function MedalPopUp({w, h, type}) {
@@ -12,7 +13,7 @@ function MedalPopUp({w, h, type}) {
         xmlns="http://www.w3.org/2000/svg"
         
       >
-        <Circle cx={50} cy={50} r={50} fill="#4C5980" />
+        <Circle cx={50} cy={50} r={50} fill={Colors.greyTwo} />
         <Path
           d="M35.355 27.778a4.167 4.167 0 014.167-4.167h1.923v24.36h-6.09V27.777zM57.685 23.61h1.924a4.167 4.167 0 014.166 4.168V47.97h-6.09V23.61zM46.52 23.611h6.09V47.97h-6.09z"
           fill="#fff"

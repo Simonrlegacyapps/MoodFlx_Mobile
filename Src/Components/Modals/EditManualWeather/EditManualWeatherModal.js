@@ -15,7 +15,8 @@ import {
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import Constants from '../../../Constants';
-import {weatherActions, weatherApiDataTypes, weatherTypes} from '../../../Constants/constants';
+import Colors from '../../../Constants/Colors/Colors';
+import {pollenValues, weatherActions, weatherApiDataTypes, weatherTypes} from '../../../Constants/constants';
 import {
   RubikBlack,
   RubikBold,
@@ -26,11 +27,8 @@ import {
 import {dynamicSize, getFontSize, horizontalScale} from '../../../Constants/sizeChoose';
 import ProfileGenderModal from '../ProfileGender/ProfileGenderModal';
 
-let data = [
-  {name: 'Low', id: 'Low'},
-  {name: 'Medium', id: 'Medium'},
-  {name: 'High', id: 'High'},
-];
+let data = pollenValues;
+
 let Weatherdata = [
   {name: weatherTypes.Rainy, id: weatherTypes.Rainy},
   {name: weatherTypes.Sunny, id: weatherTypes.Sunny},
@@ -71,9 +69,7 @@ const EditManualWeatherModal = ({
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
   const [OpenPollen, setOpenPollen] = useState(false);
-  const [pollenValue, setPollenValue] = useState(
-    Pollen ? String(Pollen) : data?.[0]?.name ?? 'Low',
-  );
+  const [pollenValue, setPollenValue] = useState(Pollen ? String(Pollen) : data[0].name);
   const [hourValue, setHourValue] = useState(Hour ? String(Hour) : '0');
   const [tempValue, setTempValue] = useState(Temp ? String(Temp) : '0');
   const [weatherTypeValue, setWeatherTypeValue] = useState(WeatherType);
@@ -120,7 +116,7 @@ const EditManualWeatherModal = ({
   const _weatherType = weatherTypeValue
     ? weatherTypeValue
     : Weather
-    ? findWeather(Weather?.weather?.[0]?.main)
+    ? Weather.weatherType
     : weatherTypes.Cloudy;
 
   const _weatherAction =
@@ -163,7 +159,7 @@ const EditManualWeatherModal = ({
             style={{
               fontWeight: '500',
               fontSize: 16,
-              color: '#9C9EB9',
+              color: Colors.greyColorCode,
               textAlign: 'center',
               marginTop: 20,
             }}>
@@ -316,8 +312,7 @@ const EditManualWeatherModal = ({
                               marginTop: 2,
                             },
                           ]}>
-                          {' '}
-                          hr
+                          {` hr`}
                         </Text>
                       </View>
                     </View>
@@ -403,7 +398,7 @@ const EditManualWeatherModal = ({
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontWeight: '500', fontSize: 16, color: '#7265E3'}}>
+                  style={{fontFamily: RubikMedium, fontSize: getFontSize(16), color: Colors.blueTextColor}}>
                   Save
                 </Text>
               </View>
