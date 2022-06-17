@@ -616,7 +616,7 @@
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
@@ -651,7 +651,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
