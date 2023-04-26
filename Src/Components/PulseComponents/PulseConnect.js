@@ -1,6 +1,5 @@
 import React, {useState, useCallback, useEffect} from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,14 +9,13 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import {RubikBold, RubikLight, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
-import {getFontSize, getLineHeight, horizontalScale, iPhoneXPadding, isIphoneX, metrics} from '../../Constants/sizeChoose';
+import {RubikLight, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
+import {getFontSize, getLineHeight, horizontalScale, isIphoneX} from '../../Constants/sizeChoose';
 import DeviceInfo, { isTablet } from 'react-native-device-info';
-import ProgressBar from "react-native-animated-progress";
 import SelectDivisionModal from '../Modals/SelectDivisionModal/SelectDivisionModal';
 import {useDispatch} from 'react-redux';
 import { Division, ResetLinkToCompanyParams, UserDivision } from '../../redux/actions/actions';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import PostRequestApi from '../../apirequest/PostRequestApi';
 import {setDivisionSetFlag} from '../../services/commonService';
 import Colors from '../../Constants/Colors/Colors';

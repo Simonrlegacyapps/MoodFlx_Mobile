@@ -6,7 +6,7 @@ import {
   UserDetail,
   UserDivision,
 } from '../redux/actions/actions';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getMyDeviceId, onUnlinkUpdate, setPrevFloCoins} from '../services/commonService';
 import {getApiBaseUrl} from '../Constants/constants';
 import isFunction from 'lodash.isfunction';

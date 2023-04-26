@@ -8,7 +8,6 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  Button,
   StatusBar,
   Platform,
   ImageBackground,
@@ -40,23 +39,19 @@ import {
   getFontSize,
   getLineHeight,
   horizontalScale,
-  iPhoneXPadding,
-  isIphoneX,
 } from '../../Constants/sizeChoose';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import CloseIcon from '../../../assets/commonicons/CloseIcon';
 import QuestionMarkIcon from '../../../assets/commonicons/QuestionMarkIcon';
-import moment from 'moment';
 import GetLocation from 'react-native-get-location';
 import PostRequestApi, { checkAndUpdateUserIfBlocked, GetStaffUserData } from '../../apirequest/PostRequestApi';
 import VideoModal from '../../Components/VideoModal/VideoModal';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   HealthPerm,
   Lat,
   Long,
-  Moods,
   SetFloCoins,
   SetNotification,
   UserDetail,
@@ -71,9 +66,8 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Geocoder from 'react-native-geocoding';
 import NotificationQuestion from '../../Components/Modals/NotificationQuestion/NotificationQuestion';
 import PushNotification from 'react-native-push-notification';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import NotifService from '../../services/notifService';
-import { RubikLight, RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
+import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 import { useFocusEffect } from '@react-navigation/native';
 import messaging, { firebase } from '@react-native-firebase/messaging';
 import {

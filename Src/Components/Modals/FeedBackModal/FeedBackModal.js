@@ -1,4 +1,4 @@
-import React, {Component, useState} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -22,19 +22,14 @@ import {
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
 import {
-  metrics,
   getFontSize,
-  getLineHeight,
-  dynamicSize,
   horizontalScale,
 } from '../../../Constants/sizeChoose';
 import {IsAnonymous, UserDetail} from '../../../redux/actions/actions';
 import AddNameModal from '../AddNameModal/AddNameModal';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GetStaffUserData} from '../../../apirequest/PostRequestApi';
-import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
 import {getApiBaseUrl, getPhotoUrl} from '../../../Constants/constants';
-import Constants from '../../../Constants';
 import { getMyDeviceId } from '../../../services/commonService';
 import Colors from '../../../Constants/Colors/Colors';
 
@@ -367,8 +362,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     paddingVertical: 20,
     width: '80%',
-    // height: (metrics.screenWidth * 0.8) / 1.5,
-    // justifyContent: 'center',
     alignItems: 'center',
   },
   imageContainer: {

@@ -36,7 +36,7 @@ import getStore from '../../../redux';
 import {ScreenTimePerm} from '../../../redux/actions/actions';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
 import {fetchAndUpdateScreenTimeData, getMyDeviceId, getScreenDataTimeInHoursMin, getScreenGraphData, getScreenTimeProgress} from '../../../services/commonService';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Skeleton from '../../../Components/Skeleton/Skeleton';
 import { getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../../Constants/constants';
 import Colors from '../../../Constants/Colors/Colors';
@@ -746,6 +746,7 @@ const ScreenData = ({
               Label="Evening"
               Time={getScreenDataTimeInHoursMin(UserData.ScreenTimePermission ? eveningTime : 94)}
               value={getScreenTimeProgress((UserData.ScreenTimePermission ? eveningTime : 94), 180)}
+              border={true}
             />
             <ScreenCircleBar
               DarkColor="#3498DB"

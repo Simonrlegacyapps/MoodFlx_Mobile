@@ -28,7 +28,7 @@ import Graph from '../../../assets/svg/graph';
 import BackIcon from '../../../assets/svg/backIcon';
 import getStore from '../../redux';
 import {getUpdateRewardPoint} from '../../apirequest/PostRequestApi';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
 import {getIsMoodLvlUp, getMyDeviceId} from '../../services/commonService';
 import {useDispatch} from 'react-redux';

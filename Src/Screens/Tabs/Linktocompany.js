@@ -41,7 +41,7 @@ import {
 } from '../../Constants/fonts/Fonts';
 import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
 import {useRoute, useFocusEffect} from '@react-navigation/native';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 import { getApiBaseUrl } from '../../Constants/constants';
 import axios from 'axios';

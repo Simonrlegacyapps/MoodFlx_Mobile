@@ -26,7 +26,7 @@ import moment from 'moment';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import Geocoder from 'react-native-geocoding';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import GraphBezierCustom from '../../../Components/GraphBezierCustom/GraphBezierCustom';
 import PopUp from '../../../Components/PopUp/PopUp';
 import GetLocation from 'react-native-get-location';

@@ -307,10 +307,11 @@ const LightData = ({
             SensorManager.stopLightSensor();
           }
         }
-        DeviceEventEmitter.addListener('LightSensor', lightSensorCallback);
+        const lightSensorListener = DeviceEventEmitter.addListener('LightSensor', lightSensorCallback);
         return () => {
           isStopLightTimeout = true;
           SensorManager.stopLightSensor();
+          lightSensorListener?.remove();
         };
       } else if (Platform.OS === 'ios') {
         isStopLightTimeout = false;

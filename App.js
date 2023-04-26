@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import SharedGroupPreferences from 'react-native-shared-group-preferences';
@@ -108,6 +108,7 @@ Number.prototype.format = function () {
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
 const {width: screenWidth} = Dimensions.get('window');
+messaging().registerDeviceForRemoteMessages();
 
 const slides = [
   {
@@ -155,7 +156,8 @@ const toastConfig = {
       {...rest}
       leadingIcon={Constants.Images.ErrorIcon}
       // style={{ borderLeftColor: 'pink' }}
-      // contentContainerStyle={{ paddingHorizontal: 15 }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text2NumberOfLines={4}
       text2Style={styles.toastText}
       text2={text2}
     />
@@ -166,6 +168,7 @@ const toastConfig = {
       leadingIcon={Constants.Images.InfoIcon}
       // style={{ borderLeftColor: 'pink' }}
       // contentContainerStyle={{ paddingHorizontal: 15 }}
+      text2NumberOfLines={4}
       text2Style={styles.toastInfoText}
       text2={text2}
     />
@@ -1222,12 +1225,12 @@ const App: () => Node = () => {
               <StackNavigation />
             </View>
           </SafeAreaView>
-          <Toast config={toastConfig} ref={ref => Toast.setRef(ref)} />
+          <Toast config={toastConfig} />
         </NavigationContainer>
       ) : (
         <>
           <Screen1 onDone={_onDone} />
-          <Toast config={toastConfig} ref={ref => Toast.setRef(ref)} />
+          <Toast config={toastConfig} />
         </>
       )}
       <LvlUpModal

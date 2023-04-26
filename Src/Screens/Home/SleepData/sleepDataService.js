@@ -9,7 +9,7 @@ import {
   Platform
 } from 'react-native';
 import GoogleFit, { Scopes } from 'react-native-google-fit';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AppPermissions, googleFitScopes} from '../../../services/appPermissions';
 import getStore from '../../../redux';
 

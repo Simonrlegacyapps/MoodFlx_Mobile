@@ -16,7 +16,6 @@ import com.facebook.soloader.SoLoader;
 import com.moodflo.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import com.moodflo.SharedStoragePackager;
 import com.moodflo.CheckPackageInstallationPackage;
 import com.moodflo.nativemodules.sensormanager.SensorManagerPackage;
@@ -46,11 +45,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
         @Override
         protected String getJSMainModuleName() {
           return "index";
-        }
-
-        @Override
-        protected JSIModulePackage getJSIModulePackage() {
-          return new ReanimatedJSIModulePackage(); // <- add
         }
       };
   

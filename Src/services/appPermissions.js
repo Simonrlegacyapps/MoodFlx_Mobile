@@ -9,7 +9,7 @@ import {
 import {Platform, Linking, Alert} from 'react-native';
 import AppleHealthKit from 'react-native-health';
 import GoogleFit, {Scopes} from 'react-native-google-fit';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import GetLocation from 'react-native-get-location';
 
 const PERMS = AppleHealthKit.Constants.Permissions;

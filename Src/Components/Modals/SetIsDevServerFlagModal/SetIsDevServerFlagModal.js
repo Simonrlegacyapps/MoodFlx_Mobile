@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { RubikMedium, RubikRegular } from '../../../Constants/fonts/Fonts';
@@ -17,7 +16,7 @@ import {
 import { getIsDevServer, setIsDevServer } from '../../../Constants/constants';
 import Colors from '../../../Constants/Colors/Colors';
 import { SetShowIsDevServerModal } from '../../../redux/actions/actions';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { unlinkFromCompany } from '../../../apirequest/PostRequestApi';
 import getStore from '../../../redux';
 import RNRestart from 'react-native-restart';
