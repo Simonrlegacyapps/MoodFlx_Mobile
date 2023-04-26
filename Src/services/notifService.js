@@ -1,9 +1,7 @@
 import PushNotification from 'react-native-push-notification';
 // import NotificationHandler from './NotificationHandler';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
-import {Platform} from 'react-native';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 let rA = [];
 

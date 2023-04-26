@@ -26,7 +26,7 @@ import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
 import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpiredModal';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GetUserId, UserEmail} from '../../redux/actions/actions';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {getDivisionName, GetStaffUserData} from '../../apirequest/PostRequestApi';

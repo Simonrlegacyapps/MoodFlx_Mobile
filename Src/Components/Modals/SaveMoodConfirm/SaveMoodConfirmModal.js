@@ -1,8 +1,7 @@
-import React, {Component, useState} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   TouchableWithoutFeedback,
   TouchableOpacity,
   StyleSheet,
@@ -23,20 +22,15 @@ import {
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
 import {
-  metrics,
   getFontSize,
-  getLineHeight,
-  dynamicSize,
   horizontalScale,
 } from '../../../Constants/sizeChoose';
 import Colors from '../../../Constants/Colors/Colors';
 import {IsAnonymous, UserDetail} from '../../../redux/actions/actions';
 import AddNameModal from '../AddNameModal/AddNameModal';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GetStaffUserData} from '../../../apirequest/PostRequestApi';
-import AnonymousIcon from '../../../../assets/commonicons/AnonymousIcon';
 import {getApiBaseUrl, getPhotoUrl} from '../../../Constants/constants';
-import Constants from '../../../Constants';
 import {BitCoinIcon} from '../../../../assets/svg/bitCoin';
 import { getMyDeviceId } from '../../../services/commonService';
 

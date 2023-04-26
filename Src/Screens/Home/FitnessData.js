@@ -23,7 +23,7 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import GraphicChart from '../../Components/GraphicChart/GraphicChart';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import PopUp from '../../Components/PopUp/PopUp';
 import AddNameModal from '../../Components/Modals/AddNameModal/AddNameModal';
@@ -35,14 +35,10 @@ import PostRequestApi, {
   GetStaffUserData,
 } from '../../apirequest/PostRequestApi';
 import DataInsights from '../../Components/DataInsights/DataInsights';
-import moment from 'moment';
 import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../Constants/constants';
-import LinearGradient from 'react-native-linear-gradient';
-import Crown from '../../../assets/svg/Crown';
-import { getFloCoins, getMyDeviceId, getWeeklyHealthGraphData, openHealthApp } from '../../services/commonService';
+import { getMyDeviceId, getWeeklyHealthGraphData, openHealthApp } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
-import { activityHealthKitOptions } from '../../services/appPermissions';
 import getStore from '../../redux';
 import Skeleton from '../../Components/Skeleton/Skeleton';
 import Colors from '../../Constants/Colors/Colors';

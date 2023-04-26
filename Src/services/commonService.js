@@ -8,7 +8,7 @@ import {
   UserDivision,
   UserEmail,
 } from '../redux/actions/actions';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import isFunction from 'lodash.isfunction';
 import {Platform, Linking, Alert, NativeModules} from 'react-native';
 import isEmpty from 'lodash.isempty';
@@ -28,7 +28,7 @@ let moodsArray = [];
 let isInitialVideoVisisble = false;
 let prevFloCoins = 0;
 let divisionSetFlag = false;
-let deviceId = DeviceInfo.getUniqueId();
+let deviceId = DeviceInfo.getUniqueIdSync();
 
 export function setDeviceId(id) {
   if (!id) {

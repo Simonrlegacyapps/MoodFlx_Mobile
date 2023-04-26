@@ -23,7 +23,7 @@ const usePrevious = (value) => {
 };
 
 const AnimatedNumber = ({
-  animateToNumber,
+  animateToNumber = 0,
   fontStyle,
   animationDuration,
   includeComma,
@@ -76,7 +76,7 @@ const AnimatedNumber = ({
     return new Animated.Value(animationHeight);
   });
 
-  const setButtonLayout = (e) => {
+  const setButtonLayout = e => {
     setNumberHeight(e.nativeEvent.layout.height);
   };
 

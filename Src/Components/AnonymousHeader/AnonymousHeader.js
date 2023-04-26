@@ -10,7 +10,7 @@ import {
 } from '../../Constants/fonts/Fonts';
 import { useDispatch, useSelector } from 'react-redux';
 import { IsAnonymous, UserDetail } from '../../redux/actions/actions';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApiBaseUrl, getPhotoUrl } from '../../Constants/constants';
 import AddNameModal from '../Modals/AddNameModal/AddNameModal';
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';

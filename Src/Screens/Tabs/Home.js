@@ -35,7 +35,7 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import Swiper from '../../Components/Swiper';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
 import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';

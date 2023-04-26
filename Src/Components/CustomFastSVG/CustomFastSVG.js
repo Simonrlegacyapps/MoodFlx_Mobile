@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View } from 'react-native';
 import PropTypes from 'prop-types'
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 

@@ -21,7 +21,7 @@ import {
 } from '../../redux/actions/actions';
 import {useRoute} from '@react-navigation/native';
 import {dynamicSize} from '../../Constants/sizeChoose';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging, {firebase} from '@react-native-firebase/messaging';
 import NotifService from '../../services/notifService';
 import Colors from '../../Constants/Colors/Colors';
