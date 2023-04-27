@@ -274,7 +274,8 @@ const SaveMoodConfirmModal = ({
               }}
               returnKeyType={'done'}
               onSubmitEditing={() => Keyboard.dismiss()}
-              style={{letterSpacing: 1}}
+              style={{letterSpacing: 1, color: Colors.greyColorCode}}
+              placeholderTextColor={Colors.placeholderTextColor}
               placeholder={`Quick note about why you're ${emotionText} today?`}
               multiline={true}
             />

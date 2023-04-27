@@ -254,11 +254,9 @@ const styles = StyleSheet.create({
     bigText: {
         fontFamily: RubikMedium,
         fontSize: width / 24,
-        // paddingHorizontal: 12,
-        // marginRight: 12,
+        color: Colors.blackColorCode,
         marginTop:11,
         textAlign: 'center'
-        // width:'80%'
     },
     smallText:{
         fontSize:width/28,

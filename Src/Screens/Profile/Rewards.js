@@ -650,6 +650,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikRegular,
     fontSize: getFontSize(18),
     textAlign: 'center',
+    color: Colors.greyTwo,
   },
 });
 

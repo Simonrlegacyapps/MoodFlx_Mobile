@@ -1097,14 +1097,7 @@ const WeatherData = ({
                       />
                       <View>
                         <Text style={[styles.Card1Text]}>{_weatherType}</Text>
-                        <Text
-                          style={[
-                            ,
-                            {
-                              fontFamily: RubikMedium,
-                              fontSize: dynamicSize(32),
-                            },
-                          ]}>
+                        <Text style={styles.weatherTypeText}>
                           {currentTemp}
                           ºC
                         </Text>
@@ -1142,7 +1135,7 @@ const WeatherData = ({
                           </Text>
                           <Text
                             style={[
-                              ,
+                              styles.weatherTypeText,
                               {
                                 fontFamily: RubikMedium,
                                 fontSize: dynamicSize(15),
@@ -1200,9 +1193,10 @@ const WeatherData = ({
                               : undefined
                           }
                           >
-                          <Text style={[, styles.smallCardText]}>Pollen</Text>
+                          <Text style={[styles.smallCardText]}>Pollen</Text>
                           <Text
                             style={[
+                              styles.weatherTypeText,
                               {
                                 fontFamily: RubikMedium,
                                 fontSize: dynamicSize(14.5),
@@ -1472,6 +1466,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  weatherTypeText: {
+    fontFamily: RubikMedium,
+    fontSize: dynamicSize(32),
+    color: Colors.blackColorCode,
+  },
   Card1Text: {
     fontFamily: RubikLight,
     fontWeight: '300',
@@ -1504,8 +1503,8 @@ const styles = StyleSheet.create({
   normalText: {
     fontSize: 16,
     marginTop: 4,
-    // lineHeight: 16,
     fontFamily: RubikRegular,
+    color: Colors.greyTwo,
   },
   ColoredText: {
     fontSize: 16,

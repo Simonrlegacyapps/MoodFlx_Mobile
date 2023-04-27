@@ -94,6 +94,7 @@ const BarGraph = ({
                   textAlign: 'center',
                   fontFamily: RubikRegular,
                   fontSize: 16,
+                  color: Colors.blackColorCode
                 }}>
                 ºC
               </Text>
@@ -110,6 +111,7 @@ const BarGraph = ({
                   marginHorizontal: 6,
                   textAlign: 'center',
                   fontFamily: RubikRegular,
+                  color: Colors.blackColorCode
                 }}>
                 Hrs
               </Text>

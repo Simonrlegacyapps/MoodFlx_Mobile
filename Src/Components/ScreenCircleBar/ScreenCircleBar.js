@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
   normalText: {
     fontSize: 16,
     marginTop: 4,
+    color: Colors.greyTwo,
     // lineHeight: 16,
     fontFamily: RubikRegular,
   },
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
   },
   SmallThinBlackText: {
     fontFamily: RubikLight,
-    // color: '#3B456D',
+    color: '#3B456D',
     fontSize: 12.5,
   },
   wrapper: {

@@ -308,6 +308,7 @@ const styles = StyleSheet.create({
     fontSize: width / 20,
     paddingHorizontal: 12,
     marginRight: 12,
+    color: Colors.blackColorCode,
     // width:'80%'
   },
 });

@@ -933,6 +933,7 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(17),
     fontWeight: '300',
     marginVertical: 6,
+    color: Colors.greyTwo,
   },
   Text: {
     fontFamily: RubikLight,

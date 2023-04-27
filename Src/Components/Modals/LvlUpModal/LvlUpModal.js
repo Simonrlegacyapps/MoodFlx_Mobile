@@ -67,7 +67,7 @@ const LvlUpModal = ({
             <MedalPopUp type={type} />
           </View>
           {title && <Text style={styles.titleText}>{title}</Text>}
-          {bigText && typeof bigText === 'string' && (
+          {!!bigText && typeof bigText === 'string' && (
             <Text style={styles.bigText}>{bigText}</Text>
           )}
           {smallText && typeof smallText === 'string' && (

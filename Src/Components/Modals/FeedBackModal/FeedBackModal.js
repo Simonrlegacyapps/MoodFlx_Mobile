@@ -275,6 +275,7 @@ const FeedBackModal = ({
               onSubmitEditing={() => Keyboard.dismiss()}
               numberOfLines={5}
               style={styles.feedBackInput}
+              placeholderTextColor={Colors.placeholderTextColor}
               placeholder={`Please let us know how we can improve... \n\nThis is anonymous`}
               multiline={true}
             />
@@ -399,6 +400,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   textOne: {
+    color: Colors.blackColorCode,
     fontFamily: RubikRegular,
     fontSize: fontSize,
   },
@@ -449,7 +451,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     fontFamily: RubikMedium,
   },
-  AnonymousButtonAnnon:{
+  AnonymousButtonAnnon: {
     fontFamily: RubikMedium,
     color: Colors.greyFive,
     borderWidth: 0.6,
@@ -488,6 +490,7 @@ const styles = StyleSheet.create({
   },
   feedBackInput: {
     letterSpacing: 1,
+    color: Colors.blackColorCode,
     fontSize: getFontSize(14),
     textAlignVertical: 'top',
     ...Platform.select({

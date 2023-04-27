@@ -35,13 +35,19 @@ import PostRequestApi, {
   GetStaffUserData,
 } from '../../apirequest/PostRequestApi';
 import DataInsights from '../../Components/DataInsights/DataInsights';
-import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable } from '../../Constants/constants';
+import { dataTypes, getApiBaseUrl, getMonthlyInsightsAvailable, getWeeklyInsightsAvailable, insightsDurationFlags } from '../../Constants/constants';
 import { getMyDeviceId, getWeeklyHealthGraphData, openHealthApp } from '../../services/commonService';
 import CrownBox from '../../Components/crownBox/crownBox';
 import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 import getStore from '../../redux';
 import Skeleton from '../../Components/Skeleton/Skeleton';
 import Colors from '../../Constants/Colors/Colors';
+
+const defaultActivityStepCount = {
+  [insightsDurationFlags.daily]: 0,
+  [insightsDurationFlags.weekly]: 0,
+  [insightsDurationFlags.monthly]: 0,
+};
 
 const fitnessInsightsInitialState = {
   dailyInsights: '',
@@ -53,6 +59,7 @@ const fitnessInsightsInitialState = {
   monthlyInsights: '',
   monthlySuggestion: '',
   monthlySuggestionType: '',
+  stepCount: {...defaultActivityStepCount},
 };
 
 const fitnessInsightsTypes = {
@@ -100,6 +107,7 @@ const FitnessData = ({
   const UserData = useSelector((state) => state.First);
   const [openActionSheet, setOpenActionSheet] = useState(false);
   const [name, setname] = useState('');
+  const [dataDuration, setDataDuration] = useState(insightsDurationFlags.daily);
   const [ShowAddName, setShowAddName] = useState(false);
   const [FitnessPopUp, setFitnessPopUp] = useState(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
@@ -198,6 +206,7 @@ const FitnessData = ({
     //   email: UserData.UserEmail ?? '',
     //   user_id: UserData.UserId ?? '',
     // };
+    let _stepCount = {...insights.stepCount};
     PostRequestApi('getActivityInsights', { ...params, status: 'daily' })
       .then((res) => {
         console.log('getActivityInsights daily res: ', res?.data);
@@ -217,6 +226,15 @@ const FitnessData = ({
           res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
+        dailyInsightsPayload.stepCount = _stepCount =
+          res?.data?.activityData?.step_count && !isNaN(res.data.activityData.step_count)
+            ? {
+                ..._stepCount,
+                [insightsDurationFlags.daily]: Number(
+                  res.data.activityData.step_count,
+                ),
+              }
+            : {..._stepCount};
         setInsights({
           type: fitnessInsightsTypes.SET_INSIGHTS,
           payload: dailyInsightsPayload,
@@ -254,6 +272,15 @@ const FitnessData = ({
           res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
+        weeklyInsightsPayload.stepCount = _stepCount =
+          res?.data?.activityData?.step_count && !isNaN(res.data.activityData.step_count)
+            ? {
+                ..._stepCount,
+                [insightsDurationFlags.weekly]: Number(
+                  res.data.activityData.step_count,
+                ),
+              }
+            : {..._stepCount};
         setInsights({
           type: fitnessInsightsTypes.SET_INSIGHTS,
           payload: weeklyInsightsPayload,
@@ -287,6 +314,15 @@ const FitnessData = ({
             res?.data?.insights?.message2Type?.toLowerCase?.() === 'warning'
             ? res.data.insights.message2Type
             : '';
+        monthlyInsightsPayload.stepCount = _stepCount =
+          res?.data?.activityData?.step_count && !isNaN(res.data.activityData.step_count)
+            ? {
+                ..._stepCount,
+                [insightsDurationFlags.monthly]: Number(
+                  res.data.activityData.step_count,
+                ),
+              }
+            : {..._stepCount};
         setInsights({
           type: fitnessInsightsTypes.SET_INSIGHTS,
           payload: monthlyInsightsPayload,
@@ -414,6 +450,8 @@ const FitnessData = ({
 
   // console.log(`UserDistance`, UserDistance);
 
+  const userSteps = insights?.stepCount?.[dataDuration];
+
   return (
     <View style={styles.container}>
       {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
@@ -513,6 +551,7 @@ const FitnessData = ({
               monthlySuggestionType={!UserData.HealthPermission ? "warning" : insights?.monthlySuggestionType}
               timeLeft={UserData?.weeklyInsightsTimeLeft}
               isPermissionGiven={UserData.HealthPermission}
+              setDataDuration={setDataDuration}
               dispatch={dispatch}
               onSync={onSync}
             />
@@ -524,7 +563,7 @@ const FitnessData = ({
               arcSweepAngle={270}
               size={180}
               width={13}
-              fill={!Loading ? (UserSteps / 10000) * 100 : 0}
+              fill={!Loading ? (userSteps / 10000) * 100 : 0}
               // fill={!Loading ? 50 : 0}
               prefill={1}
               rotation={-135}
@@ -545,7 +584,7 @@ const FitnessData = ({
                 />
                 <Text
                   style={[styles.swiperText, { fontSize: 24, marginTop: 10 }]}>
-                  {UserSteps.toFixed(0)}
+                  {userSteps.toFixed(0)}
                 </Text>
                 <Text
                   style={[
@@ -821,6 +860,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     // lineHeight: 16,
     fontFamily: RubikRegular,
+    color: Colors.greyTwo,
   },
   ColoredText: {
     fontSize: 16,
@@ -852,7 +892,7 @@ const styles = StyleSheet.create({
   },
   SmallThinBlackText: {
     fontFamily: RubikLight,
-    // color: '#3B456D',
+    color: '#3B456D',
     fontSize: 12.5,
   },
   wrapper: {

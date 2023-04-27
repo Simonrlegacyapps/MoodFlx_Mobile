@@ -113,7 +113,6 @@ const PopUp = ({
               {
                 fontSize: 10,
                 textAlign: 'center',
-
                 paddingBottom: 24,
                 alignSelf: 'center',
               },
@@ -122,7 +121,7 @@ const PopUp = ({
               onPress={() =>
                 Linking.openURL(TERMS_OF_USE_URL)
               }>
-              <Text style={{fontSize: 12, paddingTop: 12}}>
+              <Text style={styles.termsConditionText}>
                 {' '}
                 Terms & Conditions
               </Text>
@@ -131,7 +130,7 @@ const PopUp = ({
               onPress={() =>
                 Linking.openURL(PRIVACY_POLICY_URL)
               }>
-              <Text style={{fontSize: 12, paddingTop: 12}}>
+              <Text style={styles.termsConditionText}>
                 {' '}
                 • Privacy Policy
               </Text>
@@ -217,6 +216,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikRegular,
   },
   smallText: {
+    color: Colors.greyColorCode,
     fontFamily: RubikLight,
     paddingVertical: 10,
     paddingLeft: 5,
@@ -225,10 +225,16 @@ const styles = StyleSheet.create({
     //   paddingVertical:10
   },
   bigText: {
+    color: Colors.blackColorCode,
     fontFamily: RubikMedium,
     fontSize: width / 20,
     paddingHorizontal: 12,
     marginRight: 12,
     // width:'80%'
+  },
+  termsConditionText: {
+    fontSize: 12,
+    paddingTop: 12,
+    color: Colors.greyColorCode,
   },
 });

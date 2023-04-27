@@ -457,6 +457,7 @@ const Linktocompany = ({ navigation }) => {
                           textAlign: 'center',
                           marginVertical: 10,
                           fontSize: 18,
+                          color: Colors.greyTwo,
                           fontFamily: RubikRegular,
                         }}>
                         {item.name}
@@ -547,7 +548,7 @@ const Linktocompany = ({ navigation }) => {
               Sever Error: Please try again
             </Text>
           )}
-          <Text style={{ fontWeight: '500', fontSize: dynamicSize(24) }}>
+          <Text style={{ fontWeight: '500', fontSize: dynamicSize(24), color: Colors.greyTwo }}>
             What division are you in?
           </Text>
           <Text
@@ -557,8 +558,7 @@ const Linktocompany = ({ navigation }) => {
               fontWeight: '300',
               fontSize: dynamicSize(14),
               marginTop: 12,
-              // marginLeft: 62,
-              // marginRight: 62,
+              color: Colors.greyTwo,
               textAlign: 'center',
               width: dynamicSize(230),
             }}>
@@ -618,6 +618,7 @@ const Linktocompany = ({ navigation }) => {
               lineHeight: 28,
               fontWeight: '300',
               fontSize: 14,
+              color: Colors.greyTwo,
               marginTop: dynamicSize(10),
               textAlign: 'center',
               width: 270,
@@ -711,6 +712,7 @@ const Linktocompany = ({ navigation }) => {
               fontWeight: '300',
               fontSize: 16,
               marginTop: dynamicSize(52),
+              color: Colors.greyTwo,
               // marginLeft: 62,
               // marginRight: 62,
               textAlign: 'center',
@@ -723,6 +725,7 @@ const Linktocompany = ({ navigation }) => {
               lineHeight: 28,
               fontWeight: '500',
               fontSize: 16,
+              color: Colors.greyTwo,
               marginTop: 12,
               marginLeft: 62,
               marginRight: 62,
@@ -811,6 +814,7 @@ const styles = StyleSheet.create({
   linkaCompanyText: {
     fontWeight: '500',
     fontSize: 24,
+    color: Colors.greyTwo,
   },
   moodTextStyle: {
     fontWeight: '400',
@@ -819,6 +823,7 @@ const styles = StyleSheet.create({
     marginLeft: 62,
     marginRight: 62,
     textAlign: 'center',
+    color: Colors.greyTwo,
   },
   buttonStyle: {
     marginTop: 48,

@@ -117,6 +117,7 @@ const NotificationQuestion = ({
               fontFamily: RubikBold,
 
               fontSize: dynamicSize(20),
+              color: Colors.blackColorCode,
               marginTop: 12,
               alignSelf: 'center',
               // marginLeft: 62,
@@ -246,6 +247,7 @@ const styles = StyleSheet.create({
     fontSize: width / 20,
     paddingHorizontal: 12,
     marginRight: 12,
+    color: Colors.blackColorCode,
     // width:'80%'
   },
 });

@@ -666,6 +666,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     // lineHeight: 16,
     fontFamily: RubikRegular,
+    color: Colors.greyTwo,
   },
   ColoredText: {
     fontSize: 16,

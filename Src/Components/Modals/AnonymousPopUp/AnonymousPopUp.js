@@ -108,6 +108,7 @@ const AnonymousPopUp = ({
               marginTop: 12,
               //   marginLeft: 62,
               //   marginRight: 62,
+              color: Colors.greyTwo,
               textAlign: 'center',
               alignSelf: 'center',
               width: '85%',
@@ -229,6 +230,7 @@ const styles = StyleSheet.create({
     fontSize: width / 20,
     paddingHorizontal: 12,
     marginRight: 12,
+    color: Colors.blackColorCode,
     // width:'80%'
   },
 });

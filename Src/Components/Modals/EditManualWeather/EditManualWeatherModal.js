@@ -238,6 +238,7 @@ const EditManualWeatherModal = ({
                             paddingRight: 0,
                             fontFamily: RubikMedium,
                             fontSize: getFontSize(34),
+                            color: Colors.blackColorCode,
                             borderBottomWidth: 1,
                           },
                         ]}>
@@ -249,6 +250,7 @@ const EditManualWeatherModal = ({
                             fontFamily: RubikMedium,
                             fontSize: dynamicSize(34),
                             // borderBottomWidth: 1,
+                            color: Colors.blackColorCode,
                           },
                         ]}>
                         ºC
@@ -302,6 +304,7 @@ const EditManualWeatherModal = ({
                               marginTop: 2,
                               fontFamily: RubikMedium,
                               fontSize: 18,
+                              color: Colors.blackColorCode,
                             },
                           ]}></TextInput>
                         <Text
@@ -310,6 +313,7 @@ const EditManualWeatherModal = ({
                               fontFamily: RubikMedium,
                               fontSize: 18,
                               marginTop: 2,
+                              color: Colors.blackColorCode,
                             },
                           ]}>
                           {` hr`}
@@ -359,6 +363,7 @@ const EditManualWeatherModal = ({
                               marginLeft: pollenValue === 'Medium' ? -8 : 0,
                               fontFamily: RubikMedium,
                               fontSize: dynamicSize(16),
+                              color: Colors.blackColorCode,
                             },
                           ]}>
                           {pollenValue ? pollenValue : 'Low'}
@@ -512,6 +517,7 @@ const styles = StyleSheet.create({
     fontSize: width / 20,
     paddingHorizontal: 12,
     marginRight: 12,
+    color: Colors.blackColorCode,
     // width:'80%'
   },
   scrollView: {
