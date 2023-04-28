@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, View, Dimensions } from 'react-native';
+import { Image, View, Dimensions, Pressable, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './Tabs/Home';
 import Linktocompany from './Tabs/Linktocompany';
@@ -15,9 +15,9 @@ import MicActiveIcon from '../../assets/tabicons/MicActiveIcon';
 import LinkActive from '../../assets/tabicons/LinkActive';
 import LinkIcon from '../../assets/tabicons/LinkIcon';
 import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import MainProfileTab from './Profile/MainProfileTab';
 import {useSelector} from 'react-redux';
+import { horizontalScale } from '../Constants/sizeChoose';
 
 const Tab = createBottomTabNavigator();
 const WIDTH = Dimensions.get('screen').width;
@@ -37,16 +37,17 @@ const HomeScreen = ({ navigation, route }) => {
               iconName = focused ? <MicActiveIcon /> : <MicIcon />;
             } else if (route.name === 'LogoTab') {
               iconName = (
-                <TouchableOpacity
+                <Pressable
                   disabled={!isDivisionSelected}
                   onPress={() => navigation.replace('MoodEmotionDetector')}>
-                  <Image
+                  {/* <Image
                     resizeMode={'contain'}
                     // activeOpacity={1}
                     style={{ marginBottom: 75, width: 65, height: 65 }}
                     source={require('../../assets/tabicons/logo.png')}
-                  />
-                </TouchableOpacity>
+                  /> */}
+                  <View style={{ marginBottom: 75, width: 65, height: 65 }} />
+                </Pressable>
               );
             } else if (route.name === 'LinkCompanyStackNavigation') {
               iconName = focused ? <LinkActive /> : <LinkIcon />;
@@ -94,7 +95,8 @@ const HomeScreen = ({ navigation, route }) => {
           listeners={{
             tabPress: e => {
               // Prevent default action
-              !isDivisionSelected && e.preventDefault();
+              // !isDivisionSelected && e.preventDefault();
+              e.preventDefault();
             },
           }}
         />
@@ -133,6 +135,24 @@ const HomeScreen = ({ navigation, route }) => {
           style={{ tintColor: 'white', height: 60, width: WIDTH }}
           source={require('../../assets/tabicons/Rectangle.png')}
         />
+      </View>
+      <View
+        style={{
+        bottom: Platform.OS === 'android' ? horizontalScale(20) : horizontalScale(30),
+        position: 'absolute',
+        alignSelf: 'center',
+        zIndex: 100
+      }}>
+        <Pressable
+          disabled={!isDivisionSelected}
+          onPress={() => navigation.replace('MoodEmotionDetector')}>
+          <Image
+            resizeMode={'contain'}
+            // activeOpacity={1}
+            style={{ width: 65, height: 65 }}
+            source={require('../../assets/tabicons/logo.png')}
+          />
+        </Pressable>
       </View>
     </View>
   );
