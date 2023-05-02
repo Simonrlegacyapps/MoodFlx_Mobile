@@ -99,7 +99,7 @@ const VerifyEmail = ({navigation}) => {
     <View style={{flex: 1}}>
       <AnonymousHeader backGround />
       <View style={{flex: 1, alignItems: 'center', marginTop: dynamicSize(85)}}>
-        <Text style={{fontWeight: '500', fontSize: dynamicSize(22)}}>
+        <Text style={{fontWeight: '500', fontSize: dynamicSize(22), color: Colors.greyTwo}}>
           Verify your email
         </Text>
         <Text
@@ -108,6 +108,7 @@ const VerifyEmail = ({navigation}) => {
             fontWeight: '300',
             letterSpacing: 0.6,
             fontSize: dynamicSize(12),
+            color: Colors.greyTwo,
             marginTop: dynamicSize(10),
             marginLeft: 62,
             marginRight: 62,
@@ -123,6 +124,7 @@ const VerifyEmail = ({navigation}) => {
             fontWeight: '400',
             letterSpacing: 0.6,
             fontSize: 14,
+            color: Colors.greyTwo,
             marginTop: dynamicSize(10),
             marginLeft: 62,
             marginRight: 62,
@@ -138,6 +140,7 @@ const VerifyEmail = ({navigation}) => {
             fontWeight: '400',
             letterSpacing: 0.6,
             fontSize: 14,
+            color: Colors.greyTwo,
             marginTop: 12,
             marginLeft: 62,
             marginRight: 62,

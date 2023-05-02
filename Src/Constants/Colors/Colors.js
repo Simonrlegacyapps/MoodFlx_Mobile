@@ -13,6 +13,7 @@ export default {
   // blueTextColor: Platform.OS === 'ios' ? '#7265E3' : '#5B50B5',
   blueTextColor: Platform.OS === 'ios' ? '#7265E3' : '#665ACC',
   greyColorCode: Platform.OS === 'ios' ? '#9C9EB9' : '#7C7E94',
+  placeholderTextColor: '#CFD0DB',
   blackColorCode: '#2D3142',
   blackTwo: '#030047',
   greyTextColor : '#484F5F',

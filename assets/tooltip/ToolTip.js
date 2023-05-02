@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import HappyIcon from '../emotionsicons/HappyIcon';
+import Colors from '../../Src/Constants/Colors/Colors';
 
 const ToolTip = ({ text }) => {
     return (
@@ -39,7 +40,8 @@ const styles = StyleSheet.create({
     }, textStyle: {
         fontWeight: '500',
         fontSize: 14,
-        marginTop: 2
+        marginTop: 2,
+        color: Colors.blackColorCode
     }
 })
 

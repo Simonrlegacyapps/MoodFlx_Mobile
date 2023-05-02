@@ -369,8 +369,9 @@ const styles = StyleSheet.create({
   textOne: {
     fontFamily: RubikRegular,
     fontSize: fontSize,
-    textAlign:'center',
-    paddingHorizontal:10
+    textAlign: 'center',
+    paddingHorizontal: 10,
+    color: Colors.greyColorCode,
   },
   textTwo: {
     fontFamily: RubikRegular,

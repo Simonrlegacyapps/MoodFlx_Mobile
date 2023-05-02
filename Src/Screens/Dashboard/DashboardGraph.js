@@ -69,6 +69,7 @@ const noDataStyles = StyleSheet.create({
   message: {
     width: '70%',
     fontSize: getFontSize(16),
+    color: Colors.greyTwo,
     fontFamily: RubikRegular,
     alignSelf: 'center',
     textAlign: 'center',
@@ -322,6 +323,7 @@ const screenTimeStyles = StyleSheet.create({
   headerText: {
     fontSize: getFontSize(18),
     fontFamily: RubikMedium,
+    color: Colors.greyTwo,
   },
 });
 

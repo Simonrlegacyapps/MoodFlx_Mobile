@@ -1,6 +1,7 @@
 import React, {memo} from 'react';
 import {View, Text} from 'react-native';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
+import Colors from '../../Constants/Colors/Colors';
 
 function ProgressDay({label, color, label2}) {
     return(
@@ -12,7 +13,7 @@ function ProgressDay({label, color, label2}) {
             marginVertical: 5,
             height: 40,
           }}>
-          <Text style={{fontSize: 16, position: 'absolute', left: -30}}>{label}</Text>
+          <Text style={{fontSize: 16, color: Colors.blackColorCode, position: 'absolute', left: -30}}>{label}</Text>
           <ProgressBar
             dot1={true}
             dot2={true}
@@ -23,7 +24,7 @@ function ProgressDay({label, color, label2}) {
             height={8}
             backgroundColor={color}
           />
-          <Text style={{fontSize: 16, position: 'absolute', right: -40}}>
+          <Text style={{fontSize: 16, color: Colors.blackColorCode, position: 'absolute', right: -40}}>
             {label2}/3
           </Text>
         </View>

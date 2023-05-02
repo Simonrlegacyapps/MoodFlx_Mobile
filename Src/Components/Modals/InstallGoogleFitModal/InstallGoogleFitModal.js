@@ -109,7 +109,8 @@ const styles = StyleSheet.create({
     marginTop: horizontalScale(30),
     fontFamily: RubikRegular,
     fontSize: fontSize,
-    textAlign: 'center'
+    textAlign: 'center',
+    color: Colors.greyColorCode,
   },
   buttonOne: {
     marginTop: horizontalScale(40),

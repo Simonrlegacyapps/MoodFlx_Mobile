@@ -142,6 +142,7 @@ const styles = StyleSheet.create({
     fontSize: dynamicSize(26),
     textAlign: 'center',
     marginTop: 50,
+    color: Colors.blackColorCode,
     fontFamily: RubikRegular,
   },
   descriptionText: {
@@ -149,6 +150,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     fontSize: Platform.OS === 'android' ? getFontSize(16) : dynamicSize(14),
     marginTop: 12,
+    color: Colors.greyTwo,
     // marginLeft: 62,
     // marginRight: 62,
     textAlign: 'center',

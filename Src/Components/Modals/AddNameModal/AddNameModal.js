@@ -98,6 +98,7 @@ const AddNameModal = ({
             style={{
               fontWeight: Platform.OS === 'android' ? '700' : '500',
               fontSize: dynamicSize(26),
+              color: Colors.blackColorCode,
               textAlign: 'center',
               marginTop: 30,
               fontFamily: RubikRegular,
@@ -158,6 +159,7 @@ const AddNameModal = ({
                 // fontWeight: '700',
 
                 // borderWidth: 1,
+                color: Colors.blackColorCode,
                 borderRadius: 10,
                 paddingLeft: 15,
               }}
@@ -280,6 +282,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikLight,
     paddingHorizontal: 12,
     paddingBottom: 10,
+    color: Colors.greyColorCode,
     //   paddingVertical:10
   },
   bigText: {
@@ -287,6 +290,7 @@ const styles = StyleSheet.create({
     fontSize: width / 20,
     paddingHorizontal: 12,
     marginRight: 12,
+    color: Colors.blackColorCode,
     // width:'80%'
   },
   loadingView: {

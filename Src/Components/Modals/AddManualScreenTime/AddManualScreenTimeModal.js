@@ -91,6 +91,7 @@ const AddManualScreenTimeModal = ({
             style={{
               fontWeight: Platform.OS === 'android' ? '700' : '500',
               fontSize: dynamicSize(26),
+              color: Colors.blackColorCode,
               textAlign: 'center',
               marginTop: 30,
               fontFamily: RubikRegular,
@@ -131,6 +132,7 @@ const AddManualScreenTimeModal = ({
                 width: dynamicSize(220),
                 backgroundColor: 'white',
                 fontSize: 18,
+                color: Colors.blackColorCode,
                 // color: 'blue',
                 // borderColor: 'transparent',
                 // fontWeight: '700',
@@ -249,12 +251,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingBottom: 10,
     //   paddingVertical:10
+    color: Colors.greyColorCode
   },
   bigText: {
     fontFamily: RubikMedium,
     fontSize: width / 20,
     paddingHorizontal: 12,
     marginRight: 12,
+    color: Colors.blackColorCode,
     // width:'80%'
   }
 });

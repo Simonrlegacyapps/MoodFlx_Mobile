@@ -1234,7 +1234,7 @@ const App: () => Node = () => {
         </>
       )}
       <LvlUpModal
-        bigText="You’ve leveled up!"
+        bigText="You've leveled up!"
         modalVisible={isOpenLvlUpModal && !isLoading}
         dismissModalHandler={closeLvlUpModal}
         buttonText="Let's Go!"

@@ -13,6 +13,7 @@ import {
   getFontSize,
   horizontalScale,
 } from '../../../Constants/sizeChoose';
+import Colors from '../../../Constants/Colors/Colors';
 
 function SelectDivisionModal({
   setModalVisible,
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
     marginVertical: horizontalScale(10),
     fontSize: getFontSize(18),
     fontFamily: RubikRegular,
+    color: Colors.blackColorCode,
   },
   endView: {
     alignSelf: 'center',

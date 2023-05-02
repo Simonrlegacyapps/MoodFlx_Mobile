@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-toast-message/lib/src/hooks/useSlideAnimation.js b/node_modules/react-native-toast-message/lib/src/hooks/useSlideAnimation.js
+index 33f0b87..5962718 100644
+--- a/node_modules/react-native-toast-message/lib/src/hooks/useSlideAnimation.js
++++ b/node_modules/react-native-toast-message/lib/src/hooks/useSlideAnimation.js
+@@ -9,7 +9,7 @@ export function translateYOutputRangeFor({ position, height, topOffset, bottomOf
+     const outputRange = position === 'bottom' ? additiveInverseArray(range) : range;
+     return outputRange;
+ }
+-const useNativeDriver = Platform.select({ native: true, default: false });
++const useNativeDriver = Platform.select({ native: false, default: false });
+ export function useSlideAnimation({ position, height, topOffset, bottomOffset, keyboardOffset }) {
+     const animatedValue = React.useRef(new Animated.Value(0));
+     const { keyboardHeight } = useKeyboard();

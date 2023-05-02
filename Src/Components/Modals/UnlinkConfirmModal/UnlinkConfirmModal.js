@@ -121,6 +121,7 @@ const UnlinkConfirmModal = ({
               fontFamily: RubikRegular,
               fontSize: dynamicSize(18),
               marginTop: 12,
+              color: Colors.greyTwo,
               // marginLeft: 62,
               // marginRight: 62,
               textAlign: 'center',
@@ -271,6 +272,7 @@ const styles = StyleSheet.create({
     fontSize: width / 20,
     paddingHorizontal: 12,
     marginRight: 12,
+    color: Colors.blackColorCode,
     // width:'80%'
   },
 });
