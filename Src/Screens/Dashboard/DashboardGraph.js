@@ -213,6 +213,16 @@ export function LightTab(props) {
     return <NoDataScreen dataType={dataTypes.light} />;
   }
 
+  const avgHigh = isNaN(averageValues?.avgHigh)
+    ? 0
+    : parseInt(averageValues?.avgHigh, 10);
+  const avgIdeal = isNaN(averageValues?.avgIdeal)
+    ? 0
+    : parseInt(averageValues?.avgIdeal, 10);
+  const avgLow = isNaN(averageValues?.avgLow)
+    ? 0
+    : parseInt(averageValues?.avgLow, 10);
+
   return (
     <View style={lightStyles.container} key={dataTypes.light}>
       <LightGraph data={lightGraphData} graphWidth={metrics.screenWidth} />
@@ -221,8 +231,8 @@ export function LightTab(props) {
           DarkColor="#FDB007"
           lightColor="#E5F9FC"
           Label="Av. High"
-          Time={`${averageValues?.avgHigh ?? 0}%`}
-          value={getProgress(averageValues?.avgHigh)}
+          Time={`${avgHigh}%`}
+          value={getProgress(avgHigh)}
           size={horizontalScale(36)}
           width={horizontalScale(5)}
           fontSize={getFontSize(15)}
@@ -231,8 +241,8 @@ export function LightTab(props) {
           DarkColor="#FDB007"
           lightColor="#E5F9FC"
           Label="Av. Ideal"
-          Time={`${averageValues?.avgIdeal ?? 0}%`}
-          value={getProgress(averageValues?.avgIdeal)}
+          Time={`${avgIdeal}%`}
+          value={getProgress(avgIdeal)}
           size={horizontalScale(36)}
           width={horizontalScale(5)}
           fontSize={getFontSize(15)}
@@ -241,8 +251,8 @@ export function LightTab(props) {
           DarkColor="#FDB007"
           lightColor="#E5F9FC"
           Label="Av. Low"
-          Time={`${averageValues?.avgLow ?? 0}%`}
-          value={getProgress(averageValues?.avgLow)}
+          Time={`${avgLow}%`}
+          value={getProgress(avgLow)}
           size={horizontalScale(36)}
           width={horizontalScale(5)}
           fontSize={getFontSize(15)}
