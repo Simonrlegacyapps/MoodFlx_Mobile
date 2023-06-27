@@ -7,8 +7,9 @@ import { RubikRegular } from '../../Constants/fonts/Fonts';
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import { getFloCoins } from '../../services/commonService';
 import AnimatedNumber from '../AnimatedNumber/AnimatedNumber';
+import { VitalityIcon } from '../../../assets/svg/VitalityIcon';
 
-const CrownBox = memo(({floCoins}) => {
+const CrownBox = memo(({floCoins, isAiaVitality = false}) => {
   const [rewardPts, setRewardPts] = useState(floCoins);
   const prevRewardPoints = useRef(floCoins);
   useEffect(() => {
@@ -30,7 +31,7 @@ const CrownBox = memo(({floCoins}) => {
         colors={[Colors.blueTextColor, '#58A0E3']}
         style={styles.linearGradient}>
         <View style={styles.subView}>
-          <Crown />
+          {isAiaVitality ? <VitalityIcon height={dynamicSize(16)} width={dynamicSize(16)} /> : <Crown />}
           <View style={styles.coinsView}>
             <AnimatedNumber
               includeComma
@@ -38,9 +39,6 @@ const CrownBox = memo(({floCoins}) => {
               fontStyle={styles.text}
             />
           </View>
-          {/* <Text allowFontScaling={false} style={styles.text}>
-                {getFloCoins(floCoins)}
-              </Text> */}
         </View>
       </LinearGradient>
     </View>
@@ -73,6 +71,6 @@ const styles = StyleSheet.create({
     marginLeft: horizontalScale(10),
     // overflow: 'hidden',
   },
-})
+});
 
 export default CrownBox;

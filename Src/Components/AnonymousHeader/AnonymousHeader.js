@@ -20,9 +20,11 @@ import { getFloCoins, getMyDeviceId, getPrevFloCoins } from '../../services/comm
 import CustomSwitch from '../CustomSwitch/CustomSwitch';
 import AnimatedNumber from '../AnimatedNumber/AnimatedNumber';
 import Colors from '../../Constants/Colors/Colors';
+import { VitalityIcon } from '../../../assets/svg/VitalityIcon';
 
 const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
   const UserData = useSelector((state) => state.First);
+  const vitality_member_id = useSelector(state => state.First?.UserDetails?.vitality_member_id);
   const dispatch = useDispatch();
   const [Anonymous, setAnonymous] = useState(false);
   const [ShowAddName, setShowAddName] = useState(false);
@@ -153,15 +155,21 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
     <View style={styles.container}>
       <View style={styles.subContainer}>
         <View style={styles.floIconView}>
-          <FloCoinIcon />
+          {vitality_member_id ? <VitalityIcon /> : <FloCoinIcon />}
         </View>
         <View>
           <AnimatedNumber
             includeComma
-            animateToNumber={isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins}
+            animateToNumber={
+              isShowPrevFloCoins && !vitality_member_id
+                ? getPrevFloCoins()
+                : UserData.floCoins
+            }
             fontStyle={styles.floCoinsTextOne}
           />
-          <Text style={styles.floCoinsTextTwo}>flx Coins</Text>
+          <Text style={styles.floCoinsTextTwo}>
+            {vitality_member_id ? 'Bonus' : 'flx Coins'}
+          </Text>
         </View>
         <View style={styles.verifcalBarView} />
         <View

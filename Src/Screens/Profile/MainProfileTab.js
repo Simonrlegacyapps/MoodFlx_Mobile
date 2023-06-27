@@ -217,6 +217,9 @@ const MainProfileTab = ({navigation}) => {
   if (CoinComment === modalComments.lvlPassed) {
     rewardPointPopUpButtonText = "I'm Good";
   }
+
+  const isAIAVitality = !!UserData?.UserDetails?.vitality_member_id;
+
   return (
     <View style={styles.container}>
       <ProfileHeader navigation={navigation} />
@@ -279,8 +282,12 @@ const MainProfileTab = ({navigation}) => {
           indicatorStyle: { borderColor: Colors.blueTextColor, borderWidth: 1.5 },
           // tabStyle: { borderWidth: 0 }
         }}>
-        <Tab.Screen name="Rewards" component={rewards} />
-        <Tab.Screen name="History" component={history} />
+        {!isAIAVitality && (
+          <>
+            <Tab.Screen name="Rewards" component={rewards} />
+            <Tab.Screen name="History" component={history} />
+          </>
+        )}
         <Tab.Screen name="How To" component={howTo} />
       </Tab.Navigator>
       {/* </ScrollView> */}

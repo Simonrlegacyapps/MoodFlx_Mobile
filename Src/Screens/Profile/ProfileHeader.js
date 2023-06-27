@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity, Platform} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
@@ -7,22 +7,27 @@ import {
   getFontSize,
   horizontalScale,
 } from '../../Constants/sizeChoose';
-import {GetStaffUserData} from '../../apirequest/PostRequestApi';
-import {UserDetail} from '../../redux/actions/actions';
-import PickImageIcon from '../../../assets/profileicons/PickImageIcon';
-import {RubikBlack, RubikLight, RubikMedium} from '../../Constants/fonts/Fonts';
+import {RubikLight, RubikMedium} from '../../Constants/fonts/Fonts';
 import Constants from '../../Constants';
-import EditProfile from '../../../assets/svg/editProfile';
-import {getFloCoins} from '../../services/commonService';
+import {getFloCoins, isNonEmptyString} from '../../services/commonService';
 import {FloCoinIcon} from '../../../assets/svg/floCoinIcon';
 import Edit from '../../../assets/svg/Edit';
 import { getPhotoUrl } from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
+import {VitalityIcon} from '../../../assets/svg/VitalityIcon';
+import moment from 'moment';
 
 const ProfileHeader = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
 
-  const dispatch = useDispatch();
+  const since = useMemo(() => {
+    if (isNonEmptyString(UserData?.UserDetails?.created_at)) {
+      return `Since ${moment(UserData.UserDetails.created_at).format(
+        "MMMM'YY",
+      )}`;
+    }
+    return null;
+  }, [UserData?.UserDetails?.created_at]);
 
   return (
     <View style={styles.container}>
@@ -50,13 +55,12 @@ const ProfileHeader = ({navigation}) => {
             <TouchableOpacity
               onPress={() => setOpenActionSheet(true)}
               disabled={true}>
-              {/* <PickImageIcon w={18} h={18} /> */}
               <Edit w={32} h={32}/>
             </TouchableOpacity>
           </View>
         </View>
         <View style={styles.nameTexts}>
-          <Text style={styles.since}>Since March' 21</Text>
+          {isNonEmptyString(since) && <Text style={styles.since}>{since}</Text>}
           <Text style={styles.name}>
             {UserData?.UserDetails?.full_name
               ? UserData?.UserDetails?.full_name
@@ -64,18 +68,21 @@ const ProfileHeader = ({navigation}) => {
           </Text>
         </View>
       </TouchableOpacity>
-      {/* <TouchableOpacity onPress={() => { navigation.navigate("ProfileTab") }} style={styles.edit}>
-                <EditProfile />
-            </TouchableOpacity> */}
-      <View style={[styles.topCoins, ]}>
-        <View style={[styles.floIconView, {alignItems: 'flex-start'}]}>
-          <FloCoinIcon />
+      <View style={styles.topCoins}>
+        <View style={styles.floIconView}>
+          {UserData?.UserDetails?.vitality_member_id ? (
+            <VitalityIcon />
+          ) : (
+            <FloCoinIcon />
+          )}
         </View>
         <View>
           <Text style={styles.floCoinsTextOne}>
             {getFloCoins(UserData.floCoins)}
           </Text>
-          <Text style={styles.floCoinsTextTwo}>flx Coins</Text>
+          <Text style={styles.floCoinsTextTwo}>
+            {UserData?.UserDetails?.vitality_member_id ? 'Bonus' : 'flx Coins'}
+          </Text>
         </View>
       </View>
     </View>
@@ -122,10 +129,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: Colors.blackColorCode
   },
-  edit: {justifyContent: 'flex-end', marginRight: 5},
   floIconView: {
     marginLeft: horizontalScale(14),
     marginRight: horizontalScale(10),
+    alignItems: 'flex-start',
   },
   floCoinsTextOne: {
     // fontSize: Platform.OS === 'ios' ? getFontSize(14) : getFontSize(16),
@@ -147,7 +154,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     paddingRight:40,
     // alignSelf: 'flex-start',
     flex: 0.8,
