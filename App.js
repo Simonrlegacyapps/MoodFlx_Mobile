@@ -187,6 +187,7 @@ const App: () => Node = () => {
   const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const newOrg = useRef(null);
+  const vitalityMemberId = useRef(null);
   const isHandleDynamicLinkCalled = useRef(false);
   const notifSchedulePreviousDay = useRef(null);
   const widgetData = useRef({
@@ -351,7 +352,7 @@ const App: () => Node = () => {
   }, []);
 
   const linkCompany = useCallback(
-    async (org) => {
+    async (org, vitality_member_id) => {
       const deviceId = getMyDeviceId();
       let fcm = '';
       try {
@@ -362,6 +363,9 @@ const App: () => Node = () => {
       if (!org) {
         org = newOrg.current;
       }
+      if (!vitality_member_id) {
+        vitality_member_id = vitalityMemberId.current;
+      }
       if (typeof org === 'string' && deviceId && fcm) {
         console.log('handleDynamicLink org true: ', org);
         const params = {
@@ -369,12 +373,36 @@ const App: () => Node = () => {
           user_id: org ?? newOrg.current,
           device_token: fcm,
           device_type: Platform.OS,
+          vitality_member_id, // vitality memeber id from custom param dynamic link
         };
         newOrg.current = null;
+        vitalityMemberId.current = null;
         console.log('getDownloadLink api params: ', params);
         try {
           const getDownloadLinkRes = await PostRequestApi('v2/getDownloadLink', params);
           console.log('getDownloadLink api res: ', getDownloadLinkRes);
+          let _vitalityMemberId = null;
+          try {
+            _vitalityMemberId = await AsyncStorage.getItem('vitalityMemberId');
+          } catch (error) {
+            console.log(
+              'error fetching vitalityMemberId from async storage',
+              error,
+            );
+          }
+          if (vitality_member_id) {
+            if (!Number(getDownloadLinkRes?.data?.staffData?.reward_point)) {
+              try {
+                await AsyncStorage.removeItem('MoodInputTimeStamp');
+                await AsyncStorage.removeItem('NotesInputTimeStamp');
+              } catch (error) {
+                console.log('error removing MoodInputTimeStamp NotesInputTImeStamp from AsyncStorage --- ', error);
+              }
+            }
+            AsyncStorage.setItem('vitalityMemberId', String(vitality_member_id)).then(e => {}).catch(e => {});
+          } else if (_vitalityMemberId !== null) {
+            AsyncStorage.removeItem('vitalityMemberId').then(() => {}).catch((e) => {});
+          }
           let userData = null;
           if (
             !getDownloadLinkRes.data.staffData?.email &&
@@ -556,6 +584,7 @@ const App: () => Node = () => {
     if (!userEmail || !userId) {
       showFailedTouUnlinkToast();
       newOrg.current = null;
+      vitalityMemberId.current = null;
       return;
     }
     const params = {
@@ -570,11 +599,13 @@ const App: () => Node = () => {
           linkCompany();
         } else {
           newOrg.current = null;
+          vitalityMemberId.current = null;
         }
       })
       .catch((err) => {
         showFailedTouUnlinkToast();
         newOrg.current = null;
+        vitalityMemberId.current = null;
         console.log('unlink api failed error: ', err);
       });
   }, [dispatch, linkCompany]);
@@ -583,6 +614,7 @@ const App: () => Node = () => {
     setLinkModalText('');
     setIsLinkModalVisible(false);
     newOrg.current = null;
+    vitalityMemberId.current = null;
   }, []);
 
   const handleDynamicLink = async (link) => {
@@ -610,8 +642,12 @@ const App: () => Node = () => {
     console.log('handleDynamicLink link: ', link);
     const url = link?.url;
     // const url = 'https://moodflo/org/Mzg=/n/aia';
-    let org = url?.split?.("/org//")?.[1];
-    const newOrgName = url?.split?.('/n/')?.pop?.();
+    const memberId = url?.split?.('/?memberid=')?.pop?.() ?? null;
+    let newOrgName = url?.split?.('/n/')?.pop?.();
+    if (memberId) {
+      newOrgName = url?.split?.('/?memberid=')?.[0]?.split?.('/n/')?.pop?.();
+    }
+    let org = url?.split?.('/org//')?.[1];
     if (!org) {
       org = url?.split?.('/org/')?.pop?.()?.split?.('/n')?.[0];
     }
@@ -635,6 +671,7 @@ const App: () => Node = () => {
         newOrgName.toUpperCase(),
       );
       newOrg.current = org;
+      vitalityMemberId.current = memberId;
       if (link) {
         isHandleDynamicLinkCalled.current = true;
       }
@@ -648,10 +685,9 @@ const App: () => Node = () => {
         isHandleDynamicLinkCalled.current = true;
       }
       console.log('handleDynamicLink org: ', org);
-      linkCompany(org);
+      linkCompany(org, memberId);
     }
   };
-
 
   const goToSelectDivision = useCallback(() => {
     console.log('goToSelectDivision email: ', email);

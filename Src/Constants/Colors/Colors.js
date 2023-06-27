@@ -23,5 +23,6 @@ export default {
   greyFive: Platform.OS === 'ios' ? '#CBCBCB' : '#A2A2A2',
   lightGrey: '#83848E',
   coinOrange: '#FB8D09',
+  vitalityRed: '#D81C4D',
   loaderColor: '#9889F9',
 };

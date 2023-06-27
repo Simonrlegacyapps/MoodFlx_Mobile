@@ -51,6 +51,8 @@ import {BitCoinIcon} from '../../../assets/svg/bitCoin';
 import {RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
 import Clipboard from '@react-native-clipboard/clipboard';
 import getStore from '../../redux';
+import {VitalityIcon} from '../../../assets/svg/VitalityIcon';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const listData = [
   { name: 'Name', value: 'Anonymous' },
@@ -99,6 +101,7 @@ const ProfileTab = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [isHowMoodFloWorksPtsGiven, setIsHowMoodFloWorksPtsGiven] = useState(true);
+  const [prevVitalityMemberId, setPrevVitalityMemberId] = useState(null);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -159,10 +162,22 @@ const ProfileTab = ({ navigation }) => {
     wait(1000).then(() => setRefreshing(false));
   };
 
+  const fetchPrevMemberId = async () => {
+    try {
+      const id = await AsyncStorage.getItem('vitalityMemberId');
+      if (typeof id === 'string') {
+        setPrevVitalityMemberId(id);
+      }
+    } catch (error) {
+      console.log('error fetching prevVitalityMemberId from Async Storage --- ', error);
+    }
+  }
+
   useFocusEffect(
     React.useCallback(() => {
       console.log('ProfileTab focused');
       getProfileUserData();
+      fetchPrevMemberId();
       AppPermissions.checkAppPermissions(dispatch);
 
       return () => {
@@ -658,7 +673,37 @@ const ProfileTab = ({ navigation }) => {
               </TouchableOpacity>
             )}
           </View>
-          <View style={styles.headerContainerStyle}>
+          {(!!prevVitalityMemberId ||
+            !!UserData?.UserDetails?.vitality_member_id) && (
+            <>
+              <View style={[styles.headerContainerStyle, styles.marginTop41]}>
+                <View
+                  style={[
+                    styles.borderStyle,
+                    { marginRight: dynamicSize(17), width: dynamicSize(134) },
+                  ]}
+                />
+                <Text style={styles.personalDetails}>AIA VITALITY</Text>
+                <View
+                  style={[
+                    styles.borderStyle,
+                    { marginLeft: dynamicSize(11), width: dynamicSize(134) },
+                  ]}
+                />
+              </View>
+              <View style={[styles.headerContainerStyle, styles.vitalityBox]}>
+                <VitalityIcon />
+                <View style={styles.marginLeft12}>
+                  <Text style={styles.vitalityMemberIdTxt}>
+                    {UserData?.UserDetails?.vitality_member_id
+                      ? `Member #${UserData?.UserDetails?.vitality_member_id ?? ''}`
+                      : 'Link to AIA Vitality'}
+                  </Text>
+                </View>
+              </View>
+            </>
+          )}
+          <View style={[styles.headerContainerStyle, styles.marginTop41]}>
             <View
               style={[
                 styles.borderStyle,
@@ -759,6 +804,11 @@ const styles = StyleSheet.create({
     marginTop: dynamicSize(40),
     alignSelf: 'center',
   },
+  vitalityMemberIdTxt: {
+    color: Constants.Colors.blackColorCode,
+    fontSize: dynamicSize(16),
+    fontFamily: RubikMedium,
+  },
   // bottomContainer: {
   //   flex: 1,
   // },
@@ -787,10 +837,21 @@ const styles = StyleSheet.create({
     marginLeft: dynamicSize(20),
     marginRight: dynamicSize(20),
   },
+  marginLeft12: {
+    marginLeft: dynamicSize(12),
+  },
+  marginTop41: {
+    marginTop: dynamicSize(41),
+  },
   headerContainerStyle: {
     marginTop: dynamicSize(30),
     alignSelf: 'center',
     flexDirection: 'row',
+  },
+  vitalityBox: {
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    marginLeft: dynamicSize(16),
   },
   profileImage: {
     height: dynamicSize(160),

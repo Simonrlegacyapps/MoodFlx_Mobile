@@ -84,7 +84,12 @@ const HomeSyncHeader = ({
       </TouchableOpacity>
       <View style={styles.buttons}>
         <TouchableOpacity onPress={()=>{navigation.navigate("MainProfileTab")}}>
-          <CrownBox floCoins={isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins} />
+          <CrownBox
+            isAiaVitality={!!UserData?.UserDetails?.vitality_member_id}
+            floCoins={
+              isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins
+            }
+          />
         </TouchableOpacity>
       </View>
       {UserData.UserMoodCount >= 3 && !isAnimationFinished && (

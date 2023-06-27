@@ -211,6 +211,8 @@ export default function MoodDetector({ navigation }) {
   const hsvColor = useRef({ h: 0, s: 0, v: 100 });
   const shouldPlayHaptics = useRef(false);
   const moodIdForNotes = useRef("");
+  const prev_vitality_member_id = useRef(UserData?.UserDetails?.vitality_member_id);
+  const fetchSetRewardsPtsCount = useRef(0);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -939,23 +941,35 @@ export default function MoodDetector({ navigation }) {
   //   };
   // }, []);
 
+  const callSetMoodInputNotes = async () => {
+    try {
+      const rewardPointsMoodInput = await getMoodInputRewardPoints(false);
+      setMoodInputRewardPoints(rewardPointsMoodInput);
+    } catch (error) {
+      console.log('get mood input reward point error - ', error);
+    }
+    try {
+      const rewardPointsNotesInput = await getMoodInputRewardPoints(true);
+      setNotesInputRewardPoints(rewardPointsNotesInput);
+    } catch (error) {
+      console.log('get notes input reward point error - ', error);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      fetchSetRewardsPtsCount.current === 0 ||
+      (!!UserData?.UserDetails?.vitality_member_id &&
+        prev_vitality_member_id.current !== UserData?.UserDetails?.vitality_member_id)
+    ) {
+      callSetMoodInputNotes();
+      fetchSetRewardsPtsCount.current += 1;
+    }
+    prev_vitality_member_id.current = UserData?.UserDetails?.vitality_member_id;
+  }, [UserData?.UserDetails?.vitality_member_id]);
+
   useEffect(() => {
     setPrevFloCoins(getStore?.()?.getState?.()?.First?.floCoins ?? 0);
-    const callSetMoodInputNotes = async () => {
-      try {
-        const rewardPointsMoodInput = await getMoodInputRewardPoints(false);
-        setMoodInputRewardPoints(rewardPointsMoodInput);
-      } catch (error) {
-        console.log('get mood input reward point error - ', error);
-      }
-      try {
-        const rewardPointsNotesInput = await getMoodInputRewardPoints(true);
-        setNotesInputRewardPoints(rewardPointsNotesInput);
-      } catch (error) {
-        console.log('get notes input reward point error - ', error);
-      }
-    };
-    callSetMoodInputNotes();
     if (getIsInitialVideoVisible() === true) {
       setIsInitialVideoVisible(false);
       const timeoutId = setTimeout(() => {
@@ -1734,7 +1748,14 @@ export default function MoodDetector({ navigation }) {
           {pts > 0 && (
             <ImageBackground
               style={styles.pupView}
-              imageStyle={styles.Pup}
+              imageStyle={[
+                styles.Pup,
+                {
+                  tintColor: UserData?.UserDetails?.vitality_member_id
+                    ? Colors.vitalityRed
+                    : Colors.coinOrange,
+                },
+              ]}
               source={require('../../../assets/newImage/AddCoinsPopUp/popUp.png')}>
               <BitCoinIcon
                 style={styles.bitCoinIconView}

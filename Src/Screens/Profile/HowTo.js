@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
-import { getFontScale } from 'react-native/Libraries/Utilities/PixelRatio';
 import BigRing from '../../../assets/svg/BigRing';
 import Rings from '../../../assets/svg/rings';
 import Colors from '../../Constants/Colors/Colors';
 import { RubikLight, RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
-import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+import { getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+import {useSelector} from 'react-redux';
 
 const BoldHeader = ({label}) => {
   return (
@@ -41,6 +41,7 @@ const SimpleText = ({label, text, mt}) => {
 const HowTo = ({setIsLevelsHide, islevelsHide}) => {
   const offset = useRef(0);
   const isHidden = useRef(false);
+  const UserData = useSelector(state => state.First);
 
   useEffect(() => {
     if (!islevelsHide) {
@@ -64,6 +65,8 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
     [setIsLevelsHide],
   );
 
+  const isAIAVitality = !!UserData?.UserDetails?.vitality_member_id;
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -74,15 +77,22 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
         <BigRing />
       </View>
       <View style={styles.topHeaderWrapper}>
-        <Text style={styles.topHeaderText}>Earn flx Coins</Text>
+        <Text style={styles.topHeaderText}>{isAIAVitality ? 'Earn Bonus Vitality Points' : 'Earn flx Coins'}</Text>
         <Text style={styles.topHeaderDescription}>
-          Advance your Mood Status, unlock more rewards and cash in your flx Coins!
+          Advance your Mood Status, unlock more rewards and cash in your {isAIAVitality ? 'Bonus Vitality Points' : 'flx Coins'}!
         </Text>
         <View>
           <BoldHeader label={'Mood Inputs'} />
-          <SimpleText label={'Per mood'} text={' 3 coins'} />
+          <SimpleText
+            label={'Per mood'}
+            text={` 3 ${isAIAVitality ? 'Bonus Vitality Points' : 'coins'}`}
+          />
           <View style={styles.lineSeperator} />
-          <SimpleText label={'3+ moods/day'} text={' 1 bonus coin'} mt={12} />
+          <SimpleText
+            label={'3+ moods/day'}
+            text={` 1 ${isAIAVitality ? 'Bonus Vitality Point' : 'bonus coin'}`}
+            mt={12}
+          />
           <Text style={styles.smallHeaderText}>Recommended</Text>
           <Text style={styles.hoursIntervalHeaderText}>6-HOUR INTERVALS</Text>
           <View style={styles.intervalWrapper}>
@@ -94,16 +104,36 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
             </View>
             <View style={styles.verticalDivider} />
             <View style={styles.intervalDetailsWrapper}>
-              <Text style={[styles.text, { marginBottom: horizontalScale(10), letterSpacing: 0.7 }]}>2 moods per interval</Text>
-              <Text style={[styles.text, {textAlign: 'center', letterSpacing: 0.7}]}>earn coins if there is a 2 hour gap between each mood</Text>
+              <Text
+                style={[
+                  styles.text,
+                  {marginBottom: horizontalScale(10), letterSpacing: 0.7},
+                ]}>
+                2 moods per interval
+              </Text>
+              <Text
+                style={[
+                  styles.text,
+                  {textAlign: 'center', letterSpacing: 0.7},
+                ]}>
+                {isAIAVitality ? 'Earn Bonus Vitality Points' : 'earn coins'} if
+                there is a 2 hour gap between each mood
+              </Text>
             </View>
           </View>
         </View>
         <View>
           <BoldHeader label={'Mood Journaling'} />
-          <SimpleText label={'Per note'} text={' 3 coins'} />
+          <SimpleText
+            label={'Per note'}
+            text={` 3 ${isAIAVitality ? 'Bonus Vitality Points' : 'coins'}`}
+          />
           <View style={styles.lineSeperator} />
-          <SimpleText label={'3+ notes/day'} text={' 1 bonus coin'} mt={12} />
+          <SimpleText
+            label={'3+ notes/day'}
+            text={` 1 ${isAIAVitality ? 'Bonus Vitality Point' : 'bonus coin'}`}
+            mt={12}
+          />
           <Text style={styles.smallHeaderText}>Recommended</Text>
           <Text style={styles.hoursIntervalHeaderText}>6-HOUR INTERVALS</Text>
           <View style={styles.intervalWrapper}>
@@ -115,8 +145,21 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
             </View>
             <View style={styles.verticalDivider} />
             <View style={styles.intervalDetailsWrapper}>
-              <Text style={[styles.text, {  marginBottom: horizontalScale(10), letterSpacing: 0.7 }]}>2 notes per interval</Text>
-              <Text style={[styles.text, { textAlign: 'center', letterSpacing: 0.7 }]}>earn coins if there is a 2 hour gap between each note</Text>
+              <Text
+                style={[
+                  styles.text,
+                  {marginBottom: horizontalScale(10), letterSpacing: 0.7},
+                ]}>
+                2 notes per interval
+              </Text>
+              <Text
+                style={[
+                  styles.text,
+                  {textAlign: 'center', letterSpacing: 0.7},
+                ]}>
+                {isAIAVitality ? 'Earn Bonus Vitality Points' : 'earn coins'} if
+                there is a 2 hour gap between each note
+              </Text>
             </View>
           </View>
         </View>
@@ -124,7 +167,9 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
           <BoldHeader label={'Mood Status'} />
           <View style={styles.levelRowView}>
             <Text style={styles.smallHeaderText}>Level</Text>
-            <Text style={styles.smallHeaderText}>flx coins</Text>
+            <Text style={styles.smallHeaderText}>
+              {isAIAVitality ? 'Bonus Vitality Points' : 'flx coins'}
+            </Text>
           </View>
           <SimpleText label={'Mood Activator'} text={' 0 - 100'} />
           <SimpleText label={'Mood Navigator'} text={' 100 - 1,000'} />

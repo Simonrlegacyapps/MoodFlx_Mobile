@@ -302,7 +302,7 @@ const SaveMoodConfirmModal = ({
               !isNaN(notesInputRewardPoints) && (
               <ImageBackground
                 style={styles.pupView}
-                imageStyle={styles.Pup}
+                imageStyle={[styles.Pup, {tintColor: UserData?.UserDetails?.vitality_member_id ? Colors.vitalityRed : Colors.coinOrange}]}
                 source={require('../../../../assets/newImage/AddCoinsPopUp/popUp.png')}>
                 <BitCoinIcon
                   style={styles.bitCoinIconView}
