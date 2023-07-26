@@ -5,14 +5,15 @@ platform :ios, '13.0'
 install! 'cocoapods', :deterministic_uuids => false
 
 target 'MoodFlo' do
+  # React Native Maps dependencies
+  rn_maps_path = '../node_modules/react-native-maps'
+  pod 'react-native-google-maps', :path => rn_maps_path
+
   config = use_native_modules!
 
   # Flags change depending on the env values.
   flags = get_default_flags()
 
-  # React Native Maps dependencies
-  rn_maps_path = '../node_modules/react-native-maps'
-  pod 'react-native-google-maps', :path => rn_maps_path
   use_react_native!(
     :path => config[:reactNativePath],
     # Hermes is now enabled by default. Disable by setting this flag to false.
@@ -42,7 +43,7 @@ target 'MoodFlo' do
   pod 'GoogleDataTransport', :modular_headers => true
   pod 'nanopb', :modular_headers => true
 
-#  pod 'RCTAppleHealthKit', :path => '../node_modules/rn-apple-healthkit'
+  #  pod 'RCTAppleHealthKit', :path => '../node_modules/rn-apple-healthkit'
 
   target 'MoodFloTests' do
     inherit! :complete
@@ -50,12 +51,7 @@ target 'MoodFlo' do
   end
 
   post_install do |installer|
-    react_native_post_install(
-      installer,
-      # Set `mac_catalyst_enabled` to `true` in order to apply patches
-      # necessary for Mac Catalyst builds
-      # :mac_catalyst_enabled => false
-    )
+    react_native_post_install(installer)
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
     installer.pods_project.targets.each do |target|
           if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
@@ -64,4 +60,5 @@ target 'MoodFlo' do
             end
           end
   end
+end
 end

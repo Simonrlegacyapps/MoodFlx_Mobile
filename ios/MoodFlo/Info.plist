@@ -60,6 +60,10 @@
 	<string>Your rough location is used to automatically get your weather data so you don't have to manually input it</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow library access to take a profile picture</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>ConfigurationIntent</string>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Rubik-Black.ttf</string>
