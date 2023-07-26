@@ -11,9 +11,9 @@ export const PRIVACY_POLICY_URL = 'https://moodflo.com/privacy-policy';
 export const TERMS_OF_USE_URL = 'https://moodflo.com/terms-of-use';
 export const FAQ_URL = 'https://moodflo.com/frequently-asked-questions';
 let isCurrentLocationCalled = false;
-let isDevServer = (__DEV__);
+// let isDevServer = (__DEV__);
 // let isDevServer = true;
-// let isDevServer = false;
+let isDevServer = false;
 
 export const getIsDevServer = () => isDevServer;
 export const setIsDevServer = (flag = (__DEV__)) => {

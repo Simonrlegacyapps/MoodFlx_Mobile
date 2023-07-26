@@ -17,12 +17,14 @@ import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import SharedGroupPreferences from 'react-native-shared-group-preferences';
 import {
+  Division,
   GetUserId,
   HealthPerm,
   IsAnonymous,
   Lat,
   Long,
   Moods,
+  ResetLinkToCompanyParams,
   ScreenTimePerm,
   SetAvailableRewards,
   SetClaimedRewards,
@@ -434,10 +436,45 @@ const App: () => Node = () => {
               email: userData?.email,
             });
           }
-          onDynamicLinkUpdate(userData, dispatch, function (data) {
+          onDynamicLinkUpdate(userData, dispatch, async function (data) {
             if (data !== false) {
-              // data = {...data, division_id: null};
               if (data?.email) {
+                if (!isEmpty(vitality_member_id)) {
+                  const params = {
+                    device_id: deviceId,
+                    user_id: getDownloadLinkRes.data.user_id,
+                    email: data?.email ?? null,
+                  };
+                  dispatch(
+                    Division(
+                      getDownloadLinkRes?.data?.staffData?.division_id ?? '',
+                    ),
+                  );
+                  getDivisionName(
+                    params,
+                    dispatch,
+                    false,
+                    async function (isFinish, userDetails) {
+                      if (userData) {
+                        dispatch(UserDetail(userDetails));
+                      }
+                      try {
+                        await AsyncStorage.setItem(
+                          'Division',
+                          JSON.stringify(
+                            getStore?.()?.getState?.()?.First?.UserDivision,
+                          ),
+                        );
+                      } catch (error) {
+                        console.log('Async Storage setItem Division error: ', error);
+                      }
+                    },
+                  );
+                  setDivisionSetFlag(true);
+                  dispatch(SetIsDivisionSelected(true));
+                  AsyncStorage.removeItem('LinkDisabled').catch(error => {});
+                  return;
+                }
                 if (RootNavigation?.navigationRef?.current?.navigate) {
                   dispatch(SetIsDivisionSelected(false));
                   RootNavigation?.navigationRef?.current?.navigate(
@@ -642,7 +679,14 @@ const App: () => Node = () => {
     console.log('handleDynamicLink link: ', link);
     const url = link?.url;
     // const url = 'https://moodflo/org/Mzg=/n/aia';
-    const memberId = url?.split?.('/?memberid=')?.pop?.() ?? null;
+    let memberId = url?.split?.('/?memberid=');
+    console.log('memberId array after split --- ', memberId);
+    if (Array.isArray(memberId) && memberId.length > 1) {
+      memberId = memberId.pop();
+    } else {
+      memberId = null;
+    }
+    console.log('memberId --- ', memberId);
     let newOrgName = url?.split?.('/n/')?.pop?.();
     if (memberId) {
       newOrgName = url?.split?.('/?memberid=')?.[0]?.split?.('/n/')?.pop?.();
@@ -1119,7 +1163,7 @@ const App: () => Node = () => {
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     dynamicLinks().getInitialLink().then(handleDynamicLink);
     // handleDynamicLink();
-    return () => unsubscribe();
+    return () => unsubscribe?.();
     // return null;
   }, []);
 

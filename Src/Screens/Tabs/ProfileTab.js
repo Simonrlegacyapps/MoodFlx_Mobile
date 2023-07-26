@@ -31,12 +31,12 @@ import ActionSheet from '../../Components/ImageSelection/ActionSheet';
 import {useDispatch, useSelector} from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
 import {NotificationPerm, SetShowIsDevServerModal, UserDetail} from '../../redux/actions/actions';
-import {GetStaffUserData} from '../../apirequest/PostRequestApi';
+import PostRequestApi, {GetStaffUserData} from '../../apirequest/PostRequestApi';
 import {AppPermissions} from '../../services/appPermissions';
 import {useFocusEffect} from '@react-navigation/native';
 import {getSleepDataAfterPermissionIOS} from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
-import {getMyDeviceId, openHealthApp} from '../../services/commonService';
+import {getMyDeviceId, onUnlinkUpdate, openHealthApp} from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
 import {
   BASE_URL_PRODUCTION_API,
@@ -101,7 +101,8 @@ const ProfileTab = ({ navigation }) => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [isHowMoodFloWorksPtsGiven, setIsHowMoodFloWorksPtsGiven] = useState(true);
-  const [prevVitalityMemberId, setPrevVitalityMemberId] = useState(null);
+  // const [prevVitalityMemberId, setPrevVitalityMemberId] = useState(null);
+  const [disconnecting, setDisconnecting] = useState(false);
   // const [userData, setUserData] = useState(null);
 
   const dispatch = useDispatch();
@@ -162,22 +163,10 @@ const ProfileTab = ({ navigation }) => {
     wait(1000).then(() => setRefreshing(false));
   };
 
-  const fetchPrevMemberId = async () => {
-    try {
-      const id = await AsyncStorage.getItem('vitalityMemberId');
-      if (typeof id === 'string') {
-        setPrevVitalityMemberId(id);
-      }
-    } catch (error) {
-      console.log('error fetching prevVitalityMemberId from Async Storage --- ', error);
-    }
-  }
-
   useFocusEffect(
     React.useCallback(() => {
       console.log('ProfileTab focused');
       getProfileUserData();
-      fetchPrevMemberId();
       AppPermissions.checkAppPermissions(dispatch);
 
       return () => {
@@ -445,6 +434,35 @@ const ProfileTab = ({ navigation }) => {
     }
   }, [dispatch]);
 
+  const onUnlink = useCallback(async () => {
+    setDisconnecting(true);
+    PostRequestApi('unlinkToCompany', {
+      email: getStore?.()?.getState?.()?.First?.UserEmail,
+      user_id: getStore?.()?.getState?.()?.First?.UserId,
+    })
+      .then(async resp => {
+        const isDone = await onUnlinkUpdate(dispatch);
+        console.log('unlinkToCompanyDone isDone =====', isDone);
+        setDisconnecting(false);
+      })
+      .catch(err => {
+        console.log('unlink api failed error: ', err);
+        setDisconnecting(false);
+      });
+  }, [dispatch]);
+
+  const onLink = useCallback(async () => {
+    let url = '';
+    if (Platform.OS === 'ios') {
+      url = 'https://apps.apple.com/au/app/aia-vitality-australia/id1584775072';
+    } else if (Platform.OS === 'android') {
+      url = 'https://play.google.com/store/apps/details?id=com.aia.gr.rn.au.v2020.vitality';
+    }
+    Linking.openURL(url).catch(error => {
+      console.log('error redirecting to link url');
+    });
+  }, []);
+
   const onOpenHealthApp = useCallback(openHealthApp, []);
 
   // console.log(
@@ -673,36 +691,59 @@ const ProfileTab = ({ navigation }) => {
               </TouchableOpacity>
             )}
           </View>
-          {(!!prevVitalityMemberId ||
-            !!UserData?.UserDetails?.vitality_member_id) && (
-            <>
-              <View style={[styles.headerContainerStyle, styles.marginTop41]}>
-                <View
-                  style={[
-                    styles.borderStyle,
-                    { marginRight: dynamicSize(17), width: dynamicSize(134) },
-                  ]}
-                />
-                <Text style={styles.personalDetails}>AIA VITALITY</Text>
-                <View
-                  style={[
-                    styles.borderStyle,
-                    { marginLeft: dynamicSize(11), width: dynamicSize(134) },
-                  ]}
-                />
+          <View style={[styles.headerContainerStyle, styles.marginTop41]}>
+            <View
+              style={[
+                styles.borderStyle,
+                { marginRight: dynamicSize(17), width: dynamicSize(134) },
+              ]}
+            />
+            <Text style={styles.personalDetails}>AIA VITALITY</Text>
+            <View
+              style={[
+                styles.borderStyle,
+                { marginLeft: dynamicSize(11), width: dynamicSize(134) },
+              ]}
+            />
+          </View>
+          <View style={styles.permissionTileContainer}>
+            <View style={styles.row}>
+              <VitalityIcon />
+              <View style={styles.marginLeft12}>
+                <Text style={styles.vitalityMemberIdTxt}>
+                  {UserData?.UserDetails?.vitality_member_id
+                    ? `Member #${
+                        UserData?.UserDetails?.vitality_member_id ?? ''
+                      }`
+                    : 'Link to AIA Vitality'}
+                </Text>
               </View>
-              <View style={[styles.headerContainerStyle, styles.vitalityBox]}>
-                <VitalityIcon />
-                <View style={styles.marginLeft12}>
-                  <Text style={styles.vitalityMemberIdTxt}>
-                    {UserData?.UserDetails?.vitality_member_id
-                      ? `Member #${UserData?.UserDetails?.vitality_member_id ?? ''}`
-                      : 'Link to AIA Vitality'}
-                  </Text>
+            </View>
+            <TouchableOpacity
+              disabled={disconnecting}
+              style={styles.disconnectButton}
+              onPress={
+                UserData?.UserDetails?.vitality_member_id ? onUnlink : onLink
+              }>
+              {disconnecting && (
+                <View style={styles.disconnectingBox}>
+                  <ActivityIndicator color="#9889F9" size="small" />
                 </View>
-              </View>
-            </>
-          )}
+              )}
+              <AddButton
+                label={
+                  UserData?.UserDetails?.vitality_member_id
+                    ? 'Disconnect'
+                    : 'Link'
+                }
+                containerStyle={[
+                  styles.unlinkButton,
+                  !UserData?.UserDetails?.vitality_member_id &&
+                    styles.linkButton,
+                ]}
+              />
+            </TouchableOpacity>
+          </View>
           <View style={[styles.headerContainerStyle, styles.marginTop41]}>
             <View
               style={[
@@ -809,6 +850,27 @@ const styles = StyleSheet.create({
     fontSize: dynamicSize(16),
     fontFamily: RubikMedium,
   },
+  disconnectingBox: {
+    position: 'absolute',
+    zIndex: 200,
+  },
+  disconnectButton: {
+    width: 'auto',
+    height: 'auto',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  linkButton: {
+    width: dynamicSize(100),
+  },
+  unlinkButton: {
+    paddingVertical: dynamicSize(10),
+    paddingHorizontal: dynamicSize(16),
+    backgroundColor: Constants.Colors.MagoliaColor,
+    borderRadius: dynamicSize(12),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   // bottomContainer: {
   //   flex: 1,
   // },
@@ -848,9 +910,15 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   vitalityBox: {
+    width: '100%',
     alignSelf: 'flex-start',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginLeft: dynamicSize(16),
   },
   profileImage: {

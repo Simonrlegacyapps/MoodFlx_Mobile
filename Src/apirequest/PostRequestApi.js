@@ -150,7 +150,7 @@ export async function getDivisionName(
             }
             if (!isFinished && typeof onFinish === 'function') {
               isFinished = true;
-              onFinish(true);
+              onFinish(true, result?.userData);
             }
             // console.log('divisionName: ', divisionName);
             // resolve(divisionName ? divisionName : false);
@@ -160,13 +160,13 @@ export async function getDivisionName(
             console.log('error getting diviision', e);
             if (!isFinished && typeof onFinish === 'function') {
               isFinished = true;
-              onFinish(true);
+              onFinish(true, result?.userData);
             }
           });
       } else {
         if (!isFinished && typeof onFinish === 'function') {
           isFinished = true;
-          onFinish(true);
+          onFinish(true, result?.userData);
         }
         // resolve(false);
       }

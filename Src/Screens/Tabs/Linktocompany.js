@@ -718,7 +718,7 @@ const Linktocompany = ({ navigation }) => {
               textAlign: 'center',
               width: 270,
             }}>
-            You are anonymously linked to your company under the division
+            You are anonymously linked to your company{UserData?.UserDetails?.vitality_member_id ? '' : ' under the division'}
           </Text>
           <Text
             style={{
@@ -733,7 +733,9 @@ const Linktocompany = ({ navigation }) => {
               marginBottom: horizontalScale(42),
               width: 270,
             }}>
-            {UserData?.UserDivision ?? ''}
+              {UserData?.UserDetails?.vitality_member_id
+                ? ''
+                : UserData?.UserDivision ?? ''}
           </Text>
           <TouchableOpacity
             // disabled={selectedLanguage ? false : true}
