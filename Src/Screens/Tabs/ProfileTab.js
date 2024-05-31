@@ -17,9 +17,12 @@ import {
   Pressable,
   Alert,
   ImageBackground,
+  PermissionsAndroid,
 } from 'react-native';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
+import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
 import AddButton from '../../Components/buttons/AddButton';
+import RNShare from 'react-native-share';
 import Constants from '../../Constants';
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import PrivacyIcon from '../../../assets/profileicons/PrivacyIcon';
@@ -53,7 +56,8 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import getStore from '../../redux';
 import {VitalityIcon} from '../../../assets/svg/VitalityIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { PERMISSIONS } from 'react-native-permissions';
+import { logger } from '../../..';
 const listData = [
   { name: 'Name', value: 'Anonymous' },
   { name: 'Gender', value: 'Anonymous' },
@@ -136,7 +140,7 @@ const ProfileTab = ({ navigation }) => {
       dispatch,
     )
       .then(async (result) => {
-        console.log(
+        logger(
           '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
           result?.userData,
         );
@@ -148,7 +152,7 @@ const ProfileTab = ({ navigation }) => {
         }
       })
       .catch((error) =>
-        console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
+        logger('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
       );
     setImageLoading(false);
   };
@@ -178,7 +182,7 @@ const ProfileTab = ({ navigation }) => {
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', _handleAppStateChange);
-
+    
     return () => {
       subscription?.remove?.();
     };
@@ -453,14 +457,32 @@ const ProfileTab = ({ navigation }) => {
 
   const onLink = useCallback(async () => {
     let url = '';
-    if (Platform.OS === 'ios') {
-      url = 'https://apps.apple.com/au/app/aia-vitality-australia/id1584775072';
-    } else if (Platform.OS === 'android') {
-      url = 'https://play.google.com/store/apps/details?id=com.aia.gr.rn.au.v2020.vitality';
-    }
+    url = 'https://v2020.page.link/mentalact';
     Linking.openURL(url).catch(error => {
       console.log('error redirecting to link url');
     });
+    // if (Platform.OS === 'ios') {
+    //   // url = 'https://apps.apple.com/au/app/aia-vitality-australia/id1584775072';
+    //   url = 'https://v2020.page.link/mentalact';
+    //   Linking.openURL(url).catch(error => {
+    //     console.log('error redirecting to link url');
+    //   });
+    // } else if (Platform.OS === 'android') {
+    //   RNShare.isPackageInstalled('com.aia.gr.rn.au.v2020.vitality')
+    //     .then(( response ) => {
+    //       console.log('response :: ', response);
+    //     if(response.isInstalled){
+    //       url = 'https://play.google.com/store/apps/details?id=com.aia.gr.rn.au.v2020.vitality';
+    //       Linking.openURL(url).catch(error => {
+    //         console.log('error redirecting to link url');
+    //       });
+    //     }
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //       // { error }
+    //   });
+    // }
   }, []);
 
   const onOpenHealthApp = useCallback(openHealthApp, []);
@@ -473,6 +495,32 @@ const ProfileTab = ({ navigation }) => {
   //     ? UserData?.UserDetails?.full_name
   //     : name,
   // );
+
+  async function requestPermission() {
+    try {
+      const permissions = [
+        PERMISSIONS.ANDROID.CAMERA,
+        Platform.Version >= 30
+          ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
+          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
+      ].filter(Boolean);
+      const granted = await PermissionsAndroid.requestMultiple(permissions);
+      const allPermissionsGranted = Object.values(granted).every(
+        permission => permission === PermissionsAndroid.RESULTS.GRANTED,
+      );
+      if (allPermissionsGranted) {
+        logger('Camera and gallery permissions granted');
+        return true;
+      } else {
+        logger('Camera and/or gallery permissions denied');
+        return false;
+      }
+    } catch (err) {
+      logger('Error requesting permissions:', err);
+      return false;
+    }
+  }
+
 
   return (
     <>
@@ -501,7 +549,18 @@ const ProfileTab = ({ navigation }) => {
                 />
               )}
               <View style={styles.pickupIconStyle}>
-                <TouchableOpacity onPress={() => setOpenActionSheet(true)}>
+              <TouchableOpacity
+                  onPress={async () => {
+                    const isPermission = await requestPermission();
+                    if (Platform.OS === "android") {
+                      if(isPermission){
+                        setOpenActionSheet(true);
+                      }
+                    } else {
+                      setOpenActionSheet(true);
+                    }
+                  }}
+                >
                   <PickImageIcon />
                 </TouchableOpacity>
               </View>

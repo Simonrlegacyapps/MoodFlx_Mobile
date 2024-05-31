@@ -24,6 +24,8 @@ const WIDTH = Dimensions.get('screen').width;
 
 const HomeScreen = ({ navigation, route }) => {
   const isDivisionSelected = useSelector((state) => state.First?.isDivisionSelected);
+  const vitality_member_id = useSelector(state => state.First?.UserDetails?.vitality_member_id);
+  
   return (
     <View style={{ flex: 1 }}>
       <Tab.Navigator
@@ -52,6 +54,8 @@ const HomeScreen = ({ navigation, route }) => {
             } else if (route.name === 'LinkCompanyStackNavigation') {
               iconName = focused ? <LinkActive /> : <LinkIcon />;
             } else if (route.name === 'MainProfileTab') {
+              iconName = focused ? <ProfileActive /> : <Profile />;
+            } else if (route.name === 'ProfileTab') {
               iconName = focused ? <ProfileActive /> : <Profile />;
             }
             return iconName;
@@ -105,9 +109,9 @@ const HomeScreen = ({ navigation, route }) => {
           component={LinkCompanyStackNavigation}
         />
         {/* <Tab.Screen name={'ProfileTab'} component={ProfileTab} /> */}
-        <Tab.Screen 
-          name={'MainProfileTab'}
-          component={MainProfileTab}
+        <Tab.Screen
+          name={vitality_member_id ? 'ProfileTab' : 'MainProfileTab'}
+          component={vitality_member_id ? ProfileTab : MainProfileTab}
           listeners={{
             tabPress: e => {
               // Prevent default action

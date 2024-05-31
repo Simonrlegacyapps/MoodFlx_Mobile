@@ -49,7 +49,7 @@ const MainProfileTab = ({navigation}) => {
   const [type, setType] = useState('');
   const [isLevelsHide, setIsLevelsHide] = useState(false);
 
-  const UserData = useSelector((state) => state.First);
+  const UserData = useSelector(state => state.First);
   const {floCoins} = UserData;
 
   // let floCoins = 3000
@@ -58,8 +58,8 @@ const MainProfileTab = ({navigation}) => {
     setopenActionSheet(false);
   };
 
-  const changeLayout = useCallback((flag) => {
-    setIsLevelsHide((e) => {
+  const changeLayout = useCallback(flag => {
+    setIsLevelsHide(e => {
       if (e !== flag) {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       }
@@ -89,7 +89,6 @@ const MainProfileTab = ({navigation}) => {
       : `> ${getFloCoins(max)}`;
   };
 
-
   const getCommentLabel = (min, max) => {
     // return floCoins >= min && floCoins < max ? `You’ve already smashed this level` : floCoins > min ?  `You’ve already smashed this level` : `Just another ${getPromotionCoinLeft()} until you’re promoted!`
     return floCoins >= min && floCoins < max
@@ -101,10 +100,7 @@ const MainProfileTab = ({navigation}) => {
 
   const rewards = useCallback(() => {
     return (
-      <Rewards
-        setIsLevelsHide={changeLayout}
-        islevelsHide={isLevelsHide}
-      />
+      <Rewards setIsLevelsHide={changeLayout} islevelsHide={isLevelsHide} />
     );
   }, [changeLayout, isLevelsHide]);
 
@@ -119,10 +115,7 @@ const MainProfileTab = ({navigation}) => {
 
   const history = useCallback(() => {
     return (
-      <History
-        setIsLevelsHide={changeLayout}
-        islevelsHide={isLevelsHide}
-      />
+      <History setIsLevelsHide={changeLayout} islevelsHide={isLevelsHide} />
     );
   }, [changeLayout, isLevelsHide]);
 
@@ -148,7 +141,9 @@ const MainProfileTab = ({navigation}) => {
     // );
     return (
       <TouchableOpacity
-        onPress={() => onClickMedalIcon({min, max, type, LevelName: `Mood ${LevelName}`})}
+        onPress={() =>
+          onClickMedalIcon({min, max, type, LevelName: `Mood ${LevelName}`})
+        }
         style={[styles.medal]}>
         {floCoins >= min && floCoins < max && (
           <AnimatedCircularProgress
@@ -219,52 +214,56 @@ const MainProfileTab = ({navigation}) => {
   }
 
   const isAIAVitality = !!UserData?.UserDetails?.vitality_member_id;
+  // const isAIAVitality = true;
 
   return (
     <View style={styles.container}>
       <ProfileHeader navigation={navigation} />
       {/* {!Scrolling && <View style={{flexDirection: 'row', marginHorizontal: 15}}> */}
       {/* <ScrollView> */}
-      <View style={{ flexDirection: 'row', marginHorizontal: 15, height: !isLevelsHide ? null : 0, overflow: 'hidden' }}>
-        <View style={styles.nameTexts}>
-          {/* <Text style={styles.since}>Points</Text> */}
-          <Text style={styles.name}>
-            Mood status | <Rings />{' '}
-            <Text
-              style={{
-                color: '#FB8D09',
-                fontFamily: RubikLight,
-                fontSize: getFontSize(13),
-              }}>
-              {getPromotionCoinLeft()} until promotion
+      <View
+        style={{
+          flexDirection: 'row',
+          marginHorizontal: 15,
+          height: !isLevelsHide ? null : 0,
+          overflow: 'hidden',
+        }}>
+        {!isAIAVitality && (
+          <View style={styles.nameTexts}>
+            {/* <Text style={styles.since}>Points</Text> */}
+            <Text style={styles.name}>
+              Mood status | <Rings />{' '}
+              <Text
+                style={{
+                  color: '#FB8D09',
+                  fontFamily: RubikLight,
+                  fontSize: getFontSize(13),
+                }}>
+                {getPromotionCoinLeft()} until promotion
+              </Text>
             </Text>
-          </Text>
-          <View style={{ flexDirection: 'row', marginTop: 10 }}>
-            <Medals min={0} max={100} type={'a'} LevelName="Activator" />
-            <Medals
-              min={100}
-              max={1000}
-              type={'n'}
-              LevelName="Navigator"
-            />
-            <Medals min={1000} max={5000} type={'f'} LevelName="Fit" />
-            <Medals
-              min={5000}
-              max={10000}
-              type={'p'}
-              LevelName="Powerhouse"
-            />
-            <Medals
-              min={10000}
-              max={20000}
-              type={'u'}
-              LevelName="Unleashed"
-            />
+            <View style={{flexDirection: 'row', marginTop: 10}}>
+              <Medals min={0} max={100} type={'a'} LevelName="Activator" />
+              <Medals min={100} max={1000} type={'n'} LevelName="Navigator" />
+              <Medals min={1000} max={5000} type={'f'} LevelName="Fit" />
+              <Medals
+                min={5000}
+                max={10000}
+                type={'p'}
+                LevelName="Powerhouse"
+              />
+              <Medals
+                min={10000}
+                max={20000}
+                type={'u'}
+                LevelName="Unleashed"
+              />
+            </View>
           </View>
-        </View>
+        )}
       </View>
-        {/* </View>} */}
-        {/* <ScrollView> */}
+      {/* </View>} */}
+      {/* <ScrollView> */}
       <Tab.Navigator
         swipeEnabled={true}
         tabBarOptions={{
@@ -279,7 +278,7 @@ const MainProfileTab = ({navigation}) => {
           },
           activeTintColor: '#6A6D90',
           inactiveTintColor: '#6A6D90',
-          indicatorStyle: { borderColor: Colors.blueTextColor, borderWidth: 1.5 },
+          indicatorStyle: {borderColor: Colors.blueTextColor, borderWidth: 1.5},
           // tabStyle: { borderWidth: 0 }
         }}>
         {!isAIAVitality && (

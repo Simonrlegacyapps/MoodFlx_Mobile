@@ -563,7 +563,7 @@ const FitnessData = ({
               arcSweepAngle={270}
               size={180}
               width={13}
-              fill={!Loading ? (userSteps / 10000) * 100 : 0}
+              fill={!Loading ? (userSteps || UserSteps / 10000) * 100 : 0}
               // fill={!Loading ? 50 : 0}
               prefill={1}
               rotation={-135}
@@ -584,7 +584,7 @@ const FitnessData = ({
                 />
                 <Text
                   style={[styles.swiperText, { fontSize: 24, marginTop: 10 }]}>
-                  {userSteps.toFixed(0)}
+                  {(userSteps || UserSteps).toFixed(0) }
                 </Text>
                 <Text
                   style={[
@@ -656,7 +656,7 @@ const FitnessData = ({
               </View>
               <View style={{ marginTop: 10 }}>
                 <Text style={[styles.SmallThinBlackText]}>
-                  {((UserDistance / 5000) * 5).toFixed(1)} km
+                {((UserDistance / 5000) * 5).toFixed(1)} km
                 </Text>
               </View>
             </View>

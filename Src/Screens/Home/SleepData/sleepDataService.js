@@ -12,6 +12,10 @@ import GoogleFit, { Scopes } from 'react-native-google-fit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AppPermissions, googleFitScopes} from '../../../services/appPermissions';
 import getStore from '../../../redux';
+import axios from 'axios';
+import { getMyDeviceId } from '../../../services/commonService';
+import { getApiBaseUrl } from '../../../Constants/constants';
+// import {logger} from "../../../../index";
 
 export const sleepDataPermissionsIOS = {
   permissions: {
@@ -21,6 +25,8 @@ export const sleepDataPermissionsIOS = {
 };
 
 let sleepDataLastThirtyDays = [];
+
+const userData = getStore?.()?.getState?.()?.First;
 
 export function setSleepDataLastThirtyDays(data) {
   if (Array.isArray(data) && data.length > 0) {
@@ -42,20 +48,43 @@ export function fetchSleepDataForLastThirtyDays({ askPermission, onUpdate, dispa
 }
 
 export async function getSleepDataAfterPermissionAndroid({ askPermission, onUpdate, dispatch }) {
+  // logger("getSleepDataAfterPermissionAndroid")
   if (askPermission) {
-    AppPermissions.requestActivityPermission(dispatch);
-    return;
+    await AppPermissions.requestActivityPermission(dispatch);
   }
-  const getSleepData = (callback) => {
+  const getSleepData =  (callback) => {
     const sleepOptions = {
-      // startDate: (moment().startOf('day').subtract(1, 'days').toDate()).toISOString(), // required
       startDate: (moment().startOf('day').subtract(30, 'days').toDate()).toISOString(), // required
       endDate: (new Date()).toISOString(), // optional; default now
     };
     GoogleFit.getSleepSamples(sleepOptions)
-      .then(results => {
+      .then(async results => {
         if (results) {
-          // console.log('Google Fit getSleepSamples success +++++++++======>>>>', results);
+          // logger('Google Fit getSleepSamples success +++++++++======>>>>', results);
+          if(results?.length){
+            const config = {
+              method: 'post',
+              url: `${getApiBaseUrl()}updateSleepQuality`,
+              headers: {
+                'Content-Type': 'application/json',
+                Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
+              },
+              data: JSON.stringify(
+                {
+                  "device_id": getMyDeviceId(),
+                  "email": userData.UserEmail ?? '',
+                  "user_id": userData.UserEmail ?? '',
+                  "sleep_data": [
+                      {
+                          "start_date": results[0].startDate,
+                          "end_date": results[0].endDate,
+                          "type": "INBED"
+                      }
+                  ]
+              }),
+            };
+            await axios(config)
+          }
           calculateSleepData(results, callback);
         }
       })
@@ -65,7 +94,7 @@ export async function getSleepDataAfterPermissionAndroid({ askPermission, onUpda
     console.log('Google Fit isAuthorized sleep service: ', GoogleFit.isAuthorized);
     if (GoogleFit.isAuthorized) {
       dispatch?.(SleepPerm(true));
-      setSleepDataSync(dispatch);
+      await setSleepDataSync(dispatch);
       getSleepData(onUpdate);
     } else {
       const sleepPermission = getStore?.()?.getState?.()?.First?.SleepPermission;
@@ -163,8 +192,6 @@ export function getSleepDataAfterPermissionIOS({ askPermission, onUpdate, dispat
 export function calculateSleepData(sleepData, onUpdate) {
   //sleep data for last 30 days
   if (Array.isArray(sleepData) && sleepData.length > 0) {
-    let weeklySleep = null;
-    let monthlySleep = null;
     let formattedData = [];
     sleepData.forEach((e, idx) => {
       const startTimeInMillis = e?.startDate ? new Date(e.startDate).getTime() : null;
@@ -172,7 +199,6 @@ export function calculateSleepData(sleepData, onUpdate) {
       const startDate = startTimeInMillis != null ? moment(startTimeInMillis) : null;
       const endDate = endTimeInMillis != null ? moment(endTimeInMillis) : null;
       let diff = 0;
-      // console.log('calculateSleepData: ', e);
       if (startDate && endDate && Array.isArray(e?.granularity) && e?.granularity?.length > 0) {
         let asleepData = null;
         let startTimes = [];
@@ -207,22 +233,6 @@ export function calculateSleepData(sleepData, onUpdate) {
         } : asleepData;
         if (asleepData && asleepStartTime && asleepEndTime) {
           formattedData.push(asleepData);
-          // if (moment(asleepStartTime).date() !== moment(asleepEndTime).date()) {
-          //   formattedData.push({
-          //     start_date: asleepData.start_date,
-          //     end_date: moment(asleepStartTime).endOf('day').toDate(),
-          //     type: 'ASLEEP',
-          //     duration: moment(asleepStartTime).endOf('day').diff(moment(asleepStartTime), 'minutes')
-          //   });
-          //   formattedData.push({
-          //     start_date: moment(asleepEndTime).startOf('day').toDate(),
-          //     end_date: endDate.toDate(),
-          //     type: 'ASLEEP',
-          //     duration: moment(asleepEndTime).diff(moment(asleepEndTime).startOf('day'), 'minutes'),
-          //   });
-          // } else {
-          //   formattedData.push(asleepData);
-          // }
         }
       }
       if (startDate && endDate) {
@@ -235,28 +245,6 @@ export function calculateSleepData(sleepData, onUpdate) {
           type,
           duration: diff
         });
-        // if (startDate.clone().date() !== endDate.clone().date()) {
-        //   formattedData.push({
-        //     start_date: startDate.clone().toDate(),
-        //     end_date: moment(startTimeInMillis).endOf('day').toDate(),
-        //     type,
-        //     duration: moment(startTimeInMillis).endOf('day').diff(startDate, 'minutes')
-        //   });
-        //   formattedData.push({
-        //     start_date: moment(endTimeInMillis).startOf('day').toDate(),
-        //     end_date: endDate.clone().toDate(),
-        //     type,
-        //     duration: endDate.diff(moment(endTimeInMillis).startOf('day'), 'minutes'),
-        //   });
-        // } else {
-        //   diff = endDate.diff(startDate, 'minutes');
-        //   formattedData.push({
-        //     start_date: startDate.clone().toDate(),
-        //     end_date: endDate.clone().toDate(),
-        //     type,
-        //     duration: diff
-        //   });
-        // }
       }
     });
     formattedData.sort(function (a, b) {

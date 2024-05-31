@@ -90,4 +90,5 @@ export default {
   frustrated: require('../../../assets/moodIcons/upset.png'),
   impatient: require('../../../assets/moodIcons/upset.png'),
   wired: require('../../../assets/moodIcons/wired.png'),
+  vitality: require('../../../assets/profileicons/AIAVitality.png'),
 };

@@ -892,8 +892,8 @@ const App = (props) => {
               });
             }
           });
-          userSteps !== -1 && dispatch(UserSteps(res[2].steps[0].value));
-          rawSteps && dispatch(GetSteps(res[2].rawSteps));
+          userSteps !== -1 && dispatch(UserSteps(userSteps));
+          rawSteps && dispatch(GetSteps(rawSteps));
           steps = rawSteps;
         }
       } catch (e) {

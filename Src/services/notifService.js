@@ -43,22 +43,24 @@ export default class NotifService {
   static notifData = {
     one: {
       id: 1,
-      title: notifMessages?.[getRandomInt(16)] ?? 'flx would love to know how you feel',
-      timeInHour: 9,
-      timeInMin: 50,
+      title:
+        notifMessages?.[getRandomInt(16)] ??
+        'flx would love to know how you feel',
+      timeInHour: 7,
+      timeInMin: 0,
     },
     two: {
       id: 2,
       title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with flx',
       timeInHour: 12,
-      timeInMin: 50,
+      timeInMin: 0,
     },
-    three: {
-      id: 3,
-      title: notifMessages?.[getRandomInt(16)] ?? "It's flx time",
-      timeInHour: 15,
-      timeInMin: 50,
-    },
+    // three: {
+    //   id: 3,
+    //   title: notifMessages?.[getRandomInt(16)] ?? "It's flx time",
+    //   timeInHour: 13,
+    //   timeInMin: 15,
+    // },
   };
 
   static setNotifData() {
@@ -68,44 +70,26 @@ export default class NotifService {
     NotifService.notifData = {
       one: {
         id: 1,
-        title: notifMessages?.[getRandomInt(16)] ?? 'flx would love to know how you feel',
-        timeInHour: 9,
-        timeInMin: 50,
+        title:
+          notifMessages?.[getRandomInt(16)] ??
+          'flx would love to know how you feel',
+        timeInHour: 7,
+        timeInMin: 0,
       },
       two: {
         id: 2,
         title: notifMessages?.[getRandomInt(16)] ?? 'Time to check in with flx',
         timeInHour: 12,
-        timeInMin: 50,
+        timeInMin: 0,
       },
-      three: {
-        id: 3,
-        title: notifMessages?.[getRandomInt(16)] ?? "It's flx time",
-        timeInHour: 15,
-        timeInMin: 50,
-      },
+      // three: {
+      //   id: 3,
+      //   title: notifMessages?.[getRandomInt(16)] ?? "It's flx time",
+      //   timeInHour: 0,
+      //   timeInMin: 0,
+      // },
     };
   }
-  // static notifData = {
-  //   one: {
-  //     id: 1,
-  //     title: 'flx would love to know how you feel',
-  //     timeInHour: 9,
-  //     timeInMin: 50,
-  //   },
-  //   two: {
-  //     id: 2,
-  //     title: 'Time to check in with flx',
-  //     timeInHour: 12,
-  //     timeInMin: 50,
-  //   },
-  //   three: {
-  //     id: 3,
-  //     title: "It's flx time",
-  //     timeInHour: 15,
-  //     timeInMin: 50,
-  //   },
-  // };
 
   static latestNotificationData = null;
 
@@ -127,7 +111,7 @@ export default class NotifService {
       if (channels.indexOf('channel-one-id') === -1) {
         self.createDefaultChannels();
       }
-      // console.log('channels', channels);
+      // console.log('channelsssssa', channels);
     });
   }
 
@@ -151,7 +135,7 @@ export default class NotifService {
         importance: 4, // (optional) default: 4. Int value of the Android notification importance
         vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
       },
-      (created) =>
+      created =>
         console.log(`createChannel 'channel-one-id' returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
     );
     // PushNotification.createChannel(
@@ -183,7 +167,7 @@ export default class NotifService {
   //   }
 
   popInitialNotification() {
-    PushNotification.popInitialNotification((notification) =>
+    PushNotification.popInitialNotification(notification =>
       console.log('InitialNotication:', notification),
     );
   }
@@ -277,6 +261,7 @@ export default class NotifService {
       if (value !== null) {
         fcmToken = value;
       }
+      console.log('fcmtoken', fcmToken);
     } catch (e) {
       console.log('error getting device_token from storage', error);
     }
@@ -288,8 +273,8 @@ export default class NotifService {
     NotifService.setNotifData();
     this.scheduleMoodFloNotifWithId(NotifService.notifData.one.id);
     this.scheduleMoodFloNotifWithId(NotifService.notifData.two.id);
-    this.scheduleMoodFloNotifWithId(NotifService.notifData.three.id);
-    this.getScheduledLocalNotifications((notifications) => {
+    // this.scheduleMoodFloNotifWithId(NotifService.notifData.three.id);
+    this.getScheduledLocalNotifications(notifications => {
       console.log(
         'scheduleMoodFloLocalNotif after update: ',
         JSON.stringify(notifications),
@@ -327,15 +312,15 @@ export default class NotifService {
       moment.duration(secondTime.diff(now)).asMinutes(),
     );
 
-    let third = new Date(
-      new Date().setHours(
-        NotifService.notifData.three.timeInHour,
-        NotifService.notifData.three.timeInMin,
-        0,
-        0,
-      ),
-    );
-    // let third = new Date(new Date().setHours(15, 19, 0, 0));
+    // let third = new Date(
+    //   new Date().setHours(
+    //     NotifService.notifData.three.timeInHour,
+    //     NotifService.notifData.three.timeInMin,
+    //     0,
+    //     0,
+    //   ),
+    // );
+    let third = new Date(new Date().setHours(15, 19, 0, 0));
     const thirdTime = moment(third.getTime());
     let thirdDuration = Math.ceil(
       moment.duration(thirdTime.diff(now)).asMinutes(),
@@ -357,20 +342,21 @@ export default class NotifService {
         time: time,
         message: NotifService.notifData.two.title,
       });
-    } else if (thirdDuration > 0 && thirdDuration < 120) {
-      this.cancelNotif(NotifService.notifData.three.id);
-      time = thirdTime.add(1, 'days').toDate();
-      this.scheduleNotif({
-        id: NotifService.notifData.three.id,
-        time: time,
-        message: NotifService.notifData.three.title,
-      });
     }
+    // else if (thirdDuration > 0 && thirdDuration < 120) {
+    //   this.cancelNotif(NotifService.notifData.three.id);
+    //   time = thirdTime.add(1, 'days').toDate();
+    //   this.scheduleNotif({
+    //     id: NotifService.notifData.three.id,
+    //     time: time,
+    //     message: NotifService.notifData.three.title,
+    //   });
+    // }
     // this.getScheduledLocalNotifications((notif) => {
-      // console.log(
-      //   'checkTimeAndUpdateNotif scheduledNotification: ',
-      //   JSON.stringify(notif),
-      // );
+    // console.log(
+    //   'checkTimeAndUpdateNotif scheduledNotification: ',
+    //   JSON.stringify(notif),
+    // );
     // });
   }
 
@@ -413,41 +399,43 @@ export default class NotifService {
         time: second,
         message: NotifService.notifData.two.title,
       });
-    } else if (id === NotifService.notifData.three.id) {
-      let third = new Date(
-        new Date().setHours(
-          NotifService.notifData.three.timeInHour,
-          NotifService.notifData.three.timeInMin,
-          0,
-          0,
-        ),
-      );
-      // let third = new Date(new Date().setHours(12, 41, 40, 0));
-      if (moment().isAfter(third.getTime(), 'second')) {
-        third = moment(third.getTime()).add(1, 'days').toDate();
-      }
-      this.scheduleNotif({
-        id: NotifService.notifData.three.id,
-        time: third,
-        message: NotifService.notifData.three.title,
-      });
     }
+    // else if (id === NotifService.notifData.three.id) {
+    //   let third = new Date(
+    //     new Date().setHours(
+    //       NotifService.notifData.three.timeInHour,
+    //       NotifService.notifData.three.timeInMin,
+    //       0,
+    //       0,
+    //     ),
+    //   );
+    //   // let third = new Date(new Date().setHours(12, 41, 40, 0));
+    //   if (moment().isAfter(third.getTime(), 'second')) {
+    //     third = moment(third.getTime()).add(1, 'days').toDate();
+    //   }
+    //   this.scheduleNotif({
+    //     id: NotifService.notifData.three.id,
+    //     time: third,
+    //     message: NotifService.notifData.three.title,
+    //   });
+    // }
   }
 
   checkAndScheduleNotif(id) {
-    this.getScheduledLocalNotifications((notif) => {
+    this.getScheduledLocalNotifications(notif => {
       let isScheduled = false;
       Array.isArray(notif) &&
-        notif.forEach((e) => {
+        notif.forEach(e => {
           if (e.id === id) {
             let isFlagSet = false;
             if (
               (e.id === NotifService.notifData.one.id &&
                 typeof e.title !== 'string') ||
               (e.id === NotifService.notifData.two.id &&
-                typeof e.title !== 'string') ||
-              (e.id === NotifService.notifData.three.id &&
                 typeof e.title !== 'string')
+              // ||
+              // (e.id === NotifService.notifData.three.id &&
+              //   typeof e.title !== 'string')
             ) {
               this.cancelNotif(id);
               isScheduled = false;
@@ -493,17 +481,17 @@ export default class NotifService {
     NotifService.cancelDeliveredNotifications([
       String(NotifService.notifData.one.id),
       String(NotifService.notifData.two.id),
-      String(NotifService.notifData.three.id),
-    ])
+      // String(NotifService.notifData.three.id),
+    ]);
   }
 
   static cancelDeliveredNotifications(identifiers) {
     console.log('cancelDeliveredNotifications idnetifiers', identifiers);
-    if (Array.isArray(identifiers)){
-      PushNotification.removeDeliveredNotifications(identifiers)
+    if (Array.isArray(identifiers)) {
+      PushNotification.removeDeliveredNotifications(identifiers);
     } else {
-      if (identifiers){
-        PushNotification.removeDeliveredNotifications([String(identifiers)])
+      if (identifiers) {
+        PushNotification.removeDeliveredNotifications([String(identifiers)]);
       }
     }
   }

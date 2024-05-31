@@ -82,5 +82,9 @@ const ProvidedApp = () => {
     </Provider>
   );
 };
-
+const log = console.log
+export function logger(...args){
+  log(args);
+}
+console.log = ()=>{}
 AppRegistry.registerComponent(appName, () => ProvidedApp);

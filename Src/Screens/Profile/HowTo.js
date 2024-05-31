@@ -1,11 +1,23 @@
-import React, { useRef, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import React, {useRef, useEffect, useCallback} from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  RefreshControl,
+  Image,
+} from 'react-native';
 import BigRing from '../../../assets/svg/BigRing';
 import Rings from '../../../assets/svg/rings';
 import Colors from '../../Constants/Colors/Colors';
-import { RubikLight, RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
-import { getFontSize, horizontalScale } from '../../Constants/sizeChoose';
+import {
+  RubikLight,
+  RubikMedium,
+  RubikRegular,
+} from '../../Constants/fonts/Fonts';
+import {getFontSize, horizontalScale} from '../../Constants/sizeChoose';
 import {useSelector} from 'react-redux';
+import Images from '../../Constants/Images/Images';
 
 const BoldHeader = ({label}) => {
   return (
@@ -25,12 +37,8 @@ const SimpleText = ({label, text, mt}) => {
         alignItems: 'center',
         marginBottom: horizontalScale(14),
       }}>
-      <Text
-        style={styles.simpleTextLabel}>
-        {label}
-      </Text>
-      <Text
-        style={styles.simpleTextCoins}>
+      <Text style={styles.simpleTextLabel}>{label}</Text>
+      <Text style={styles.simpleTextCoins}>
         <Rings w={14} h={14} />
         {text}
       </Text>
@@ -42,6 +50,10 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
   const offset = useRef(0);
   const isHidden = useRef(false);
   const UserData = useSelector(state => state.First);
+
+  console.log('UserData :: ', UserData?.UserDetails);
+  const isAIAVitalityDemo = !!UserData?.UserDetails?.vitality_member_id;
+  console.log('isAIAVitalityDemo :: ', isAIAVitalityDemo);
 
   useEffect(() => {
     if (!islevelsHide) {
@@ -66,6 +78,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
   );
 
   const isAIAVitality = !!UserData?.UserDetails?.vitality_member_id;
+  // const isAIAVitality = true;
 
   return (
     <ScrollView
@@ -74,113 +87,127 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
       onScroll={onScroll}
       style={styles.scrollViewStyle}>
       <View style={styles.flxCoinImageWrapper}>
-        <BigRing />
+        {isAIAVitality ? (
+          <Image source={Images.vitality} style={styles.vitalityImg} />
+        ) : (
+          <BigRing />
+        )}
       </View>
       <View style={styles.topHeaderWrapper}>
-        <Text style={styles.topHeaderText}>{isAIAVitality ? 'Earn Bonus Vitality Points' : 'Earn flx Coins'}</Text>
+        <Text style={styles.topHeaderText}>
+          {isAIAVitality ? 'Earn Vitality Points' : 'Earn flx Coins'}
+        </Text>
         <Text style={styles.topHeaderDescription}>
-          Advance your Mood Status, unlock more rewards and cash in your {isAIAVitality ? 'Bonus Vitality Points' : 'flx Coins'}!
+          Advance your Mood Status, unlock more rewards and cash in your{' '}
+          {isAIAVitality ? 'Vitality Points' : 'flx Coins'}!
         </Text>
         <View>
           <BoldHeader label={'Mood Inputs'} />
           <SimpleText
-            label={'Per mood'}
-            text={` 3 ${isAIAVitality ? 'Bonus Vitality Points' : 'coins'}`}
+            label={isAIAVitality ? 'Log Mood Per day' : 'Per mood'}
+            // text={` 3 ${isAIAVitality ? 'Bonus Vitality Points' : 'coins'}`}
+            text={isAIAVitality ? '10 Vitality Points' : '3 coins'}
           />
           <View style={styles.lineSeperator} />
-          <SimpleText
-            label={'3+ moods/day'}
-            text={` 1 ${isAIAVitality ? 'Bonus Vitality Point' : 'bonus coin'}`}
-            mt={12}
-          />
-          <Text style={styles.smallHeaderText}>Recommended</Text>
-          <Text style={styles.hoursIntervalHeaderText}>6-HOUR INTERVALS</Text>
-          <View style={styles.intervalWrapper}>
-            <View style={styles.intervalTextWrapper}>
-              <Text style={styles.hours}>12:00 AM - 6:00 AM</Text>
-              <Text style={styles.hours}>6:00 AM - 12:00 PM</Text>
-              <Text style={styles.hours}>12:00 PM - 6:00 PM</Text>
-              <Text style={styles.hours}>6:00 PM - 12:00 AM</Text>
-            </View>
-            <View style={styles.verticalDivider} />
-            <View style={styles.intervalDetailsWrapper}>
-              <Text
-                style={[
-                  styles.text,
-                  {marginBottom: horizontalScale(10), letterSpacing: 0.7},
-                ]}>
-                2 moods per interval
+          {!isAIAVitality && (
+            <>
+              <SimpleText
+                label={'3+ moods/day'}
+                text={` 1 ${
+                  isAIAVitality ? 'Bonus Vitality Point' : 'bonus coin'
+                }`}
+                mt={12}
+              />
+              <Text style={styles.smallHeaderText}>Recommended</Text>
+              <Text style={styles.hoursIntervalHeaderText}>
+                6-HOUR INTERVALS
               </Text>
-              <Text
-                style={[
-                  styles.text,
-                  {textAlign: 'center', letterSpacing: 0.7},
-                ]}>
-                {isAIAVitality ? 'Earn Bonus Vitality Points' : 'earn coins'} if
-                there is a 2 hour gap between each mood
-              </Text>
-            </View>
-          </View>
+              <View style={styles.intervalWrapper}>
+                <View style={styles.intervalTextWrapper}>
+                  <Text style={styles.hours}>12:00 AM - 6:00 AM</Text>
+                  <Text style={styles.hours}>6:00 AM - 12:00 PM</Text>
+                  <Text style={styles.hours}>12:00 PM - 6:00 PM</Text>
+                  <Text style={styles.hours}>6:00 PM - 12:00 AM</Text>
+                </View>
+                <View style={styles.verticalDivider} />
+                <View style={styles.intervalDetailsWrapper}>
+                  <Text style={[styles.text, styles.txtBottom]}>
+                    2 moods per interval
+                  </Text>
+                  <Text style={[styles.text, styles.txtCenter]}>
+                    {isAIAVitality
+                      ? 'Earn Bonus Vitality Points'
+                      : 'earn coins'}{' '}
+                    if there is a 2 hour gap between each mood
+                  </Text>
+                </View>
+              </View>
+            </>
+          )}
         </View>
         <View>
           <BoldHeader label={'Mood Journaling'} />
           <SimpleText
-            label={'Per note'}
-            text={` 3 ${isAIAVitality ? 'Bonus Vitality Points' : 'coins'}`}
+            label={isAIAVitality ? 'Log 3 notes per day' : 'Per note'}
+            // text={` 3 ${isAIAVitality ? 'Bonus Vitality Points' : 'coins'}`}
+            text={isAIAVitality ? '10 Vitality Points' : '3 coins'}
           />
           <View style={styles.lineSeperator} />
-          <SimpleText
-            label={'3+ notes/day'}
-            text={` 1 ${isAIAVitality ? 'Bonus Vitality Point' : 'bonus coin'}`}
-            mt={12}
-          />
-          <Text style={styles.smallHeaderText}>Recommended</Text>
-          <Text style={styles.hoursIntervalHeaderText}>6-HOUR INTERVALS</Text>
-          <View style={styles.intervalWrapper}>
-            <View style={styles.intervalTextWrapper}>
-              <Text style={styles.hours}>12:00 AM - 6:00 AM</Text>
-              <Text style={styles.hours}>6:00 AM - 12:00 PM</Text>
-              <Text style={styles.hours}>12:00 PM - 6:00 PM</Text>
-              <Text style={styles.hours}>6:00 PM - 12:00 AM</Text>
-            </View>
-            <View style={styles.verticalDivider} />
-            <View style={styles.intervalDetailsWrapper}>
-              <Text
-                style={[
-                  styles.text,
-                  {marginBottom: horizontalScale(10), letterSpacing: 0.7},
-                ]}>
-                2 notes per interval
+          {!isAIAVitality && (
+            <>
+              <SimpleText
+                label={'3+ notes/day'}
+                text={` 1 ${
+                  isAIAVitality ? 'Bonus Vitality Point' : 'bonus coin'
+                }`}
+                mt={12}
+              />
+              <Text style={styles.smallHeaderText}>Recommended</Text>
+              <Text style={styles.hoursIntervalHeaderText}>
+                6-HOUR INTERVALS
               </Text>
-              <Text
-                style={[
-                  styles.text,
-                  {textAlign: 'center', letterSpacing: 0.7},
-                ]}>
-                {isAIAVitality ? 'Earn Bonus Vitality Points' : 'earn coins'} if
-                there is a 2 hour gap between each note
+              <View style={styles.intervalWrapper}>
+                <View style={styles.intervalTextWrapper}>
+                  <Text style={styles.hours}>12:00 AM - 6:00 AM</Text>
+                  <Text style={styles.hours}>6:00 AM - 12:00 PM</Text>
+                  <Text style={styles.hours}>12:00 PM - 6:00 PM</Text>
+                  <Text style={styles.hours}>6:00 PM - 12:00 AM</Text>
+                </View>
+                <View style={styles.verticalDivider} />
+                <View style={styles.intervalDetailsWrapper}>
+                  <Text style={[styles.text, styles.txtBottom]}>
+                    2 notes per interval
+                  </Text>
+                  <Text style={[styles.text, styles.txtCenter]}>
+                    {isAIAVitality
+                      ? 'Earn Bonus Vitality Points'
+                      : 'earn coins'}{' '}
+                    if there is a 2 hour gap between each note
+                  </Text>
+                </View>
+              </View>
+            </>
+          )}
+        </View>
+        {!isAIAVitality && (
+          <View>
+            <BoldHeader label={'Mood Status'} />
+            <View style={styles.levelRowView}>
+              <Text style={styles.smallHeaderText}>Level</Text>
+              <Text style={styles.smallHeaderText}>
+                {isAIAVitality ? 'Bonus Vitality Points' : 'flx coins'}
               </Text>
             </View>
+            <SimpleText label={'Mood Activator'} text={' 0 - 100'} />
+            <SimpleText label={'Mood Navigator'} text={' 100 - 1,000'} />
+            <SimpleText label={'Mood Fit'} text={' 1,000 - 5,000'} />
+            <SimpleText label={'Mood Powerhouse'} text={' 5,000 - 10,000'} />
+            <SimpleText label={'Mood Unleashed'} text={' 10,000 - 20,000'} />
           </View>
-        </View>
-        <View>
-          <BoldHeader label={'Mood Status'} />
-          <View style={styles.levelRowView}>
-            <Text style={styles.smallHeaderText}>Level</Text>
-            <Text style={styles.smallHeaderText}>
-              {isAIAVitality ? 'Bonus Vitality Points' : 'flx coins'}
-            </Text>
-          </View>
-          <SimpleText label={'Mood Activator'} text={' 0 - 100'} />
-          <SimpleText label={'Mood Navigator'} text={' 100 - 1,000'} />
-          <SimpleText label={'Mood Fit'} text={' 1,000 - 5,000'} />
-          <SimpleText label={'Mood Powerhouse'} text={' 5,000 - 10,000'} />
-          <SimpleText label={'Mood Unleashed'} text={' 10,000 - 20,000'} />
-
-        </View>
+        )}
       </View>
 
-      <View style={{ marginBottom: 120 }} />
+      <View style={{marginBottom: 120}} />
     </ScrollView>
   );
 };
@@ -196,11 +223,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: horizontalScale(30),
   },
+  vitalityImg: {
+    marginBottom: 20,
+  },
   topHeaderWrapper: {
     height: '100%',
     width: '100%',
     backgroundColor: 'white',
     paddingHorizontal: horizontalScale(12),
+  },
+  txtBottom: {
+    marginBottom: horizontalScale(10),
+    letterSpacing: 0.7,
+  },
+  txtCenter: {
+    textAlign: 'center',
+    letterSpacing: 0.7,
   },
   topHeaderText: {
     textAlign: 'center',
@@ -221,7 +259,7 @@ const styles = StyleSheet.create({
   lineSeperator: {
     height: 0.6,
     width: '100%',
-    backgroundColor: '#ebebeb'
+    backgroundColor: '#ebebeb',
   },
   smallHeaderText: {
     fontSize: getFontSize(12),
@@ -232,7 +270,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikRegular,
     fontSize: getFontSize(12),
     color: Colors.blueTextColor,
-    marginVertical: horizontalScale(10)
+    marginVertical: horizontalScale(10),
   },
   intervalWrapper: {
     flexDirection: 'row',
@@ -251,7 +289,7 @@ const styles = StyleSheet.create({
     color: Colors.greyTwo,
     fontSize: 13,
     margin: 8,
-    marginLeft: 0
+    marginLeft: 0,
   },
   verticalDivider: {
     width: 1,
@@ -292,6 +330,6 @@ const styles = StyleSheet.create({
     fontFamily: RubikRegular,
     fontSize: getFontSize(15),
   },
-})
+});
 
 export default HowTo;

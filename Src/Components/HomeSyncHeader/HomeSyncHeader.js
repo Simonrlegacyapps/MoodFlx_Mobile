@@ -10,12 +10,20 @@ import {
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import Constants from '../../Constants';
-import {RubikLight, RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
-import {dynamicSize, getFontSize, horizontalScale} from '../../Constants/sizeChoose';
+import {
+  RubikLight,
+  RubikMedium,
+  RubikRegular,
+} from '../../Constants/fonts/Fonts';
+import {
+  dynamicSize,
+  getFontSize,
+  horizontalScale,
+} from '../../Constants/sizeChoose';
 import CrownBox from '../crownBox/crownBox';
 import LottieView from 'lottie-react-native';
-import { useNavigation } from '@react-navigation/native';
-import { getPrevFloCoins, setPrevFloCoins } from '../../services/commonService';
+import {useNavigation} from '@react-navigation/native';
+import {getPrevFloCoins, setPrevFloCoins} from '../../services/commonService';
 import getStore from '../../redux';
 import Colors from '../../Constants/Colors/Colors';
 
@@ -28,7 +36,7 @@ const HomeSyncHeader = ({
   isPermissionGiven,
   syncText,
 }) => {
-  const UserData = useSelector((state) => state.First);
+  const UserData = useSelector(state => state.First);
   const navigation = useNavigation();
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
   const [isShowPrevFloCoins, setIsShowPrevFloCoins] = useState(true);
@@ -82,16 +90,22 @@ const HomeSyncHeader = ({
           </Text>
         </View>
       </TouchableOpacity>
-      <View style={styles.buttons}>
-        <TouchableOpacity onPress={()=>{navigation.navigate("MainProfileTab")}}>
-          <CrownBox
-            isAiaVitality={!!UserData?.UserDetails?.vitality_member_id}
-            floCoins={
-              isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins
-            }
-          />
-        </TouchableOpacity>
-      </View>
+      {!UserData?.UserDetails?.vitality_member_id && (
+        <View style={styles.buttons}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('MainProfileTab');
+            }}>
+            <CrownBox
+              isAiaVitality={!!UserData?.UserDetails?.vitality_member_id}
+              floCoins={
+                isShowPrevFloCoins ? getPrevFloCoins() : UserData.floCoins
+              }
+            />
+          </TouchableOpacity>
+        </View>
+      )}
+
       {UserData.UserMoodCount >= 3 && !isAnimationFinished && (
         <LottieView
           source={require('../../../assets/json/c2.json')}
@@ -100,7 +114,7 @@ const HomeSyncHeader = ({
           style={styles.lottieViewStyle}
           onAnimationFinish={onAnimationFinished}
         />
-       )} 
+      )}
     </View>
   );
 };
@@ -165,9 +179,9 @@ const styles = StyleSheet.create({
 
 export default HomeSyncHeader;
 
-
-
- {/* {UserData.UserMoodCount >= 3 && ( */}
+{
+  /* {UserData.UserMoodCount >= 3 && ( */
+}
 //   <LottieView
 //   source={require('../../../assets/json/64686-confetti.json')}
 //   autoPlay={true}
