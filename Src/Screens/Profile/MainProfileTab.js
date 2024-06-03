@@ -244,17 +244,17 @@ const MainProfileTab = ({navigation}) => {
             </Text>
             <View style={{flexDirection: 'row', marginTop: 10}}>
               <Medals min={0} max={100} type={'a'} LevelName="Activator" />
-              <Medals min={100} max={1000} type={'n'} LevelName="Navigator" />
-              <Medals min={1000} max={5000} type={'f'} LevelName="Fit" />
+              <Medals min={101} max={250} type={'n'} LevelName="Navigator" />
+              <Medals min={251} max={500} type={'f'} LevelName="Fit" />
               <Medals
-                min={5000}
-                max={10000}
+                min={501}
+                max={750}
                 type={'p'}
                 LevelName="Powerhouse"
               />
               <Medals
-                min={10000}
-                max={20000}
+                min={751}
+                max={1000}
                 type={'u'}
                 LevelName="Unleashed"
               />

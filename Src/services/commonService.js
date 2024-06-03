@@ -437,15 +437,15 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     return false;
   }
   const negativeMoodNames = [
-    'Annoyed',
-    'Frustrated',
+    'Stressed',
+    'Cranky',
     'Upset',
     'Sad',
     'Bored',
-    'Gloomy',
+    'Flat',
     'Tense',
     'Impatient',
-    'Worried',
+    'Anxious',
     'Tired',
   ];
   const allNegativeMoods = allMoods

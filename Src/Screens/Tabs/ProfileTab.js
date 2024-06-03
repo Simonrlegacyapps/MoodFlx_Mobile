@@ -65,14 +65,14 @@ const listData = [
   { name: 'Pronoun', value: 'Anonymous' },
 ];
 
+const FAQ_DETAILS = {
+  id: "1",
+  name: 'FAQ',
+  icon: <FaqIcon />,
+  link: FAQ_URL,
+}
+
 const bottomList = [
-  // {name: 'FAQ', icon: <FaqIcon />},
-  {
-    id: "1",
-    name: 'FAQ',
-    icon: <FaqIcon />,
-    link: FAQ_URL,
-  },
   {
     id: "2",
     name: 'Terms & Conditions',
@@ -851,6 +851,24 @@ const ProfileTab = ({ navigation }) => {
                 </View>
               </View>
             </TouchableOpacity>
+            {
+            !UserData?.UserDetails?.vitality_member_id &&
+            <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(FAQ_DETAILS.link);
+                }}>
+                <View style={styles.bottomFlatlistContainer}>
+                  <View style={{ marginTop: dynamicSize(5) }}>{FAQ_DETAILS.icon}</View>
+                  <Text
+                    style={[
+                      styles.anonymousTextStyle,
+                      { marginLeft: dynamicSize(16) },
+                    ]}>
+                    {FAQ_DETAILS.name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            }       
             {bottomList.map((item, idx) => (
               <TouchableOpacity
                 onPress={() => {

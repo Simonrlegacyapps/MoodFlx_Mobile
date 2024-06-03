@@ -12,6 +12,7 @@ import {
   Platform,
   ImageBackground,
   AppState,
+  Image,
 } from 'react-native';
 import Scroller from './moodScroller';
 import {
@@ -105,7 +106,7 @@ import NegativeMoodModal from '../../Components/Modals/NegativeMoodModal/Negativ
 import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
 import isEmpty from 'lodash.isempty';
 import getStore from '../../redux';
-
+import Constants from '../../Constants';
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
 let lpX = 0;
@@ -1404,23 +1405,23 @@ export default function MoodDetector({navigation}) {
 
               if (route?.params?.question != undefined) {
                 setSwiperIndexHome(0, dispatch);
-                navigation.navigate('HomeScreen', {screen: 'MicScreen'});
+                navigation.navigate("HomeScreen", { screen: "MicScreen" });
               } else {
                 if (showNegativeMoodModal === true) {
                   let negativeModalTimeoutId = setTimeout(() => {
-                    setShowNegativeMoodModal(true)();
+                    // setShowNegativeMoodModal(true)();
                     clearTimeout(negativeModalTimeoutId);
                   }, 400);
                 } else {
-                  showMoodSaveConfirmModal(() => {
-                    setSwiperIndexHome(0, dispatch);
-                    navigation.replace('HomeScreen', {
-                      lat: lat,
-                      long: lng,
-                      screen: 'Home',
-                      isMoodUpdate: true,
-                    });
-                  });
+                    // showMoodSaveConfirmModal(() => {
+                      setSwiperIndexHome(0, dispatch);
+                      navigation.replace("HomeScreen", {
+                        lat: lat,
+                        long: lng,
+                        screen: "Home",
+                        isMoodUpdate: true,
+                      });
+                    // });
                 }
                 const notifService = new NotifService();
                 notifService.checkTimeAndUpdateNotif();
@@ -1851,7 +1852,23 @@ export default function MoodDetector({navigation}) {
             navigation.navigate('Dashboard');
           }}>
           <View style={styles.questionIconView} />
-          <QuestionMarkIcon w={dynamicSize(52)} h={dynamicSize(52)} />
+          <View
+            style={{
+              height: 52,
+              width: 52,
+              alignItems: "center",
+              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: "white",
+              borderRadius:10
+            }}
+          >
+            <Image
+              source={Constants.Images.goldStar}
+              style={{ height: 32, width: 32, resizeMode: "contain",}}
+            />
+          </View>
+          {/* <QuestionMarkIcon w={dynamicSize(52)} h={dynamicSize(52)} /> */}
         </TouchableOpacity>
         {/* {MoodFail && (
           <Text style={styles.ErrorText}>Please select a mood</Text>

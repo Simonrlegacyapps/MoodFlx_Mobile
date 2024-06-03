@@ -600,7 +600,7 @@ const MicScreen = ({navigation}) => {
                         textAlign: 'right',
                         // backgroundColor:'blue'
                       }}>
-                      Answer ->
+                      Answer -{'>'}
                     </Text>
                   </TouchableOpacity>
                 )}

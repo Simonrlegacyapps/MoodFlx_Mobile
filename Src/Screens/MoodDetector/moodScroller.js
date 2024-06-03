@@ -188,7 +188,7 @@ export default function MoodScroller({
           // { transform: [{ scale: circleOne.current }] }
         ]}
         // {...(isAllMoodsDataAvailable && wheelSize === regularWheelSize) ? scrollerPanResponder.panHandlers : {}}
-        pointerEvents="none">
+        >
         <View style={[styles.circleView, 
           {alignSelf: wheelSize === regularWheelSize ? 'center' : 'center'},
           ]}>

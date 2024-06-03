@@ -199,10 +199,10 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
               </Text>
             </View>
             <SimpleText label={'Mood Activator'} text={' 0 - 100'} />
-            <SimpleText label={'Mood Navigator'} text={' 100 - 1,000'} />
-            <SimpleText label={'Mood Fit'} text={' 1,000 - 5,000'} />
-            <SimpleText label={'Mood Powerhouse'} text={' 5,000 - 10,000'} />
-            <SimpleText label={'Mood Unleashed'} text={' 10,000 - 20,000'} />
+            <SimpleText label={'Mood Navigator'} text={' 101 - 250'} />
+            <SimpleText label={'Mood Fit'} text={' 251 - 500'} />
+            <SimpleText label={'Mood Powerhouse'} text={' 501 - 750'} />
+            <SimpleText label={'Mood Unleashed'} text={' 751 - 1,000'} />
           </View>
         )}
       </View>
