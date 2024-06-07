@@ -47,6 +47,7 @@ import {
   getApiBaseUrl,
   getPhotoUrl,
   PRIVACY_POLICY_URL,
+  SUPPORT_EMAIL,
   TERMS_OF_USE_URL,
 } from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
@@ -58,6 +59,7 @@ import {VitalityIcon} from '../../../assets/svg/VitalityIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PERMISSIONS } from 'react-native-permissions';
 import { logger } from '../../..';
+import ContactUsIcon from '../../../assets/profileicons/ContactUsIcon';
 const listData = [
   { name: 'Name', value: 'Anonymous' },
   { name: 'Gender', value: 'Anonymous' },
@@ -65,14 +67,14 @@ const listData = [
   { name: 'Pronoun', value: 'Anonymous' },
 ];
 
+const FAQ_DETAILS = {
+  id: "1",
+  name: 'FAQ',
+  icon: <FaqIcon />,
+  link: FAQ_URL,
+}
+
 const bottomList = [
-  // {name: 'FAQ', icon: <FaqIcon />},
-  {
-    id: "1",
-    name: 'FAQ',
-    icon: <FaqIcon />,
-    link: FAQ_URL,
-  },
   {
     id: "2",
     name: 'Terms & Conditions',
@@ -84,6 +86,12 @@ const bottomList = [
     name: 'Privacy Policy',
     icon: <PrivacyIcon />,
     link: PRIVACY_POLICY_URL,
+  },
+  {
+    id: "4",
+    name: 'Contact Us',
+    icon: <ContactUsIcon />,
+    link: `mailto:${SUPPORT_EMAIL}`,
   },
 ];
 
@@ -851,6 +859,24 @@ const ProfileTab = ({ navigation }) => {
                 </View>
               </View>
             </TouchableOpacity>
+            {
+            !UserData?.UserDetails?.vitality_member_id &&
+            <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(FAQ_DETAILS.link);
+                }}>
+                <View style={styles.bottomFlatlistContainer}>
+                  <View style={{ marginTop: dynamicSize(5) }}>{FAQ_DETAILS.icon}</View>
+                  <Text
+                    style={[
+                      styles.anonymousTextStyle,
+                      { marginLeft: dynamicSize(16) },
+                    ]}>
+                    {FAQ_DETAILS.name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            }       
             {bottomList.map((item, idx) => (
               <TouchableOpacity
                 onPress={() => {
