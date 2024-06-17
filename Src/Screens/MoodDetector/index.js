@@ -105,6 +105,7 @@ import NegativeMoodModal from '../../Components/Modals/NegativeMoodModal/Negativ
 import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
 import isEmpty from 'lodash.isempty';
 import getStore from '../../redux';
+import {logger} from '../../../index'
 
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
@@ -1363,17 +1364,19 @@ export default function MoodDetector({navigation}) {
             setLoading(false);
           });
       } else {
-        console.log('params for mood update', params);
+        logger('params for mood update', params);
+        let showNegativeMoodModal = false;
         PostRequestApi('moodUpdate', params)
           .then(async resp => {
             if (resp.status == 200) {
               moodIdForNotes.current = resp?.data?.mood_id ?? '';
               AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
               setMoodInputTimeStamps(false);
-              console.log(
+              logger(
                 'Success Message of respose mood ✅ ✅ ✅ ✅',
                 resp?.data,
               );
+              showNegativeMoodModal = resp?.data?.isNegativeMoodFlagged
               if (!isNaN(resp?.data?.reward_point)) {
                 // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
                 dispatch(SetFloCoins(Number(resp.data.reward_point)));
@@ -1386,22 +1389,6 @@ export default function MoodDetector({navigation}) {
               ) {
                 isLvlUpOnMoodInput.current = true;
               }
-              let showNegativeMoodModal = false;
-              try {
-                setLoading(true);
-                showNegativeMoodModal = await getIsShowNegativeMoodInputPopup(
-                  Id.id,
-                  userData?.current?.AllMoods,
-                );
-                setLoading(false);
-              } catch (error) {
-                setLoading(false);
-                console.log(
-                  'error in calling getIsShowNegativeMoodInputPopup ',
-                  error,
-                );
-              }
-
               if (route?.params?.question != undefined) {
                 setSwiperIndexHome(0, dispatch);
                 navigation.navigate('HomeScreen', {screen: 'MicScreen'});
@@ -1869,6 +1856,40 @@ export default function MoodDetector({navigation}) {
 
   const topBottomColor = pSBC(0.6, color);
   // {top: blockSize.current.top - horizontalScale(25)}
+
+  const setHealthSupportCount = async () => {
+    try {
+      setLoading(true);
+      const user_data = getStore?.()?.getState?.()?.First;
+      if(user_data?.UserDetails?.vitality_member_id){
+        const params = {
+          email: user_data.UserEmail,
+          user_id: user_data.UserId,
+        };
+        const res = await fetch(`${getApiBaseUrl()}setHealthSupportCount`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(params),
+        });
+        if (res.status == 200) {
+          openUrl(UserData?.negativeMoodModalData?.eap_link)();
+        } else {
+          logger("setHealthSupportCount Error", `HTTP status ${res.status}`);
+          setShowNegativeMoodModal(false);
+        }
+      }else{
+        setShowNegativeMoodModal(false);
+      }
+    } catch (error) {
+      logger("setHealthSupportCount Error", error);
+      setShowNegativeMoodModal(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   return (
     <View
       onLayout={onLayoutScreenContainer}
@@ -1951,7 +1972,7 @@ export default function MoodDetector({navigation}) {
         dismissModalHandler={setShowNegativeMoodModal(false)}
         emotionText={moodName}
         description={UserData?.negativeMoodModalData?.eap_text}
-        onClickButtonOne={openUrl(UserData?.negativeMoodModalData?.eap_link)}
+        onClickButtonOne={setHealthSupportCount}
         onClickButtonTwo={setShowNegativeMoodModal(false)}
       />
 

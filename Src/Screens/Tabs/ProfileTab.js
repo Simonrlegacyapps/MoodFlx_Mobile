@@ -74,6 +74,13 @@ const FAQ_DETAILS = {
   link: FAQ_URL,
 }
 
+const CONTACT_US =   {
+  id: "4",
+  name: 'Contact Us',
+  icon: <ContactUsIcon />,
+  link: `mailto:${SUPPORT_EMAIL}`,
+}
+
 const bottomList = [
   {
     id: "2",
@@ -86,12 +93,6 @@ const bottomList = [
     name: 'Privacy Policy',
     icon: <PrivacyIcon />,
     link: PRIVACY_POLICY_URL,
-  },
-  {
-    id: "4",
-    name: 'Contact Us',
-    icon: <ContactUsIcon />,
-    link: `mailto:${SUPPORT_EMAIL}`,
   },
 ];
 
@@ -894,6 +895,24 @@ const ProfileTab = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
             ))}
+            {
+            UserData?.UserDetails?.vitality_member_id &&
+            <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(CONTACT_US.link);
+                }}>
+                <View style={styles.bottomFlatlistContainer}>
+                  <View style={{ marginTop: dynamicSize(5) }}>{CONTACT_US.icon}</View>
+                  <Text
+                    style={[
+                      styles.anonymousTextStyle,
+                      { marginLeft: dynamicSize(16) },
+                    ]}>
+                    {CONTACT_US.name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            } 
             <View style={styles.bottomFlatlistContainer} />
           </View>
         </View>
