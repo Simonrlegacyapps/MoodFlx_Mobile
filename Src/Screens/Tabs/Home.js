@@ -220,9 +220,21 @@ const App = (props) => {
     console.log(`mainToken`, fcmToken);
   };
 
+  const checkPermission = async () => {
+    try {
+      if (Platform.OS === 'android' && Platform.Version >= 12) {
+        const grant = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
+        );
+      }
+    } catch (error) {
+      console.log('ACTIVITY_RECOGNITION_PERMISSIONS Err', error);
+    }
+  };
+
   useEffect(() => {
     mainToken();
-
+    checkPermission()
     // messaging()
     //   .requestPermission({
     //     provisional: true,
