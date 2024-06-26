@@ -1,16 +1,14 @@
 export const PHOTO_URL = 'https://admin.moodflo.com/';
 // export const PHOTO_URL = 'https://adminstage.moodflo.com/';
 export const PHOTO_URL_DEV = 'https://dev.moodflo.com/';
-
 export const MOOD_ICONS = 'https://super.moodflo.com/';
 // export const MOOD_ICONS = ' https://admin.moodflo.com/';
 // export const MOOD_ICONS = 'https://superstage.moodflo.com/';
 export const MOOD_ICONS_DEV = 'https://staging.moodflo.com/';
-
-export const BASE_URL_PRODUCTION_API = 'https://admin.moodflo.com/api/';
-// export const BASE_URL_PRODUCTION_API = 'https://adminstage.moodflo.com/api/';
-// export const BASE_URL_PRODUCTION_API = 'https://adminmoodflo.legacyapps.com.au/api/';
 export const BASE_URL_DEV_API = 'https://dev.moodflo.com/api/';
+// export const BASE_URL_PRODUCTION_API = 'https://adminstage.moodflo.com/api/';
+export const BASE_URL_PRODUCTION_API = 'https://admin.moodflo.com/api/';
+// export const BASE_URL_PRODUCTION_API = 'https://adminmoodflo.legacyapps.com.au/api/';
 
 import moment from 'moment';
 import {Platform} from 'react-native';
@@ -18,6 +16,7 @@ import {Platform} from 'react-native';
 export const PRIVACY_POLICY_URL = 'https://moodflo.com/privacy-policy';
 export const TERMS_OF_USE_URL = 'https://moodflo.com/terms-of-use';
 export const FAQ_URL = 'https://moodflo.com/frequently-asked-questions';
+export const SUPPORT_EMAIL = 'queries@aiavitality.com.au'
 let isCurrentLocationCalled = false;
 // let isDevServer = (__DEV__);
 // let isDevServer = true;

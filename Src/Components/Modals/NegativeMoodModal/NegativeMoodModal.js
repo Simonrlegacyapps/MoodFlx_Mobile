@@ -208,7 +208,8 @@ const NegativeMoodModal = ({
         <View
           onStartShouldSetResponder={Keyboard.dismiss}
           style={[styles.upperContainer]}>
-          <Text style={styles.textOne}>{moodText?.confirmation_text}</Text>
+          <Text style={styles.textOne}>{"If you feel you need further assistance, please click Support"}</Text>
+          {/* <Text style={styles.textOne}>{moodText?.confirmation_text}</Text> */}
           {/* <Text style={styles.textTwo}>flx feels you</Text> */}
           {/* <Text style={styles.textTwo}>{moodText?.confirmation_text}</Text> */}
           <Text style={styles.textThree}>
@@ -254,9 +255,9 @@ const NegativeMoodModal = ({
               <Text style={styles.AnonymousButtonAnnon}>as Anonymous</Text>
             )}
           </TouchableOpacity>
-          <View style={styles.descriptionView}>
+          {/* <View style={styles.descriptionView}>
             <Text style={styles.descriptionText}>{description}</Text>
-          </View>
+          </View> */}
           <TouchableOpacity
             style={[
               styles.buttonOne,
@@ -267,7 +268,7 @@ const NegativeMoodModal = ({
               },
             ]}
             onPress={onClickButtonOne}>
-            <Text style={styles.buttonOneText}>Sure</Text>
+            <Text style={styles.buttonOneText}>Support</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[

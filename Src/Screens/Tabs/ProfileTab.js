@@ -47,6 +47,7 @@ import {
   getApiBaseUrl,
   getPhotoUrl,
   PRIVACY_POLICY_URL,
+  SUPPORT_EMAIL,
   TERMS_OF_USE_URL,
 } from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
@@ -58,6 +59,7 @@ import {VitalityIcon} from '../../../assets/svg/VitalityIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PERMISSIONS } from 'react-native-permissions';
 import { logger } from '../../..';
+import ContactUsIcon from '../../../assets/profileicons/ContactUsIcon';
 const listData = [
   { name: 'Name', value: 'Anonymous' },
   { name: 'Gender', value: 'Anonymous' },
@@ -70,6 +72,13 @@ const FAQ_DETAILS = {
   name: 'FAQ',
   icon: <FaqIcon />,
   link: FAQ_URL,
+}
+
+const CONTACT_US =   {
+  id: "4",
+  name: 'Contact Us',
+  icon: <ContactUsIcon />,
+  link: `mailto:${SUPPORT_EMAIL}`,
 }
 
 const bottomList = [
@@ -886,6 +895,24 @@ const ProfileTab = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
             ))}
+            {
+            UserData?.UserDetails?.vitality_member_id &&
+            <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(CONTACT_US.link);
+                }}>
+                <View style={styles.bottomFlatlistContainer}>
+                  <View style={{ marginTop: dynamicSize(5) }}>{CONTACT_US.icon}</View>
+                  <Text
+                    style={[
+                      styles.anonymousTextStyle,
+                      { marginLeft: dynamicSize(16) },
+                    ]}>
+                    {CONTACT_US.name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            } 
             <View style={styles.bottomFlatlistContainer} />
           </View>
         </View>

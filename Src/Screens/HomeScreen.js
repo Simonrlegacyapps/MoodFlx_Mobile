@@ -18,6 +18,7 @@ import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation'
 import MainProfileTab from './Profile/MainProfileTab';
 import {useSelector} from 'react-redux';
 import { horizontalScale } from '../Constants/sizeChoose';
+import DropShadow from 'react-native-drop-shadow';
 
 const Tab = createBottomTabNavigator();
 const WIDTH = Dimensions.get('screen').width;
@@ -34,7 +35,7 @@ const HomeScreen = ({ navigation, route }) => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
             if (route.name === 'Home') {
-              iconName = focused ? <HomeActiveIcon /> : <HomeIcon />;
+              iconName = focused ? <HomeActiveIcon isVitalityUser={vitality_member_id} /> : <HomeIcon isVitalityUser={vitality_member_id} />;
             } else if (route.name === 'MicScreen') {
               iconName = focused ? <MicActiveIcon /> : <MicIcon />;
             } else if (route.name === 'LogoTab') {
@@ -53,10 +54,8 @@ const HomeScreen = ({ navigation, route }) => {
               );
             } else if (route.name === 'LinkCompanyStackNavigation') {
               iconName = focused ? <LinkActive /> : <LinkIcon />;
-            } else if (route.name === 'MainProfileTab') {
-              iconName = focused ? <ProfileActive /> : <Profile />;
-            } else if (route.name === 'ProfileTab') {
-              iconName = focused ? <ProfileActive /> : <Profile />;
+            } else if (route.name === 'MainProfileTab' || route.name === 'ProfileTab' ) {
+              iconName = focused ? <ProfileActive isVitalityUser={vitality_member_id} /> : <Profile isVitalityUser={vitality_member_id} />;
             }
             return iconName;
           },
@@ -82,7 +81,7 @@ const HomeScreen = ({ navigation, route }) => {
             },
           }}
         />
-        <Tab.Screen
+        {!vitality_member_id && <Tab.Screen
           name={'MicScreen'}
           component={MicScreen}
           listeners={{
@@ -91,7 +90,7 @@ const HomeScreen = ({ navigation, route }) => {
               !isDivisionSelected && e.preventDefault();
             },
           }}
-        />
+        /> }
         <Tab.Screen
           name={'LogoTab'}
           component={LogoTab}
@@ -104,10 +103,10 @@ const HomeScreen = ({ navigation, route }) => {
             },
           }}
         />
-        <Tab.Screen
+        {!vitality_member_id && <Tab.Screen
           name={'LinkCompanyStackNavigation'}
           component={LinkCompanyStackNavigation}
-        />
+        />}
         {/* <Tab.Screen name={'ProfileTab'} component={ProfileTab} /> */}
         <Tab.Screen
           name={vitality_member_id ? 'ProfileTab' : 'MainProfileTab'}
@@ -126,19 +125,23 @@ const HomeScreen = ({ navigation, route }) => {
           alignSelf: 'flex-end',
           justifyContent: 'flex-end',
           bottom: 0,
-          shadowColor: 'black',
-          shadowOpacity: 0.3,
-          shadowOffset: {
-            width: 0,
-            height: 3,
-          },
-          shadowRadius: 4.65,
         }}>
-        <Image
-          resizeMode={'stretch'}
-          style={{ tintColor: 'white', height: 60, width: WIDTH }}
-          source={require('../../assets/tabicons/Rectangle.png')}
-        />
+        <DropShadow
+          style={{
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 0,
+            },
+            shadowOpacity: 0.3,
+            shadowRadius: 4.65,
+          }}>
+          <Image
+            resizeMode={'stretch'}
+            style={{ tintColor: 'white', height: 60, width: WIDTH }}
+            source={require('../../assets/tabicons/Rectangle.png')}
+          />
+        </DropShadow>
       </View>
       <View
         style={{

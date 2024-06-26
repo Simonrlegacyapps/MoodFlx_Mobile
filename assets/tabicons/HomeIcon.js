@@ -1,11 +1,16 @@
 import * as React from "react"
 import Svg, { Path } from "react-native-svg"
 
-const HomeIcon = () => {
+const HomeIcon = ({isVitalityUser}) => {
+
+  const iconSize = {
+    width:isVitalityUser ? 29 : 18,
+    height:isVitalityUser ? 31 :19,
+  }
   return (
     <Svg
-      width={18}
-      height={19}
+      width={iconSize.width}
+      height={iconSize.height}
       viewBox="0 0 18 19"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
