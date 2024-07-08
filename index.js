@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
-import React from 'react';
-import {AppRegistry, Platform, LogBox, UIManager} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { AppRegistry, Platform, LogBox, UIManager } from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 import {Provider} from 'react-redux';
@@ -10,6 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NotifService from './Src/services/notifService';
 import {SetNotification} from './Src/redux/actions/actions';
 import getStore from './Src/redux';
+import SplashScreen from './Src/Screens/Splash/SplashScreen';
+
 LogBox.ignoreAllLogs(true);
 
 const store = getStore();
@@ -76,6 +78,20 @@ PushNotification.configure({
 });
 
 const ProvidedApp = () => {
+  const [isSplashVisible, setSplashVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSplashVisible(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isSplashVisible) {
+    return <SplashScreen onLoaded={() => setSplashVisible(false)} />;
+  }
+
   return (
     <Provider store={store}>
       <App />

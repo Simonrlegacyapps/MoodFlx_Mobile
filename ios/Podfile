@@ -30,8 +30,6 @@ target 'MoodFlo' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
   permissions_path = '../node_modules/react-native-permissions/ios'
-
-  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
   pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
   pod 'Firebase', :modular_headers => true

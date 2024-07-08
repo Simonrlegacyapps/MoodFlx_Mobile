@@ -6,7 +6,6 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.reactnativecommunity.clipboard.ClipboardPackage;
 import com.reactnative.googlefit.GoogleFitPackage;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;

@@ -11,7 +11,6 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
@@ -706,13 +705,11 @@ const App = () => {
           console.log('checkScreen error -->', e);
         }
         const timeoutId = setTimeout(() => {
-          SplashScreen.hide();
           clearTimeout(timeoutId);
         }, 2500);
       } else {
         setShowWelcome(false);
         const timeoutId = setTimeout(() => {
-          SplashScreen.hide();
           clearTimeout(timeoutId);
         }, 2500);
       }
