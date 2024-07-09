@@ -345,9 +345,11 @@ const App = () => {
   }, []);
 
   const linkCompany = async (org, vitality_member_id) => {
+    
       setIsLinkLoader(true)
       const deviceId = getMyDeviceId();
       let fcm = '';
+    
       try {
         fcm = await messaging().getToken();
       } catch (error) {
@@ -375,15 +377,20 @@ const App = () => {
         };
         newOrg.current = null;
         vitalityMemberId.current = null;
-        console.log('getDownloadLink api params: ', params);
+        logger('getDownloadLink api params: ', params);
         try {
           const getDownloadLinkRes = await PostRequestApi('v2/getDownloadLink', params);
-          console.log('getDownloadLink api res: ', getDownloadLinkRes);
+          logger('getDownloadLink api res: ', getDownloadLinkRes);
+          try {
+            await AsyncStorage.setItem('splashURL',  getDownloadLinkRes?.data?.companyData?.splash_screen);
+          } catch (error) {
+            logger('Async Storage setItem Division error: ', error);
+          }
           let _vitalityMemberId = null;
           try {
             _vitalityMemberId = await AsyncStorage.getItem('vitalityMemberId');
           } catch (error) {
-            console.log(
+            logger(
               'error fetching vitalityMemberId from async storage',
               error,
             );

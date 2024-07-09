@@ -1,20 +1,37 @@
-// SplashScreen.js
-import React, { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
+import { logger } from '../../..';
 
 const SplashScreen = ({ onLoaded }) => {
+  const [imageURL, setImageURL] = useState();
+
   useEffect(() => {
+    // Start retrieving the URL immediately
+    getURLFromLocal();
     const timer = setTimeout(() => {
       onLoaded();
-    }, 3000); // Change the duration as needed
-
+    }, 5000); // Change the duration as needed
     return () => clearTimeout(timer);
   }, []);
+
+  const getURLFromLocal = async () => {
+    try {
+      const finalUrl = await AsyncStorage.getItem('splashURL');
+      setImageURL(finalUrl);
+    } catch (error) {
+      logger(error, 'error getting email from Async storage');
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../../assets/default_splash.png')}
+        source={
+          imageURL
+            ? { uri: imageURL }
+            : require('../../../assets/default_splash.png')
+        }
         style={styles.splashImage}
       />
     </View>
@@ -30,8 +47,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', // Change the background color if needed
   },
   splashImage: {
-    width: "100%",
-    height: "100%", // Adjust the size of the image as needed
+    width: '100%',
+    height: '100%', // Adjust the size of the image as needed
+    resizeMode: 'cover', // Optional: Adjust the image scaling
   },
 });
 

@@ -72,7 +72,7 @@ import {
   googleFitScopes,
   activityHealthKitOptions,
 } from '../../services/appPermissions';
-import { dataTypes, getApiBaseUrl, getScreensPriority } from '../../Constants/constants';
+import { BASE_URL_PRODUCTION_API, dataTypes, getApiBaseUrl, getScreensPriority } from '../../Constants/constants';
 import { getMyDeviceId, setFitnessDataSync, setSwiperIndexHome } from '../../services/commonService';
 import { setSleepDataSync } from '../Home/SleepData/sleepDataService';
 import getStore from '../../redux';
@@ -82,6 +82,7 @@ import StandingData from '../Home/StandingData/StandingData';
 import LocationData from '../Home/LocationData/LocationData';
 import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
 import Colors from '../../Constants/Colors/Colors';
+import { logger } from '../../..';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
@@ -234,7 +235,8 @@ const App = (props) => {
 
   useEffect(() => {
     mainToken();
-    checkPermission()
+    checkPermission();
+    fetchSplash();
     // messaging()
     //   .requestPermission({
     //     provisional: true,
@@ -266,7 +268,22 @@ const App = (props) => {
     //   id: userData.id
     // }
   }, []);
-
+  const fetchSplash = async () => {
+    const params = {user_id: '111'}
+    await axios
+      .post(BASE_URL_PRODUCTION_API +'getSplashScreen', params)
+      .then(async resp => {
+        logger(resp?.data?.splash_screen);
+        try {
+          await AsyncStorage.setItem('splashURL', resp?.data?.splash_screen);
+        } catch (error) {
+          logger('Async Storage setItem Division error: ', error);
+        }
+      })
+      .catch(error => {
+        logger(error, 'error fetching splash');
+      });
+  };
   useEffect(() => {
     callAnApi();
     return () => {
