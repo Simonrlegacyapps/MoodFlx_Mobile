@@ -41,7 +41,7 @@ const SplashScreen = ({onLoaded}) => {
         .post(BASE_URL_PRODUCTION_API + 'getSplashScreen', params)
         .then(async resp => {
           if (!resp?.data?.splash_screen.includes(finalUrl)) {
-            if (!resp?.data?.splash_screen.includes('splash_screen.svg')) {
+            if (!resp?.data?.splash_screen.includes('splash_screen')) {
               try {
                 await AsyncStorage.setItem(
                   'nextSplashURL',

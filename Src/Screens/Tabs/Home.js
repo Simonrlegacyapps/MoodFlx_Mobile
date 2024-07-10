@@ -286,7 +286,7 @@ const App = props => {
         .post(BASE_URL_PRODUCTION_API + 'getSplashScreen', params)
         .then(async resp => {
           setImageURL(resp?.data?.splash_screen);
-          if (!resp?.data?.splash_screen.includes('splash_screen.svg')) {
+          if (!resp?.data?.splash_screen.includes('splash_screen')) {
             try {
               await AsyncStorage.setItem(
                 'splashURL',
