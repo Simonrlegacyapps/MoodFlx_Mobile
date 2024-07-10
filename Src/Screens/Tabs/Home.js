@@ -137,7 +137,7 @@ const PERMS = AppleHealthKit.Constants.Permissions;
 
 const App = props => {
   const UserData = useSelector(state => state.First);
-
+  const [imageURL, setImageURL] = useState();
   // const [Weight, setWeight] = useState(false);
   const [Weather, setWeather] = useState(false);
   // const [lng, setlng] = useState(false);
@@ -285,13 +285,20 @@ const App = props => {
       await axios
         .post(BASE_URL_PRODUCTION_API + 'getSplashScreen', params)
         .then(async resp => {
-          if(!resp?.data?.splash_screen.includes("splash_screen.svg")){
-          try {
-            await AsyncStorage.setItem('splashURL', resp?.data?.splash_screen);
-          } catch (error) {
-            logger('Async Storage setItem Division error: ', error);
-          }}else{
-            await AsyncStorage.removeItem('splashURL').then(() => {}).catch((e) => {});
+          setImageURL(resp?.data?.splash_screen);
+          if (!resp?.data?.splash_screen.includes('splash_screen.svg')) {
+            try {
+              await AsyncStorage.setItem(
+                'splashURL',
+                resp?.data?.splash_screen,
+              );
+            } catch (error) {
+              logger('Async Storage setItem Division error: ', error);
+            }
+          } else {
+            await AsyncStorage.removeItem('splashURL')
+              .then(() => {})
+              .catch(e => {});
           }
         })
         .catch(error => {
@@ -1687,6 +1694,7 @@ const App = props => {
 
   return (
     <View style={{flex: 1}}>
+      <Image source={{uri: imageURL}} />
       {Platform.OS === 'ios' ? (
         <StatusBar barStyle="dark-content" />
       ) : (

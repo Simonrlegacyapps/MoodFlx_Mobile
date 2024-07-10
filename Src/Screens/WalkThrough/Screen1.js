@@ -9,7 +9,8 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
-  Platform
+  Platform,
+  Image
 } from 'react-native';
 import Mood from '../../../assets/svg/mood';
 import {
@@ -32,6 +33,8 @@ import { getMyDeviceId } from '../../services/commonService';
 import { BitCoinIcon } from '../../../assets/svg/bitCoin';
 import Constants from '../../Constants';
 import Colors from '../../Constants/Colors/Colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '../../..';
 
 const {height} = Dimensions.get("window")
 
@@ -40,7 +43,7 @@ const Screen1 = ({onDone}) => {
   const [isHowMoodFloWorksPtsGiven, setIsHowMoodFloWorksPtsGiven] = useState(true);
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
-
+  const [updatedSplash, setUpdatedSplash] = useState();
   const data = [
     {
       img1: <Lock />,
@@ -120,9 +123,24 @@ const Screen1 = ({onDone}) => {
   useEffect(() => {
     checkHowMoodFloWorksPtsGive(UserData.UserEmail, UserData.UserId);
   }, [UserData.UserEmail, UserData.UserId]);
-
+  useEffect(()=>{
+    replashSplash()
+  },[])
+  const replashSplash = async () => {
+    const nextUrl = await AsyncStorage.getItem('nextSplashURL');
+    setUpdatedSplash(nextUrl)
+    if (nextUrl) {
+      try {
+        await AsyncStorage.setItem('splashURL', nextUrl);
+        logger('splash replaced with nextsplash');
+      } catch (error) {
+        logger('Async Storage setItem error: ', error);
+      }
+    }
+  };
   return (
     <View>
+      <Image source={{uri: updatedSplash}} style={{height:0,width:0}}/>
       <ImageBackground
         source={require('../../../assets/newImage/WalkThrough/Onboarding.png')}
         style={{height: '100%', width: '100%'}}>

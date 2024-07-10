@@ -176,7 +176,7 @@ export default function MoodDetector({navigation}) {
   const dispatch = useDispatch();
   const route = useRoute();
   const forceUpdate = useForceUpdate();
-
+  const [updatedSplash, setUpdatedSplash] = useState();
   const closeModal = () => {
     setModalVisible(false);
   };
@@ -1906,7 +1906,22 @@ export default function MoodDetector({navigation}) {
       setLoading(false);
     }
   };
-  
+  useEffect(()=>{
+    getSplash()
+  },[])
+  const getSplash = async () => {
+    const nextUrl = await AsyncStorage.getItem('nextSplashURL') ;
+    const currentUrl = await AsyncStorage.getItem('splashURL') ;
+    setUpdatedSplash(nextUrl || currentUrl)
+    if (nextUrl) {
+      try {
+        await AsyncStorage.setItem('splashURL', nextUrl);
+        logger('splash replaced with nextsplash');
+      } catch (error) {
+        logger('Async Storage setItem error: ', error);
+      }
+    }
+  };
   return (
     <View
       onLayout={onLayoutScreenContainer}
@@ -1914,6 +1929,7 @@ export default function MoodDetector({navigation}) {
       style={[styles.container, {backgroundColor: topBottomColor}]}>
       <TouchableOpacity disabled={true} style={styles.anonymousHeaderView}>
         <AnonymousHeader isShowPrevFloCoins={isShowPrevFloCoins} />
+        <Image source={{uri: updatedSplash}} style={{height:0,width:0}}/>
       </TouchableOpacity>
       {emotionText !== 'Slide finger' &&
         showLongPressText &&
