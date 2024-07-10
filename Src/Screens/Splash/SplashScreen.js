@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
-import { logger } from '../../..';
+import React, {useEffect, useState} from 'react';
+import {View, Image, StyleSheet} from 'react-native';
+import {logger} from '../../..';
 
-const SplashScreen = ({ onLoaded }) => {
+const SplashScreen = ({onLoaded}) => {
   const [imageURL, setImageURL] = useState();
 
   useEffect(() => {
@@ -18,9 +18,9 @@ const SplashScreen = ({ onLoaded }) => {
   const getURLFromLocal = async () => {
     try {
       const finalUrl = await AsyncStorage.getItem('splashURL');
-      setImageURL(finalUrl);
+      finalUrl &&  setImageURL(finalUrl);
     } catch (error) {
-      logger(error, 'error getting email from Async storage');
+      logger(error, 'error getting splash from Async storage');
     }
   };
 
@@ -37,7 +37,6 @@ const SplashScreen = ({ onLoaded }) => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

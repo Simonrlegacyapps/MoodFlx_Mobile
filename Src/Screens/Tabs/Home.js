@@ -285,11 +285,13 @@ const App = props => {
       await axios
         .post(BASE_URL_PRODUCTION_API + 'getSplashScreen', params)
         .then(async resp => {
-          logger(resp?.data?.splash_screen);
+          if(!resp?.data?.splash_screen.includes("splash_screen.svg")){
           try {
             await AsyncStorage.setItem('splashURL', resp?.data?.splash_screen);
           } catch (error) {
             logger('Async Storage setItem Division error: ', error);
+          }}else{
+            await AsyncStorage.removeItem('splashURL').then(() => {}).catch((e) => {});
           }
         })
         .catch(error => {

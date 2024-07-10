@@ -545,7 +545,8 @@ const App = () => {
     PostRequestApi('unlinkToCompany', params)
       .then(async (resp) => {
         const isDone = await onUnlinkUpdate(dispatch);
-        console.log('unlinkToCompanyDone isDone =====', isDone);
+        logger('unlinkToCompanyDone isDone =====', isDone);
+        await AsyncStorage.removeItem('splashURL').then(() => {}).catch((e) => {});
         if (isDone) {
           linkCompany();
         } else {
