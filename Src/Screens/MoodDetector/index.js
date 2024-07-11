@@ -106,8 +106,9 @@ import NegativeMoodModal from '../../Components/Modals/NegativeMoodModal/Negativ
 import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
 import isEmpty from 'lodash.isempty';
 import getStore from '../../redux';
-import {logger} from '../../../index'
+import {logger} from '../../../index';
 import Constants from '../../Constants';
+import FastImage from 'react-native-fast-image';
 let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
 let lpX = 0;
@@ -181,7 +182,6 @@ export default function MoodDetector({navigation}) {
     setModalVisible(false);
   };
   const UserData = useSelector(state => state.First);
-
   const pan = useRef(
     new Animated.ValueXY({x: screenWidth / 2, y: window.height / 2}),
   );
@@ -1189,7 +1189,25 @@ export default function MoodDetector({navigation}) {
       return () => onNoteInputComplete(true);
     }
   };
-
+  useEffect(() => {
+    setUID();
+  }, [UserData]);
+  const setUID = async () => {
+    const UID = UserData?.UserId;
+    if (UID) {
+      try {
+        await AsyncStorage.setItem('UID', UID);
+      } catch (error) {
+        logger('Async Storage setItem error: ', error);
+      }
+    } else {
+      try {
+        await AsyncStorage.removeItem('UID');
+      } catch (error) {
+        console.log('removed UID --- ', error);
+      }
+    }
+  };
   const findId = async () => {
     const user_data = getStore?.()?.getState?.()?.First;
     let mood_type = moodTypes.regular;
@@ -1373,11 +1391,8 @@ export default function MoodDetector({navigation}) {
               moodIdForNotes.current = resp?.data?.mood_id ?? '';
               AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
               setMoodInputTimeStamps(false);
-              logger(
-                'Success Message of respose mood ✅ ✅ ✅ ✅',
-                resp?.data,
-              );
-              showNegativeMoodModal = resp?.data?.isNegativeMoodFlagged
+              logger('Success Message of respose mood ✅ ✅ ✅ ✅', resp?.data);
+              showNegativeMoodModal = resp?.data?.isNegativeMoodFlagged;
               if (!isNaN(resp?.data?.reward_point)) {
                 // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
                 dispatch(SetFloCoins(Number(resp.data.reward_point)));
@@ -1392,7 +1407,7 @@ export default function MoodDetector({navigation}) {
               }
               if (route?.params?.question != undefined) {
                 setSwiperIndexHome(0, dispatch);
-                navigation.navigate("HomeScreen", { screen: "MicScreen" });
+                navigation.navigate('HomeScreen', {screen: 'MicScreen'});
               } else {
                 if (showNegativeMoodModal === true) {
                   let negativeModalTimeoutId = setTimeout(() => {
@@ -1400,15 +1415,15 @@ export default function MoodDetector({navigation}) {
                     clearTimeout(negativeModalTimeoutId);
                   }, 400);
                 } else {
-                    // showMoodSaveConfirmModal(() => {
-                      setSwiperIndexHome(0, dispatch);
-                      navigation.replace("HomeScreen", {
-                        lat: lat,
-                        long: lng,
-                        screen: "Home",
-                        isMoodUpdate: true,
-                      });
-                    // });
+                  // showMoodSaveConfirmModal(() => {
+                  setSwiperIndexHome(0, dispatch);
+                  navigation.replace('HomeScreen', {
+                    lat: lat,
+                    long: lng,
+                    screen: 'Home',
+                    isMoodUpdate: true,
+                  });
+                  // });
                 }
                 const notifService = new NotifService();
                 notifService.checkTimeAndUpdateNotif();
@@ -1843,16 +1858,15 @@ export default function MoodDetector({navigation}) {
             style={{
               height: 52,
               width: 52,
-              alignItems: "center",
-              justifyContent: "center",
+              alignItems: 'center',
+              justifyContent: 'center',
               borderWidth: 1,
-              borderColor: "white",
-              borderRadius:10
-            }}
-          >
+              borderColor: 'white',
+              borderRadius: 10,
+            }}>
             <Image
               source={Constants.Images.goldStar}
-              style={{ height: 32, width: 32, resizeMode: "contain",}}
+              style={{height: 32, width: 32, resizeMode: 'contain'}}
             />
           </View>
           {/* <QuestionMarkIcon w={dynamicSize(52)} h={dynamicSize(52)} /> */}
@@ -1878,7 +1892,7 @@ export default function MoodDetector({navigation}) {
     try {
       setLoading(true);
       const user_data = getStore?.()?.getState?.()?.First;
-      if(user_data?.UserDetails?.vitality_member_id){
+      if (user_data?.UserDetails?.vitality_member_id) {
         const params = {
           email: user_data.UserEmail,
           user_id: user_data.UserId,
@@ -1893,26 +1907,28 @@ export default function MoodDetector({navigation}) {
         if (res.status == 200) {
           openUrl(UserData?.negativeMoodModalData?.eap_link)();
         } else {
-          logger("setHealthSupportCount Error", `HTTP status ${res.status}`);
+          logger('setHealthSupportCount Error', `HTTP status ${res.status}`);
           setShowNegativeMoodModal(false);
         }
-      }else{
+      } else {
         setShowNegativeMoodModal(false);
       }
     } catch (error) {
-      logger("setHealthSupportCount Error", error);
+      logger('setHealthSupportCount Error', error);
       setShowNegativeMoodModal(false);
     } finally {
       setLoading(false);
     }
   };
-  useEffect(()=>{
-    getSplash()
-  },[])
+  useEffect(() => {
+    getSplash();
+  }, []);
   const getSplash = async () => {
-    const nextUrl = await AsyncStorage.getItem('nextSplashURL') ;
-    const currentUrl = await AsyncStorage.getItem('splashURL') ;
-    setUpdatedSplash(nextUrl || currentUrl)
+    const nextUrl = await AsyncStorage.getItem('nextSplashURL');
+    const currentUrl = await AsyncStorage.getItem('splashURL');
+    logger(nextUrl, 'nextUrl');
+    logger(currentUrl, 'currentURL');
+    setUpdatedSplash(nextUrl || currentUrl);
     if (nextUrl) {
       try {
         await AsyncStorage.setItem('splashURL', nextUrl);
@@ -1929,8 +1945,15 @@ export default function MoodDetector({navigation}) {
       style={[styles.container, {backgroundColor: topBottomColor}]}>
       <TouchableOpacity disabled={true} style={styles.anonymousHeaderView}>
         <AnonymousHeader isShowPrevFloCoins={isShowPrevFloCoins} />
-        <Image source={{uri: updatedSplash}} style={{height:0,width:0}}/>
-      </TouchableOpacity>
+        {Platform.OS === 'android' ? (
+          <Image source={{uri: updatedSplash}} style={{height: 0, width: 0}} />
+        ) : (
+          <FastImage
+            source={{uri: updatedSplash, cache: FastImage.cacheControl.web}}
+            style={{height: 0, width: 0}}
+          />
+        )}
+        </TouchableOpacity>
       {emotionText !== 'Slide finger' &&
         showLongPressText &&
         blocksSize?.current?.top && (

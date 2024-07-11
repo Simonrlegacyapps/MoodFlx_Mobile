@@ -92,6 +92,7 @@ import LocationData from '../Home/LocationData/LocationData';
 import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
 import Colors from '../../Constants/Colors/Colors';
 import {logger} from '../../..';
+import FastImage from 'react-native-fast-image';
 
 const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 let steps = false;
@@ -286,19 +287,11 @@ const App = props => {
         .post(BASE_URL_PRODUCTION_API + 'getSplashScreen', params)
         .then(async resp => {
           setImageURL(resp?.data?.splash_screen);
-          if (!resp?.data?.splash_screen.includes('splash_screen')) {
-            try {
-              await AsyncStorage.setItem(
-                'splashURL',
-                resp?.data?.splash_screen,
-              );
-            } catch (error) {
-              logger('Async Storage setItem Division error: ', error);
-            }
-          } else {
-            await AsyncStorage.removeItem('splashURL')
-              .then(() => {})
-              .catch(e => {});
+          try {
+            await AsyncStorage.setItem('splashURL', resp?.data?.splash_screen);
+             await AsyncStorage.setItem('nextSplashURL',resp?.data?.splash_screen);
+          } catch (error) {
+            logger('Async Storage setItem Division error: ', error);
           }
         })
         .catch(error => {
@@ -1694,7 +1687,14 @@ const App = props => {
 
   return (
     <View style={{flex: 1}}>
-      <Image source={{uri: imageURL}} />
+      {Platform.OS === 'android' ? (
+        <Image source={{uri: imageURL}} />
+      ) : (
+        <FastImage
+          source={{uri: imageURL, cache: FastImage.cacheControl.web}}
+          style={{height: 0, width: 0}}
+        />
+      )}
       {Platform.OS === 'ios' ? (
         <StatusBar barStyle="dark-content" />
       ) : (
