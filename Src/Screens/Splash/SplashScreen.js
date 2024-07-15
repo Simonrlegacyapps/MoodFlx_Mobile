@@ -91,7 +91,7 @@ const SplashScreen = ({onLoaded}) => {
                 ? {uri: imageURL, cache: FastImage.cacheControl.web}
                 : require('../../../assets/default_splash.png')
             }
-            resizeMode={imageURL ? FastImage.resizeMode.stretch : FastImage.resizeMode.cover}
+            resizeMode={FastImage.resizeMode.stretch}
             onLoad={res => {
               logger(res, 'onload');
             }}

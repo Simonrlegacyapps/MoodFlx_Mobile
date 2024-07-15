@@ -18,7 +18,6 @@ import {
   Alert,
   ImageBackground,
   PermissionsAndroid,
-  NativeModules
 } from 'react-native';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
 import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
@@ -98,15 +97,6 @@ const bottomList = [
 ];
 
 const ProfileTab = ({ navigation }) => {
-  const { EmailModule } = NativeModules;
-  const handleEmail = () => {
-    EmailModule.sendEmail(SUPPORT_EMAIL, '', '')
-      .then(() => {
-        Alert.alert('Email sent successfully');
-      })
-      .catch(error => {
-        Alert.alert('Error', error.message);
-      });}
   const [openActionSheet, setOpenActionSheet] = useState(false);
   // const [value, onChangeText] = React.useState('');
   const UserData = useSelector((state) => state.First);
@@ -908,11 +898,9 @@ const ProfileTab = ({ navigation }) => {
             {
             UserData?.UserDetails?.vitality_member_id &&
             <TouchableOpacity
-            onPress={() => {
-              Platform.OS === 'android'
-                ? handleEmail()
-                : Linking.openURL(CONTACT_US.link);
-            }}>
+                onPress={() => {
+                  Linking.openURL(CONTACT_US.link);
+                }}>
                 <View style={styles.bottomFlatlistContainer}>
                   <View style={{ marginTop: dynamicSize(5) }}>{CONTACT_US.icon}</View>
                   <Text
