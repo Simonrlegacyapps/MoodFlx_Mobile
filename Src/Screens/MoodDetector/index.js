@@ -623,10 +623,10 @@ export default function MoodDetector({navigation}) {
       setIsShowNegativeMoodModal(true);
     } else {
       setIsShowNegativeMoodModal(false);
-      const timeoutId = setTimeout(() => {
-        setIsSaveMoodConfirmModalVisible(true);
-        clearTimeout(timeoutId);
-      }, 500);
+      // const timeoutId = setTimeout(() => {
+      //   setIsSaveMoodConfirmModalVisible(true);
+      //   clearTimeout(timeoutId);
+      // }, 500);
     }
   };
 
@@ -1396,7 +1396,7 @@ export default function MoodDetector({navigation}) {
               } else {
                 if (showNegativeMoodModal === true) {
                   let negativeModalTimeoutId = setTimeout(() => {
-                    // setShowNegativeMoodModal(true)();
+                    setShowNegativeMoodModal(true)();
                     clearTimeout(negativeModalTimeoutId);
                   }, 400);
                 } else {
@@ -1894,14 +1894,14 @@ export default function MoodDetector({navigation}) {
           openUrl(UserData?.negativeMoodModalData?.eap_link)();
         } else {
           logger("setHealthSupportCount Error", `HTTP status ${res.status}`);
-          setShowNegativeMoodModal(false);
+          setShowNegativeMoodModal(false)();
         }
       }else{
-        setShowNegativeMoodModal(false);
+        setShowNegativeMoodModal(false)();
       }
     } catch (error) {
       logger("setHealthSupportCount Error", error);
-      setShowNegativeMoodModal(false);
+      setShowNegativeMoodModal(false)();
     } finally {
       setLoading(false);
     }

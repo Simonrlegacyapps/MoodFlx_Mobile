@@ -15,6 +15,7 @@ import {
   InteractionManager,
   Linking,
   FlatList,
+  PermissionsAndroid,
 } from 'react-native';
 import moment from 'moment';
 import axios from 'axios';
@@ -82,6 +83,7 @@ import StandingData from '../Home/StandingData/StandingData';
 import LocationData from '../Home/LocationData/LocationData';
 import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
 import Colors from '../../Constants/Colors/Colors';
+import { logger } from '../../..';
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 let steps = false;
