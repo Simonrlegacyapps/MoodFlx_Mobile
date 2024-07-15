@@ -38,6 +38,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
            packages.add(new CheckPackageInstallationPackage());
            packages.add(new SensorManagerPackage());
            packages.add(new UsageStatsPackage());
+           packages.add(new EmailPackage());
           return packages;
         }
 
