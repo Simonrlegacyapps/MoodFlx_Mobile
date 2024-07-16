@@ -97,6 +97,18 @@ const bottomList = [
 ];
 
 const ProfileTab = ({ navigation }) => {
+  const { EmailModule } = NativeModules;
+  const handleEmail = () => {
+    Platform.OS === 'android'
+      ? EmailModule.sendEmail(SUPPORT_EMAIL, '', '')
+          .then(() => {
+            Alert.alert('Email sent successfully');
+          })
+          .catch(error => {
+            Alert.alert('Error', error.message);
+          })
+      : EmailModule.sendEmail(SUPPORT_EMAIL, '', '');
+  };
   const [openActionSheet, setOpenActionSheet] = useState(false);
   // const [value, onChangeText] = React.useState('');
   const UserData = useSelector((state) => state.First);
@@ -897,10 +909,7 @@ const ProfileTab = ({ navigation }) => {
             ))}
             {
             UserData?.UserDetails?.vitality_member_id &&
-            <TouchableOpacity
-                onPress={() => {
-                  Linking.openURL(CONTACT_US.link);
-                }}>
+            <TouchableOpacity onPress={handleEmail}>
                 <View style={styles.bottomFlatlistContainer}>
                   <View style={{ marginTop: dynamicSize(5) }}>{CONTACT_US.icon}</View>
                   <Text
