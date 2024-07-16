@@ -172,7 +172,7 @@ function RewardsHistory({setIsLevelsHide, islevelsHide}) {
             {!isNaN(item.reward_point) && (
               <Text
                 numberOfLines={2}
-                style={styles.itemPrice}>{`${item.reward_point} coins`}</Text>
+                style={styles.itemPrice}>{`${item.reward_point} Points`}</Text>
             )}
           </View>
         </View>

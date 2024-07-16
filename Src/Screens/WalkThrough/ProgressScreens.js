@@ -78,7 +78,7 @@ const ProgressScreen = ({navigation, route}) => {
       "reward_point": 50,
       "description": "How moodflo works"
     };
-    console.log(`params of how mood flx works 50 coins`, params);
+    console.log(`params of how mood flx works 50 Points`, params);
     setIsLoading(true);
     function onError() {
       setIsLoading(false);

@@ -1820,7 +1820,7 @@ export default function MoodDetector({navigation}) {
                     h={getFontSize(12.5)}
                   />
                   <Text allowFontScaling={false} style={styles.coinText}>
-                    + {`${pts}`} coins
+                    + {`${pts}`} Points
                   </Text>
                 </ImageBackground>
               )
@@ -1843,7 +1843,7 @@ export default function MoodDetector({navigation}) {
                     h={getFontSize(12.5)}
                   />
                   <Text allowFontScaling={false} style={styles.coinText}>
-                    + {`${pts}`} coins
+                    + {`${pts}`} Points
                   </Text>
                 </ImageBackground>
               )}

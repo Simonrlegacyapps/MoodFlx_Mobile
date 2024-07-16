@@ -853,7 +853,7 @@ const ProfileTab = ({ navigation }) => {
                         h={getFontSize(12.5)}
                       />
                       <Text allowFontScaling={false} style={styles.coinText}>
-                        +50 coins
+                        +50 Points
                       </Text>
                     </ImageBackground>
                   )}

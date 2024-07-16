@@ -852,7 +852,7 @@ const MicScreen = ({navigation}) => {
                     alignItems: 'center',
                   }}>
                   <Text style={[styles.Text, {flex: 1, marginVertical: 10}]}>
-                    Answer on time to earn more coins{' '}
+                    Answer on time to earn more Points{' '}
                   </Text>
                   <Text style={[styles.Text, {fontSize: 14}]}>
                     <Text style={{fontFamily: RubikMedium, fontWeight: '500'}}>

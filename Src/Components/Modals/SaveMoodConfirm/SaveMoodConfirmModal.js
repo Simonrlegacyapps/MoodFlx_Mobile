@@ -311,7 +311,7 @@ const SaveMoodConfirmModal = ({
                   h={getFontSize(11.5)}
                 />
                 <Text allowFontScaling={false} style={styles.coinText}>
-                  + {`${notesInputRewardPoints}`} coins
+                  + {`${notesInputRewardPoints}`} Points
                 </Text>
               </ImageBackground>
             )}
