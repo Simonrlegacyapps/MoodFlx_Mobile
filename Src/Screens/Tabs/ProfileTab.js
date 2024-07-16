@@ -60,6 +60,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PERMISSIONS } from 'react-native-permissions';
 import { logger } from '../../..';
 import ContactUsIcon from '../../../assets/profileicons/ContactUsIcon';
+import * as Email from '../../../Src/share_module/index';
 const listData = [
   { name: 'Name', value: 'Anonymous' },
   { name: 'Gender', value: 'Anonymous' },
@@ -531,6 +532,18 @@ const ProfileTab = ({ navigation }) => {
   }
 
 
+  const handleEmail = () => {
+    Email.openComposer({
+      to: 'example@example.com',
+      subject: 'Hello',
+      body: 'How are you?',
+    })
+      .catch((err) => {
+        Alert.alert('Error', 'Unable to open the email client.');
+        logger("OpenComposer Err", err)
+      });
+  };  
+
   return (
     <>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
@@ -899,7 +912,7 @@ const ProfileTab = ({ navigation }) => {
             UserData?.UserDetails?.vitality_member_id &&
             <TouchableOpacity
                 onPress={() => {
-                  Linking.openURL(CONTACT_US.link);
+                  handleEmail()
                 }}>
                 <View style={styles.bottomFlatlistContainer}>
                   <View style={{ marginTop: dynamicSize(5) }}>{CONTACT_US.icon}</View>
