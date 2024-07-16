@@ -410,7 +410,7 @@ const MicScreen = ({navigation}) => {
 
   function getRewardsCoins(day, hour) {
     if (day != 0) {
-      return 'Missed out on flx coins';
+      return 'Missed out on Flx Points';
     } else {
       if (hour <= 2) {
         return 8;
@@ -578,8 +578,8 @@ const MicScreen = ({navigation}) => {
                         ]}>
                         {' '}
                         {rewardPts === 0
-                          ? 'Missed out on flx coins'
-                          : `Earn ${rewardPts} flx coins`}
+                          ? 'Missed out on Flx Points'
+                          : `Earn ${rewardPts} Flx Points`}
                       </Text>
                     </View>
                   )}
@@ -641,7 +641,7 @@ const MicScreen = ({navigation}) => {
                           color: '#FB8D09',
                         },
                       ]}>
-                      Earned {i.reward_point} flx coins
+                      Earned {i.reward_point} Flx Points
                     </Text>
                   </>
                 )}

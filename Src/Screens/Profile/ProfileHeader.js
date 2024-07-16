@@ -81,7 +81,7 @@ const ProfileHeader = ({navigation}) => {
             {getFloCoins(UserData.floCoins)}
           </Text>
           <Text style={styles.floCoinsTextTwo}>
-            {UserData?.UserDetails?.vitality_member_id ? 'Bonus' : 'flx Coins'}
+            {UserData?.UserDetails?.vitality_member_id ? 'Bonus' : 'Flx Points'}
           </Text>
         </View>
       </View>

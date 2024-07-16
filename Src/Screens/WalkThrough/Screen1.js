@@ -89,7 +89,7 @@ const Screen1 = ({onDone}) => {
       t1: 'More data = more accurate insights + ',
       t2: 'more rewards.',
       t3: 'Get Rewarded!',
-      t4: 'Spend your flx coins on things that make you feel good',
+      t4: 'Spend your Flx Points on things that make you feel good',
       button: "Done"
     },
   ];
