@@ -95,18 +95,18 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
       </View>
       <View style={styles.topHeaderWrapper}>
         <Text style={styles.topHeaderText}>
-          {isAIAVitality ? 'Earn Vitality Points' : 'Earn flx Coins'}
+          {isAIAVitality ? 'Earn Vitality Points' : 'Earn Flx Points'}
         </Text>
         <Text style={styles.topHeaderDescription}>
           Advance your Mood Status, unlock more rewards and cash in your{' '}
-          {isAIAVitality ? 'Vitality Points' : 'flx Coins'}!
+          {isAIAVitality ? 'Vitality Points' : 'Flx Points'}!
         </Text>
         <View>
           <BoldHeader label={'Mood Inputs'} />
           <SimpleText
             label={isAIAVitality ? 'Log Mood Per day' : 'Per mood'}
             // text={` 3 ${isAIAVitality ? 'Bonus Vitality Points' : 'coins'}`}
-            text={isAIAVitality ? '10 Vitality Points' : '3 coins'}
+            text={isAIAVitality ? '10 Vitality Points' : '3 Points'}
           />
           <View style={styles.lineSeperator} />
           {!isAIAVitality && (
@@ -114,7 +114,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
               <SimpleText
                 label={'3+ moods/day'}
                 text={` 1 ${
-                  isAIAVitality ? 'Bonus Vitality Point' : 'bonus coin'
+                  isAIAVitality ? 'Bonus Vitality Point' : 'Bonus Point'
                 }`}
                 mt={12}
               />
@@ -137,7 +137,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
                   <Text style={[styles.text, styles.txtCenter]}>
                     {isAIAVitality
                       ? 'Earn Bonus Vitality Points'
-                      : 'earn coins'}{' '}
+                      : 'Earn Points'}{' '}
                     if there is a 2 hour gap between each mood
                   </Text>
                 </View>
@@ -150,7 +150,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
           <SimpleText
             label={isAIAVitality ? 'Log 3 notes per day' : 'Per note'}
             // text={` 3 ${isAIAVitality ? 'Bonus Vitality Points' : 'coins'}`}
-            text={isAIAVitality ? '10 Vitality Points' : '3 coins'}
+            text={isAIAVitality ? '10 Vitality Points' : '3 Points'}
           />
           <View style={styles.lineSeperator} />
           {!isAIAVitality && (
@@ -158,7 +158,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
               <SimpleText
                 label={'3+ notes/day'}
                 text={` 1 ${
-                  isAIAVitality ? 'Bonus Vitality Point' : 'bonus coin'
+                  isAIAVitality ? 'Bonus Vitality Point' : 'Bonus Point'
                 }`}
                 mt={12}
               />
@@ -181,7 +181,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
                   <Text style={[styles.text, styles.txtCenter]}>
                     {isAIAVitality
                       ? 'Earn Bonus Vitality Points'
-                      : 'earn coins'}{' '}
+                      : 'Earn Points'}{' '}
                     if there is a 2 hour gap between each note
                   </Text>
                 </View>
@@ -195,7 +195,7 @@ const HowTo = ({setIsLevelsHide, islevelsHide}) => {
             <View style={styles.levelRowView}>
               <Text style={styles.smallHeaderText}>Level</Text>
               <Text style={styles.smallHeaderText}>
-                {isAIAVitality ? 'Bonus Vitality Points' : 'flx coins'}
+                {isAIAVitality ? 'Bonus Vitality Points' : 'Flx Points'}
               </Text>
             </View>
             <SimpleText label={'Mood Activator'} text={' 0 - 100'} />
