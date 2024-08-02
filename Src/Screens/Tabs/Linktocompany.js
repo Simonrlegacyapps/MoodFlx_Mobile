@@ -364,6 +364,10 @@ const Linktocompany = ({ navigation }) => {
     if (type === 'Yes') {
       PostRequestApi('unlinkToCompany', params)
         .then(async (resp) => {
+          await AsyncStorage.removeItem('splashURL').then(() => {}).catch((e) => {});
+          await AsyncStorage.removeItem('UID').then(() => {}).catch((e) => {});
+          await AsyncStorage.removeItem('nextSplashURL').then(() => {}).catch((e) => {});
+
           setUnlinkConfirm(false);
           const timeoutId = setTimeout(async () => {
             setLoading(true);

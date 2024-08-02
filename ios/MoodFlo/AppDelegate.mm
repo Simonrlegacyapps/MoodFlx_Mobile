@@ -7,7 +7,6 @@
 #import <RNCPushNotificationIOS.h>
 #import "RNFBMessagingModule.h"
 #import <FirebaseMessaging.h>
-#import "RNSplashScreen.h"
 #import <GoogleMaps/GoogleMaps.h>
 // #import "FIRApp.h"
 #import <Firebase.h>
@@ -62,7 +61,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [self getCurrentLight];
-  [RNSplashScreen show];
   // [FIRApp configure];
     // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];

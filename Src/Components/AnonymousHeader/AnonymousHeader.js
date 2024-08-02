@@ -178,7 +178,7 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
           />}
           <Text style={styles.floCoinsTextTwo}>
             {/* {vitality_member_id ? 'Bonus' : 'flx Coins'} */}
-            {!vitality_member_id && 'flx Coins'}
+            {!vitality_member_id && 'Flx Points'}
           </Text>
         </View>
         {!vitality_member_id && <View style={styles.verifcalBarView} />}

@@ -292,7 +292,7 @@ const MainProfileTab = ({navigation}) => {
       {/* </ScrollView> */}
       <ProfileCoinModal
         title={lvlName}
-        permission={`${CoinLevel} flx coins`}
+        permission={`${CoinLevel} Flx Points`}
         // image={Constants.Images.FitnessPopUp}
         dataType={'fitness'}
         smallText={CoinComment}

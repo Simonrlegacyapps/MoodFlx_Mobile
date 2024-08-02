@@ -465,7 +465,7 @@ const Rewards = ({setIsLevelsHide, islevelsHide}) => {
             {!isNaN(item.value) && (
               <Text
                 numberOfLines={2}
-                style={styles.itemPrice}>{`${item.value} coins`}</Text>
+                style={styles.itemPrice}>{`${item.value} Points`}</Text>
             )}
           </View>
           <Image

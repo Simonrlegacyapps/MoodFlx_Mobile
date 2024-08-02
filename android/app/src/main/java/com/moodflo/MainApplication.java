@@ -7,7 +7,6 @@ import com.facebook.react.ReactApplication;
 import com.moodflo.nativemodules.share_manager.EmailPackage;
 import com.reactnativecommunity.clipboard.ClipboardPackage;
 import com.reactnative.googlefit.GoogleFitPackage;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;

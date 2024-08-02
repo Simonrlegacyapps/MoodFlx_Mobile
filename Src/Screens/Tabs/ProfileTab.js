@@ -98,6 +98,7 @@ const bottomList = [
 ];
 
 const ProfileTab = ({ navigation }) => {
+ 
   const [openActionSheet, setOpenActionSheet] = useState(false);
   // const [value, onChangeText] = React.useState('');
   const UserData = useSelector((state) => state.First);
@@ -866,7 +867,7 @@ const ProfileTab = ({ navigation }) => {
                         h={getFontSize(12.5)}
                       />
                       <Text allowFontScaling={false} style={styles.coinText}>
-                        +50 coins
+                        +50 Points
                       </Text>
                     </ImageBackground>
                   )}
@@ -910,10 +911,10 @@ const ProfileTab = ({ navigation }) => {
             ))}
             {
             UserData?.UserDetails?.vitality_member_id &&
-            <TouchableOpacity
-                onPress={() => {
-                  handleEmail()
-                }}>
+            <TouchableOpacity 
+            onPress={() => {Linking.openURL(CONTACT_US.link);
+              
+            }}>
                 <View style={styles.bottomFlatlistContainer}>
                   <View style={{ marginTop: dynamicSize(5) }}>{CONTACT_US.icon}</View>
                   <Text

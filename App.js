@@ -11,7 +11,6 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
@@ -346,9 +345,11 @@ const App = () => {
   }, []);
 
   const linkCompany = async (org, vitality_member_id) => {
+    
       setIsLinkLoader(true)
       const deviceId = getMyDeviceId();
       let fcm = '';
+    
       try {
         fcm = await messaging().getToken();
       } catch (error) {
@@ -376,15 +377,20 @@ const App = () => {
         };
         newOrg.current = null;
         vitalityMemberId.current = null;
-        console.log('getDownloadLink api params: ', params);
+        logger('getDownloadLink api params: ', params);
         try {
           const getDownloadLinkRes = await PostRequestApi('v2/getDownloadLink', params);
-          console.log('getDownloadLink api res: ', getDownloadLinkRes);
+          logger('getDownloadLink api res: ', getDownloadLinkRes);
+          try {
+            await AsyncStorage.setItem('splashURL',  getDownloadLinkRes?.data?.companyData?.splash_screen);
+          } catch (error) {
+            logger('Async Storage setItem Division error: ', error);
+          }
           let _vitalityMemberId = null;
           try {
             _vitalityMemberId = await AsyncStorage.getItem('vitalityMemberId');
           } catch (error) {
-            console.log(
+            logger(
               'error fetching vitalityMemberId from async storage',
               error,
             );
@@ -539,7 +545,8 @@ const App = () => {
     PostRequestApi('unlinkToCompany', params)
       .then(async (resp) => {
         const isDone = await onUnlinkUpdate(dispatch);
-        console.log('unlinkToCompanyDone isDone =====', isDone);
+        logger('unlinkToCompanyDone isDone =====', isDone);
+        await AsyncStorage.removeItem('splashURL').then(() => {}).catch((e) => {});
         if (isDone) {
           linkCompany();
         } else {
@@ -706,13 +713,11 @@ const App = () => {
           console.log('checkScreen error -->', e);
         }
         const timeoutId = setTimeout(() => {
-          SplashScreen.hide();
           clearTimeout(timeoutId);
         }, 2500);
       } else {
         setShowWelcome(false);
         const timeoutId = setTimeout(() => {
-          SplashScreen.hide();
           clearTimeout(timeoutId);
         }, 2500);
       }
