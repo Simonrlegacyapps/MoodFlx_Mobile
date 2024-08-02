@@ -18,6 +18,7 @@ import {
   Alert,
   ImageBackground,
   PermissionsAndroid,
+  NativeModules
 } from 'react-native';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
 import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
