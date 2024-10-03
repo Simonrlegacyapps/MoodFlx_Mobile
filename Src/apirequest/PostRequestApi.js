@@ -11,10 +11,15 @@ import {getMyDeviceId, onUnlinkUpdate, setPrevFloCoins} from '../services/common
 import {getApiBaseUrl} from '../Constants/constants';
 import isFunction from 'lodash.isfunction';
 import getStore from '../redux';
+import { logger } from '../..';
 
 const PostRequestApi = async (url, params) => {
+  axios.defaults.timeout = 10000000000;
   return await axios.post(getApiBaseUrl() + url, params).then((resp) => {
+    logger("Response =",resp)
     return resp;
+  }).catch(err=>{
+    logger("Catch erro =", err)
   });
 };
 
@@ -28,7 +33,7 @@ export async function GetStaffUserData(
   myHeaders.append('Content-Type', 'application/json');
 
   var raw = JSON.stringify(params);
-
+logger("raw", raw)
   var requestOptions = {
     method: 'POST',
     headers: myHeaders,

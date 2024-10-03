@@ -1539,6 +1539,7 @@ export default function MoodDetector({navigation}) {
 
   useEffect(() => {
     isUnmounted = false;
+    logger("userData.notifi", UserData.notification,pulseNotifData)
     if (UserData.notification) {
       if (
         isScreenFocused &&

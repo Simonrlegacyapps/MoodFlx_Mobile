@@ -15,7 +15,7 @@ import getStore from '../../../redux';
 import axios from 'axios';
 import { getMyDeviceId } from '../../../services/commonService';
 import { getApiBaseUrl } from '../../../Constants/constants';
-// import {logger} from "../../../../index";
+import {logger} from "../../../../index";
 
 export const sleepDataPermissionsIOS = {
   permissions: {
@@ -131,6 +131,7 @@ export function getSleepDataAfterPermissionIOS({ askPermission, onUpdate, dispat
       AppleHealthKit.getSleepSamples(
         sleepOptions,
         async (err: Object, results: Array<Object>) => {
+          logger('results', results)
           if (err) {
             console.log('getSleepAnalysis error: ', err);
           }
@@ -198,6 +199,7 @@ export function calculateSleepData(sleepData, onUpdate) {
       const endTimeInMillis = e?.endDate ? new Date(e.endDate).getTime() : null;
       const startDate = startTimeInMillis != null ? moment(startTimeInMillis) : null;
       const endDate = endTimeInMillis != null ? moment(endTimeInMillis) : null;
+      logger("sleep", e, startTimeInMillis, endTimeInMillis,"====",startDate,endDate)
       let diff = 0;
       if (startDate && endDate && Array.isArray(e?.granularity) && e?.granularity?.length > 0) {
         let asleepData = null;
@@ -207,6 +209,7 @@ export function calculateSleepData(sleepData, onUpdate) {
         let asleepEndTime = null;
         const awakeSleepStages = [2, 4, 5]
         e?.granularity.forEach(g => {
+          logger('granular',g)
           const gData = g?.startDate;
           const start_date = gData?.startDate ? new Date(gData.startDate).getTime() : null;
           const end_date = gData?.endDate ? new Date(gData.endDate).getTime() : null;

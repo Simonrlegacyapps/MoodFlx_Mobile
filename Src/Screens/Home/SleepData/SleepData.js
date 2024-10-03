@@ -173,10 +173,12 @@ const SleepData = ({
     };
 
     console.log(`Sleep Insights Api Params`, params);
+    logger('sleep params', params)
     let _sleepDuration = {...insights.duration};
     PostRequestApi('getSleepInsights', {...params, status: 'daily'})
       .then((res) => {
         console.log('✅ ✅ ✅ ✅ getSleepInsights daily: ✅ ✅ ✅ ✅ ', res?.data);
+        logger("getSleepInsights daily", res?.data)
         // console.log('getSleepInsights daily res: ', res);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
@@ -361,6 +363,7 @@ const SleepData = ({
       user_id: userData.UserId ?? '',
       sleep_data: sleepData,
     };
+    logger('sleep req', data)
     var config = {
       method: 'post',
       url: `${getApiBaseUrl()}updateSleepQuality`,
@@ -371,6 +374,7 @@ const SleepData = ({
       data: JSON.stringify(data),
     };
 
+    logger("updateSleepQuality",getApiBaseUrl(),data.sleep_data, JSON.stringify(data), config)
     GetStaffUserData(
       {
         device_id: deviceId,
@@ -386,10 +390,16 @@ const SleepData = ({
         // );
         if (result?.userData?.status !== 2) {
           return axios(config);
+          // axios(config).then((res)=>{
+          //   logger('axios',res)
+          // })
         } else {
           data.user_id = '';
           data.email = '';
           config.data = JSON.stringify(data);
+          // axios(config).then((res)=>{
+          //   logger('axios',res)
+          // })
           return axios(config);
         }
       })

@@ -234,17 +234,21 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Is connected?", netInfo?.isConnected);
+    logger("netinfo", netInfo)
+    if (netInfo) {
     setIsConnected((e) => {
-      let i = (netInfo.isConnected || netInfo.isConnected === null) && 
-      (netInfo.isInternetReachable || netInfo.isInternetReachable === null);
+      const i = (netInfo.isConnected !== false || netInfo.isConnected === null ) &&
+       (netInfo.isInternetReachable !== false || netInfo.isInternetReachable === null);
+      //let i = (netInfo.isConnected || netInfo.isConnected === null) && 
+      //(netInfo.isInternetReachable || netInfo.isInternetReachable === null);
       if (e === false && i === true) {
         // Reload app to after internet comes back
         RNRestart?.Restart?.();
       }
       return i;
     });
-  }, [netInfo?.isConnected,netInfo?.isInternetReachable]);
+    }
+  }, [netInfo?.isConnected]);
 
   useEffect(() => {
     const setWidgetData = async () => {
@@ -410,7 +414,7 @@ const App = () => {
           }
           let userData = null;
           if (
-            !getDownloadLinkRes.data.staffData?.email &&
+            !getDownloadLinkRes?.data.staffData?.email &&
             getDownloadLinkRes?.data?.staffData === 'Not found'
           ) {
             // console.log('Showing Toast ====>');
@@ -1267,7 +1271,7 @@ const App = () => {
         buttonTwoText="Cancel"
       />
       <NoInternetModal
-        modalVisible={(isConnected === false)}
+        modalVisible={!isConnected}
         onButtonOnePress={checkInternet}
       />
       <WeeklyInsightsProgress
