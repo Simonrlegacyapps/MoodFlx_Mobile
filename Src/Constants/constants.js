@@ -19,8 +19,8 @@ export const FAQ_URL = 'https://moodflo.com/frequently-asked-questions';
 export const SUPPORT_EMAIL = 'queries@aiavitality.com.au'
 let isCurrentLocationCalled = false;
 // let isDevServer = (__DEV__);
-let isDevServer = true;
-//let isDevServer = false;
+//let isDevServer = true;
+let isDevServer = false;
 
 export const getIsDevServer = () => isDevServer;
 export const setIsDevServer = (flag = (__DEV__)) => {
