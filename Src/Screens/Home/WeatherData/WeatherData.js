@@ -64,6 +64,7 @@ import { getMyDeviceId } from '../../../services/commonService';
 import { IndicatorHelper } from '../../../Components/CommonComponents/CommonComponents';
 import getStore from '../../../redux';
 import Colors from '../../../Constants/Colors/Colors';
+import { logger } from '../../../..';
 
 let weatherData = null;
 
@@ -583,26 +584,34 @@ const WeatherData = ({
       .then(async (response) => {
         const userData = getStore?.()?.getState?.()?.First;
         let currentWeatherDetails = userData.CurrentWeatherData;
-        console.log(
+        logger(
           ' ✅ ✅ ✅ ✅ Success CheckForWeather✅ ✅ ✅ ✅ ',
-          response?.data,
+          JSON.stringify(response?.data),
         );
         // dispatch(CurrentWeather(response?.data));
         weatherData = response?.data ? response?.data : weatherData;
+        const minTemp = response.data?.main?.temp_min ?? currentWeatherDetails.minTemp;
+        const maxTemp = response.data?.main?.temp_max ?? currentWeatherDetails.maxTemp;
         dispatch(
           CurrentWeather({
             ...currentWeatherDetails,
             place: response?.data?.name,
+            currentTemp: response.data?.main?.temp ?? null,
+            minTemp,
+            maxTemp,
+            weatherType: findWeather(response?.data?.weather?.[0]?.main),
           }),
         );
-        onFinish?.(true);
+        onFinish?.(true);loc_lat
         // await setTryWeather(response?.data);
         // await console.log(`response.data for weather`, response.data);
         return axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${loc_lat}&lon=${loc_long}&exclude=hourly,minutely&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`)
       })
       .then(async (response) => {
+          logger("----")
         const userData = getStore?.()?.getState?.()?.First;
         let currentWeatherDetails = userData.CurrentWeatherData;
+          logger("HERE ==>", JSON.stringify(response))
         const currTemp = response?.data?.current?.temp ?? currentWeatherDetails.currentTemp;
         // console.log('response.data.daily =============--->', JSON.stringify(response.data.daily));
         const currentWeather = response?.data?.daily?.filter?.((e, idx) => moment.utc((e.dt * 1000)).date() === moment().date());
@@ -618,15 +627,16 @@ const WeatherData = ({
             weatherType: findWeather(response?.data?.current?.weather?.[0]?.main),
           }),
         );
-      })
-      .catch(function (error) {
-        onFinish?.(false);
+        })
+        .catch(function (error) {
+          onFinish?.(false);
         console.log('Error CheckForWeather❌❌❌❌', error);
       });
     // }
   };
 
   const getWeather = onFinish => {
+    logger("Api call")
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -647,12 +657,12 @@ const WeatherData = ({
     };
 
     let timeOutId = setTimeout(() => {
-      console.log(`Weather Graph Data Params`, raw);
+      logger(`Weather Graph Data Params`, raw);
       fetch(`${getApiBaseUrl()}getWeatherReport`, requestOptions)
         .then((response) => response.json())
         .then(async (result) => {
           // console.log('Get weather Graph data', result),
-          console.log(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ');
+          logger(' ✅ ✅ ✅ ✅ Get Weather Success ✅ ✅ ✅ ✅ ',JSON.stringify(result));
           if (
             Array.isArray(result?.weatherData) &&
             result.weatherData.length > 0
@@ -662,7 +672,7 @@ const WeatherData = ({
             if (isFunction(onFinish)) {
               let v = getPollenTypeFromWeatherData(result.weatherData);
               if (v) {
-                console.log('setManualPollen ---->>>>>>', v);
+                logger('setManualPollen ---->>>>>>', v);
                 setManulPollen(v);
               }
               onFinish(v);
@@ -670,7 +680,7 @@ const WeatherData = ({
           }
           // await syncWeatherData();
         })
-        .catch((error) => console.log('error', error));
+        .catch((error) => logger('weather api error', error));
       clearTimeout(timeOutId);
       timeOutId = null;
     }, 1000);

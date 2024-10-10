@@ -1,22 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState, useReducer } from 'react';
+import React, {  useEffect, useState, useReducer } from 'react';
 import {
   View,
   Text,
   ScrollView,
   Dimensions,
   StyleSheet,
-  Image,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
-  RubikExtraBold,
   RubikLight,
-  RubikMedium,
   RubikRegular,
 } from '../../../Constants/fonts/Fonts';
-// import ProgressBar from 'react-native-animated-progress';
 import ProgressBar from '../../../Components/ProgressBar/ProgressBarCustom';
 import axios from 'axios';
 import GraphicChart from '../../../Components/GraphicChart/GraphicChart';
@@ -24,15 +19,12 @@ import StarProgress from '../../../Components/StarProgress/StarProgress';
 import PopUp from '../../../Components/PopUp/PopUp';
 import DateExpiredModal from '../../../Components/Modals/DateExpiredModal/DateExpiredModal';
 import { useDispatch, useSelector } from 'react-redux';
-// import AppleHealthKit from 'rn-apple-healthkit';
-import moment from 'moment';
-import { dynamicSize, horizontalScale } from '../../../Constants/sizeChoose';
+import {  horizontalScale } from '../../../Constants/sizeChoose';
 import {
   getMonthlySleepData,
   getSleepGraphData,
   getWeeklySleepData,
   setSleepDataLastThirtyDays,
-  sleepDataPermissionsIOS,
   fetchSleepDataForLastThirtyDays,
   getSleepDataForUpdateApi,
 } from './sleepDataService';
@@ -45,6 +37,7 @@ import Skeleton from '../../../Components/Skeleton/Skeleton';
 import getStore from '../../../redux';
 import { getMyDeviceId } from '../../../services/commonService';
 import Colors from '../../../Constants/Colors/Colors';
+import { logger } from '../../../..';
 
 const defaultSleepDuration = {
   [insightsDurationFlags.daily]: 0,
@@ -83,14 +76,6 @@ function sleepInsightsReducer(state, action) {
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 
-const IndicatorHelper = ({ color, text }) => {
-  return (
-    <View style={styles.indicatorHelperView}>
-      <View style={[styles.indicatorHelper, { backgroundColor: color }]} />
-      <Text style={styles.indicatorText}>{text}</Text>
-    </View>
-  );
-};
 
 const SleepData = ({
   CheckForSleepData,
@@ -101,13 +86,8 @@ const SleepData = ({
 }) => {
   const [openActionSheet, setopenActionSheet] = useState(false);
   const [SleepPopUp, setSleepPopUp] = useState(false);
-  // const [sleepMinutes, setSleepMinutes] = useState(0);
   const [dataDuration, setDataDuration] = useState(insightsDurationFlags.daily);
   const [lastThirtyDaySleepData, setLastThirtyDaySleepData] = useState(null);
-  const [weeklySleepData, setWeeklySleepData] = useState(null);
-  const [weeklyInBedData, setWeeklyInBedData] = useState(null);
-  const [weeklyAsleepData, setWeeklyAsleepData] = useState(null);
-  const [monthlySleepData, setMonthlySleepData] = useState(null);
   const [sleepGraphData, setSleepGraphData] = useState(null);
   const [AnonymousClick, setAnonymousClick] = useState(false);
   const [skeleton, setskeleton] = useState(false);
@@ -118,19 +98,14 @@ const SleepData = ({
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
-  // console.log(`UserData.SleepPermission`, UserData.SleepPermission);
 
   const VerifyDone = async () => {
-    // return;
-    // await AsyncStorage.setItem('GiveSleepPerm', 'true');
-
     setopenActionSheet(false);
     const timeoutId = setTimeout(() => {
-      // remove commented code after testing for fetchSleepDataFroLastThiryDays
-      // onSleepDataPerm();
       fetchSleepDataForLastThirtyDays({
         askPermission: true,
         onUpdate: function ({ sleepData, isPermissionAsked }) {
+          logger('SleepData ',sleepData)
           setLastThirtyDaySleepData(sleepData);
           if (sleepData) {
             callSleepDataUpdateApi(sleepData);
@@ -143,13 +118,6 @@ const SleepData = ({
       });
       clearTimeout(timeoutId);
     }, 500);
-    // let Sp = await AsyncStorage.getItem('GiveSleepPerm');
-    // let SleepP = await JSON.parse(Sp);
-    // console.log(`SleepPerm`, SleepP);
-    // dispatch(SleepPerm(SleepP));
-    // if (SleepP == null) {
-    //   onSleepDataPerm();
-    // }
   };
 
   const onSync = () => {
@@ -160,7 +128,7 @@ const SleepData = ({
   };
 
   useEffect(() => {
-    console.log('Sleep Data useEffect called');
+    logger('Sleep Data useEffect called');
     fetchSleepDataForLastThirtyDays({
       askPermission: false,
       onUpdate: function ({ sleepData, isPermissionAsked }) {
@@ -177,68 +145,18 @@ const SleepData = ({
     });
   }, [UserData.SleepPermission]);
 
-  // useEffect(() => {
-  //   //sleep data for current day
-  //   if (
-  //     Array.isArray(lastThirtyDaySleepData) &&
-  //     lastThirtyDaySleepData.length > 0
-  //   ) {
-  //     let totalMinutes = 0;
-  //     lastThirtyDaySleepData.forEach((e, idx) => {
-  //       const startDate = e?.start_date ? moment(new Date(e.start_date).getTime()) : null;
-  //       const endDate = e?.end_date ? moment(new Date(e.end_date).getTime()) : null;
-  //       let diff = 0;
-  //       if (e.type === 'ASLEEP' && startDate && endDate && (startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') || endDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY'))) {
-  //         diff = endDate.diff(startDate, 'minutes');
-  //         totalMinutes += diff;
-  //         console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
-  //       }
-  //     });
-  //     totalMinutes === 0 &&
-  //       lastThirtyDaySleepData.forEach((e, idx) => {
-  //         const startDate = e?.start_date
-  //           ? moment(new Date(e.start_date).getTime())
-  //           : null;
-  //         const endDate = e?.end_date
-  //           ? moment(new Date(e.end_date).getTime())
-  //           : null;
-  //         let diff = 0;
-  //         if (
-  //           e.type === 'INBED' &&
-  //           startDate &&
-  //           endDate && (
-  //             startDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY') ||
-  //             endDate.clone().format('DD MMM YYYY') === moment().format('DD MMM YYYY')
-  //           )
-  //         ) {
-  //         diff = endDate.diff(startDate, 'minutes');
-  //         totalMinutes += diff;
-  //         console.log('======sleep today diff=======', diff, 'total min===', totalMinutes, '---e---', e);
-  //       }
-  //     });
-  //     setSleepMinutes(totalMinutes);
-  //   }
-  // }, [lastThirtyDaySleepData]);
-
   useEffect(() => {
     //sleep data for last 7 days
     if (Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
       setSleepDataLastThirtyDays(lastThirtyDaySleepData);
       const weeklyData = getWeeklySleepData();
-      // console.log('weeklyData: ', JSON.stringify(weeklyData));
-      // console.log('weeklyData: ', weeklyData);
-      setWeeklySleepData(weeklyData);
     }
   }, [lastThirtyDaySleepData]);
 
   useEffect(() => {
-    //sleep data for this month
     if (Array.isArray(lastThirtyDaySleepData) && lastThirtyDaySleepData.length > 0) {
       setSleepDataLastThirtyDays(lastThirtyDaySleepData);
-      const montlhlySleep = getMonthlySleepData();
-      // console.log('monthlySleep: ', JSON.stringify(montlhlySleep));
-      // console.log('monthlySleep: ', montlhlySleep);
-      setMonthlySleepData(montlhlySleep);
+       getMonthlySleepData();
     }
   }, [lastThirtyDaySleepData]);
 
@@ -255,10 +173,12 @@ const SleepData = ({
     };
 
     console.log(`Sleep Insights Api Params`, params);
+    logger('sleep params', params)
     let _sleepDuration = {...insights.duration};
     PostRequestApi('getSleepInsights', {...params, status: 'daily'})
       .then((res) => {
         console.log('✅ ✅ ✅ ✅ getSleepInsights daily: ✅ ✅ ✅ ✅ ', res?.data);
+        logger("getSleepInsights daily", res?.data)
         // console.log('getSleepInsights daily res: ', res);
         let dailyInsightsPayload = {};
         dailyInsightsPayload.dailyInsights =
@@ -304,7 +224,6 @@ const SleepData = ({
         }
       })
       .then((res) => {
-        // console.log('getSleepInsights weekly res: ', res);
         let weeklyInsightsPayload = {};
         console.log('✅ ✅ ✅ ✅ getSleepInsights weekly: ✅ ✅ ✅ ✅ ', res?.data);
         weeklyInsightsPayload.weeklyInsights =
@@ -394,17 +313,11 @@ const SleepData = ({
       email: UserData?.UserEmail ?? '',
       user_id: UserData?.UserId ?? '',
     };
-    // var raw = JSON.stringify({
-    //   device_id: deviceId,
-    //   email: UserData?.UserEmail ?? '',
-    //   user_id: UserData?.UserId ?? '',
-    // });
 
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
       body: JSON.stringify(params),
-      // redirect: 'follow',
     };
 
     console.log(`Get Sleep Data Params`, params);
@@ -414,16 +327,13 @@ const SleepData = ({
         console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅ ', JSON.stringify(result));
         const inBedArray = result?.sleepData?.INBED ? Object.values(result.sleepData.INBED) : [];
         const asleepArray = result?.sleepData?.ASLEEP ? Object.values(result.sleepData.ASLEEP) : [];
-        if (Array.isArray(inBedArray) && inBedArray.length > 0) {
-          console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  inBed', inBedArray);
-          setWeeklyInBedData(inBedArray);
-        }
-        if (Array.isArray(asleepArray) && asleepArray.length > 0) {
-          console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  asleep', asleepArray);
-          setWeeklyAsleepData(asleepArray);
-        }
+        // if (Array.isArray(inBedArray) && inBedArray.length > 0) {
+        //   console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  inBed', inBedArray);
+        // }
+        // if (Array.isArray(asleepArray) && asleepArray.length > 0) {
+        //   console.log(' ✅ ✅ ✅ ✅ Get Sleep Data Success ✅ ✅ ✅ ✅  asleep', asleepArray);
+        // }
         const graphData = getSleepGraphData({ weeklyData: { ASLEEP: asleepArray, INBED: inBedArray } });
-        console.log('graphData: ', graphData);
         setSleepGraphData(graphData);
       })
       .catch(function (error) {
@@ -453,6 +363,7 @@ const SleepData = ({
       user_id: userData.UserId ?? '',
       sleep_data: sleepData,
     };
+    logger('sleep req', data)
     var config = {
       method: 'post',
       url: `${getApiBaseUrl()}updateSleepQuality`,
@@ -463,6 +374,7 @@ const SleepData = ({
       data: JSON.stringify(data),
     };
 
+    logger("updateSleepQuality",getApiBaseUrl(),data.sleep_data, JSON.stringify(data), config)
     GetStaffUserData(
       {
         device_id: deviceId,
@@ -478,10 +390,16 @@ const SleepData = ({
         // );
         if (result?.userData?.status !== 2) {
           return axios(config);
+          // axios(config).then((res)=>{
+          //   logger('axios',res)
+          // })
         } else {
           data.user_id = '';
           data.email = '';
           config.data = JSON.stringify(data);
+          // axios(config).then((res)=>{
+          //   logger('axios',res)
+          // })
           return axios(config);
         }
       })

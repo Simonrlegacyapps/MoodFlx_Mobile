@@ -172,7 +172,7 @@ function RewardsHistory({setIsLevelsHide, islevelsHide}) {
             {!isNaN(item.reward_point) && (
               <Text
                 numberOfLines={2}
-                style={styles.itemPrice}>{`${item.reward_point} coins`}</Text>
+                style={styles.itemPrice}>{`${item.reward_point} Points`}</Text>
             )}
           </View>
         </View>
@@ -207,7 +207,7 @@ function RewardsHistory({setIsLevelsHide, islevelsHide}) {
               <HisotyImage />
             </View>
             <Text style={styles.BigText}>You're Getting There! </Text>
-            <Text style={styles.SmallText}>You haven't redeemed {`\n`}any rewards yet. Keep bringing {`\n`}in the flx coins!</Text>
+            <Text style={styles.SmallText}>You haven't redeemed {`\n`}any rewards yet. Keep bringing {`\n`}in the Flx Points!</Text>
           </View>
           <View style={styles.bottomTwo} />
         </ScrollView>

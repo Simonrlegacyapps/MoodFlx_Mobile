@@ -12,13 +12,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import isFunction from 'lodash.isfunction';
 import {Platform, Linking, Alert, NativeModules} from 'react-native';
 import isEmpty from 'lodash.isempty';
-import { activityHealthKitOptions } from './appPermissions';
+import {activityHealthKitOptions} from './appPermissions';
 import moment from 'moment';
 import {GetStaffUserData} from '../apirequest/PostRequestApi';
 import DeviceInfo from 'react-native-device-info';
 import axios from 'axios';
 import getStore from '../redux';
-import { getApiBaseUrl } from '../Constants/constants';
+import {getApiBaseUrl} from '../Constants/constants';
 import uuid from 'react-native-uuid';
 import Toast from 'react-native-toast-message';
 import PostRequestApi from '../apirequest/PostRequestApi';
@@ -34,14 +34,14 @@ export function setDeviceId(id) {
   if (!id) {
     if (!(deviceId && typeof deviceId === 'string')) {
       AsyncStorage.getItem('deviceId')
-        .then((e) => {
+        .then(e => {
           if (e && typeof e === 'string') {
             deviceId = e;
           } else {
             deviceId = getMyDeviceId();
           }
         })
-        .catch((e) => {
+        .catch(e => {
           console.log('error getting deviceId from AsyncStorage: ', e);
         });
     }
@@ -55,10 +55,10 @@ export function getMyDeviceId() {
     const uid = uuid.v4();
     if (typeof uid === 'string' && uid !== '') {
       AsyncStorage.setItem('deviceId', JSON.stringify(uid))
-        .then((e) => {
+        .then(e => {
           console.log('uuid generated and saved as deviceId in AsyncStorage');
         })
-        .catch((e) => {
+        .catch(e => {
           console.log('error saving uuid as deviceId in AsyncStorage: ', e);
         });
       deviceId = uid;
@@ -98,7 +98,7 @@ export function setMoodsArray(moods) {
   // console.log('setMoodsArray ----', moods);
   if (Array.isArray(moods) && moods.length > 0) {
     moodsArray = moods
-      .map((e) => {
+      .map(e => {
         if (typeof e?.name === 'string') {
           if (e.name.toLowerCase() === 'happy') {
             return 'happ';
@@ -107,7 +107,7 @@ export function setMoodsArray(moods) {
         }
         return '';
       })
-      .filter((e, idx, arr) => (e !== '' && onlyUnique(e, idx, arr)));
+      .filter((e, idx, arr) => e !== '' && onlyUnique(e, idx, arr));
   }
 }
 
@@ -121,7 +121,7 @@ export async function onUnlinkUpdate(dispatch, onFinish) {
     await AsyncStorage.removeItem('Anonymous');
     await AsyncStorage.removeItem('Email');
     await AsyncStorage.removeItem('Division');
-    await AsyncStorage.removeItem('Email');
+
     dispatch?.(UserDivision(null));
     dispatch?.(UserEmail(null));
     dispatch?.(GetUserId(null));
@@ -183,7 +183,7 @@ export async function onDynamicLinkUpdate(userData, dispatch, onFinish) {
   }
 }
 
-export const getBulbColorFromLux = (v) => {
+export const getBulbColorFromLux = v => {
   if (!isNaN(v)) {
     v = Number(v);
     if (v >= 0 && v <= 100) {
@@ -206,7 +206,7 @@ export const setSwiperIndexHome = (i, dispatch) => {
   dispatch?.(SetSwiperIndex(i));
 };
 
-export const getFloCoins = (coins) => {
+export const getFloCoins = coins => {
   // console.log('getFloCoins ----', coins);
   let c = !isNaN(coins) ? String(coins) : -1;
   if (typeof c === 'string') {
@@ -247,20 +247,29 @@ export const setFitnessDataSync = async (dispatch, dataSyncArray) => {
   } else if (Array.isArray(dataSyncArray) && !isEmpty(dataSyncArray)) {
     finalArray = [...dataSyncArray];
   }
-  finalArray = [...Array.isArray(finalArray) ? finalArray : [], ...activityHealthKitOptions.permissions.read];
+  finalArray = [
+    ...(Array.isArray(finalArray) ? finalArray : []),
+    ...activityHealthKitOptions.permissions.read,
+  ];
   // console.log('keep duplicates in this array ===', finalArray);
   //getting duplicates
   finalArray = finalArray.filter((v, idx) => finalArray.indexOf(v) !== idx);
   console.log('fitness data syncing array ===', finalArray);
   let text = `0/${activityHealthKitOptions.permissions.read.length}`;
-  if ((finalArray?.length ?? 0) <= activityHealthKitOptions.permissions.read.length) {
+  if (
+    (finalArray?.length ?? 0) <=
+    activityHealthKitOptions.permissions.read.length
+  ) {
     text = `Syncing ${finalArray?.length}/${activityHealthKitOptions.permissions.read.length}`;
   } else {
     text = `Syncing ${activityHealthKitOptions.permissions.read.length}/${activityHealthKitOptions.permissions.read.length}`;
   }
   dispatch?.(SetFitnessSyncText(text));
   try {
-    await AsyncStorage.setItem('fitnessSyncingData', JSON.stringify(finalArray));
+    await AsyncStorage.setItem(
+      'fitnessSyncingData',
+      JSON.stringify(finalArray),
+    );
   } catch (error) {
     console.log('error on AsyncStorage set fitnessSyncingData');
   }
@@ -279,12 +288,16 @@ export const openHealthApp = async () => {
     // by some browser in the mobile
     await Linking.openURL(url);
   } else {
-    Alert.alert('Unable to open Health App from this app. Please manully open the Health App to make changes');
+    Alert.alert(
+      'Unable to open Health App from this app. Please manully open the Health App to make changes',
+    );
   }
 };
 
-export const setMoodInputTimeStamps = async (isNotes) => {
-  let asyncStorageTimeStampKey = isNotes ? 'NotesInputTimeStamp' : 'MoodInputTimeStamp';
+export const setMoodInputTimeStamps = async isNotes => {
+  let asyncStorageTimeStampKey = isNotes
+    ? 'NotesInputTimeStamp'
+    : 'MoodInputTimeStamp';
   let timeStamps = [];
   try {
     const t = await AsyncStorage.getItem(asyncStorageTimeStampKey);
@@ -298,9 +311,16 @@ export const setMoodInputTimeStamps = async (isNotes) => {
     timeStamps.sort(function (a, b) {
       return a - b;
     });
-    console.log(`setMoodInputTimeStamps ${asyncStorageTimeStampKey} ----`, timeStamps);
+    console.log(
+      `setMoodInputTimeStamps ${asyncStorageTimeStampKey} ----`,
+      timeStamps,
+    );
     const currentTime = new Date().getTime();
-    if (moment(timeStamps[timeStamps.length - 1]).isBefore(moment().startOf('day'))) {
+    if (
+      moment(timeStamps[timeStamps.length - 1]).isBefore(
+        moment().startOf('day'),
+      )
+    ) {
       timeStamps = [];
     }
     timeStamps.push(currentTime);
@@ -308,8 +328,10 @@ export const setMoodInputTimeStamps = async (isNotes) => {
   }
 };
 
-export const getMoodInputRewardPoints = async (isNotes) => {
-  let asyncStorageTimeStampKey = isNotes ? 'NotesInputTimeStamp' : 'MoodInputTimeStamp';
+export const getMoodInputRewardPoints = async (isNotes, isAIAVitality) => {
+  let asyncStorageTimeStampKey = isNotes
+    ? 'NotesInputTimeStamp'
+    : 'MoodInputTimeStamp';
   let moodCount = -1;
   let rewardPoints = 0;
   let timeStamps = [];
@@ -324,12 +346,13 @@ export const getMoodInputRewardPoints = async (isNotes) => {
   if (!isNotes) {
     try {
       let p = await AsyncStorage.getItem('MoodCount');
+      console.log('p :: ', p);
       moodCount = await JSON.parse(p);
       if (!isNaN(moodCount)) {
         moodCount = Number(moodCount);
       }
     } catch (error) {
-      console.log(`Async Storage get MoodCount error `, error);
+      console.log('Async Storage get MoodCount error ', error);
     }
   } else {
     moodCount = timeStamps?.length ?? 0;
@@ -359,8 +382,20 @@ export const getMoodInputRewardPoints = async (isNotes) => {
     });
     let existingQuarter = null;
     let l = [];
+    console.log('timeStamps :: ', timeStamps);
     if (timeStamps.length === 0) {
-      rewardPoints = 3;
+      if (isAIAVitality && !isNotes) {
+        // rewardPoints = 10;
+        rewardPoints = 0;
+      } else if (isAIAVitality && isNotes) {
+        rewardPoints = 0;
+      } else {
+        rewardPoints = 3;
+      }
+    } else if (timeStamps.length === 2 && isNotes && isAIAVitality) {
+      console.log('else if called');
+      // rewardPoints = 10;
+      rewardPoints = 0;
     } else {
       timeQuarters.forEach((d, index) => {
         if (currentTime >= d.startTime && currentTime < d.endTime) {
@@ -371,15 +406,21 @@ export const getMoodInputRewardPoints = async (isNotes) => {
         l = timeStamps.filter((e, idx) => {
           return e >= existingQuarter.startTime && e < existingQuarter.endTime;
         });
-        if (l.length < 3) {
-          const diff = moment().diff(
-            moment(timeStamps[timeStamps.length - 1]),
-            'minutes',
-          );
-          if (diff >= 120) {
-            rewardPoints = 3;
-            if (moodCount >= 3) {
-              rewardPoints = rewardPoints + 1;
+        console.log('l :: ', l);
+        if (l.length === 0 && isAIAVitality) {
+          // rewardPoints = 10;
+          rewardPoints = 0;
+        } else {
+          if (l.length < 3) {
+            const diff = moment().diff(
+              moment(timeStamps[timeStamps.length - 1]),
+              'minutes',
+            );
+            if (diff >= 120) {
+              rewardPoints = 3;
+              if (moodCount >= 3) {
+                rewardPoints = rewardPoints + 1;
+              }
             }
           }
         }
@@ -396,20 +437,20 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     return false;
   }
   const negativeMoodNames = [
-    'Annoyed',
-    'Frustrated',
+    'Stressed',
+    'Cranky',
     'Upset',
     'Sad',
     'Bored',
-    'Gloomy',
+    'Flat',
     'Tense',
     'Impatient',
-    'Worried',
+    'Anxious',
     'Tired',
   ];
   const allNegativeMoods = allMoods
-    .filter((e) => negativeMoodNames.indexOf(e?.name) !== -1)
-    .map((e) => e.id);
+    .filter(e => negativeMoodNames.indexOf(e?.name) !== -1)
+    .map(e => e.id);
   if (!(moodId && allNegativeMoods.indexOf(moodId) !== -1)) {
     return false;
   }
@@ -423,23 +464,33 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
   if (typeof negativeMoodPopupTimeStamp !== 'number') {
     return false;
   }
-  if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 13) {
-  // if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 1) {
-  // if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 0) {
+  if (
+    moment()
+      .startOf('day')
+      .diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 13
+  ) {
+    // if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 1) {
+    // if (moment().startOf('day').diff(moment(negativeMoodPopupTimeStamp).startOf('day'), 'days') < 0) {
     return false;
   }
   const params = {
-    "device_id": getMyDeviceId?.() ?? '',
-    "email": getStore?.()?.getState?.()?.First?.UserEmail ?? '',
-    "user_id": getStore?.()?.getState?.()?.First?.UserId ?? '',
-    "start_date": moment().utcOffset(600).subtract(13, 'days').format('YYYY-MM-DD'),
+    device_id: getMyDeviceId?.() ?? '',
+    email: getStore?.()?.getState?.()?.First?.UserEmail ?? '',
+    user_id: getStore?.()?.getState?.()?.First?.UserId ?? '',
+    start_date: moment()
+      .utcOffset(600)
+      .subtract(13, 'days')
+      .format('YYYY-MM-DD'),
     // "start_date": moment().utcOffset(600).subtract(1, 'days').format('YYYY-MM-DD'),
     // "start_date": moment().utcOffset(600).subtract(0, 'days').format('YYYY-MM-DD'),
   };
   let response;
   try {
     response = await axios.post(`${getApiBaseUrl()}getMoodInputData`, params);
-    console.log('✅ ✅ ✅ ✅ Success getMoodInputData response.data✅ ✅ ✅ ✅', response?.data);
+    console.log(
+      '✅ ✅ ✅ ✅ Success getMoodInputData response.data✅ ✅ ✅ ✅',
+      response?.data,
+    );
   } catch (error) {
     console.error(error);
   }
@@ -457,7 +508,7 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
     return false;
   }
 
-  values.forEach((e) => {
+  values.forEach(e => {
     if (Array.isArray(e) && e.length > 0) {
       moodInputIdData = [...moodInputIdData, ...e];
     }
@@ -467,25 +518,39 @@ export async function getIsShowNegativeMoodInputPopup(moodId, allMoods) {
   }
   //console.log('moodInputIdData ->', moodInputIdData);
   if (moodInputIdData.length > 0) {
-    negativeMoodInputIdData = moodInputIdData.filter(e => allNegativeMoods.indexOf(e?.mood_id) !== -1);
+    negativeMoodInputIdData = moodInputIdData.filter(
+      e => allNegativeMoods.indexOf(e?.mood_id) !== -1,
+    );
   }
   let negativeMoodPercentage = 0;
   if (negativeMoodInputIdData.length > 0) {
-    negativeMoodPercentage = (negativeMoodInputIdData.length * 100) / moodInputIdData.length;
+    negativeMoodPercentage =
+      (negativeMoodInputIdData.length * 100) / moodInputIdData.length;
   }
   if (negativeMoodPercentage > 50) {
     try {
-      await AsyncStorage.setItem('NegativeMoodPopupTimeStamp', JSON.stringify(new Date().getTime()));
+      await AsyncStorage.setItem(
+        'NegativeMoodPopupTimeStamp',
+        JSON.stringify(new Date().getTime()),
+      );
     } catch (error) {
-      console.log('Set NegativeMoodPopupTimeStamp in AsyncStorage error ', error);
+      console.log(
+        'Set NegativeMoodPopupTimeStamp in AsyncStorage error ',
+        error,
+      );
     }
     return true;
   }
-  console.log('(moodInputIdData.length negativeMoodInputIdData.length---', moodInputIdData.length, negativeMoodInputIdData.length, negativeMoodPercentage);
+  console.log(
+    '(moodInputIdData.length negativeMoodInputIdData.length---',
+    moodInputIdData.length,
+    negativeMoodInputIdData.length,
+    negativeMoodPercentage,
+  );
   return false;
 }
 
-export const openUrl = (url) => async () => {
+export const openUrl = url => async () => {
   // Checking if the link is supported for links with custom URL scheme.
   if (typeof url !== 'string') {
     return;
@@ -543,7 +608,7 @@ export const getIsMoodLvlUp = (previousPoints, currentPoints) => {
   if (prevPts >= currentPoints) {
     return false;
   }
-  if ((currentPts - prevPts) > 50) {
+  if (currentPts - prevPts > 50) {
     return false;
   }
   const prevLvl = getLvlName(prevPts) ?? -1;
@@ -559,7 +624,7 @@ export const getIsMoodLvlUp = (previousPoints, currentPoints) => {
   return false;
 };
 
-export const getUpdateAnswerRewardPoints = (startDate) => {
+export const getUpdateAnswerRewardPoints = startDate => {
   if (typeof startDate !== 'string') {
     return 0;
   }
@@ -596,13 +661,16 @@ export function getLightGraphData(dataArray) {
     let day = '';
     day = eData.format('dd')?.charAt?.(0);
     // INBED
-    dataArray.forEach((d) => {
+    dataArray.forEach(d => {
       const startDateMillis = d?.date ? new Date(d.date).getTime() : null;
       let value = 0;
       if (d?.value && !isNaN(d?.value)) {
         value = Number.parseInt(Number(d.value), 10);
       }
-      if (startDateMillis !== null && moment(startDateMillis).startOf('days').isSame(eData)) {
+      if (
+        startDateMillis !== null &&
+        moment(startDateMillis).startOf('days').isSame(eData)
+      ) {
         data = {
           x: idx + 1,
           y: value,
@@ -636,15 +704,17 @@ export function getStandGraphData(dataArray) {
     let day = '';
     day = eData.format('dd');
     // INBED
-    dataArray.forEach((d) => {
-      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+    dataArray.forEach(d => {
+      const startDateMillis = d?.start_date
+        ? new Date(d.start_date).getTime()
+        : null;
       let value = 0;
       if (!isNaN(d?.duration)) {
         value = Number.parseInt(Number(d.duration), 10);
         value = value > 0 ? Math.floor(value / 60) : 0;
         let x = Number(d.duration) % 60;
         x = Math.floor((100 * x) / 60);
-        value = value + (x / 100);
+        value = value + x / 100;
       }
       if (
         startDateMillis !== null &&
@@ -684,15 +754,17 @@ export function getScreenGraphData(dataArray) {
     let day = '';
     day = eData.format('dd');
     // INBED
-    dataArray.forEach((d) => {
-      const startDateMillis = d?.start_date ? new Date(d.start_date).getTime() : null;
+    dataArray.forEach(d => {
+      const startDateMillis = d?.start_date
+        ? new Date(d.start_date).getTime()
+        : null;
       let value = 0;
       if (!isNaN(d?.duration)) {
         value = Number.parseInt(Number(d.duration), 10);
         value = value > 0 ? Math.floor(value / 60) : 0;
         let x = Number(d.duration) % 60;
         x = Math.floor((100 * x) / 60);
-        value = value + (x / 100);
+        value = value + x / 100;
       }
       if (
         startDateMillis !== null &&
@@ -725,7 +797,11 @@ export function getWeeklyHealthGraphData(dataArray) {
   let apiDataArray = [];
   dates.forEach((e, idx) => {
     const d = moment().startOf('day').subtract(e, 'days');
-    weekDates.push({ date: d.format('YYYY-MM-DD'), day: d.format('dd'), y: e === 0 ? todaySteps : "0" });
+    weekDates.push({
+      date: d.format('YYYY-MM-DD'),
+      day: d.format('dd'),
+      y: e === 0 ? todaySteps : '0',
+    });
   });
   console.log('dates ->', weekDates);
   if (!(Array.isArray(dataArray) && dataArray.length > 0)) {
@@ -733,9 +809,9 @@ export function getWeeklyHealthGraphData(dataArray) {
   }
   let flag = false;
   weekDates.forEach((e, idx) => {
-    dataArray.forEach((x) => {
+    dataArray.forEach(x => {
       if (!flag && x?.date === (e?.date ?? '-1')) {
-        apiDataArray.push({ ...e, y: x?.steps ?? "0" });
+        apiDataArray.push({...e, y: x?.steps ?? '0'});
         flag = true;
       }
     });
@@ -744,9 +820,9 @@ export function getWeeklyHealthGraphData(dataArray) {
     }
     flag = false;
   });
-  apiDataArray = apiDataArray.map((e) => {
-    return { ...e, y: typeof e?.y === 'number' ? String(e.y) : (e?.y ?? '0') };
-  })
+  apiDataArray = apiDataArray.map(e => {
+    return {...e, y: typeof e?.y === 'number' ? String(e.y) : e?.y ?? '0'};
+  });
   return apiDataArray;
 }
 
@@ -776,8 +852,12 @@ export function fetchAndUpdateScreenTimeData({
   let afternoonSTime = moment().startOf('day').add(13, 'hours').valueOf();
   let eveningSTime = moment().startOf('day').add(16, 'hours').valueOf();
   let nightSTime = moment().startOf('day').add(19, 'hours').valueOf();
-  let nightETime = moment().startOf('day').add(1, 'day').add(7, 'hours').valueOf();
-  const getTotalTimeInForeground = (screenTimeData) => {
+  let nightETime = moment()
+    .startOf('day')
+    .add(1, 'day')
+    .add(7, 'hours')
+    .valueOf();
+  const getTotalTimeInForeground = screenTimeData => {
     let totalScreenTime = 0;
     if (!screenTimeData) {
       return totalScreenTime;
@@ -787,16 +867,18 @@ export function fetchAndUpdateScreenTimeData({
       totalScreenTime = screenTimeData?.[keys[0]]?.totalTime ?? 0;
     }
     // console.log('screen time in milli --->', totalScreenTime);
-    totalScreenTime = totalScreenTime > 0 ? Math.ceil((totalScreenTime / 1000) / 60) : 0;
+    totalScreenTime =
+      totalScreenTime > 0 ? Math.ceil(totalScreenTime / 1000 / 60) : 0;
     return totalScreenTime;
   };
-  const updateScreenTimePermission = (data) => {
-    const screenTimePermission = getStore?.()?.getState?.()?.First?.ScreenTimePermission;
+  const updateScreenTimePermission = data => {
+    const screenTimePermission =
+      getStore?.()?.getState?.()?.First?.ScreenTimePermission;
     // console.log('screenTimePermission --->', screenTimePermission);
     if (screenTimePermission !== true && !isEmpty(data)) {
       setScreenTimePermission(true);
     }
-  }
+  };
   if (!UsageStats) {
     Toast.show({
       type: 'error',
@@ -816,7 +898,7 @@ export function fetchAndUpdateScreenTimeData({
     return;
   }
   UsageStats?.getUsageStats?.(morningSTime, noonSTime)
-    .then((data) => {
+    .then(data => {
       console.log('MORNING SCREEN TIME DATA: ', data);
       morning = getTotalTimeInForeground(data);
       if (isFunction(setMorningTime)) {
@@ -829,7 +911,7 @@ export function fetchAndUpdateScreenTimeData({
         return Promise.resolve(null);
       }
     })
-    .then((data) => {
+    .then(data => {
       console.log('NOON SCREEN TIME DATA: ', data);
       if (isFunction(setNoonTime)) {
         noon = getTotalTimeInForeground(data);
@@ -842,7 +924,7 @@ export function fetchAndUpdateScreenTimeData({
         return Promise.resolve(null);
       }
     })
-    .then((data) => {
+    .then(data => {
       console.log('AFTERNOON SCREEN TIME DATA: ', data);
       if (isFunction(setAfternoonTime)) {
         afternoon = getTotalTimeInForeground(data);
@@ -855,7 +937,7 @@ export function fetchAndUpdateScreenTimeData({
         return Promise.resolve(null);
       }
     })
-    .then((data) => {
+    .then(data => {
       console.log('EVENING SCREEN TIME DATA: ', data);
       if (isFunction(setEveningTime)) {
         evening = getTotalTimeInForeground(data);
@@ -868,7 +950,7 @@ export function fetchAndUpdateScreenTimeData({
         return Promise.resolve(null);
       }
     })
-    .then((data) => {
+    .then(data => {
       console.log('NIGHT SCREEN TIME DATA: ', data);
       if (isFunction(setNightTime)) {
         night = getTotalTimeInForeground(data);
@@ -884,7 +966,7 @@ export function fetchAndUpdateScreenTimeData({
         return Promise.resolve(null);
       }
     })
-    .then((data) => {
+    .then(data => {
       console.log('CURRENT DAY SCREEN TIME DATA: ', data);
       if (isFunction(setCurrentDayScreenTime)) {
         currentDayTime = getTotalTimeInForeground(data);
@@ -912,7 +994,7 @@ export function fetchAndUpdateScreenTimeData({
         return Promise.resolve(null);
       }
     })
-    .then((data) => {
+    .then(data => {
       console.log('YESTERDAY SCREEN TIME DATA: ', data);
       if (isFunction(setYesterdayScreenTime)) {
         prevDayTime = getTotalTimeInForeground(data);
@@ -927,8 +1009,14 @@ export function fetchAndUpdateScreenTimeData({
           screen_data: [
             {
               time_interval: 'yesterday',
-              start_date: prevDay.clone().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
-              end_date: prevDay.clone().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+              start_date: prevDay
+                .clone()
+                .startOf('day')
+                .format('YYYY-MM-DD HH:mm:ss'),
+              end_date: prevDay
+                .clone()
+                .endOf('day')
+                .format('YYYY-MM-DD HH:mm:ss'),
               value: prevDayTime,
             },
             {
@@ -976,8 +1064,11 @@ export function fetchAndUpdateScreenTimeData({
         return Promise.resolve(null);
       }
     })
-    .then((data) => {
-      console.log('✅ ✅ ✅ ✅ updateScreenTime api success✅ ✅ ✅ ✅ -data---->', data?.data);
+    .then(data => {
+      console.log(
+        '✅ ✅ ✅ ✅ updateScreenTime api success✅ ✅ ✅ ✅ -data---->',
+        data?.data,
+      );
       if (data?.data && isFunction(callScreenInsights)) {
         callScreenInsights();
       }
@@ -993,8 +1084,11 @@ export function fetchAndUpdateScreenTimeData({
         return Promise.resolve(null);
       }
     })
-    .then((data) => {
-      console.log('✅ ✅ ✅ ✅ getScreenTimeReport api success✅ ✅ ✅ ✅ -data---->', data?.data);
+    .then(data => {
+      console.log(
+        '✅ ✅ ✅ ✅ getScreenTimeReport api success✅ ✅ ✅ ✅ -data---->',
+        data?.data,
+      );
       if (isFunction(setGraphData)) {
         let screenDataArray = Object.values(data?.data?.screenData);
         if (Array.isArray(screenDataArray) && screenDataArray.length > 0) {
@@ -1002,8 +1096,11 @@ export function fetchAndUpdateScreenTimeData({
         }
       }
     })
-    .catch((error) => {
-      console.log('❌ ❌ ❌ ❌ Error in getting SCREEN TIME DATA❌ ❌ ❌ ❌ : ', error);
+    .catch(error => {
+      console.log(
+        '❌ ❌ ❌ ❌ Error in getting SCREEN TIME DATA❌ ❌ ❌ ❌ : ',
+        error,
+      );
     });
 }
 
@@ -1019,7 +1116,9 @@ export function getScreenDataTimeInHoursMin(e) {
     let i = Number(e);
     let hr = Math.floor(i / 60);
     let min = i % 60;
-    return i > 0 ? `${hr > 0 ? `${hr}hr ` : ''}${min > 0 ? `${min}min` : ''}` : '0min';
+    return i > 0
+      ? `${hr > 0 ? `${hr}hr ` : ''}${min > 0 ? `${min}min` : ''}`
+      : '0min';
   }
   return '0min';
 }

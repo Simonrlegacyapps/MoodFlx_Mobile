@@ -21,7 +21,13 @@ import {
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
 import Svg, {Path, SvgUri} from 'react-native-svg';
-import {dynamicSize, getFontSize, getLineHeight, horizontalScale, isTablet} from '../../Constants/sizeChoose';
+import {
+  dynamicSize,
+  getFontSize,
+  getLineHeight,
+  horizontalScale,
+  isTablet,
+} from '../../Constants/sizeChoose';
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
@@ -29,12 +35,20 @@ import DateExpiredModal from '../../Components/Modals/DateExpiredModal/DateExpir
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GetUserId, UserEmail} from '../../redux/actions/actions';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
-import {getDivisionName, GetStaffUserData} from '../../apirequest/PostRequestApi';
-import {getApiBaseUrl, moodTypes} from '../../Constants/constants';
+import {
+  getDivisionName,
+  GetStaffUserData,
+} from '../../apirequest/PostRequestApi';
+import {MOOD_ICONS, getApiBaseUrl, getMoodIconsUrl, moodTypes} from '../../Constants/constants';
 import ProgressBar from '../../Components/ProgressBar/ProgressBarCustom';
 import Clock from '../../../assets/svg/clock';
 import FloCoin from '../../../assets/svg/floCoins';
-import {getDivisionSetFlag, getMyDeviceId, getUpdateAnswerRewardPoints, setDivisionSetFlag} from '../../services/commonService';
+import {
+  getDivisionSetFlag,
+  getMyDeviceId,
+  getUpdateAnswerRewardPoints,
+  setDivisionSetFlag,
+} from '../../services/commonService';
 import getStore from '../../redux';
 import {
   PulseConnect,
@@ -44,7 +58,7 @@ import Colors from '../../Constants/Colors/Colors';
 
 const {height, width} = Dimensions.get('window');
 const MicScreen = ({navigation}) => {
-  const UserData = useSelector((state) => state.First);
+  const UserData = useSelector(state => state.First);
   const [questions, setquestions] = useState(null);
   const [Loading, setLoading] = useState(false);
   const [isSelectDivisionLoading, setIsSelectDivisionLoading] = useState(false);
@@ -55,8 +69,8 @@ const MicScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const route = useRoute();
 
-  const wait = (timeout) => {
-    return new Promise((resolve) => {
+  const wait = timeout => {
+    return new Promise(resolve => {
       const timeoutId = setTimeout(() => {
         resolve();
         clearTimeout(timeoutId);
@@ -66,7 +80,7 @@ const MicScreen = ({navigation}) => {
 
   const onRefresh = React.useCallback(() => {
     setquestions(null);
-    console.log(`refreshed here`);
+    console.log('refreshed here');
     getQuestions();
     setRefreshing(true);
     wait(500).then(() => setRefreshing(false));
@@ -115,7 +129,7 @@ const MicScreen = ({navigation}) => {
       email: e,
       user_id: Id,
     };
-    console.log(`data of questions`, data);
+    console.log('data of questions', data);
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -135,7 +149,7 @@ const MicScreen = ({navigation}) => {
       },
       dispatch,
     )
-      .then(async (result) => {
+      .then(async result => {
         // console.log(
         //   '✅ ✅ ✅ ✅ Mic Screen Success Get Staff User Data ✅ ✅ ✅ ✅',
         //   result?.userData
@@ -150,8 +164,11 @@ const MicScreen = ({navigation}) => {
         return axios.post(`${getApiBaseUrl()}getQuestions`, data);
       })
       // .then(async (result) => result.json())
-      .then(async (result) => {
-        console.log(' ✅ ✅ ✅ ✅ Success Get Questions✅ ✅ ✅ ✅ ', result?.data);
+      .then(async result => {
+        console.log(
+          ' ✅ ✅ ✅ ✅ Success Get Questions✅ ✅ ✅ ✅ ',
+          result?.data,
+        );
         if (result?.data?.questions) {
           await setquestions(result.data.questions);
         }
@@ -166,14 +183,14 @@ const MicScreen = ({navigation}) => {
   useFocusEffect(
     useCallback(() => {
       AsyncStorage.getItem('Division')
-        .then((e) => {
+        .then(e => {
           if (!(e && typeof e === 'string')) {
             setDivisionSetFlag(false);
           } else {
             setDivisionSetFlag(true);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log('AsyncStorage get division error', error);
         });
       const userEmail = getStore?.()?.getState?.()?.First?.UserEmail;
@@ -203,7 +220,7 @@ const MicScreen = ({navigation}) => {
     }, []),
   );
 
-  const getMoodType = (type) => {
+  const getMoodType = type => {
     if (typeof type !== 'string') {
       return '';
     }
@@ -393,7 +410,7 @@ const MicScreen = ({navigation}) => {
 
   function getRewardsCoins(day, hour) {
     if (day != 0) {
-      return 'Missed out on flx coins';
+      return 'Missed out on Flx Points';
     } else {
       if (hour <= 2) {
         return 8;
@@ -422,21 +439,30 @@ const MicScreen = ({navigation}) => {
     const cancelled = () => {
       setDateExpired(false);
     };
-  
-    const VerifyDone = (value) => {
+
+    const VerifyDone = value => {
       setDateExpired(false);
     };
 
     let i = item?.item;
-    const startDate = i.start_date ? (
-      moment(i.start_date)?.subtract?.(600, 'minute')?.add?.(moment().utcOffset(), 'minute')?.format?.('YYYY-MM-DD HH-mm-ss')
-      ) : i.start_date;
-    const endDate = i.end_date ? (
-      moment(i.end_date)?.subtract?.(600, 'minute')?.add?.(moment().utcOffset(), 'minute')?.format?.('YYYY-MM-DD HH-mm-ss')
-      ) : i.end_date;
-    let answerDate = i?.answerdate ? (
-      moment(i.answerdate)?.subtract?.(600, 'minute')?.add?.(moment().utcOffset(), 'minute')?.format?.('YYYY-MM-DD HH-mm-ss')
-      ) : null;
+    const startDate = i.start_date
+      ? moment(i.start_date)
+          ?.subtract?.(600, 'minute')
+          ?.add?.(moment().utcOffset(), 'minute')
+          ?.format?.('YYYY-MM-DD HH-mm-ss')
+      : i.start_date;
+    const endDate = i.end_date
+      ? moment(i.end_date)
+          ?.subtract?.(600, 'minute')
+          ?.add?.(moment().utcOffset(), 'minute')
+          ?.format?.('YYYY-MM-DD HH-mm-ss')
+      : i.end_date;
+    let answerDate = i?.answerdate
+      ? moment(i.answerdate)
+          ?.subtract?.(600, 'minute')
+          ?.add?.(moment().utcOffset(), 'minute')
+          ?.format?.('YYYY-MM-DD HH-mm-ss')
+      : null;
     const currentDate = moment().format('YYYY-MM-DD HH-mm-ss');
     console.log('endDate -', endDate);
     const isExpired = moment().isAfter(moment(endDate, 'YYYY-MM-DD HH-mm-ss'));
@@ -446,100 +472,118 @@ const MicScreen = ({navigation}) => {
     let timeTaken = hrDiff(startDate, currentDate);
     let rewardPts = getUpdateAnswerRewardPoints(i.start_date);
 
-    console.log(`DateExpired`, DateExpired, showMore)
+    console.log('DateExpired', DateExpired, showMore);
 
     return (
       <>
-      <TouchableOpacity
-        disabled={true}
-        key={i?.id ?? index}
-        onPress={() => setshowMore((e) => !e)}>
         <TouchableOpacity
-          onPress={() => setshowMore((e) => !e)}>
-          <View style={{flexDirection: 'row'}}>
-            <Text style={[styles.questionText, {marginRight: horizontalScale(6)}]}>
-              {index + 1}.{' '}
-            </Text>
+          disabled={true}
+          key={i?.id ?? index}
+          onPress={() => setshowMore(e => !e)}>
+          <TouchableOpacity onPress={() => setshowMore(e => !e)}>
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={[
+                  styles.questionText,
+                  {marginRight: horizontalScale(6)},
+                ]}>
+                {index + 1}.{' '}
+              </Text>
               <View style={styles.questionTextView}>
                 <Text style={[styles.questionText]}>{i.question}</Text>
               </View>
-            <Image
-              source={require('../../../assets/newImage/arrow/arrow.png')}
-              style={[
-                styles.imageArrow,
-                {
-                  tintColor: '#8496AC',
-                  transform: [{rotate: showMore ? '270deg' : '90deg'}],
-                },
-              ]}
-            />
-          </View>
-        </TouchableOpacity>
-        {!i.name && showMore && (
-          <View
-            style={styles.unansweredContainer}>
-            <View
-              style={styles.unansweredSubView}>
-              <Text
+              <Image
+                source={require('../../../assets/newImage/arrow/arrow.png')}
                 style={[
-                  styles.Text,
-                  {textAlign: 'left', flex: 1, marginLeft: '4%', fontSize: getFontSize(13)},
-                ]}>
-                {postedTimeFormat(startDate, currentDate)}
-              </Text>
-              <View style={{alignSelf: 'center'}}>
-              <Clock w={getFontSize(13.5)} h={getFontSize(13.5)} />
-              </View>
-              <Text
-                style={[
-                  styles.Text,
-                  {textAlign: 'right', fontSize: getFontSize(13), color: 'red'},
-                ]}>
-                {' '}
-                {isExpired
-                  ? 'Closed'
-                  : EndDiff}
-              </Text>
-            </View>
-            <View style={{width: '90%'}}>
-              <ProgressBar
-                dots={true}
-                dot1={true}
-                dot2={true}
-                dot3={true}
-                dot4={true}
-                progress={isExpired === true ? 100: ((timeTaken/totalTime)*100)}
-                MoodCount={2}
-                height={6}
+                  styles.imageArrow,
+                  {
+                    tintColor: '#8496AC',
+                    transform: [{rotate: showMore ? '270deg' : '90deg'}],
+                  },
+                ]}
               />
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                alignItems: 'center',
-              }}>
+          </TouchableOpacity>
+          {!i.name && showMore && (
+            <View style={styles.unansweredContainer}>
+              <View style={styles.unansweredSubView}>
+                <Text
+                  style={[
+                    styles.Text,
+                    {
+                      textAlign: 'left',
+                      flex: 1,
+                      marginLeft: '4%',
+                      fontSize: getFontSize(13),
+                    },
+                  ]}>
+                  {postedTimeFormat(startDate, currentDate)}
+                </Text>
+                <View style={{alignSelf: 'center'}}>
+                  <Clock w={getFontSize(13.5)} h={getFontSize(13.5)} />
+                </View>
+                <Text
+                  style={[
+                    styles.Text,
+                    {
+                      textAlign: 'right',
+                      fontSize: getFontSize(13),
+                      color: 'red',
+                    },
+                  ]}>
+                  {' '}
+                  {isExpired ? 'Closed' : EndDiff}
+                </Text>
+              </View>
+              <View style={{width: '90%'}}>
+                <ProgressBar
+                  dots={true}
+                  dot1={true}
+                  dot2={true}
+                  dot3={true}
+                  dot4={true}
+                  progress={
+                    isExpired === true ? 100 : (timeTaken / totalTime) * 100
+                  }
+                  MoodCount={2}
+                  height={6}
+                />
+              </View>
               <View
                 style={{
-                  flex: 1,
                   flexDirection: 'row',
+                  width: '100%',
                   alignItems: 'center',
-                  marginLeft: '4%',
                 }}>
-                <View style={styles.answerFloCoinsView}>
-                  <View style={styles.unansweredFloCoinIcon}>
-                    <FloCoin color={'#6D6E86'} w={getFontSize(13.5)} h={getFontSize(13.5)} />
-                  </View>
-                  <Text
-                    style={[styles.Text, {fontSize: getFontSize(13), marginVertical: 0}]}>
-                    {' '}
-                    {rewardPts === 0
-                      ? 'Missed out on flx coins'
-                      : `Earn ${rewardPts} flx coins`
-                    }
-                  </Text>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginLeft: '4%',
+                  }}>
+                  {!UserData?.UserDetails?.vitality_member_id && (
+                    <View style={styles.answerFloCoinsView}>
+                      <View style={styles.unansweredFloCoinIcon}>
+                        <FloCoin
+                          color={'#6D6E86'}
+                          w={getFontSize(13.5)}
+                          h={getFontSize(13.5)}
+                        />
+                      </View>
+                      <Text
+                        style={[
+                          styles.Text,
+                          {fontSize: getFontSize(13), marginVertical: 0},
+                        ]}>
+                        {' '}
+                        {rewardPts === 0
+                          ? 'Missed out on Flx Points'
+                          : `Earn ${rewardPts} Flx Points`}
+                      </Text>
+                    </View>
+                  )}
                 </View>
-              </View>
                 {!isExpired && (
                   <TouchableOpacity
                     onPress={() => {
@@ -556,119 +600,134 @@ const MicScreen = ({navigation}) => {
                         textAlign: 'right',
                         // backgroundColor:'blue'
                       }}>
-                      Answer ->
+                      Answer -{'>'}
                     </Text>
                   </TouchableOpacity>
                 )}
+              </View>
             </View>
-          </View>
-        )}
-        {i.name && answerDate && showMore && (
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <View
-              style={{width: '100%', flexDirection: 'row', marginBottom: 5}}>
-              <Text
-                style={[
-                  styles.Text,
-                  {textAlign: 'left', flex: 1, marginLeft: '4%', fontSize: getFontSize(13)},
-                ]}>
-                {postedTimeFormat(startDate, currentDate)}
-              </Text>
-                <View style={styles.postedFloCoinIcon}>
-                  <FloCoin w={getFontSize(13.5)} h={getFontSize(13.5)} />
-                </View>
-              <Text
-                style={[
-                  styles.Text,
-                  {textAlign: 'right', fontSize: getFontSize(13), color: '#FB8D09'},
-                ]}>
-                Earned {i.reward_point} flx coins
-              </Text>
-            </View>
-            <View style={{width: '90%'}}>
-              <ProgressBar
-                dots={true}
-                dot1={true}
-                dot2={true}
-                dot3={true}
-                dot4={true}
-                progress={isExpired === true ? 100: ((timeTaken/totalTime)*100)}
-                MoodCount={2}
-                height={6}
-                // backgroundColor={"blue"}
-              />
-            </View>
+          )}
+          {i.name && answerDate && showMore && (
             <View
               style={{
-                flexDirection: 'row',
-                width: '100%',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
               }}>
               <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  // padding: 8,
-                  // borderRadius: 10,
-                  marginLeft: '4%',
-                  marginVertical: horizontalScale(10),
-                }}>
-                <SvgUri
-                  width={horizontalScale(30)}
-                  height={horizontalScale(30)}
-                  // viewBox="0 0 24 24"
-                  fill="none"
-                  uri={`https://super.moodflo.com/${i.icon}`}
-                  // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+                style={{width: '100%', flexDirection: 'row', marginBottom: 5}}>
+                <Text
+                  style={[
+                    styles.Text,
+                    {
+                      textAlign: 'left',
+                      flex: 1,
+                      marginLeft: '4%',
+                      fontSize: getFontSize(13),
+                    },
+                  ]}>
+                  {postedTimeFormat(startDate, currentDate)}
+                </Text>
+                {!UserData?.UserDetails?.vitality_member_id && (
+                  <>
+                    <View style={styles.postedFloCoinIcon}>
+                      <FloCoin w={getFontSize(13.5)} h={getFontSize(13.5)} />
+                    </View>
+                    <Text
+                      style={[
+                        styles.Text,
+                        {
+                          textAlign: 'right',
+                          fontSize: getFontSize(13),
+                          color: '#FB8D09',
+                        },
+                      ]}>
+                      Earned {i.reward_point} Flx Points
+                    </Text>
+                  </>
+                )}
+              </View>
+              <View style={{width: '90%'}}>
+                <ProgressBar
+                  dots={true}
+                  dot1={true}
+                  dot2={true}
+                  dot3={true}
+                  dot4={true}
+                  progress={
+                    isExpired === true ? 100 : (timeTaken / totalTime) * 100
+                  }
+                  MoodCount={2}
+                  height={6}
+                  // backgroundColor={"blue"}
                 />
-                <View>
-                  <Text
-                    style={{
-                      flexDirection: 'row',
-                      marginHorizontal: horizontalScale(10),
-                      color: Colors.blackColorCode,
-                      fontFamily: RubikMedium,
-                    }}>
-                    {i.mood_type ? getMoodType(i.mood_type) : ''}
-                    {i.name}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.Text,
-                      {
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    // padding: 8,
+                    // borderRadius: 10,
+                    marginLeft: '4%',
+                    marginVertical: horizontalScale(10),
+                  }}>
+                  <SvgUri
+                    width={horizontalScale(30)}
+                    height={horizontalScale(30)}
+                    // viewBox="0 0 24 24"
+                    fill="none"
+                    uri={`${getMoodIconsUrl()}${i.icon}`}
+                    // uri="http://super.moodflo.com/mood_icons/161616176321272238406054abe3bb450.svg"
+                  />
+                  <View>
+                    <Text
+                      style={{
                         flexDirection: 'row',
                         marginHorizontal: horizontalScale(10),
-                        fontSize: getFontSize(13),
-                      },
-                    ]}>
+                        color: Colors.blackColorCode,
+                        fontFamily: RubikMedium,
+                      }}>
+                      {i.mood_type ? getMoodType(i.mood_type) : ''}
+                      {i.name}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.Text,
+                        {
+                          flexDirection: 'row',
+                          marginHorizontal: horizontalScale(10),
+                          fontSize: getFontSize(13),
+                        },
+                      ]}>
                       {answeredTimeFormat(startDate, answerDate)}
-                  </Text>
+                    </Text>
+                  </View>
+                  {/* <HappyIcon /> */}
                 </View>
-                {/* <HappyIcon /> */}
+                <TouchableOpacity disabled={true}>
+                  <Text
+                    style={{
+                      fontSize: getFontSize(13.5),
+                      fontFamily: RubikRegular,
+                      color: '#6D6E86',
+                      textAlign: 'right',
+                    }}>
+                    {i.is_anonymous === 0 ? 'Answered by you' : 'Anonymous'}
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity disabled={true}>
-                <Text
-                  style={{
-                    fontSize: getFontSize(13.5),
-                    fontFamily: RubikRegular,
-                    color: '#6D6E86',
-                    textAlign: 'right',
-                  }}>
-                  {i.is_anonymous === 0 ? 'Answered by you' : 'Anonymous'}
-                </Text>
-              </TouchableOpacity>
             </View>
-          </View>
-        )}
-        {questions.length - 1 != index && <View style={styles.line} />}
-      </TouchableOpacity>
-      {/* <DateExpiredModal
+          )}
+          {questions.length - 1 != index && <View style={styles.line} />}
+        </TouchableOpacity>
+        {/* <DateExpiredModal
         modalVisible={DateExpired}
         dismissModalHandler={() => cancelled()}
         verifyDone={(value) => VerifyDone(value)}
@@ -680,9 +739,8 @@ const MicScreen = ({navigation}) => {
   if (
     !UserData.UserEmail ||
     !UserData.UserId ||
-    (!UserData.UserDivision && !(
-      Array.isArray(UserData.getDivision) &&
-      UserData.getDivision.length > 0))
+    (!UserData.UserDivision &&
+      !(Array.isArray(UserData.getDivision) && UserData.getDivision.length > 0))
   ) {
     return <PulseConnect onConnect={onConnect} />;
   } else if (
@@ -775,7 +833,8 @@ const MicScreen = ({navigation}) => {
           }}
           source={Constants.Images.Circles}
         />
-        <View style={{marginHorizontal: horizontalScale(20), paddingBottom: 90}}>
+        <View
+          style={{marginHorizontal: horizontalScale(20), paddingBottom: 90}}>
           <Text style={styles.normalText}>Team Pulse</Text>
           {UserData.UserEmail ? (
             questions && questions.length > 0 ? (
@@ -793,7 +852,7 @@ const MicScreen = ({navigation}) => {
                     alignItems: 'center',
                   }}>
                   <Text style={[styles.Text, {flex: 1, marginVertical: 10}]}>
-                    Answer on time to earn more coins{' '}
+                    Answer on time to earn more Points{' '}
                   </Text>
                   <Text style={[styles.Text, {fontSize: 14}]}>
                     <Text style={{fontFamily: RubikMedium, fontWeight: '500'}}>
@@ -875,7 +934,12 @@ const MicScreen = ({navigation}) => {
                   marginBottom: 40,
                 }}>
                 <Text
-                  style={{fontFamily: RubikMedium, fontWeight: '500', fontSize: getFontSize(16), color: Colors.blueTextColor}}>
+                  style={{
+                    fontFamily: RubikMedium,
+                    fontWeight: '500',
+                    fontSize: getFontSize(16),
+                    color: Colors.blueTextColor,
+                  }}>
                   Connect
                 </Text>
               </View>

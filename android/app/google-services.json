@@ -14,41 +14,13 @@
       },
       "oauth_client": [
         {
-          "client_id": "241040459952-ecs9mnr30akq9bt7624mvm30uf4avg5o.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDwZpeZ-hXntgUKSQo7V8rF_FQfxpYoI-0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "241040459952-ecs9mnr30akq9bt7624mvm30uf4avg5o.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "241040459952-8n58iiocffldj7kr06fu3getcibbhgkp.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "moodFlo.ios"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:241040459952:android:0fe6126d50041893979375",
-        "android_client_info": {
-          "package_name": "moodFlo.android"
-        }
-      },
-      "oauth_client": [
+          "client_id": "241040459952-dsgb5dp0kuk0ii3mouhr0fuialnj4l4d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.moodflo",
+            "certificate_hash": "e35179e3f0ee72c1deffac20d3fd1f96c338807d"
+          }
+        },
         {
           "client_id": "241040459952-ecs9mnr30akq9bt7624mvm30uf4avg5o.apps.googleusercontent.com",
           "client_type": 3
@@ -67,10 +39,11 @@
               "client_type": 3
             },
             {
-              "client_id": "241040459952-8n58iiocffldj7kr06fu3getcibbhgkp.apps.googleusercontent.com",
+              "client_id": "241040459952-gi7utvdic94ifc5lcp5tqv1l2s8qnkqp.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "moodFlo.ios"
+                "bundle_id": "org.reactjs.native.example.MoodFlo",
+                "app_store_id": "1560828214"
               }
             }
           ]

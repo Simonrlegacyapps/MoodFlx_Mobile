@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -15,6 +15,7 @@ import {
   InteractionManager,
   Linking,
   FlatList,
+  PermissionsAndroid,
 } from 'react-native';
 import moment from 'moment';
 import axios from 'axios';
@@ -25,7 +26,7 @@ import AppleHealthKit, {
 } from 'react-native-health';
 import isEmpty from 'lodash.isempty';
 import GetLocation from 'react-native-get-location';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {
   RubikBlack,
   RubikBold,
@@ -36,12 +37,12 @@ import {
 } from '../../Constants/fonts/Fonts';
 import Swiper from '../../Components/Swiper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRoute } from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import FitnessData from '../Home/FitnessData';
 import WeatherData from '../Home/WeatherData/WeatherData';
 import ScreenData from '../Home/screenData/screenData';
 import SleepData from '../Home/SleepData/SleepData';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   DaySteps,
   GetCalories,
@@ -60,9 +61,9 @@ import {
   UserSteps,
   WeatherPerm,
 } from '../../redux/actions/actions';
-import messaging, { firebase } from '@react-native-firebase/messaging';
+import messaging, {firebase} from '@react-native-firebase/messaging';
 import LightData from '../Home/LightData/LightData';
-import GoogleFit, { Scopes } from 'react-native-google-fit';
+import GoogleFit, {Scopes} from 'react-native-google-fit';
 // import {
 //   AppInstalledChecker,
 //   CheckPackageInstallation,
@@ -72,18 +73,29 @@ import {
   googleFitScopes,
   activityHealthKitOptions,
 } from '../../services/appPermissions';
-import { dataTypes, getApiBaseUrl, getScreensPriority } from '../../Constants/constants';
-import { getMyDeviceId, setFitnessDataSync, setSwiperIndexHome } from '../../services/commonService';
-import { setSleepDataSync } from '../Home/SleepData/sleepDataService';
+import {
+  BASE_URL_PRODUCTION_API,
+  dataTypes,
+  getApiBaseUrl,
+  getScreensPriority,
+} from '../../Constants/constants';
+import {
+  getMyDeviceId,
+  setFitnessDataSync,
+  setSwiperIndexHome,
+} from '../../services/commonService';
+import {setSleepDataSync} from '../Home/SleepData/sleepDataService';
 import getStore from '../../redux';
 import Constants from '../../Constants';
-import { horizontalScale } from '../../Constants/sizeChoose';
+import {horizontalScale} from '../../Constants/sizeChoose';
 import StandingData from '../Home/StandingData/StandingData';
 import LocationData from '../Home/LocationData/LocationData';
 import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
 import Colors from '../../Constants/Colors/Colors';
+import {logger} from '../../..';
+import FastImage from 'react-native-fast-image';
 
-const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
+const {width: SIZE, height: HEIGHT} = Dimensions.get('window');
 let steps = false;
 let HeartRate = false;
 let workOuts = null;
@@ -101,23 +113,23 @@ let userWeight = 0;
 // let userHeight = 0;
 
 const data = [
-  { x: 1, y: 1.2 },
-  { x: 2, y: 2.3 },
-  { x: 3, y: 2.42 },
-  { x: 4, y: 1.1 },
-  { x: 5, y: 2.41 },
-  { x: 6, y: 2.43 },
-  { x: 7, y: 2.2 },
+  {x: 1, y: 1.2},
+  {x: 2, y: 2.3},
+  {x: 3, y: 2.42},
+  {x: 4, y: 1.1},
+  {x: 5, y: 2.41},
+  {x: 6, y: 2.43},
+  {x: 7, y: 2.2},
 ];
 
 const dataLow = [
-  { x: 1, y: 10 },
-  { x: 2, y: 20 },
-  { x: 3, y: 29 },
-  { x: 4, y: 18 },
-  { x: 5, y: 22 },
-  { x: 6, y: 20 },
-  { x: 7, y: 23 },
+  {x: 1, y: 10},
+  {x: 2, y: 20},
+  {x: 3, y: 29},
+  {x: 4, y: 18},
+  {x: 5, y: 22},
+  {x: 6, y: 20},
+  {x: 7, y: 23},
 ];
 
 // const points = monotoneCubicInterpolation({data, range: 30});
@@ -125,9 +137,9 @@ const dataLow = [
 
 const PERMS = AppleHealthKit.Constants.Permissions;
 
-const App = (props) => {
-  const UserData = useSelector((state) => state.First);
-
+const App = props => {
+  const UserData = useSelector(state => state.First);
+  const [imageURL, setImageURL] = useState();
   // const [Weight, setWeight] = useState(false);
   const [Weather, setWeather] = useState(false);
   // const [lng, setlng] = useState(false);
@@ -174,9 +186,10 @@ const App = (props) => {
   const [ScreenDataPermModal, setScreenDataPermModal] = useState(false);
   const route = useRoute();
   const [loadAgain, setloadAgain] = useState(1);
-  const [isInstallGoogleFitModalVisible, setIsInstallGoogleFitModalVisible] = useState(false);
+  const [isInstallGoogleFitModalVisible, setIsInstallGoogleFitModalVisible] =
+    useState(false);
   const [healthUpdateApiCount, setHealthUpdateApiCount] = useState(0);
-  const { lat, long, isMoodUpdate } = route.params.cord;
+  const {lat, long, isMoodUpdate} = route.params.cord;
 
   // const a = moment().subtract(1, 'months').format('DD MMM YYYY');
   // const a = moment().subtract(1, 'days').format('DD MMM YYYY'); // yesterday
@@ -220,9 +233,22 @@ const App = (props) => {
     console.log(`mainToken`, fcmToken);
   };
 
+  const checkPermission = async () => {
+    try {
+      if (Platform.OS === 'android' && Platform.Version >= 12) {
+        const grant = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
+        );
+      }
+    } catch (error) {
+      console.log('ACTIVITY_RECOGNITION_PERMISSIONS Err', error);
+    }
+  };
+
   useEffect(() => {
     mainToken();
-
+    checkPermission();
+    fetchSplash();
     // messaging()
     //   .requestPermission({
     //     provisional: true,
@@ -254,7 +280,28 @@ const App = (props) => {
     //   id: userData.id
     // }
   }, []);
-
+  const fetchSplash = async () => {
+    const userData = getStore?.()?.getState?.()?.First;
+    const params = {user_id: userData?.UserId};
+    if (userData?.UserId) {
+      await axios
+        .post(BASE_URL_PRODUCTION_API + 'getSplashScreen', params)
+        .then(async resp => {
+          setImageURL(resp?.data?.splash_screen);
+          try {
+            await AsyncStorage.setItem('splashURL', resp?.data?.splash_screen);
+             await AsyncStorage.setItem('nextSplashURL',resp?.data?.splash_screen);
+          } catch (error) {
+            logger('Async Storage setItem Division error: ', error);
+          }
+        })
+        .catch(error => {
+          logger(error, 'error fetching splash');
+        });
+    } else {
+      logger('not a vatility user');
+    }
+  };
   useEffect(() => {
     callAnApi();
     return () => {
@@ -318,7 +365,7 @@ const App = (props) => {
             filterSteps();
             AddDataToFilter();
           } else {
-            setHealthUpdateApiCount((e) => e + 1);
+            setHealthUpdateApiCount(e => e + 1);
           }
           clearTimeout(timeoutId);
         }, 500);
@@ -364,7 +411,7 @@ const App = (props) => {
             filterSteps();
             AddDataToFilter();
           } else {
-            setHealthUpdateApiCount((e) => e + 1);
+            setHealthUpdateApiCount(e => e + 1);
           }
           clearTimeout(timeoutId);
         }, 500);
@@ -373,7 +420,7 @@ const App = (props) => {
     }, 500);
   };
 
-  const OnAutoSync = async (onFinish) => {
+  const OnAutoSync = async onFinish => {
     console.log(`auto sync function called`);
     let count = 0;
     //for ios if count === 11 - call onFinish function
@@ -386,7 +433,8 @@ const App = (props) => {
     if (Platform.OS === 'ios') {
       const healthKitOptions = activityHealthKitOptions;
       let dataSyncArray = [];
-      !UserData.HealthPermission && dispatch?.(SetFitnessSyncText('Trying to Sync'));
+      !UserData.HealthPermission &&
+        dispatch?.(SetFitnessSyncText('Trying to Sync'));
       // console.log(`-------------qwertyuiopasdfghjklzxcvbnm-----------------,`);
       AppleHealthKit.initHealthKit(healthKitOptions, (err, results) => {
         // setLoading(true);
@@ -483,7 +531,8 @@ const App = (props) => {
             }
             console.log(`results of all steps `, results);
             dispatch(GetSteps(results));
-            !isEmpty(results) && dataSyncArray.push(PERMS.StepCount, PERMS.Steps);
+            !isEmpty(results) &&
+              dataSyncArray.push(PERMS.StepCount, PERMS.Steps);
             let total = 0;
             let zero = 0;
             let ones = 0;
@@ -502,27 +551,27 @@ const App = (props) => {
               ) {
                 if (
                   moment(results[j].startDate).startOf('day') <
-                  moment(results[j].startDate) &&
+                    moment(results[j].startDate) &&
                   moment(results[j].startDate) <
-                  moment(results[j].startDate).startOf('day').hours(4)
+                    moment(results[j].startDate).startOf('day').hours(4)
                 ) {
                   console.log(`0`);
                   zero = zero + results[j].value;
                   setOnes(zero);
                 } else if (
                   moment(results[j].startDate).startOf('day').hours(4) <
-                  moment(results[j].startDate) &&
+                    moment(results[j].startDate) &&
                   moment(results[j].startDate) <
-                  moment(results[j].startDate).startOf('day').hours(8)
+                    moment(results[j].startDate).startOf('day').hours(8)
                 ) {
                   console.log(`2`, results[j].value);
                   ones = ones + results[j].value;
                   setTwos(ones);
                 } else if (
                   moment(results[j].startDate).startOf('day').hours(8) <=
-                  moment(results[j].startDate) &&
+                    moment(results[j].startDate) &&
                   moment(results[j].startDate) <=
-                  moment(results[j].startDate).startOf('day').hours(12)
+                    moment(results[j].startDate).startOf('day').hours(12)
                 ) {
                   twos = twos + results[j].value;
                   console.log(`3`, twos);
@@ -530,18 +579,18 @@ const App = (props) => {
                   //add setzeros to this.
                 } else if (
                   moment(results[j].startDate).startOf('day').hours(12) <=
-                  moment(results[j].startDate) &&
+                    moment(results[j].startDate) &&
                   moment(results[j].startDate) <=
-                  moment(results[j].startDate).startOf('day').hours(16)
+                    moment(results[j].startDate).startOf('day').hours(16)
                 ) {
                   threes = threes + results[j].value;
                   console.log(`4`, threes);
                   setFours(threes);
                 } else if (
                   moment(results[j].startDate).startOf('day').hours(16) <
-                  moment(results[j].startDate) &&
+                    moment(results[j].startDate) &&
                   moment(results[j].startDate) <
-                  moment(results[j].startDate).startOf('day').hours(20)
+                    moment(results[j].startDate).startOf('day').hours(20)
                 ) {
                   fours = fours + results[j].value;
                   console.log(`5`, results[j].value);
@@ -586,7 +635,11 @@ const App = (props) => {
             console.log('All BP', results);
             count++;
             console.log(`count==> `, count);
-            !isEmpty(results) && dataSyncArray.push(PERMS.BloodPressureDiastolic, PERMS.BloodPressureSystolic);
+            !isEmpty(results) &&
+              dataSyncArray.push(
+                PERMS.BloodPressureDiastolic,
+                PERMS.BloodPressureSystolic,
+              );
             count === 8 && onFinish?.(true, dataSyncArray);
           },
         );
@@ -640,7 +693,8 @@ const App = (props) => {
             // console.log('Distance in KMS', results, total);
             count++;
             console.log(`count==> `, count);
-            !isEmpty(results) && dataSyncArray.push(PERMS.DistanceWalkingRunning);
+            !isEmpty(results) &&
+              dataSyncArray.push(PERMS.DistanceWalkingRunning);
             count === 8 && onFinish?.(true, dataSyncArray);
           },
         );
@@ -774,7 +828,7 @@ const App = (props) => {
         if (!GoogleFit.isAuthorized) {
           dispatch?.(SetFitnessSyncText('Trying to Sync'));
           await GoogleFit.authorize(options)
-            .then((authResult) => {
+            .then(authResult => {
               if (authResult.success) {
                 console.log('AUTH_SUCCESS');
                 setLoading(true);
@@ -874,7 +928,7 @@ const App = (props) => {
               Array.isArray(e?.steps) &&
               e.steps.length > 0
             ) {
-              e.steps.forEach((s) => {
+              e.steps.forEach(s => {
                 if (
                   userSteps === -1 &&
                   s.date &&
@@ -892,8 +946,8 @@ const App = (props) => {
               });
             }
           });
-          userSteps !== -1 && dispatch(UserSteps(res[2].steps[0].value));
-          rawSteps && dispatch(GetSteps(res[2].rawSteps));
+          userSteps !== -1 && dispatch(UserSteps(userSteps));
+          rawSteps && dispatch(GetSteps(rawSteps));
           steps = rawSteps;
         }
       } catch (e) {
@@ -985,19 +1039,19 @@ const App = (props) => {
       // }
 
       // Blood Pressure data
-    //   try {
-    //     const bloodpressure = await GoogleFit.getBloodPressureSamples(
-    //       heartRateBPOptions,
-    //     );
-    //     if (Array.isArray(bloodpressure) && bloodpressure.length > 0) {
-    //       BP = bloodpressure;
-    //     }
-    //     console.log('getBloodPressureSamples', bloodpressure);
-    //     onFinish?.(true);
-    //   } catch (e) {
-    //     console.log('getBloodPressureSamples error: ', e);
-    //     onFinish?.(true);
-    //   }
+      //   try {
+      //     const bloodpressure = await GoogleFit.getBloodPressureSamples(
+      //       heartRateBPOptions,
+      //     );
+      //     if (Array.isArray(bloodpressure) && bloodpressure.length > 0) {
+      //       BP = bloodpressure;
+      //     }
+      //     console.log('getBloodPressureSamples', bloodpressure);
+      //     onFinish?.(true);
+      //   } catch (e) {
+      //     console.log('getBloodPressureSamples error: ', e);
+      //     onFinish?.(true);
+      //   }
     }
 
     const health = async () => {
@@ -1075,27 +1129,27 @@ const App = (props) => {
         }
         if (
           moment(steps[j].startDate).startOf('day') <
-          moment(steps[j].startDate) &&
+            moment(steps[j].startDate) &&
           moment(steps[j].startDate) <
-          moment(steps[j].startDate).startOf('day').hours(4)
+            moment(steps[j].startDate).startOf('day').hours(4)
         ) {
           console.log(`0`);
           zero = zero + steps[j].value;
           setOnes(zero);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(4) <
-          moment(steps[j].startDate) &&
+            moment(steps[j].startDate) &&
           moment(steps[j].startDate) <
-          moment(steps[j].startDate).startOf('day').hours(8)
+            moment(steps[j].startDate).startOf('day').hours(8)
         ) {
           console.log(`2`, steps[j].value);
           ones = ones + steps[j].value;
           setTwos(ones);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(8) <=
-          moment(steps[j].startDate) &&
+            moment(steps[j].startDate) &&
           moment(steps[j].startDate) <=
-          moment(steps[j].startDate).startOf('day').hours(12)
+            moment(steps[j].startDate).startOf('day').hours(12)
         ) {
           twos = twos + steps[j].value;
           console.log(`3`, twos);
@@ -1103,18 +1157,18 @@ const App = (props) => {
           //add setzeros to this.
         } else if (
           moment(steps[j].startDate).startOf('day').hours(12) <=
-          moment(steps[j].startDate) &&
+            moment(steps[j].startDate) &&
           moment(steps[j].startDate) <=
-          moment(steps[j].startDate).startOf('day').hours(16)
+            moment(steps[j].startDate).startOf('day').hours(16)
         ) {
           threes = threes + steps[j].value;
           console.log(`4`, threes);
           setFours(threes);
         } else if (
           moment(steps[j].startDate).startOf('day').hours(16) <
-          moment(steps[j].startDate) &&
+            moment(steps[j].startDate) &&
           moment(steps[j].startDate) <
-          moment(steps[j].startDate).startOf('day').hours(20)
+            moment(steps[j].startDate).startOf('day').hours(20)
         ) {
           fours = fours + steps[j].value;
           console.log(`5`, steps[j].value);
@@ -1298,7 +1352,7 @@ const App = (props) => {
             '✅ ✅ ✅ ✅ Success Update Staff Health ✅ ✅ ✅ ✅',
             response?.data,
           );
-          setHealthUpdateApiCount((e) => e + 1);
+          setHealthUpdateApiCount(e => e + 1);
         })
         .catch(function (error) {
           console.log(
@@ -1307,7 +1361,7 @@ const App = (props) => {
           );
         });
     } else {
-      setHealthUpdateApiCount((e) => e + 1);
+      setHealthUpdateApiCount(e => e + 1);
     }
     setTodayStep(Fsteps.length > 0 ? (Fsteps[0].steps / 10000) * 100 : 0);
     setTodayDistance(Fsteps.length > 0 ? (Fsteps[0].distance / 5000) * 100 : 0);
@@ -1368,7 +1422,8 @@ const App = (props) => {
   };
 
   const getScreen = (type, idx, isLoading) => {
-    const scrollNo = getStore()?.getState?.()?.First?.swiperIndex ?? swiperIndex;
+    const scrollNo =
+      getStore()?.getState?.()?.First?.swiperIndex ?? swiperIndex;
     // console.log("SCROLLNO ----", scrollNo);
     if (type === dataTypes.activity) {
       return (
@@ -1522,11 +1577,13 @@ const App = (props) => {
     })?.[0]?.name;
   };
 
-  const renderItem = (loading) => ({item, index}) => {
-    return getScreen(item?.name, index, loading);
-  };
+  const renderItem =
+    loading =>
+    ({item, index}) => {
+      return getScreen(item?.name, index, loading);
+    };
 
-  const onViewableItemsChanged = useCallback(({ viewableItems, changed }) => {
+  const onViewableItemsChanged = useCallback(({viewableItems, changed}) => {
     // console.log("Visible items are", viewableItems?.[0]?.index);
     if (
       typeof viewableItems?.[0]?.index === 'number' &&
@@ -1537,30 +1594,37 @@ const App = (props) => {
     // console.log("Changed in this iteration", changed);
   }, []);
 
-  const getSwiperItemLayout = useCallback((data, index) => (
-    { length: SIZE, offset: index !== 0 ? (SIZE * index) : index, index }
-  ), []);
+  const getSwiperItemLayout = useCallback(
+    (data, index) => ({
+      length: SIZE,
+      offset: index !== 0 ? SIZE * index : index,
+      index,
+    }),
+    [],
+  );
 
-  const scrollNext = useCallback((currentIndex) => {
+  const scrollNext = useCallback(currentIndex => {
     // console.log('currentIndex ----', currentIndex);
-    const nextIndex = currentIndex === dataScreens(UserData)?.length - 1 ? 0 : currentIndex + 1;
+    const nextIndex =
+      currentIndex === dataScreens(UserData)?.length - 1 ? 0 : currentIndex + 1;
     // console.log('nextIndex ----', nextIndex);
-    pagerRef?.current?.scrollToIndex({animated: false, index: "" + nextIndex})
+    pagerRef?.current?.scrollToIndex({animated: false, index: '' + nextIndex});
   }, []);
 
-  const scrollPrevious = useCallback((currentIndex) => {
+  const scrollPrevious = useCallback(currentIndex => {
     // console.log('currentIndex ----', currentIndex);
-    const nextIndex = currentIndex === 0 ? dataScreens(UserData)?.length - 1 : currentIndex - 1;
+    const nextIndex =
+      currentIndex === 0 ? dataScreens(UserData)?.length - 1 : currentIndex - 1;
     // console.log('nextIndex ----', nextIndex);
-    pagerRef?.current?.scrollToIndex({animated: false, index: "" + nextIndex});
+    pagerRef?.current?.scrollToIndex({animated: false, index: '' + nextIndex});
   }, []);
 
-  const scrollToStart = useCallback((currentIndex) => {
+  const scrollToStart = useCallback(currentIndex => {
     // const nextIndex = currentIndex === 0 ? dataScreens(UserData)?.length - 1 : currentIndex - 1;
     pagerRef?.current?.scrollToOffset({offset: 0});
   }, []);
 
-  const renderButtons = (currentIndex) => (
+  const renderButtons = currentIndex => (
     <>
       <TouchableOpacity
         onPress={() => scrollPrevious(currentIndex)}
@@ -1570,12 +1634,12 @@ const App = (props) => {
       <TouchableOpacity
         onPress={() => scrollNext(currentIndex)}
         style={styles.nextButton}>
-        <Image source={Constants.Images.Arrow} style={styles.nextImage}/>
+        <Image source={Constants.Images.Arrow} style={styles.nextImage} />
       </TouchableOpacity>
     </>
   );
 
-  const onScrollEndDrag = useCallback((event) => {
+  const onScrollEndDrag = useCallback(event => {
     const latestSwiperIndex = getStore?.()?.getState?.()?.First?.swiperIndex;
     const offset = event.nativeEvent.contentOffset.x;
     const visibleLength = event.nativeEvent.layoutMeasurement.width;
@@ -1585,14 +1649,19 @@ const App = (props) => {
     const isScrollAtStart = offset < 10;
     const isScrollAtEnd = contentLength - visibleLength - offset < 10;
 
-    if (latestSwiperIndex === 0 && isScrollEndStartCalled.current === 0 && isScrollAtStart) {
+    if (
+      latestSwiperIndex === 0 &&
+      isScrollEndStartCalled.current === 0 &&
+      isScrollAtStart
+    ) {
       // console.log("isScrollAtStart called -------------------", isScrollEndStartCalled.current);
       isScrollEndStartCalled.current = isScrollEndStartCalled.current + 1;
       if (isScrollEndStartCalled.current === 1) {
         scrollPrevious(latestSwiperIndex);
       }
     }
-    if (latestSwiperIndex === (dataScreens?.(UserData)?.length ?? 0) - 1 &&
+    if (
+      latestSwiperIndex === (dataScreens?.(UserData)?.length ?? 0) - 1 &&
       isScrollEndStartCalled.current === 0 &&
       isScrollAtEnd
     ) {
@@ -1618,7 +1687,15 @@ const App = (props) => {
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
+      {Platform.OS === 'android' ? (
+        <Image source={{uri: imageURL}} />
+      ) : (
+        <FastImage
+          source={{uri: imageURL, cache: FastImage.cacheControl.web}}
+          style={{height: 0, width: 0}}
+        />
+      )}
       {Platform.OS === 'ios' ? (
         <StatusBar barStyle="dark-content" />
       ) : (
@@ -1634,11 +1711,11 @@ const App = (props) => {
           getItemLayout={getSwiperItemLayout}
           keyExtractor={(data, index) => data.name}
           initialScrollIndex={swiperIndex}
-          renderItem={renderItem((Loading && !isInstallGoogleFitModalVisible))}
+          renderItem={renderItem(Loading && !isInstallGoogleFitModalVisible)}
           showsHorizontalScrollIndicator={false}
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={{
-            itemVisiblePercentThreshold: 50
+            itemVisiblePercentThreshold: 50,
           }}
           onEndReached={null}
           onScrollEndDrag={onScrollEndDrag}
@@ -1703,7 +1780,7 @@ const styles = StyleSheet.create({
     top: HEIGHT * 0.3,
   },
   prevImage: {
-    transform:[{rotate:"180deg"}],
+    transform: [{rotate: '180deg'}],
     height: 22,
     width: horizontalScale(20),
     margin: horizontalScale(5),
@@ -1820,7 +1897,7 @@ const styles = StyleSheet.create({
     fontFamily: RubikMedium,
     color: '#222432',
   },
-  forCircle: { alignItems: 'center', justifyContent: 'center', flex: 1 },
+  forCircle: {alignItems: 'center', justifyContent: 'center', flex: 1},
   BigCircleBackgroundImage: {
     height: 140,
     width: 130,
@@ -1832,7 +1909,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
   },
-  indicatorHelper: { height: 18, width: 18, borderRadius: 5 },
+  indicatorHelper: {height: 18, width: 18, borderRadius: 5},
   indicatorHelperView: {
     flexDirection: 'row',
     marginHorizontal: 3,

@@ -43,7 +43,7 @@ import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
 import {useRoute, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
-import { getApiBaseUrl } from '../../Constants/constants';
+import { getApiBaseUrl, getMoodIconsUrl } from '../../Constants/constants';
 import axios from 'axios';
 import {getMyDeviceId, onUnlinkUpdate, setDivisionSetFlag} from '../../services/commonService';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
@@ -364,6 +364,10 @@ const Linktocompany = ({ navigation }) => {
     if (type === 'Yes') {
       PostRequestApi('unlinkToCompany', params)
         .then(async (resp) => {
+          await AsyncStorage.removeItem('splashURL').then(() => {}).catch((e) => {});
+          await AsyncStorage.removeItem('UID').then(() => {}).catch((e) => {});
+          await AsyncStorage.removeItem('nextSplashURL').then(() => {}).catch((e) => {});
+
           setUnlinkConfirm(false);
           const timeoutId = setTimeout(async () => {
             setLoading(true);
@@ -649,7 +653,7 @@ const Linktocompany = ({ navigation }) => {
         <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
           <View style={{}}>
             {console.log(
-              'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
+              getMoodIconsUrl() + UserData?.NameCompany?.logo,
             )}
             {UserData?.NameCompany?.logo ? (
               <Image
@@ -660,7 +664,7 @@ const Linktocompany = ({ navigation }) => {
                 }}
                 source={{
                   uri:
-                    'https://super.moodflo.com/' + UserData?.NameCompany?.logo,
+                  getMoodIconsUrl() + UserData?.NameCompany?.logo,
                   // UserData?.NameCompany?.company_logo,
                 }}
               />
@@ -683,7 +687,7 @@ const Linktocompany = ({ navigation }) => {
                     // borderRadius: dynamicSize(40),
                   }}
                   source={{
-                    uri: 'https://super.moodflo.com/' + CompanyDetails?.logo,
+                    uri: getMoodIconsUrl() + CompanyDetails?.logo,
                     // UserData?.NameCompany?.company_logo,
                   }}
                 />

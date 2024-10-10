@@ -152,7 +152,7 @@ export default function MoodScroller({
                   uri:
                     typeof toolTipData?.icon === 'string'
                       ? `${getMoodIconsUrl()}${toolTipData.icon}`
-                      : `${MOOD_ICONS}mood_icons/161616176321272238406054abe3bb450.svg`,
+                      : `${getMoodIconsUrl()}mood_icons/161616176321272238406054abe3bb450.svg`,
                 }}
               />
             )}
@@ -188,7 +188,7 @@ export default function MoodScroller({
           // { transform: [{ scale: circleOne.current }] }
         ]}
         // {...(isAllMoodsDataAvailable && wheelSize === regularWheelSize) ? scrollerPanResponder.panHandlers : {}}
-        pointerEvents="none">
+        >
         <View style={[styles.circleView, 
           {alignSelf: wheelSize === regularWheelSize ? 'center' : 'center'},
           ]}>

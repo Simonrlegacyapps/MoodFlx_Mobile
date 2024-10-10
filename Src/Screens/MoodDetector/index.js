@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -12,6 +12,7 @@ import {
   Platform,
   ImageBackground,
   AppState,
+  Image,
 } from 'react-native';
 import Scroller from './moodScroller';
 import {
@@ -33,7 +34,7 @@ import {
   setIsHapticsEnabledFlag,
   getIsHapticsEnabled,
 } from './moodService';
-import { hsv2Hex, pSBC } from './moodUtlis';
+import {hsv2Hex, pSBC} from './moodUtlis';
 import {
   dynamicSize,
   getFontSize,
@@ -41,11 +42,14 @@ import {
   horizontalScale,
 } from '../../Constants/sizeChoose';
 import AnonymousHeader from '../../Components/AnonymousHeader/AnonymousHeader';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import CloseIcon from '../../../assets/commonicons/CloseIcon';
 import QuestionMarkIcon from '../../../assets/commonicons/QuestionMarkIcon';
 import GetLocation from 'react-native-get-location';
-import PostRequestApi, { checkAndUpdateUserIfBlocked, GetStaffUserData } from '../../apirequest/PostRequestApi';
+import PostRequestApi, {
+  checkAndUpdateUserIfBlocked,
+  GetStaffUserData,
+} from '../../apirequest/PostRequestApi';
 import VideoModal from '../../Components/VideoModal/VideoModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -59,7 +63,7 @@ import {
   UserEmail,
   WeatherPerm,
 } from '../../redux/actions/actions';
-import { useRoute } from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import SaveMoodConfirmModal from '../../Components/Modals/SaveMoodConfirm/SaveMoodConfirmModal';
 import SaveConfirmModal from '../../Components/Modals/SaveConfirmModal/SaveConfirmModal';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -67,9 +71,9 @@ import Geocoder from 'react-native-geocoding';
 import NotificationQuestion from '../../Components/Modals/NotificationQuestion/NotificationQuestion';
 import PushNotification from 'react-native-push-notification';
 import NotifService from '../../services/notifService';
-import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
-import { useFocusEffect } from '@react-navigation/native';
-import messaging, { firebase } from '@react-native-firebase/messaging';
+import {RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
+import {useFocusEffect} from '@react-navigation/native';
+import messaging, {firebase} from '@react-native-firebase/messaging';
 import {
   defaultLocation,
   getApiBaseUrl,
@@ -79,7 +83,7 @@ import {
   moodTypes,
   setIsGetCurrentLocationCalled,
 } from '../../Constants/constants';
-import { getCurrentRoute, navigate } from '../../navigator/RootNavigation';
+import {getCurrentRoute, navigate} from '../../navigator/RootNavigation';
 import SkipMoodInputModal from '../../Components/Modals/SkipMoodInputModal/SkipMoodInputModal';
 import Insights from '../../../assets/svg/insights';
 import {
@@ -102,8 +106,10 @@ import NegativeMoodModal from '../../Components/Modals/NegativeMoodModal/Negativ
 import LvlUpModal from '../../Components/Modals/LvlUpModal/LvlUpModal';
 import isEmpty from 'lodash.isempty';
 import getStore from '../../redux';
-
-let prevXY = { dx: 0, dy: 0 };
+import {logger} from '../../../index';
+import Constants from '../../Constants';
+import FastImage from 'react-native-fast-image';
+let prevXY = {dx: 0, dy: 0};
 let moveCount = 0;
 let lpX = 0;
 let lpY = 0;
@@ -118,7 +124,7 @@ const hapticOptions = {
 };
 function useForceUpdate() {
   const [value, setValue] = useState(0); // integer state
-  return () => setValue((value) => value + 1); // update the state to force render
+  return () => setValue(value => value + 1); // update the state to force render
 }
 
 const window = Dimensions.get('window');
@@ -127,9 +133,9 @@ const screenWidth = Math.floor(window.width);
 
 // import imagePath from '../assets/images';
 
-let moodText = ''
+let moodText = '';
 
-export default function MoodDetector({ navigation }) {
+export default function MoodDetector({navigation}) {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [lng, setlng] = useState(false); //using in api calls
@@ -139,18 +145,14 @@ export default function MoodDetector({ navigation }) {
   const [SaveConfirm, setSaveConfirm] = useState(false); //for modal flag
   const [SaveName, setSaveName] = useState(null); //for modal flag
   const [isScreenFocused, setIsScreenFocused] = useState(false); //for modal flag
-  const [
-    isSaveMoodConfirmModalVisible,
-    setIsSaveMoodConfirmModalVisible,
-  ] = useState(false); //for modal flag
+  const [isSaveMoodConfirmModalVisible, setIsSaveMoodConfirmModalVisible] =
+    useState(false); //for modal flag
   const [
     isNotificationQuestionModalVisible,
     setIsNotificationQuestionModalVisible,
   ] = useState(false); //for remote question flag
-  const [
-    isSkipMoodInputModalVisible,
-    setIsSkipMoodInputModalVisible,
-  ] = useState(false);
+  const [isSkipMoodInputModalVisible, setIsSkipMoodInputModalVisible] =
+    useState(false);
   const [QuestionID, setQuestionID] = useState(null);
   const [blocksContainerSize, setBlocksContainerSize] = useState(null);
   let [toolTipData, setToolTipData] = useState({...initialEmotionTextData});
@@ -162,8 +164,8 @@ export default function MoodDetector({ navigation }) {
   const [wheelSize, setWheelSize] = useState(getScrollerWheelSize());
   const [pulseNotifData, setPulseNotifData] = useState(null);
   const [showLongPressText, setShowLongPressText] = useState(false);
-  const [CurrentMood, setCurrentMood] = useState(null)
-  const [textForMood, setTextForMood] = useState("")
+  const [CurrentMood, setCurrentMood] = useState(null);
+  const [textForMood, setTextForMood] = useState('');
   const [moodInputRewardPoints, setMoodInputRewardPoints] = useState(0);
   const [notesInputRewardPoints, setNotesInputRewardPoints] = useState(0);
   const [updateAnswerRewardPoints, setUpdateAnswerRewardPoints] = useState(0);
@@ -175,14 +177,13 @@ export default function MoodDetector({ navigation }) {
   const dispatch = useDispatch();
   const route = useRoute();
   const forceUpdate = useForceUpdate();
-
+  const [updatedSplash, setUpdatedSplash] = useState();
   const closeModal = () => {
     setModalVisible(false);
   };
-  const UserData = useSelector((state) => state.First);
-
+  const UserData = useSelector(state => state.First);
   const pan = useRef(
-    new Animated.ValueXY({ x: screenWidth / 2, y: window.height / 2 }),
+    new Animated.ValueXY({x: screenWidth / 2, y: window.height / 2}),
   );
   const prevEmotionData = useRef({});
   const scrollerRef = useRef(null);
@@ -208,10 +209,12 @@ export default function MoodDetector({ navigation }) {
   const previousWheelCenter = useRef(null);
   const userData = useRef(UserData);
   const wheelSizeChangeDisabled = useRef(true);
-  const hsvColor = useRef({ h: 0, s: 0, v: 100 });
+  const hsvColor = useRef({h: 0, s: 0, v: 100});
   const shouldPlayHaptics = useRef(false);
-  const moodIdForNotes = useRef("");
-  const prev_vitality_member_id = useRef(UserData?.UserDetails?.vitality_member_id);
+  const moodIdForNotes = useRef('');
+  const prev_vitality_member_id = useRef(
+    UserData?.UserDetails?.vitality_member_id,
+  );
   const fetchSetRewardsPtsCount = useRef(0);
 
   const panResponder = useRef(
@@ -239,7 +242,7 @@ export default function MoodDetector({ navigation }) {
         if (offsetSize.current) {
           const panX = offsetSize.current.xMin + x;
           const panY = offsetSize.current.yMin + y;
-          pan.current.setValue({ x: panX, y: panY });
+          pan.current.setValue({x: panX, y: panY});
           const left = blocksSize.current.left + x;
           const top = blocksSize.current.top + y;
           updateColorData(left, top);
@@ -314,7 +317,7 @@ export default function MoodDetector({ navigation }) {
           }
           wheelSizeChangeDisabled.current = true;
           onPanResponderMove(event, gestureState, panX, panY);
-          pan.current.setValue({ x: panX, y: panY });
+          pan.current.setValue({x: panX, y: panY});
           startLongPressGesture(event, gestureState);
         } else {
           if (longPressPopUpTimeoutId.current === null && moveCount === 0) {
@@ -322,7 +325,7 @@ export default function MoodDetector({ navigation }) {
           }
           moveCount += 1;
         }
-        prevXY = { dx: gestureState.dx, dy: gestureState.dy };
+        prevXY = {dx: gestureState.dx, dy: gestureState.dy};
         return true;
       },
       onPanResponderRelease: (event, gestureState) => {
@@ -332,11 +335,11 @@ export default function MoodDetector({ navigation }) {
         shouldPlayHaptics.current = false;
         const x = parseFloat(event.nativeEvent.locationX.toFixed(2));
         const y = parseFloat(event.nativeEvent.locationY.toFixed(2));
-        let panXY = { x, y };
+        let panXY = {x, y};
         if (offsetSize.current) {
           let panX = offsetSize.current.xMin + x;
           let panY = offsetSize.current.yMin + y;
-          panXY = { ...panXY, x: panX, y: panY };
+          panXY = {...panXY, x: panX, y: panY};
         }
         wheelSizeChangeDisabled.current = true;
         clearLongPressTimeouts({
@@ -352,8 +355,8 @@ export default function MoodDetector({ navigation }) {
   ).current;
 
   const onPanResponderMove = (event, gestureState, panX, panY) => {
-    const x = panX + (regularWheelSize/2);
-    const y = panY + (regularWheelSize/2);
+    const x = panX + regularWheelSize / 2;
+    const y = panY + regularWheelSize / 2;
     updateColorData(x, y, gestureState);
     // scrollerRef.current.measureInWindow((x, y, width, height) => {
     //   const left = x + (regularWheelSize/2);
@@ -367,7 +370,7 @@ export default function MoodDetector({ navigation }) {
 
   //color wheel caluclations
 
-  const polar = ({ locationX, locationY }) => {
+  const polar = ({locationX, locationY}) => {
     const lx = locationX,
       ly = locationY;
     if (!lx || !ly) {
@@ -388,19 +391,19 @@ export default function MoodDetector({ navigation }) {
     };
   };
 
-  const updateHueSaturation = (location) => {
+  const updateHueSaturation = location => {
     const polarData = polar(location);
     if (!polarData) {
       return;
     }
-    let { deg, radius } = polarData;
+    let {deg, radius} = polarData;
     if (radius > 1) {
       radius = 1;
     }
     const h = deg,
       s = 100 * radius,
       v = hsvColor.current.v;
-    const hsv = { h, s, v };
+    const hsv = {h, s, v};
     const currentColor = hsv2Hex(hsv);
     hsvColor.current = hsv;
     setColor(hsv2Hex(hsv));
@@ -409,8 +412,8 @@ export default function MoodDetector({ navigation }) {
   const updateColorData = (x, y, gestureState) => {
     const left = x;
     const top = y;
-    updateHueSaturation({ locationX: left, locationY: y });
-    previousWheelCenter.current = { left, top };
+    updateHueSaturation({locationX: left, locationY: y});
+    previousWheelCenter.current = {left, top};
     const emotionData = getEmotionsTextData(
       top,
       left,
@@ -499,16 +502,16 @@ export default function MoodDetector({ navigation }) {
           //     : largeWheelSize;
           if (!wheelSizeChangeDisabled.current) {
             // if (offsetSize.current) {
-              // panX =
-              //   offsetSize.current.xMin +
-              //   offsetSize.current.scrollerWidth / 2 -
-              //   newScrollerWidth / 2 +
-              //   x;
-              // panY =
-              //   offsetSize.current.yMin +
-              //   offsetSize.current.bubbleCenterOffsetTop -
-              //   (offsetSize.current.toolTipHeight + largeWheelSize / 2) +
-              //   y;
+            // panX =
+            //   offsetSize.current.xMin +
+            //   offsetSize.current.scrollerWidth / 2 -
+            //   newScrollerWidth / 2 +
+            //   x;
+            // panY =
+            //   offsetSize.current.yMin +
+            //   offsetSize.current.bubbleCenterOffsetTop -
+            //   (offsetSize.current.toolTipHeight + largeWheelSize / 2) +
+            //   y;
             // }
             setScrollerWheelSize(largeWheelSize);
             setWheelSize(largeWheelSize);
@@ -520,11 +523,11 @@ export default function MoodDetector({ navigation }) {
             });
             setShowLongPressText(false);
           }
-          clearLongPressTimeouts({ longPressTimeoutId });
+          clearLongPressTimeouts({longPressTimeoutId});
         }, longPressDuration * 1000);
-        clearLongPressTimeouts({ mediumPressTimeoutId });
+        clearLongPressTimeouts({mediumPressTimeoutId});
       }, mediumPressDuration * 1000);
-      clearLongPressTimeouts({ longPressPopUpTimeoutId });
+      clearLongPressTimeouts({longPressPopUpTimeoutId});
     }, longPressPopupDuration * 1000);
   };
 
@@ -563,7 +566,7 @@ export default function MoodDetector({ navigation }) {
         //   x: pan.current.x._value,
         //   y: pan.current.y._value
         // });
-        pan.current.setValue({ x: 0, y: 0 });
+        pan.current.setValue({x: 0, y: 0});
         pan.current.setValue(panXY);
       }
       // console.log('setting wheelSize to Regular =>', regularWheelSize);
@@ -584,14 +587,14 @@ export default function MoodDetector({ navigation }) {
     onLayoutScrollerContainer();
   };
 
-  const _handleAppStateChange = (nextAppState) => {
+  const _handleAppStateChange = nextAppState => {
     if (
       appState.current.match(/inactive|background/) &&
-      nextAppState === "active"
+      nextAppState === 'active'
     ) {
-      console.log("App has come to the foreground!");
+      console.log('App has come to the foreground!');
       let negativeMoodModalVisible = false;
-      setIsShowNegativeMoodModal((e) => {
+      setIsShowNegativeMoodModal(e => {
         negativeMoodModalVisible = e;
         return e;
       });
@@ -606,21 +609,24 @@ export default function MoodDetector({ navigation }) {
   };
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", _handleAppStateChange);
+    const subscription = AppState.addEventListener(
+      'change',
+      _handleAppStateChange,
+    );
     return () => {
       subscription?.remove?.();
     };
   }, []);
 
-  const setShowNegativeMoodModal = (isOpen) => () => {
+  const setShowNegativeMoodModal = isOpen => () => {
     if (isOpen) {
       setIsShowNegativeMoodModal(true);
     } else {
       setIsShowNegativeMoodModal(false);
-      const timeoutId = setTimeout(() => {
-        setIsSaveMoodConfirmModalVisible(true);
-        clearTimeout(timeoutId);
-      }, 500);
+      // const timeoutId = setTimeout(() => {
+      //   setIsSaveMoodConfirmModalVisible(true);
+      //   clearTimeout(timeoutId);
+      // }, 500);
     }
   };
 
@@ -632,11 +638,11 @@ export default function MoodDetector({ navigation }) {
     const closeId = setTimeout(() => {
       let latitude = lat;
       let longitude = lng;
-      setlat((e) => {
+      setlat(e => {
         latitude = e;
         return e;
       });
-      setlng((e) => {
+      setlng(e => {
         longitude = e;
         return e;
       });
@@ -652,7 +658,7 @@ export default function MoodDetector({ navigation }) {
     }, 300);
   };
 
-  const SaveMood = (isCallApi) => async () => {
+  const SaveMood = isCallApi => async () => {
     setIsSaveMoodConfirmModalVisible(false);
     // const onSaveMoodComplete = () => {
     //   const closeId = setTimeout(() => {
@@ -667,7 +673,13 @@ export default function MoodDetector({ navigation }) {
     //     clearTimeout(closeId);
     //   }, 300);
     // };
-    if (!(isCallApi && typeof moodIdForNotes.current === 'string' && moodIdForNotes.current)) {
+    if (
+      !(
+        isCallApi &&
+        typeof moodIdForNotes.current === 'string' &&
+        moodIdForNotes.current
+      )
+    ) {
       if (isLvlUpOnMoodInput.current === true) {
         const timeoutId = setTimeout(() => {
           setIsOpenLvlUpModal(true);
@@ -687,7 +699,7 @@ export default function MoodDetector({ navigation }) {
     }
     const deviceId = getMyDeviceId();
     let notesText = '';
-    setTextForMood((t) => {
+    setTextForMood(t => {
       notesText = t;
       return t;
     });
@@ -700,31 +712,34 @@ export default function MoodDetector({ navigation }) {
       reward_point: rewardPoint,
       section_index: 5,
     };
-    console.log(`params for update notes`, params);
+    console.log('params for update notes', params);
     setLoading(true);
     const prevRewardPts = getStore?.()?.getState?.()?.First?.floCoins;
     const id = setTimeout(() => {
-      PostRequestApi("updateNotes", params)
-        .then((resp) => {
+      PostRequestApi('updateNotes', params)
+        .then(resp => {
           setLoading(false);
           setMoodInputTimeStamps(true);
-          console.log('✅ ✅ ✅ ✅ Success Message of notes Input ✅ ✅ ✅ ✅', resp?.data);
+          console.log(
+            '✅ ✅ ✅ ✅ Success Message of notes Input ✅ ✅ ✅ ✅',
+            resp?.data,
+          );
           if (!isNaN(resp?.data?.reward_point)) {
             dispatch(SetFloCoins(Number(resp.data.reward_point)));
           }
           if (
-            isLvlUpOnMoodInput.current === true || (
-            !isNaN(rewardPoint) &&
-            Number(rewardPoint) > 0 &&
-            getIsMoodLvlUp(prevRewardPts, resp?.data?.reward_point)
-          )) {
+            isLvlUpOnMoodInput.current === true ||
+            (!isNaN(rewardPoint) &&
+              Number(rewardPoint) > 0 &&
+              getIsMoodLvlUp(prevRewardPts, resp?.data?.reward_point))
+          ) {
             setIsOpenLvlUpModal(true);
             isLvlUpOnMoodInput.current = false;
           } else {
             onNoteInputComplete();
           }
         })
-        .catch((err) => {
+        .catch(err => {
           setLoading(false);
           onNoteInputComplete();
           console.log('err for notes addition', err);
@@ -753,7 +768,7 @@ export default function MoodDetector({ navigation }) {
       screenContainerSize.current,
     );
     offsetSize.current = offSetSize;
-    let { xMin, xMax, yMin, yMax, initialX, initialY } = offSetSize;
+    let {xMin, xMax, yMin, yMax, initialX, initialY} = offSetSize;
     // console.log('updatePanResponder ', offSetSize);
     constrainedX.current = pan.current.x.interpolate({
       inputRange: [xMin, 150, xMax],
@@ -773,7 +788,7 @@ export default function MoodDetector({ navigation }) {
     // }
 
     if (emotionText === initialEmotionTextData.name && isInitialUpdate) {
-      pan.current.setOffset({ x: 0, y: 0 });
+      pan.current.setOffset({x: 0, y: 0});
       pan.current.setValue({
         x: initialX,
         y: initialY,
@@ -787,7 +802,7 @@ export default function MoodDetector({ navigation }) {
       return;
     }
     blocksContainerRef.current.measureInWindow((x, y, width, height) => {
-      const size = { left: x, top: y, width, height };
+      const size = {left: x, top: y, width, height};
       if (screenContainerSize.current) {
         size.top = y - screenContainerSize.current.top;
       }
@@ -809,7 +824,7 @@ export default function MoodDetector({ navigation }) {
       return;
     }
     toolTipRef?.current?.measureInWindow((x, y, width, height) => {
-      toolTipSize.current = { left: x, top: y, width, height };
+      toolTipSize.current = {left: x, top: y, width, height};
       !isInitialPanResponderUpdated.current && updatePanResponder();
     });
   };
@@ -819,7 +834,7 @@ export default function MoodDetector({ navigation }) {
       return;
     }
     scrollerContainerRef?.current?.measureInWindow((x, y, width, height) => {
-      scrollerContainerSize.current = { left: x, top: y, width, height };
+      scrollerContainerSize.current = {left: x, top: y, width, height};
       // console.log('scrollerContainerSize x,y,width,height', x, y, width, height)
       // console.log('scrollerContainerSize scrollerContainerSize.current', scrollerContainerSize.current)
       !isInitialPanResponderUpdated.current && updatePanResponder();
@@ -831,7 +846,7 @@ export default function MoodDetector({ navigation }) {
       return;
     }
     screenContainerRef?.current?.measureInWindow((x, y, width, height) => {
-      const size = { left: x, top: y, width, height };
+      const size = {left: x, top: y, width, height};
       screenContainerSize.current = size;
       if (blocksSize.current) {
         blocksSize.current = {
@@ -874,7 +889,7 @@ export default function MoodDetector({ navigation }) {
     }
     // console.log(`division`, division);
     dispatch(UserDivision(division));
-    setDivisionSetFlag((typeof division === 'string' && division !== ''));
+    setDivisionSetFlag(typeof division === 'string' && division !== '');
   };
 
   const getProfileUserData = () => {
@@ -897,12 +912,15 @@ export default function MoodDetector({ navigation }) {
       redirect: 'follow',
     };
     fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
-      .then((response) => response.json())
-      .then(async (result) => {
-        console.log('✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅', result);
+      .then(response => response.json())
+      .then(async result => {
+        console.log(
+          '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
+          result,
+        );
         await dispatch(UserDetail(result.userData));
       })
-      .catch((error) => console.log('error', error));
+      .catch(error => console.log('error', error));
   };
 
   // useEffect(() => {
@@ -943,13 +961,21 @@ export default function MoodDetector({ navigation }) {
 
   const callSetMoodInputNotes = async () => {
     try {
-      const rewardPointsMoodInput = await getMoodInputRewardPoints(false);
+      const rewardPointsMoodInput = await getMoodInputRewardPoints(
+        false,
+        UserData?.UserDetails?.vitality_member_id,
+      );
+      console.log('rewardPointsMoodInput :: ', rewardPointsMoodInput);
       setMoodInputRewardPoints(rewardPointsMoodInput);
     } catch (error) {
       console.log('get mood input reward point error - ', error);
     }
     try {
-      const rewardPointsNotesInput = await getMoodInputRewardPoints(true);
+      const rewardPointsNotesInput = await getMoodInputRewardPoints(
+        true,
+        UserData?.UserDetails?.vitality_member_id,
+      );
+      console.log('rewardPointsNotesInput :: ', rewardPointsNotesInput);
       setNotesInputRewardPoints(rewardPointsNotesInput);
     } catch (error) {
       console.log('get notes input reward point error - ', error);
@@ -960,7 +986,8 @@ export default function MoodDetector({ navigation }) {
     if (
       fetchSetRewardsPtsCount.current === 0 ||
       (!!UserData?.UserDetails?.vitality_member_id &&
-        prev_vitality_member_id.current !== UserData?.UserDetails?.vitality_member_id)
+        prev_vitality_member_id.current !==
+          UserData?.UserDetails?.vitality_member_id)
     ) {
       callSetMoodInputNotes();
       fetchSetRewardsPtsCount.current += 1;
@@ -990,7 +1017,7 @@ export default function MoodDetector({ navigation }) {
           enableHighAccuracy: false,
           timeout: 15000,
         })
-          .then((location) => {
+          .then(location => {
             setIsGetCurrentLocationCalled(false);
             // const isIndia = isCountryIndia();
             // if (isIndia) {
@@ -1005,9 +1032,9 @@ export default function MoodDetector({ navigation }) {
             setlng(location.longitude);
             dispatch(Long(location.longitude));
           })
-          .catch((error) => {
+          .catch(error => {
             setIsGetCurrentLocationCalled(false);
-            const { code, message } = error;
+            const {code, message} = error;
             console.log('error', code, message);
           });
       }
@@ -1042,7 +1069,7 @@ export default function MoodDetector({ navigation }) {
     // console.log('playHaptics shouldPlayHaptics.current', shouldPlayHaptics.current);
     if (shouldPlayHaptics.current) {
       const data = hapticsData.current ?? {};
-      let { hapticType, timeInterval, percentage, isLeft } = data;
+      let {hapticType, timeInterval, percentage, isLeft} = data;
       if (percentage < 0) {
         setIsHapticsEnabledFlag({
           isEnabled: false,
@@ -1124,7 +1151,7 @@ export default function MoodDetector({ navigation }) {
     // return () => hapticTimeoutId.current && clearInterval(hapticTimeoutId.current);
   }, [isHapticsEnabled, playHaptics]);
 
-  const showMoodSaveConfirmModal = (onClose) => {
+  const showMoodSaveConfirmModal = onClose => {
     setIsSaveMoodConfirmModalVisible(true);
     // const id = setTimeout(() => {
     //   setIsSaveMoodConfirmModalVisible(false);
@@ -1162,7 +1189,25 @@ export default function MoodDetector({ navigation }) {
       return () => onNoteInputComplete(true);
     }
   };
-
+  useEffect(() => {
+    setUID();
+  }, [UserData]);
+  const setUID = async () => {
+    const UID = UserData?.UserId;
+    if (UID) {
+      try {
+        await AsyncStorage.setItem('UID', UID);
+      } catch (error) {
+        logger('Async Storage setItem error: ', error);
+      }
+    } else {
+      try {
+        await AsyncStorage.removeItem('UID');
+      } catch (error) {
+        console.log('removed UID --- ', error);
+      }
+    }
+  };
   const findId = async () => {
     const user_data = getStore?.()?.getState?.()?.First;
     let mood_type = moodTypes.regular;
@@ -1176,7 +1221,8 @@ export default function MoodDetector({ navigation }) {
     let p = await AsyncStorage.getItem('MoodCount');
     // console.log(`check check check`, JSON.parse(AsyncStorage.getItem('Email')));
     let e = await JSON.parse(p);
-    const fcm = await messaging().getToken();
+    // const fcm = await messaging().getToken();
+    const fcm = await NotifService.getDeviceToken();
     // console.log(`mood count`, e);
 
     let geocode = null;
@@ -1190,7 +1236,7 @@ export default function MoodDetector({ navigation }) {
         lat: user_data.lat,
         lng: user_data.lon,
       })
-        .then((data) => {
+        .then(data => {
           geocode = data.plus_code.compound_code;
           const address_list = data.results[0].address_components;
           for (i = 0; i < address_list.length; i++) {
@@ -1213,19 +1259,18 @@ export default function MoodDetector({ navigation }) {
             }
           }
         })
-        .catch((err) => console.log(`weather api location err`, err));
+        .catch(err => console.log('weather api location err', err));
     }
-    const Id = user_data.AllMoods.find(({ name }) => {
+    const Id = user_data.AllMoods.find(({name}) => {
       // console.log(`name`, name);
       return name === emotionText;
     });
-    console.log(`Id`, Id);
-    setCurrentMood(Id)
+    console.log('Id ==>>', Id);
+    setCurrentMood(Id);
 
     // console.log(`lat, lng`, UserData.lat, UserData.lon);
     const deviceId = getMyDeviceId();
     if (Id === undefined) {
-      // console.log(`fail`);
       setLoading(false);
       setMoodFail(true);
     } else {
@@ -1247,11 +1292,26 @@ export default function MoodDetector({ navigation }) {
         mood_id: Id.id,
         device_id: deviceId,
         mood_type,
-        city: isIndia && user_data.WeatherPermission ? defaultLocation.city : city_info,
-        state: isIndia && user_data.WeatherPermission ? defaultLocation.state : state_info,
-        country: isIndia && user_data.WeatherPermission ? defaultLocation.country : country_info,
-        lat: isIndia && user_data.WeatherPermission ? defaultLocation.latitude : user_data.lat,
-        lon: isIndia && user_data.WeatherPermission ? defaultLocation.longitude : user_data.lon,
+        city:
+          isIndia && user_data.WeatherPermission
+            ? defaultLocation.city
+            : city_info,
+        state:
+          isIndia && user_data.WeatherPermission
+            ? defaultLocation.state
+            : state_info,
+        country:
+          isIndia && user_data.WeatherPermission
+            ? defaultLocation.country
+            : country_info,
+        lat:
+          isIndia && user_data.WeatherPermission
+            ? defaultLocation.latitude
+            : user_data.lat,
+        lon:
+          isIndia && user_data.WeatherPermission
+            ? defaultLocation.longitude
+            : user_data.lon,
         // city: isIndia || !UserData.lat ? defaultLocation.city : city_info,
         // state: isIndia || !UserData.lat ? defaultLocation.state : state_info,
         // country: isIndia || !UserData.lat ? defaultLocation.country : country_info,
@@ -1268,12 +1328,12 @@ export default function MoodDetector({ navigation }) {
       };
 
       if (route?.params?.question != undefined || QuestionID !== null) {
-        console.log(`route.params.points`,route?.params?.points);
+        console.log('route.params.points', route?.params?.points);
         var myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
 
         let pulseAnswerRewardPoints = 0;
-        setUpdateAnswerRewardPoints((e) => {
+        setUpdateAnswerRewardPoints(e => {
           pulseAnswerRewardPoints = e;
           return e;
         });
@@ -1292,7 +1352,7 @@ export default function MoodDetector({ navigation }) {
           description: 'team pulse answer',
         });
 
-        console.log(`params for updating answer --------------->`, raw);
+        console.log('params for updating answer --------------->', raw);
 
         var requestOptions = {
           method: 'POST',
@@ -1302,8 +1362,8 @@ export default function MoodDetector({ navigation }) {
         };
 
         fetch(`${getApiBaseUrl()}updateAnswer`, requestOptions)
-          .then((response) => response.json())
-          .then((result) => {
+          .then(response => response.json())
+          .then(result => {
             console.log('quesstion updated', result);
             console.log('quesstion updated', result?.reward_point);
             setLoading(false);
@@ -1318,22 +1378,21 @@ export default function MoodDetector({ navigation }) {
               onUpdateAnswerApiSuccess();
             }
           })
-          .catch((error) => {
+          .catch(error => {
             console.log('error', error);
             setLoading(false);
           });
       } else {
-        console.log(`params for mood update`, params);
+        logger('params for mood update', params);
+        let showNegativeMoodModal = false;
         PostRequestApi('moodUpdate', params)
-          .then(async (resp) => {
+          .then(async resp => {
             if (resp.status == 200) {
-              moodIdForNotes.current = resp?.data?.mood_id ?? "";
+              moodIdForNotes.current = resp?.data?.mood_id ?? '';
               AsyncStorage.setItem('MoodCount', JSON.stringify(e + 1));
               setMoodInputTimeStamps(false);
-              console.log(
-                'Success Message of respose mood ✅ ✅ ✅ ✅',
-                resp?.data,
-              );
+              logger('Success Message of respose mood ✅ ✅ ✅ ✅', resp?.data);
+              showNegativeMoodModal = resp?.data?.isNegativeMoodFlagged;
               if (!isNaN(resp?.data?.reward_point)) {
                 // console.log('resp.data.reward_point ----', Number(resp.data.reward_point));
                 dispatch(SetFloCoins(Number(resp.data.reward_point)));
@@ -1346,19 +1405,9 @@ export default function MoodDetector({ navigation }) {
               ) {
                 isLvlUpOnMoodInput.current = true;
               }
-              let showNegativeMoodModal = false;
-              try {
-                setLoading(true);
-                showNegativeMoodModal = await getIsShowNegativeMoodInputPopup(Id.id, userData?.current?.AllMoods);
-                setLoading(false);
-              } catch (error) {
-                setLoading(false);
-                console.log('error in calling getIsShowNegativeMoodInputPopup ', error);
-              }
-
               if (route?.params?.question != undefined) {
                 setSwiperIndexHome(0, dispatch);
-                navigation.navigate('HomeScreen', { screen: 'MicScreen' });
+                navigation.navigate('HomeScreen', {screen: 'MicScreen'});
               } else {
                 if (showNegativeMoodModal === true) {
                   let negativeModalTimeoutId = setTimeout(() => {
@@ -1366,15 +1415,15 @@ export default function MoodDetector({ navigation }) {
                     clearTimeout(negativeModalTimeoutId);
                   }, 400);
                 } else {
-                  showMoodSaveConfirmModal(() => {
-                    setSwiperIndexHome(0, dispatch);
-                    navigation.replace('HomeScreen', {
-                      lat: lat,
-                      long: lng,
-                      screen: 'Home',
-                      isMoodUpdate: true,
-                    });
+                  // showMoodSaveConfirmModal(() => {
+                  setSwiperIndexHome(0, dispatch);
+                  navigation.replace('HomeScreen', {
+                    lat: lat,
+                    long: lng,
+                    screen: 'Home',
+                    isMoodUpdate: true,
                   });
+                  // });
                 }
                 const notifService = new NotifService();
                 notifService.checkTimeAndUpdateNotif();
@@ -1385,11 +1434,11 @@ export default function MoodDetector({ navigation }) {
               //   long: UserData.lon,
               // });
 
-              console.log(`params`, params);
+              console.log('params', params);
             }
           })
-          .catch((err) => {
-            console.log(`params for err of mood`, params);
+          .catch(err => {
+            console.log('params for err of mood', params);
             console.log('err of response mood❌ ❌ ❌ ❌', err);
             setLoading(false);
           });
@@ -1399,7 +1448,6 @@ export default function MoodDetector({ navigation }) {
 
   const savingDataWithName = () => {
     // navigation.replace('HomeScreen');
-
     if (!UserData.Anonymous) {
       setSaveConfirm(true);
     } else {
@@ -1407,7 +1455,7 @@ export default function MoodDetector({ navigation }) {
     }
   };
 
-  const verifyDone = (value) => {
+  const verifyDone = value => {
     // console.log(`value-->`, value);
 
     if (value === 'Yes') {
@@ -1418,7 +1466,7 @@ export default function MoodDetector({ navigation }) {
     }
   };
 
-  const verifyNotificationQuestion = (value) => {
+  const verifyNotificationQuestion = value => {
     if (value === 'Yes') {
       setIsNotificationQuestionModalVisible(false);
       setQuestionID(pulseNotifData?.data?.id);
@@ -1439,7 +1487,7 @@ export default function MoodDetector({ navigation }) {
   const dismissNotificationQuestionModal = useCallback(() => {
     setIsNotificationQuestionModalVisible(false);
     setSwiperIndexHome(0, dispatch);
-    navigation.navigate('HomeScreen', { screen: 'MicScreen' });
+    navigation.navigate('HomeScreen', {screen: 'MicScreen'});
   }, []);
 
   const dismissSkipMoodInputModal = useCallback(() => {
@@ -1449,7 +1497,7 @@ export default function MoodDetector({ navigation }) {
   const onAcceptSkipMoodInput = useCallback(() => {
     dismissSkipMoodInputModal();
     const timeoutId = setTimeout(() => {
-      navigation.navigate('HomeScreen', { lat: lat, long: lng });
+      navigation.navigate('HomeScreen', {lat: lat, long: lng});
       clearTimeout(timeoutId);
     }, 500);
   }, [dismissSkipMoodInputModal, lat, lng, navigation]);
@@ -1491,6 +1539,7 @@ export default function MoodDetector({ navigation }) {
 
   useEffect(() => {
     isUnmounted = false;
+    logger("userData.notifi", UserData.notification,pulseNotifData)
     if (UserData.notification) {
       if (
         isScreenFocused &&
@@ -1511,7 +1560,11 @@ export default function MoodDetector({ navigation }) {
           setPulseNotifData(UserData.notification);
           setIsNotificationQuestionModalVisible(true);
           if (UserData.notification?.data?.start_date) {
-            setUpdateAnswerRewardPoints(getUpdateAnswerRewardPoints(UserData.notification?.data?.start_date));
+            setUpdateAnswerRewardPoints(
+              getUpdateAnswerRewardPoints(
+                UserData.notification?.data?.start_date,
+              ),
+            );
           }
         }
       }
@@ -1519,7 +1572,10 @@ export default function MoodDetector({ navigation }) {
       console.log('NOTIFICATION: MoodDetector', UserData.notification);
     }
     if (typeof route?.params?.points === 'number') {
-      console.log('route?.params?.points -------->>>>>>>>', route?.params?.points);
+      console.log(
+        'route?.params?.points -------->>>>>>>>',
+        route?.params?.points,
+      );
       setUpdateAnswerRewardPoints(route.params.points);
     }
   }, [isScreenFocused, pulseNotifData, UserData.notification, dispatch]);
@@ -1540,7 +1596,7 @@ export default function MoodDetector({ navigation }) {
   // console.log('pSBC(0.25, color) --->', pSBC(0.25, color));
   // console.log('pSBC(0.5, color) --->', pSBC(0.5, color));
   // console.log('pSBC(0.75, color) --->', pSBC(0.75, color));
-  const renderBlocks = (tbColor) => {
+  const renderBlocks = tbColor => {
     const fontSize = getFontSize(12);
     const lineHeight = getLineHeight(fontSize);
     return (
@@ -1694,7 +1750,8 @@ export default function MoodDetector({ navigation }) {
   if (
     emotionText !== 'Slide finger' &&
     moodInputRewardPoints !== 0 &&
-    !isNaN(moodInputRewardPoints)) {
+    !isNaN(moodInputRewardPoints)
+  ) {
     pts = moodInputRewardPoints;
   }
   if (
@@ -1705,17 +1762,16 @@ export default function MoodDetector({ navigation }) {
     pts = updateAnswerRewardPoints;
   }
 
-  const renderBottomBar = (color) => (
+  const renderBottomBar = color => (
     <View
       pointerEvents={isHapticsEnabled ? 'none' : 'auto'}
       style={{
         backgroundColor: color,
         width: '100%',
       }}>
-      <View
-        style={styles.bottomBarContainer}>
+      <View style={styles.bottomBarContainer}>
         <TouchableOpacity
-          style={{ marginLeft: 12 }}
+          style={{marginLeft: 12}}
           onPress={
             () => setIsSkipMoodInputModalVisible(true)
             // navigation.replace('HomeScreen', {
@@ -1723,8 +1779,7 @@ export default function MoodDetector({ navigation }) {
             //   long: UserData.lon,
             // })
           }>
-          <View
-            style={styles.insightsIconView}>
+          <View style={styles.insightsIconView}>
             <Insights w={dynamicSize(52)} h={dynamicSize(52)} />
 
             {/* <CloseIcon width={dynamicSize(52)} height={dynamicSize(52)} /> */}
@@ -1745,39 +1800,77 @@ export default function MoodDetector({ navigation }) {
           }}>
           <View />
           <Text style={styles.saveText}>Save</Text>
-          {pts > 0 && (
-            <ImageBackground
-              style={styles.pupView}
-              imageStyle={[
-                styles.Pup,
-                {
-                  tintColor: UserData?.UserDetails?.vitality_member_id
-                    ? Colors.vitalityRed
-                    : Colors.coinOrange,
-                },
-              ]}
-              source={require('../../../assets/newImage/AddCoinsPopUp/popUp.png')}>
-              <BitCoinIcon
-                style={styles.bitCoinIconView}
-                color={'#FFFFFF'}
-                w={getFontSize(12.5)}
-                h={getFontSize(12.5)}
-              />
-              <Text allowFontScaling={false} style={styles.coinText}>
-                + {`${pts}`} coins
-              </Text>
-            </ImageBackground>
-          )}
+          {UserData?.UserDetails?.vitality_member_id
+            ? pts > 0 &&
+              !route?.params?.points && (
+                <ImageBackground
+                  style={styles.pupView}
+                  imageStyle={[
+                    styles.Pup,
+                    {
+                      tintColor: UserData?.UserDetails?.vitality_member_id
+                        ? Colors.vitalityRed
+                        : Colors.coinOrange,
+                    },
+                  ]}
+                  source={require('../../../assets/newImage/AddCoinsPopUp/popUp.png')}>
+                  <BitCoinIcon
+                    style={styles.bitCoinIconView}
+                    color={'#FFFFFF'}
+                    w={getFontSize(12.5)}
+                    h={getFontSize(12.5)}
+                  />
+                  <Text allowFontScaling={false} style={styles.coinText}>
+                    + {`${pts}`} Points
+                  </Text>
+                </ImageBackground>
+              )
+            : pts > 0 && (
+                <ImageBackground
+                  style={styles.pupView}
+                  imageStyle={[
+                    styles.Pup,
+                    {
+                      tintColor: UserData?.UserDetails?.vitality_member_id
+                        ? Colors.vitalityRed
+                        : Colors.coinOrange,
+                    },
+                  ]}
+                  source={require('../../../assets/newImage/AddCoinsPopUp/popUp.png')}>
+                  <BitCoinIcon
+                    style={styles.bitCoinIconView}
+                    color={'#FFFFFF'}
+                    w={getFontSize(12.5)}
+                    h={getFontSize(12.5)}
+                  />
+                  <Text allowFontScaling={false} style={styles.coinText}>
+                    + {`${pts}`} Points
+                  </Text>
+                </ImageBackground>
+              )}
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             // setModalVisible(true);
             navigation.navigate('Dashboard');
           }}>
+          <View style={styles.questionIconView} />
           <View
-            style={styles.questionIconView}
-          />
-          <QuestionMarkIcon w={dynamicSize(52)} h={dynamicSize(52)} />
+            style={{
+              height: 52,
+              width: 52,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 1,
+              borderColor: 'white',
+              borderRadius: 10,
+            }}>
+            <Image
+              source={Constants.Images.goldStar}
+              style={{height: 32, width: 32, resizeMode: 'contain'}}
+            />
+          </View>
+          {/* <QuestionMarkIcon w={dynamicSize(52)} h={dynamicSize(52)} /> */}
         </TouchableOpacity>
         {/* {MoodFail && (
           <Text style={styles.ErrorText}>Please select a mood</Text>
@@ -1786,7 +1879,8 @@ export default function MoodDetector({ navigation }) {
     </View>
   );
 
-  let moodName = wheelSize === regularWheelSize || emotionText === 'Slide finger'
+  let moodName =
+    wheelSize === regularWheelSize || emotionText === 'Slide finger'
       ? emotionText
       : wheelSize === mediumWheelSize
       ? `Pretty ${emotionText}`
@@ -1794,14 +1888,73 @@ export default function MoodDetector({ navigation }) {
 
   const topBottomColor = pSBC(0.6, color);
   // {top: blockSize.current.top - horizontalScale(25)}
+
+  const setHealthSupportCount = async () => {
+    try {
+      setLoading(true);
+      const user_data = getStore?.()?.getState?.()?.First;
+      if (user_data?.UserDetails?.vitality_member_id) {
+        const params = {
+          email: user_data.UserEmail,
+          user_id: user_data.UserId,
+        };
+        const res = await fetch(`${getApiBaseUrl()}setHealthSupportCount`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(params),
+        });
+        if (res.status == 200) {
+          openUrl(UserData?.negativeMoodModalData?.eap_link)();
+        } else {
+          logger("setHealthSupportCount Error", `HTTP status ${res.status}`);
+          setShowNegativeMoodModal(false)();
+        }
+      }else{
+        setShowNegativeMoodModal(false)();
+      }
+    } catch (error) {
+      logger("setHealthSupportCount Error", error);
+      setShowNegativeMoodModal(false)();
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getSplash();
+  }, []);
+  const getSplash = async () => {
+    const nextUrl = await AsyncStorage.getItem('nextSplashURL');
+    const currentUrl = await AsyncStorage.getItem('splashURL');
+    logger(nextUrl, 'nextUrl');
+    logger(currentUrl, 'currentURL');
+    setUpdatedSplash(nextUrl || currentUrl);
+    if (nextUrl) {
+      try {
+        await AsyncStorage.setItem('splashURL', nextUrl);
+        logger('splash replaced with nextsplash');
+      } catch (error) {
+        logger('Async Storage setItem error: ', error);
+      }
+    }
+  };
   return (
     <View
       onLayout={onLayoutScreenContainer}
       ref={screenContainerRef}
-      style={[styles.container, { backgroundColor: topBottomColor }]}>
+      style={[styles.container, {backgroundColor: topBottomColor}]}>
       <TouchableOpacity disabled={true} style={styles.anonymousHeaderView}>
         <AnonymousHeader isShowPrevFloCoins={isShowPrevFloCoins} />
-      </TouchableOpacity>
+        {Platform.OS === 'android' ? (
+          <Image source={{uri: updatedSplash}} style={{height: 0, width: 0}} />
+        ) : (
+          <FastImage
+            source={{uri: updatedSplash, cache: FastImage.cacheControl.web}}
+            style={{height: 0, width: 0}}
+          />
+        )}
+        </TouchableOpacity>
       {emotionText !== 'Slide finger' &&
         showLongPressText &&
         blocksSize?.current?.top && (
@@ -1822,9 +1975,9 @@ export default function MoodDetector({ navigation }) {
         scrollerStyle={{
           ...pan.current.getLayout(),
           ...(constrainedX.current !== null &&
-            constrainedY.current !== null &&
-            wheelSize === regularWheelSize
-            ? { left: constrainedX.current, top: constrainedY.current }
+          constrainedY.current !== null &&
+          wheelSize === regularWheelSize
+            ? {left: constrainedX.current, top: constrainedY.current}
             : {}),
         }}
         toolTipStyle={{
@@ -1839,10 +1992,10 @@ export default function MoodDetector({ navigation }) {
         wheelSize={wheelSize}
         onToolTipLayout={onToolTipLayout}
         isAllMoodsDataAvailable={UserData.AllMoods !== null}
-        scrollerRef={(ref) => (scrollerRef.current = ref)}
+        scrollerRef={ref => (scrollerRef.current = ref)}
         scrollerContainerRef={scrollerContainerRef}
         onLayoutScrollerContainer={onLayoutScrollerContainer}
-      // toolTipSize={toolTipSize.current}
+        // toolTipSize={toolTipSize.current}
       />
 
       <VideoModal
@@ -1855,8 +2008,7 @@ export default function MoodDetector({ navigation }) {
         onChangeText={setSaveName}
         modalVisible={SaveConfirm}
         dismissModalHandler={cancelled}
-        verifyDone={(value) => verifyDone(value)}
-
+        verifyDone={value => verifyDone(value)}
       />
 
       <SaveMoodConfirmModal
@@ -1877,7 +2029,7 @@ export default function MoodDetector({ navigation }) {
         dismissModalHandler={setShowNegativeMoodModal(false)}
         emotionText={moodName}
         description={UserData?.negativeMoodModalData?.eap_text}
-        onClickButtonOne={openUrl(UserData?.negativeMoodModalData?.eap_link)}
+        onClickButtonOne={setHealthSupportCount}
         onClickButtonTwo={setShowNegativeMoodModal(false)}
       />
 
@@ -1886,7 +2038,7 @@ export default function MoodDetector({ navigation }) {
         question={pulseNotifData}
         modalVisible={isNotificationQuestionModalVisible}
         dismissModalHandler={dismissNotificationQuestionModal}
-        verifyDone={(value) => verifyNotificationQuestion(value)}
+        verifyDone={value => verifyNotificationQuestion(value)}
       />
 
       <SkipMoodInputModal
@@ -1915,7 +2067,7 @@ export default function MoodDetector({ navigation }) {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <ActivityIndicator color='#9889F9' size="large" />
+          <ActivityIndicator color="#9889F9" size="large" />
         </View>
       )}
     </View>

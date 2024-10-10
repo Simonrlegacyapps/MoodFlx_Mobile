@@ -29,7 +29,7 @@
 		190280542801F7E8003E07A6 /* Rubik-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 190280532801F7E8003E07A6 /* Rubik-SemiBoldItalic.ttf */; };
 		1922D43B2706011A003403BB /* MoodInputWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 1922D43627060118003403BB /* MoodInputWidget.intentdefinition */; };
 		196AD42F281194F900D64A0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 196AD42E281194F900D64A0C /* GoogleService-Info.plist */; };
-		19DCB896267B1B19009C4DC1 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		19DCB896267B1B19009C4DC1 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		19ED3130282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 19ED312F282AA5C7003C35B9 /* RCTMoodDataModule.m */; };
 		19ED3131282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 19ED312F282AA5C7003C35B9 /* RCTMoodDataModule.m */; };
 		19F536DD281FD187008A1F82 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F536DC281FD187008A1F82 /* HealthKit.framework */; };
@@ -542,7 +542,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				19ED3130282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				19DCB896267B1B19009C4DC1 /* (null) in Sources */,
+				19DCB896267B1B19009C4DC1 /* BuildFile in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -562,6 +562,7 @@
 			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-MoodFlo-MoodFloTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				EXCLUDED_ARCHS = i386;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -573,6 +574,11 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(inherited)",
+				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -590,6 +596,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				EXCLUDED_ARCHS = i386;
 				INFOPLIST_FILE = MoodFloTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -597,6 +604,11 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(inherited)",
+				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -618,16 +630,22 @@
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				ENABLE_BITCODE = NO;
+				EXCLUDED_ARCHS = i386;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 7.7.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(inherited)",
+				);
+				MARKETING_VERSION = 7.9.3;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -652,17 +670,22 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFloRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
+				EXCLUDED_ARCHS = i386;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 7.7.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(inherited)",
+				);
+				MARKETING_VERSION = 7.9.3;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

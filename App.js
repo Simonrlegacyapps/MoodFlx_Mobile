@@ -1,5 +1,4 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
-import type {Node} from 'react';
 import {
   View,
   SafeAreaView,
@@ -9,9 +8,9 @@ import {
   Platform,
   AppState,
   NativeModules,
+  PermissionsAndroid,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
@@ -103,6 +102,11 @@ import RNRestart from 'react-native-restart';
 import MonthlyInsightsProgress from './Src/Components/Modals/MonthlyInsightsProgressModal/MonthlyInsightsProgressModal';
 import LvlUpModal from './Src/Components/Modals/LvlUpModal/LvlUpModal';
 import SetIsDevServerFlagModal from './Src/Components/Modals/SetIsDevServerFlagModal/SetIsDevServerFlagModal';
+import { Linking } from 'react-native';
+import Loader from './Src/Components/Loader/Loader';
+import { logger } from '.';
+import UpdateModal from './Src/Components/UpdateModal/UpdateModal';
+import { checkAppVersion } from './Src/services/checkAppVersion';
 
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -177,17 +181,17 @@ const toastConfig = {
   ),
 };
 
-const App: () => Node = () => {
-  const [screenName, setScreenName] = useState(false);
+const App = () => {
+
   const [ShowWelcome, setShowWelcome] = useState(false);
   const notifService = useRef(new NotifService()).current;
   const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [email, setEmail] = useState('');
   const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
   const [linkModalText, setLinkModalText] = useState('');
   const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLinkLoader, setIsLinkLoader] = useState(false);
   const newOrg = useRef(null);
   const vitalityMemberId = useRef(null);
   const isHandleDynamicLinkCalled = useRef(false);
@@ -214,27 +218,13 @@ const App: () => Node = () => {
   });
 
   const [isConnected, setIsConnected] = useState(true);
+  const [updateModalAlert, setUpdateModalAlert] = useState(false);
   const netInfo = useNetInfo();
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   const fetchAndSetIsDevServer = async () => {
-  //     try {
-  //       let f = await AsyncStorage.getItem('isDevServerFlag');
-  //       let isDevServerFlag = await JSON.parse(f);
-  //       if (typeof isDevServerFlag === 'boolean') {
-  //         console.log('setting isDevServerFlag: ', isDevServerFlag);
-  //         setIsDevServer(isDevServerFlag);
-  //       }
-  //     } catch (error) {
-  //       console.log('error fetching isDevServerFlag: ', error);
-  //     }
-  //   }
-  //   fetchAndSetIsDevServer();
-  // }, []);
-
   useEffect(() => {
+    checkAppUpdate()
     setDeviceId();
     Analytics.init();
     crashlytics().setCrashlyticsCollectionEnabled(true);
@@ -244,15 +234,20 @@ const App: () => Node = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Is connected?", netInfo?.isConnected);
+    logger("netinfo", netInfo)
+    if (netInfo) {
     setIsConnected((e) => {
-      let i = (netInfo.isConnected === true || netInfo.isConnected === null)
+      const i = (netInfo.isConnected !== false || netInfo.isConnected === null ) &&
+       (netInfo.isInternetReachable !== false || netInfo.isInternetReachable === null);
+      //let i = (netInfo.isConnected || netInfo.isConnected === null) && 
+      //(netInfo.isInternetReachable || netInfo.isInternetReachable === null);
       if (e === false && i === true) {
         // Reload app to after internet comes back
         RNRestart?.Restart?.();
       }
       return i;
     });
+    }
   }, [netInfo?.isConnected]);
 
   useEffect(() => {
@@ -349,18 +344,25 @@ const App: () => Node = () => {
     NetInfo.fetch().then(state => {
       console.log("Connection type", state?.type);
       console.log("Is connected?", state?.isConnected);
-      setIsConnected((state.isConnected === true));
+      setIsConnected(state.isConnected && state.isInternetReachable);
     });
   }, []);
 
-  const linkCompany = useCallback(
-    async (org, vitality_member_id) => {
+  const linkCompany = async (org, vitality_member_id) => {
+    
+      setIsLinkLoader(true)
       const deviceId = getMyDeviceId();
       let fcm = '';
+    
       try {
         fcm = await messaging().getToken();
       } catch (error) {
-        console.log('error getting fcm token');
+        const fcmToken = await NotifService.getDeviceToken();
+        if(fcmToken){
+          fcm = fcmToken
+        } else {
+          console.log('error getting fcm token company link');
+        }
       }
       if (!org) {
         org = newOrg.current;
@@ -379,15 +381,20 @@ const App: () => Node = () => {
         };
         newOrg.current = null;
         vitalityMemberId.current = null;
-        console.log('getDownloadLink api params: ', params);
+        logger('getDownloadLink api params: ', params);
         try {
           const getDownloadLinkRes = await PostRequestApi('v2/getDownloadLink', params);
-          console.log('getDownloadLink api res: ', getDownloadLinkRes);
+          logger('getDownloadLink api res: ', getDownloadLinkRes);
+          try {
+            await AsyncStorage.setItem('splashURL',  getDownloadLinkRes?.data?.companyData?.splash_screen);
+          } catch (error) {
+            logger('Async Storage setItem Division error: ', error);
+          }
           let _vitalityMemberId = null;
           try {
             _vitalityMemberId = await AsyncStorage.getItem('vitalityMemberId');
           } catch (error) {
-            console.log(
+            logger(
               'error fetching vitalityMemberId from async storage',
               error,
             );
@@ -401,13 +408,13 @@ const App: () => Node = () => {
                 console.log('error removing MoodInputTimeStamp NotesInputTImeStamp from AsyncStorage --- ', error);
               }
             }
-            AsyncStorage.setItem('vitalityMemberId', String(vitality_member_id)).then(e => {}).catch(e => {});
+            await AsyncStorage.setItem('vitalityMemberId', String(vitality_member_id)).then(e => {}).catch(e => {});
           } else if (_vitalityMemberId !== null) {
-            AsyncStorage.removeItem('vitalityMemberId').then(() => {}).catch((e) => {});
+            await AsyncStorage.removeItem('vitalityMemberId').then(() => {}).catch((e) => {});
           }
           let userData = null;
           if (
-            !getDownloadLinkRes.data.staffData?.email &&
+            !getDownloadLinkRes?.data.staffData?.email &&
             getDownloadLinkRes?.data?.staffData === 'Not found'
           ) {
             // console.log('Showing Toast ====>');
@@ -501,97 +508,8 @@ const App: () => Node = () => {
           console.log('error calling getDownloadLink api: ', error);
         }
       }
-    },
-    [dispatch],
-  );
-  // const linkCompany = useCallback(
-  //   async (org) => {
-  //     const deviceId = getMyDeviceId();
-  //     let fcm = '';
-  //     try {
-  //       fcm = await messaging().getToken();
-  //     } catch (error) {
-  //       console.log('error getting fcm token');
-  //     }
-  //     if (!org) {
-  //       org = newOrg.current;
-  //     }
-  //     if (typeof org === 'string' && deviceId && fcm) {
-  //       console.log('handleDynamicLink org true: ', org);
-  //       const params = {
-  //         device_id: deviceId,
-  //         user_id: org ?? newOrg.current,
-  //         device_token: fcm,
-  //         device_type: Platform.OS,
-  //       };
-  //       newOrg.current = null;
-  //       console.log('getDownloadLink api params: ', params);
-  //       try {
-  //         const getDownloadLinkRes = await PostRequestApi('getDownloadLink', params);
-  //         console.log('getDownloadLink api res: ', getDownloadLinkRes);
-  //         let userData = null;
-  //         if (
-  //           !getDownloadLinkRes.data.staffData?.email &&
-  //           getDownloadLinkRes?.data?.staffData === 'Not found'
-  //         ) {
-  //           // console.log('Showing Toast ====>');
-  //           Toast.show({
-  //             type: 'error',
-  //             text2: 'Cannot link this device, please contact your HR manager',
-  //             visibilityTime: 4000,
-  //             autoHide: true,
-  //           });
-  //         } else if (
-  //           getDownloadLinkRes?.data?.staffData &&
-  //           getDownloadLinkRes?.data?.user_id
-  //         ) {
-  //           userData = {
-  //             ...getDownloadLinkRes.data.staffData,
-  //             user_id: getDownloadLinkRes.data.user_id,
-  //           };
-  //         }
-  //         const currentRoute = RootNavigation.getCurrentRoute();
-  //         if (
-  //           currentRoute &&
-  //           currentRoute.name === 'Linktocompany' &&
-  //           userData?.email
-  //         ) {
-  //           RootNavigation?.getNavigationRef?.()?.current?.setParams?.({
-  //             email: userData?.email,
-  //           });
-  //         }
-  //         onDynamicLinkUpdate(userData, dispatch, function (data) {
-  //           if (data !== false) {
-  //             // data = {...data, division_id: null};
-  //             if (data?.email) {
-  //               if (RootNavigation?.navigationRef?.current?.navigate) {
-  //                 // RootNavigation?.navigationRef?.current?.navigate(
-  //                 //   'HomeScreen',
-  //                 //   {
-  //                 //     screen: 'LinkCompanyStackNavigation',
-  //                 //     params: {
-  //                 //       screen: 'Linktocompany',
-  //                 //       params: {email: data.email},
-  //                 //     },
-  //                 //   },
-  //                 // );
-  //               } else {
-  //                 setEmail(data.email);
-  //               }
-  //             } else {
-  //               console.log('Dynamic link onDynamicLinkUpdate onFinish else block');
-  //             }
-  //           }
-  //         });
-  //         console.log('getDownloadLink api res', getDownloadLinkRes);
-  //         // })
-  //       } catch (error) {
-  //         console.log('error calling getDownloadLink api: ', error);
-  //       }
-  //     }
-  //   },
-  //   [dispatch],
-  // );
+      setIsLinkLoader(false)
+    }
 
   const onLinkConfirm = useCallback(async () => {
     setLinkModalText('');
@@ -631,7 +549,8 @@ const App: () => Node = () => {
     PostRequestApi('unlinkToCompany', params)
       .then(async (resp) => {
         const isDone = await onUnlinkUpdate(dispatch);
-        console.log('unlinkToCompanyDone isDone =====', isDone);
+        logger('unlinkToCompanyDone isDone =====', isDone);
+        await AsyncStorage.removeItem('splashURL').then(() => {}).catch((e) => {});
         if (isDone) {
           linkCompany();
         } else {
@@ -655,12 +574,6 @@ const App: () => Node = () => {
   }, []);
 
   const handleDynamicLink = async (link) => {
-    // if (isHandleDynamicLinkCalled.current === true) {
-    //   return;
-    // }
-    // if (link) {
-    //   isHandleDynamicLinkCalled.current = true;
-    // }
     let userEmail;
     let existingOrgName;
     try {
@@ -745,11 +658,23 @@ const App: () => Node = () => {
     });
   }, [email]);
 
-  const CheckScreen = async () => {
+  const CheckScreen = async (isCallFromDone = false) => {
+    console.log('check screen called ...');
     let p = await AsyncStorage.getItem('ShowWelcomeScreen');
     let welcome = await JSON.parse(p);
-    await setShowWelcome((welcome === null || welcome === true));
-    return Promise.resolve(welcome);
+    let aia = await AsyncStorage.getItem('IsRedirectToAIA');
+    let isRedirectToAIA = await JSON.parse(aia);
+    if((isRedirectToAIA === null || isRedirectToAIA === true) && Platform.OS === 'ios' && isCallFromDone){
+      await AsyncStorage.setItem('IsRedirectToAIA', 'false');
+      let url = '';
+      url = 'https://v2020.page.link/mentalact';
+      Linking.openURL(url).catch(error => {
+        console.log('error redirecting to link url');
+      });
+    } else {
+      await setShowWelcome((welcome === null || welcome === true));
+      return Promise.resolve(welcome);
+    }
     // console.log('welcome', welcome);
   };
 
@@ -792,13 +717,11 @@ const App: () => Node = () => {
           console.log('checkScreen error -->', e);
         }
         const timeoutId = setTimeout(() => {
-          SplashScreen.hide();
           clearTimeout(timeoutId);
         }, 2500);
       } else {
         setShowWelcome(false);
         const timeoutId = setTimeout(() => {
-          SplashScreen.hide();
           clearTimeout(timeoutId);
         }, 2500);
       }
@@ -895,7 +818,8 @@ const App: () => Node = () => {
       appState.current.match(/inactive|background/) &&
       nextAppState === "active"
     ) {
-      console.log("App has come to the foreground!");
+      logger("App has come to the foreground!");
+      checkAppUpdate()
       NotifService.cancelMoodFloSheduledNotifications();
       dispatch(SetWeeklyInsightsTimeLeft(getWeeklyInsightsDaysLeft()));
       if (notifSchedulePreviousDay.current !== moment().day()) {
@@ -904,8 +828,6 @@ const App: () => Node = () => {
     }
 
     appState.current = nextAppState;
-    setAppStateVisible(appState.current);
-    // console.log("AppState", appState.current);
   };
 
   useEffect(() => {
@@ -1080,9 +1002,22 @@ const App: () => Node = () => {
       });
   };
 
+  const checkApplicationPermission = async () => {
+      try {
+        const grant = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+        );
+        if(grant){
+          fp();
+        }
+      } catch (error) {
+        console.log("checkApplicationPermission Err",error);
+      }
+  };
+
   useEffect(() => {
     if (Platform.OS === 'android') {
-      fp();
+      checkApplicationPermission()
     } else {
       notifService.checkPermission((res) => {
         console.log('checkPermission data => ', res);
@@ -1219,10 +1154,9 @@ const App: () => Node = () => {
 
   const _onDone = async () => {
     await AsyncStorage.setItem('ShowWelcomeScreen', 'false');
-    CheckScreen();
+    CheckScreen(true);
     try {
       await AsyncStorage.setItem('ShowWelcomeScreen', 'false');
-      setScreenName(true);
     } catch (e) {
       console.warn(e);
     }
@@ -1294,6 +1228,11 @@ const App: () => Node = () => {
     });
   };
 
+  const checkAppUpdate = async() => {
+    const isUpdate = await checkAppVersion()
+    setUpdateModalAlert(isUpdate)
+  }
+
   return (
     <>
       {ShowWelcome === false ? (
@@ -1313,6 +1252,7 @@ const App: () => Node = () => {
           <Toast config={toastConfig} />
         </>
       )}
+      <Loader isLoading={isLinkLoader} />
       <LvlUpModal
         bigText="You've leveled up!"
         modalVisible={isOpenLvlUpModal && !isLoading}
@@ -1331,7 +1271,7 @@ const App: () => Node = () => {
         buttonTwoText="Cancel"
       />
       <NoInternetModal
-        modalVisible={(isConnected === false)}
+        modalVisible={!isConnected}
         onButtonOnePress={checkInternet}
       />
       <WeeklyInsightsProgress
@@ -1348,6 +1288,7 @@ const App: () => Node = () => {
         isModalVisible={UserData.showIsDevServerModal}
         dispatch={dispatch}
       />
+    <UpdateModal isVisible={updateModalAlert}/>
     </>
   );
 };

@@ -89,7 +89,7 @@ let emotionsTextData = {
       0,
       52
     ],
-    "name": "Annoyed",
+    "name": "Stressed",
     "parent_id": "71c07325-3311-483f-b048-605d834d0661",
     "position": "1,2,3,13,14,15,27",
     "position_at": "1",
@@ -108,7 +108,7 @@ let emotionsTextData = {
       0,
       52
     ],
-    "name": "Annoyed",
+    "name": "Stressed",
     "parent_id": "71c07325-3311-483f-b048-605d834d0661",
     "position": "1,2,3,13,14,15,27",
     "position_at": "2",
@@ -127,7 +127,7 @@ let emotionsTextData = {
       0,
       52
     ],
-    "name": "Annoyed",
+    "name": "Stressed",
     "parent_id": "71c07325-3311-483f-b048-605d834d0661",
     "position": "1,2,3,13,14,15,27",
     "position_at": "3",
@@ -146,7 +146,7 @@ let emotionsTextData = {
       0,
       52
     ],
-    "name": "Frustrated",
+    "name": "Cranky",
     "parent_id": "a2fb79e8-e203-46a5-8d76-a6efcefe26f2",
     "position": "4,16,28,29,40",
     "position_at": "4",
@@ -317,7 +317,7 @@ let emotionsTextData = {
       52,
       104
     ],
-    "name": "Annoyed",
+    "name": "Stressed",
     "parent_id": "71c07325-3311-483f-b048-605d834d0661",
     "position": "1,2,3,13,14,15,27",
     "position_at": "13",
@@ -336,7 +336,7 @@ let emotionsTextData = {
       52,
       104
     ],
-    "name": "Annoyed",
+    "name": "Stressed",
     "parent_id": "71c07325-3311-483f-b048-605d834d0661",
     "position": "1,2,3,13,14,15,27",
     "position_at": "14",
@@ -355,7 +355,7 @@ let emotionsTextData = {
       52,
       104
     ],
-    "name": "Annoyed",
+    "name": "Stressed",
     "parent_id": "71c07325-3311-483f-b048-605d834d0661",
     "position": "1,2,3,13,14,15,27",
     "position_at": "15",
@@ -374,7 +374,7 @@ let emotionsTextData = {
       52,
       104
     ],
-    "name": "Frustrated",
+    "name": "Cranky",
     "parent_id": "a2fb79e8-e203-46a5-8d76-a6efcefe26f2",
     "position": "4,16,28,29,40",
     "position_at": "16",
@@ -450,7 +450,7 @@ let emotionsTextData = {
       52,
       104
     ],
-    "name": "Gloomy",
+    "name": "Flat",
     "parent_id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "position": "20,21,32,33",
     "position_at": "20",
@@ -469,7 +469,7 @@ let emotionsTextData = {
       52,
       104
     ],
-    "name": "Gloomy",
+    "name": "Flat",
     "parent_id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "position": "20,21,32,33",
     "position_at": "21",
@@ -583,7 +583,7 @@ let emotionsTextData = {
       104,
       155
     ],
-    "name": "Annoyed",
+    "name": "Stressed",
     "parent_id": "71c07325-3311-483f-b048-605d834d0661",
     "position": "1,2,3,13,14,15,27",
     "position_at": "27",
@@ -602,7 +602,7 @@ let emotionsTextData = {
       104,
       155
     ],
-    "name": "Frustrated",
+    "name": "Cranky",
     "parent_id": "a2fb79e8-e203-46a5-8d76-a6efcefe26f2",
     "position": "4,16,28,29,40",
     "position_at": "28",
@@ -621,7 +621,7 @@ let emotionsTextData = {
       104,
       155
     ],
-    "name": "Frustrated",
+    "name": "Cranky",
     "parent_id": "a2fb79e8-e203-46a5-8d76-a6efcefe26f2",
     "position": "4,16,28,29,40",
     "position_at": "29",
@@ -678,7 +678,7 @@ let emotionsTextData = {
       104,
       155
     ],
-    "name": "Gloomy",
+    "name": "Flat",
     "parent_id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "position": "20,21,32,33",
     "position_at": "32",
@@ -697,7 +697,7 @@ let emotionsTextData = {
       104,
       155
     ],
-    "name": "Gloomy",
+    "name": "Flat",
     "parent_id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "position": "20,21,32,33",
     "position_at": "33",
@@ -830,7 +830,7 @@ let emotionsTextData = {
       155,
       207
     ],
-    "name": "Frustrated",
+    "name": "Cranky",
     "parent_id": "a2fb79e8-e203-46a5-8d76-a6efcefe26f2",
     "position": "4,16,28,29,40",
     "position_at": "40",
@@ -887,7 +887,7 @@ let emotionsTextData = {
       155,
       207
     ],
-    "name": "Worried",
+    "name": "Anxious",
     "parent_id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "position": "43,44,45",
     "position_at": "43",
@@ -906,7 +906,7 @@ let emotionsTextData = {
       155,
       207
     ],
-    "name": "Worried",
+    "name": "Anxious",
     "parent_id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "position": "43,44,45",
     "position_at": "44",
@@ -925,7 +925,7 @@ let emotionsTextData = {
       155,
       207
     ],
-    "name": "Worried",
+    "name": "Anxious",
     "parent_id": "e08c39dc-579a-4e8e-a342-967931151ca9",
     "position": "43,44,45",
     "position_at": "45",
@@ -1039,7 +1039,7 @@ let emotionsTextData = {
       207,
       259
     ],
-    "name": "Excited",
+    "name": "Pumped",
     "parent_id": null,
     "position": "51,62,63,75,87",
     "position_at": "51",
@@ -1058,7 +1058,7 @@ let emotionsTextData = {
       207,
       259
     ],
-    "name": "Amused",
+    "name": "Awesome",
     "parent_id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "position": "52,53,54,66",
     "position_at": "52",
@@ -1077,7 +1077,7 @@ let emotionsTextData = {
       207,
       259
     ],
-    "name": "Amused",
+    "name": "Awesome",
     "parent_id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "position": "52,53,54,66",
     "position_at": "53",
@@ -1096,7 +1096,7 @@ let emotionsTextData = {
       207,
       259
     ],
-    "name": "Amused",
+    "name": "Awesome",
     "parent_id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "position": "52,53,54,66",
     "position_at": "54",
@@ -1172,7 +1172,7 @@ let emotionsTextData = {
       207,
       259
     ],
-    "name": "Calm",
+    "name": "Chilled",
     "parent_id": null,
     "position": "58,59,60,71,72,84,96",
     "position_at": "58",
@@ -1191,7 +1191,7 @@ let emotionsTextData = {
       207,
       259
     ],
-    "name": "Calm",
+    "name": "Chilled",
     "parent_id": null,
     "position": "58,59,60,71,72,84,96",
     "position_at": "59",
@@ -1210,7 +1210,7 @@ let emotionsTextData = {
       207,
       259
     ],
-    "name": "Calm",
+    "name": "Chilled",
     "parent_id": null,
     "position": "58,59,60,71,72,84,96",
     "position_at": "60",
@@ -1248,7 +1248,7 @@ let emotionsTextData = {
       259,
       311
     ],
-    "name": "Excited",
+    "name": "Pumped",
     "parent_id": null,
     "position": "51,62,63,75,87",
     "position_at": "62",
@@ -1267,7 +1267,7 @@ let emotionsTextData = {
       259,
       311
     ],
-    "name": "Excited",
+    "name": "Pumped",
     "parent_id": null,
     "position": "51,62,63,75,87",
     "position_at": "63",
@@ -1286,7 +1286,7 @@ let emotionsTextData = {
       259,
       311
     ],
-    "name": "Delighted",
+    "name": "Chuffed",
     "parent_id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "position": "64,65,76,77",
     "position_at": "64",
@@ -1305,7 +1305,7 @@ let emotionsTextData = {
       259,
       311
     ],
-    "name": "Delighted",
+    "name": "Chuffed",
     "parent_id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "position": "64,65,76,77",
     "position_at": "65",
@@ -1324,7 +1324,7 @@ let emotionsTextData = {
       259,
       311
     ],
-    "name": "Amused",
+    "name": "Awesome",
     "parent_id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "position": "52,53,54,66",
     "position_at": "66",
@@ -1343,7 +1343,7 @@ let emotionsTextData = {
       259,
       311
     ],
-    "name": "Glad",
+    "name": "Grateful",
     "parent_id": "43bd3752-d44b-4309-90f8-b081172461f2",
     "position": "67,79,80,91",
     "position_at": "67",
@@ -1419,7 +1419,7 @@ let emotionsTextData = {
       259,
       311
     ],
-    "name": "Calm",
+    "name": "Chilled",
     "parent_id": null,
     "position": "58,59,60,71,72,84,96",
     "position_at": "71",
@@ -1438,7 +1438,7 @@ let emotionsTextData = {
       259,
       311
     ],
-    "name": "Calm",
+    "name": "Chilled",
     "parent_id": null,
     "position": "58,59,60,71,72,84,96",
     "position_at": "72",
@@ -1495,7 +1495,7 @@ let emotionsTextData = {
       311,
       362
     ],
-    "name": "Excited",
+    "name": "Pumped",
     "parent_id": null,
     "position": "51,62,63,75,87",
     "position_at": "75",
@@ -1514,7 +1514,7 @@ let emotionsTextData = {
       311,
       362
     ],
-    "name": "Delighted",
+    "name": "Chuffed",
     "parent_id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "position": "64,65,76,77",
     "position_at": "76",
@@ -1533,7 +1533,7 @@ let emotionsTextData = {
       311,
       362
     ],
-    "name": "Delighted",
+    "name": "Chuffed",
     "parent_id": "13b3c477-9e5f-4bd3-b312-0abbb32e48bb",
     "position": "64,65,76,77",
     "position_at": "77",
@@ -1571,7 +1571,7 @@ let emotionsTextData = {
       311,
       362
     ],
-    "name": "Glad",
+    "name": "Grateful",
     "parent_id": "43bd3752-d44b-4309-90f8-b081172461f2",
     "position": "67,79,80,91",
     "position_at": "79",
@@ -1590,7 +1590,7 @@ let emotionsTextData = {
       311,
       362
     ],
-    "name": "Glad",
+    "name": "Grateful",
     "parent_id": "43bd3752-d44b-4309-90f8-b081172461f2",
     "position": "67,79,80,91",
     "position_at": "80",
@@ -1666,7 +1666,7 @@ let emotionsTextData = {
       311,
       362
     ],
-    "name": "Calm",
+    "name": "Chilled",
     "parent_id": null,
     "position": "58,59,60,71,72,84,96",
     "position_at": "84",
@@ -1723,7 +1723,7 @@ let emotionsTextData = {
       362,
       414
     ],
-    "name": "Excited",
+    "name": "Pumped",
     "parent_id": null,
     "position": "51,62,63,75,87",
     "position_at": "87",
@@ -1799,7 +1799,7 @@ let emotionsTextData = {
       362,
       414
     ],
-    "name": "Glad",
+    "name": "Grateful",
     "parent_id": "43bd3752-d44b-4309-90f8-b081172461f2",
     "position": "67,79,80,91",
     "position_at": "91",
@@ -1894,7 +1894,7 @@ let emotionsTextData = {
       362,
       414
     ],
-    "name": "Calm",
+    "name": "Chilled",
     "parent_id": null,
     "position": "58,59,60,71,72,84,96",
     "position_at": "96",

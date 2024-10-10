@@ -17,9 +17,13 @@ import {
   Pressable,
   Alert,
   ImageBackground,
+  PermissionsAndroid,
+  NativeModules
 } from 'react-native';
 import ProfilePlaceholder from '../../../assets/profileicons/ProfilePlaceholder';
+import AppInstalledChecker from '../../nativeModules/react-native-check-app-install/appInstallChecker';
 import AddButton from '../../Components/buttons/AddButton';
+import RNShare from 'react-native-share';
 import Constants from '../../Constants';
 import { dynamicSize, getFontSize, horizontalScale } from '../../Constants/sizeChoose';
 import PrivacyIcon from '../../../assets/profileicons/PrivacyIcon';
@@ -44,6 +48,7 @@ import {
   getApiBaseUrl,
   getPhotoUrl,
   PRIVACY_POLICY_URL,
+  SUPPORT_EMAIL,
   TERMS_OF_USE_URL,
 } from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
@@ -53,7 +58,10 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import getStore from '../../redux';
 import {VitalityIcon} from '../../../assets/svg/VitalityIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { PERMISSIONS } from 'react-native-permissions';
+import { logger } from '../../..';
+import ContactUsIcon from '../../../assets/profileicons/ContactUsIcon';
+import * as Email from '../../../Src/share_module/index';
 const listData = [
   { name: 'Name', value: 'Anonymous' },
   { name: 'Gender', value: 'Anonymous' },
@@ -61,14 +69,21 @@ const listData = [
   { name: 'Pronoun', value: 'Anonymous' },
 ];
 
+const FAQ_DETAILS = {
+  id: "1",
+  name: 'FAQ',
+  icon: <FaqIcon />,
+  link: FAQ_URL,
+}
+
+const CONTACT_US =   {
+  id: "4",
+  name: 'Contact Us',
+  icon: <ContactUsIcon />,
+  link: `mailto:${SUPPORT_EMAIL}`,
+}
+
 const bottomList = [
-  // {name: 'FAQ', icon: <FaqIcon />},
-  {
-    id: "1",
-    name: 'FAQ',
-    icon: <FaqIcon />,
-    link: FAQ_URL,
-  },
   {
     id: "2",
     name: 'Terms & Conditions',
@@ -84,6 +99,7 @@ const bottomList = [
 ];
 
 const ProfileTab = ({ navigation }) => {
+ 
   const [openActionSheet, setOpenActionSheet] = useState(false);
   // const [value, onChangeText] = React.useState('');
   const UserData = useSelector((state) => state.First);
@@ -136,7 +152,7 @@ const ProfileTab = ({ navigation }) => {
       dispatch,
     )
       .then(async (result) => {
-        console.log(
+        logger(
           '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
           result?.userData,
         );
@@ -148,7 +164,7 @@ const ProfileTab = ({ navigation }) => {
         }
       })
       .catch((error) =>
-        console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
+        logger('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error),
       );
     setImageLoading(false);
   };
@@ -178,7 +194,7 @@ const ProfileTab = ({ navigation }) => {
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', _handleAppStateChange);
-
+    
     return () => {
       subscription?.remove?.();
     };
@@ -453,14 +469,32 @@ const ProfileTab = ({ navigation }) => {
 
   const onLink = useCallback(async () => {
     let url = '';
-    if (Platform.OS === 'ios') {
-      url = 'https://apps.apple.com/au/app/aia-vitality-australia/id1584775072';
-    } else if (Platform.OS === 'android') {
-      url = 'https://play.google.com/store/apps/details?id=com.aia.gr.rn.au.v2020.vitality';
-    }
+    url = 'https://v2020.page.link/mentalact';
     Linking.openURL(url).catch(error => {
       console.log('error redirecting to link url');
     });
+    // if (Platform.OS === 'ios') {
+    //   // url = 'https://apps.apple.com/au/app/aia-vitality-australia/id1584775072';
+    //   url = 'https://v2020.page.link/mentalact';
+    //   Linking.openURL(url).catch(error => {
+    //     console.log('error redirecting to link url');
+    //   });
+    // } else if (Platform.OS === 'android') {
+    //   RNShare.isPackageInstalled('com.aia.gr.rn.au.v2020.vitality')
+    //     .then(( response ) => {
+    //       console.log('response :: ', response);
+    //     if(response.isInstalled){
+    //       url = 'https://play.google.com/store/apps/details?id=com.aia.gr.rn.au.v2020.vitality';
+    //       Linking.openURL(url).catch(error => {
+    //         console.log('error redirecting to link url');
+    //       });
+    //     }
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //       // { error }
+    //   });
+    // }
   }, []);
 
   const onOpenHealthApp = useCallback(openHealthApp, []);
@@ -473,6 +507,44 @@ const ProfileTab = ({ navigation }) => {
   //     ? UserData?.UserDetails?.full_name
   //     : name,
   // );
+
+  async function requestPermission() {
+    try {
+      const permissions = [
+        PERMISSIONS.ANDROID.CAMERA,
+        Platform.Version >= 30
+          ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
+          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
+      ].filter(Boolean);
+      const granted = await PermissionsAndroid.requestMultiple(permissions);
+      const allPermissionsGranted = Object.values(granted).every(
+        permission => permission === PermissionsAndroid.RESULTS.GRANTED,
+      );
+      if (allPermissionsGranted) {
+        logger('Camera and gallery permissions granted');
+        return true;
+      } else {
+        logger('Camera and/or gallery permissions denied');
+        return false;
+      }
+    } catch (err) {
+      logger('Error requesting permissions:', err);
+      return false;
+    }
+  }
+
+
+  const handleEmail = () => {
+    Email.openComposer({
+      to: 'example@example.com',
+      subject: 'Hello',
+      body: 'How are you?',
+    })
+      .catch((err) => {
+        Alert.alert('Error', 'Unable to open the email client.');
+        logger("OpenComposer Err", err)
+      });
+  };  
 
   return (
     <>
@@ -501,7 +573,18 @@ const ProfileTab = ({ navigation }) => {
                 />
               )}
               <View style={styles.pickupIconStyle}>
-                <TouchableOpacity onPress={() => setOpenActionSheet(true)}>
+              <TouchableOpacity
+                  onPress={async () => {
+                    const isPermission = await requestPermission();
+                    if (Platform.OS === "android") {
+                      if(isPermission){
+                        setOpenActionSheet(true);
+                      }
+                    } else {
+                      setOpenActionSheet(true);
+                    }
+                  }}
+                >
                   <PickImageIcon />
                 </TouchableOpacity>
               </View>
@@ -785,13 +868,31 @@ const ProfileTab = ({ navigation }) => {
                         h={getFontSize(12.5)}
                       />
                       <Text allowFontScaling={false} style={styles.coinText}>
-                        +50 coins
+                        +50 Points
                       </Text>
                     </ImageBackground>
                   )}
                 </View>
               </View>
             </TouchableOpacity>
+            {
+            !UserData?.UserDetails?.vitality_member_id &&
+            <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(FAQ_DETAILS.link);
+                }}>
+                <View style={styles.bottomFlatlistContainer}>
+                  <View style={{ marginTop: dynamicSize(5) }}>{FAQ_DETAILS.icon}</View>
+                  <Text
+                    style={[
+                      styles.anonymousTextStyle,
+                      { marginLeft: dynamicSize(16) },
+                    ]}>
+                    {FAQ_DETAILS.name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            }       
             {bottomList.map((item, idx) => (
               <TouchableOpacity
                 onPress={() => {
@@ -809,6 +910,24 @@ const ProfileTab = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
             ))}
+            {
+            UserData?.UserDetails?.vitality_member_id &&
+            <TouchableOpacity 
+            onPress={() => {Linking.openURL(CONTACT_US.link);
+              
+            }}>
+                <View style={styles.bottomFlatlistContainer}>
+                  <View style={{ marginTop: dynamicSize(5) }}>{CONTACT_US.icon}</View>
+                  <Text
+                    style={[
+                      styles.anonymousTextStyle,
+                      { marginLeft: dynamicSize(16) },
+                    ]}>
+                    {CONTACT_US.name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            } 
             <View style={styles.bottomFlatlistContainer} />
           </View>
         </View>

@@ -150,7 +150,7 @@ class MoodFloPermission {
     if (Platform.OS === 'ios') {
       Alert.alert(
         '',
-        'Tap OK bellow and allow notifications. Remember, flx will only send you notifications to remind you to input your mood and earn flx Coins',
+        'Tap OK bellow and allow notifications. Remember, flx will only send you notifications to remind you to input your mood and earn Flx Points',
         [
           {
             text: 'OK',
@@ -162,7 +162,7 @@ class MoodFloPermission {
     } else {
       Alert.alert(
         '',
-        'Tap OK bellow and allow notifications. Remember, flx will only send you notifications to remind you to input your mood and earn flx Coins',
+        'Tap OK bellow and allow notifications. Remember, flx will only send you notifications to remind you to input your mood and earn Flx Points',
         [
           {
             text: 'OK',

@@ -78,7 +78,7 @@ const ProgressScreen = ({navigation, route}) => {
       "reward_point": 50,
       "description": "How moodflo works"
     };
-    console.log(`params of how mood flx works 50 coins`, params);
+    console.log(`params of how mood flx works 50 Points`, params);
     setIsLoading(true);
     function onError() {
       setIsLoading(false);
@@ -154,7 +154,7 @@ const ProgressScreen = ({navigation, route}) => {
       t1: 'More data = more accurate insights + ',
       t2: 'more rewards.',
       t3: 'Get Rewarded!',
-      t4: 'Spend your flx coins on things that make you feel good',
+      t4: 'Spend your Flx Points on things that make you feel good',
       button: "Done"
     },
   ];

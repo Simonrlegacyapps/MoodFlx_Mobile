@@ -308,43 +308,43 @@ public class MoodInputWidget extends AppWidgetProvider {
     public void setMoods() {
         if (moods.isEmpty()) {
             //1
-            moods.add(new Mood("Annoyed", "79fba97b-2eb8-47d5-8d44-9b15ceaa1e6c", 1, Color.rgb(255, 68, 108)));
+            moods.add(new Mood("Stressed", "79fba97b-2eb8-47d5-8d44-9b15ceaa1e6c", 1, Color.rgb(255, 68, 108)));
             //2
             moods.add(new Mood("Tense", "71c07325-3311-483f-b048-605d834d0661", 2, Color.rgb(255, 161, 146)));
             //3
             moods.add(new Mood("Alert", "c3d99c75-dd32-437b-a417-5e1654328cb1", 3, Color.rgb(251, 255, 122)));
             //4
-            moods.add(new Mood("Excited", "a6b543a4-07d3-4781-8f1a-80ddf7f22808", 4, Color.rgb(225, 255, 157)));
+            moods.add(new Mood("Pumped", "a6b543a4-07d3-4781-8f1a-80ddf7f22808", 4, Color.rgb(225, 255, 157)));
             //5
             moods.add(new Mood("Upset", "a2fb79e8-e203-46a5-8d76-a6efcefe26f2", 5, Color.rgb(255, 109, 254)));
             //6
-            moods.add(new Mood("Frustrated", "594e5408-8e0f-4613-b843-fb81d2322eb8", 6, Color.rgb(245, 172, 255)));
+            moods.add(new Mood("Cranky", "594e5408-8e0f-4613-b843-fb81d2322eb8", 6, Color.rgb(245, 172, 255)));
             //7
-            moods.add(new Mood("Amused", "7ae0766e-3ac3-49b7-9ee0-ecd47ab90b09", 7, Color.rgb(210, 255, 217)));
+            moods.add(new Mood("Awesome", "7ae0766e-3ac3-49b7-9ee0-ecd47ab90b09", 7, Color.rgb(210, 255, 217)));
             //8
-            moods.add(new Mood("Delighted", "c52921a3-fc8f-4e8c-9a77-d9ba17a773dd", 8, Color.rgb(134, 255, 174)));
+            moods.add(new Mood("Chuffed", "c52921a3-fc8f-4e8c-9a77-d9ba17a773dd", 8, Color.rgb(134, 255, 174)));
             //9
             moods.add(new Mood("Upset", "a2fb79e8-e203-46a5-8d76-a6efcefe26f2", 9, Color.rgb(225, 91, 255)));
             //10
             moods.add(new Mood("Impatient", "b4bd1683-8581-4156-844b-bc88c1f439f0", 10, Color.rgb(212, 194, 255)));
             //11
-            moods.add(new Mood("Amused", "7ae0766e-3ac3-49b7-9ee0-ecd47ab90b09", 11, Color.rgb(178, 240, 255)));
+            moods.add(new Mood("Awesome", "7ae0766e-3ac3-49b7-9ee0-ecd47ab90b09", 11, Color.rgb(178, 240, 255)));
             //12
             moods.add(new Mood("Happy", "13b3c477-9e5f-4bd3-b312-0abbb32e48bb", 12, Color.rgb(98, 255, 199)));
             //13
             moods.add(new Mood("Sad", "e08c39dc-579a-4e8e-a342-967931151ca9", 13, Color.rgb(172, 56, 255)));
             //14
-            moods.add(new Mood("Gloomy", "abad9076-b41c-45fe-a3e5-960b1afe5f9f", 14, Color.rgb(129, 79, 255)));
+            moods.add(new Mood("Flat", "abad9076-b41c-45fe-a3e5-960b1afe5f9f", 14, Color.rgb(129, 79, 255)));
             //15
-            moods.add(new Mood("Glad", "23bd0192-8d1a-435f-a6b7-8c5fa97c5487", 15, Color.rgb(108, 198, 255)));
+            moods.add(new Mood("Grateful", "23bd0192-8d1a-435f-a6b7-8c5fa97c5487", 15, Color.rgb(108, 198, 255)));
             //16
             moods.add(new Mood("Content", "43bd3752-d44b-4309-90f8-b081172461f2", 16, Color.rgb(22, 255, 243)));
             //17
             moods.add(new Mood("Bored", "da6e32d2-f8f0-439d-8540-ed85d543c2aa", 17, Color.rgb(64, 0, 255)));
             //18
-            moods.add(new Mood("Worried", "2c764148-a046-409f-97c8-85220c2162de", 18, Color.rgb(31, 48, 255)));
+            moods.add(new Mood("Anxious", "2c764148-a046-409f-97c8-85220c2162de", 18, Color.rgb(31, 48, 255)));
             //19
-            moods.add(new Mood("Calm", "56b4197c-8f6a-48bc-8751-33b16a572da7", 19, Color.rgb(0, 106, 255)));
+            moods.add(new Mood("Chilled", "56b4197c-8f6a-48bc-8751-33b16a572da7", 19, Color.rgb(0, 106, 255)));
             //20
             moods.add(new Mood("Relaxed", "88028988-a2d5-4ee3-8912-a4ffac7e9c43", 20, Color.rgb(0, 160, 255)));
             //21
@@ -352,7 +352,7 @@ public class MoodInputWidget extends AppWidgetProvider {
             //22
             moods.add(new Mood("Tired", "32043734-1bac-4b59-8e15-b6791011f52f", 22, Color.rgb(0, 2, 255)));
             //23
-            moods.add(new Mood("Calm", "56b4197c-8f6a-48bc-8751-33b16a572da7", 23, Color.rgb(0, 97, 255)));
+            moods.add(new Mood("Chilled", "56b4197c-8f6a-48bc-8751-33b16a572da7", 23, Color.rgb(0, 97, 255)));
             //24
             moods.add(new Mood("Relaxed", "88028988-a2d5-4ee3-8912-a4ffac7e9c43", 24, Color.rgb(0, 145, 255)));
         }

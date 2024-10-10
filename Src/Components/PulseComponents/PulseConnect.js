@@ -59,7 +59,7 @@ function PulseConnectTop() {
       </View>
       <View style={styles.answerOnTimeView}>
         <Text style={styles.answerOnTimeText}>
-          Answer on time to earn more coins
+          Answer on time to earn more points
         </Text>
         <Text style={styles.progressCountText}>0/0</Text>
       </View>

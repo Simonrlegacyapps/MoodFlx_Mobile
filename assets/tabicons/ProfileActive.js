@@ -2,11 +2,16 @@ import * as React from "react"
 import Svg, { Path } from "react-native-svg"
 import Colors from "../../Src/Constants/Colors/Colors"
 
-const ProfileActive = () => {
+const ProfileActive = ({isVitalityUser}) => {
+
+    const iconSize = {
+        width: isVitalityUser ? 29 : 18,
+        height: isVitalityUser ? 29 : 19,
+      };
     return (
         <Svg
-            width={17}
-            height={18}
+            width={iconSize.width}
+            height={iconSize.height}
             viewBox="0 0 17 18"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

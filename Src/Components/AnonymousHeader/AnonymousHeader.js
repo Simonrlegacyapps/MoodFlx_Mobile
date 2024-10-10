@@ -155,10 +155,11 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
     <View style={styles.container}>
       <View style={styles.subContainer}>
         <View style={styles.floIconView}>
-          {vitality_member_id ? <VitalityIcon /> : <FloCoinIcon />}
+          {/* {vitality_member_id ? <VitalityIcon /> : <FloCoinIcon />} */}
+          {!vitality_member_id && <FloCoinIcon />}
         </View>
         <View>
-          <AnimatedNumber
+          {/* <AnimatedNumber
             includeComma
             animateToNumber={
               isShowPrevFloCoins && !vitality_member_id
@@ -166,12 +167,21 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
                 : UserData.floCoins
             }
             fontStyle={styles.floCoinsTextOne}
-          />
+          /> */}
+          {!vitality_member_id && 
+          <AnimatedNumber
+            includeComma
+            animateToNumber={
+              isShowPrevFloCoins && getPrevFloCoins()
+            }
+            fontStyle={styles.floCoinsTextOne}
+          />}
           <Text style={styles.floCoinsTextTwo}>
-            {vitality_member_id ? 'Bonus' : 'flx Coins'}
+            {/* {vitality_member_id ? 'Bonus' : 'flx Coins'} */}
+            {!vitality_member_id && 'Flx Points'}
           </Text>
         </View>
-        <View style={styles.verifcalBarView} />
+        {!vitality_member_id && <View style={styles.verifcalBarView} />}
         <View
           style={{
             marginRight: horizontalScale(14),

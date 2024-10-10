@@ -4,9 +4,9 @@ import androidx.multidex.MultiDexApplication;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.moodflo.nativemodules.share_manager.EmailPackage;
 import com.reactnativecommunity.clipboard.ClipboardPackage;
 import com.reactnative.googlefit.GoogleFitPackage;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
@@ -39,6 +39,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
            packages.add(new CheckPackageInstallationPackage());
            packages.add(new SensorManagerPackage());
            packages.add(new UsageStatsPackage());
+           packages.add(new EmailPackage());
           return packages;
         }
 
