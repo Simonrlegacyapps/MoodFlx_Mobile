@@ -59,7 +59,7 @@
     "react-native-google-fit": "^0.19.1",
     "react-native-haptic-feedback": "^2.0.3",
     "react-native-health": "^1.14.0",
-    "react-native-image-crop-picker": "^0.38.1",
+    "react-native-image-crop-picker": "^0.41.2",
     "react-native-linear-gradient": "2.8.3",
     "react-native-maps": "1.11.3",
     "react-native-modal": "^13.0.1",
