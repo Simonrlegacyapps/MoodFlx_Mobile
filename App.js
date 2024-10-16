@@ -107,6 +107,7 @@ import Loader from './Src/Components/Loader/Loader';
 import { logger } from '.';
 import UpdateModal from './Src/Components/UpdateModal/UpdateModal';
 import { checkAppVersion } from './Src/services/checkAppVersion';
+import { AppPermissions } from './Src/services/appPermissions';
 
 Number.prototype.format = function () {
   return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
@@ -222,6 +223,21 @@ const App = () => {
   const netInfo = useNetInfo();
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
+
+
+
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
+
+  const requestLocationPermission = async () => {
+    const permissionGranted =  await AppPermissions.requestLocationPermission(dispatch);;
+    if (permissionGranted) {
+      console.warn('Location permission granted');
+    } else {
+      console.warn('Location permission denied');
+    }
+  };
 
   useEffect(() => {
     checkAppUpdate()

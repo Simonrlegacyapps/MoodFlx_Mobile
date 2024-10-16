@@ -174,52 +174,46 @@ const WeatherData = ({
       if (getIsGetCurrentLocationCalled() === false) {
         setIsGetCurrentLocationCalled(true);
         GetLocation.getCurrentPosition({
-          enableHighAccuracy: false,
-          timeout: 25000,
+          enableHighAccuracy: true, // Consider enabling high accuracy
+          timeout: 60000, // Increased timeout
         })
           .then((location) => {
             setIsGetCurrentLocationCalled(false);
-            // const isIndia = isCountryIndia();
-            // if (isIndia) {
-            //   location = {
-            //     latitude: defaultLocation.latitude,
-            //     longitude: defaultLocation.longitude
-            //   };
-            // }
-            console.log('Success', location);
-            // setlat(location.latitude);
+            console.warn('Success-------', location);
             dispatch(SetLocation({
-              lat: location.latitude,
-              lon: location.longitude,
+              lat: location?.latitude,
+              lon: location?.longitude,
             }));
-            location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, function (flag) {
-              console.log('WeatherDayData called from getUserLocation');
-              location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude, function (isSuccess) {
+            location?.latitude && location?.longitude && CheckForWeather(location?.latitude, location?.longitude, (flag) => {
+              console.warn('WeatherDayData called from getUserLocation');
+              location?.latitude && location?.longitude && WeatherDayData(location?.latitude, location?.longitude, (isSuccess) => {
                 resolve(isSuccess);
               });
-            },
-            );
-            // if (UserData.lat == null || UserData.lon == null) {
-            // }
+            });
           })
           .catch(async (error) => {
             const { code, message } = error;
             setIsGetCurrentLocationCalled(false);
+            console.warn('Error Location-------', code, message);
+            
+            // Check for location permissions
             let flag;
             try {
               flag = await AppPermissions.requestLocationPermission(dispatch);
             } catch (e) {
-              console.log('Request Location Permission error: ', e);
-              flag = false
+              console.warn('Request Location Permission error: ', e);
+              flag = false;
             }
+            
+            // Resolve based on permission status
             resolve(flag);
-            console.log('error', code, message);
           });
       } else {
         resolve();
       }
     });
   };
+  
 
   const _handleAppStateChange = (nextAppState) => {
     if (
