@@ -181,7 +181,7 @@ const ProgressScreen = ({navigation, route}) => {
                 </View>
                 <View style={styles.bottomButtons}>
                   <TouchableOpacity onPress={onDone(false)} style={{ flex: 1 }}>
-                    <Text allowFontScaling={false} style={styles.skip}>Skip > ></Text>
+                    <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {

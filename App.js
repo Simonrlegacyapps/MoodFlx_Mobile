@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ScaledSheet} from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import SharedGroupPreferences from 'react-native-shared-group-preferences';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {
   Division,
   GetUserId,
@@ -1248,6 +1249,16 @@ const App = () => {
     const isUpdate = await checkAppVersion()
     setUpdateModalAlert(isUpdate)
   }
+
+  // useEffect(() => {
+  //   if (Platform.OS === 'android' && !ShowWelcome) {
+  //     // Make the bottom navigation bar transparent
+  //     changeNavigationBarColor('transparent', true); // Second param is `true` to use light content.
+  //   } else{
+  //     changeNavigationBarColor('transparent', false); // Second param is `true` to use light content.
+
+  //   }
+  // }, [ShowWelcome]);
 
   return (
     <>
