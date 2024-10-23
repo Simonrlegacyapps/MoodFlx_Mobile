@@ -154,10 +154,12 @@ const CustomMarker = ({e, idx, setRef, markerIndex, markers
                 width="100%"
                 height="100%"
                 preserveAspectRatio="xMidYMid slice"
-                href={Images?.[e?.icon]}
+                href={Images?.[e?.icon]== undefined ?  70 : Images?.[e?.icon]}
               />
             </Svg>
+
           )}
+          
           <View style={styles.labelSubContainer}>
             {e?.title && <Text style={styles.moodName}>{e?.title}</Text>}
             {e?.timestamp && (

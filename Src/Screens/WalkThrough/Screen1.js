@@ -17,6 +17,7 @@ import {
   RubikLight,
   RubikMedium,
   RubikRegular,
+  RubikSemiBold,
 } from '../../Constants/fonts/Fonts';
 import {
   dynamicSize,
@@ -153,7 +154,7 @@ const Screen1 = ({onDone}) => {
       <ImageBackground
         source={require('../../../assets/newImage/WalkThrough/Onboarding.png')}
         style={{height: '100%', width: '100%'}}>
-        <SafeAreaView style={{paddingBottom: 15}}>
+        <View>
           {number === 0 ? (
             <View style={styles.Container}>
               <View style={{marginTop: dynamicSize(80)}}>
@@ -161,7 +162,7 @@ const Screen1 = ({onDone}) => {
               </View>
               <View style={{width: '100%', paddingHorizontal: dynamicSize(13)}}>
                 <Text allowFontScaling={false} style={styles.bigText}>
-                  It's time to unleash your untapped!
+                  It's time to {'\n'}unleash your {'\n'}untapped!
                 </Text>
                 <Text allowFontScaling={false} style={styles.smallText0}>
                   Let's take you through flx's features
@@ -174,6 +175,7 @@ const Screen1 = ({onDone}) => {
                     width: '100%',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    marginBottom: dynamicSize(15),
                   }}>
                   <TouchableOpacity onPress={onDone} style={{flex: 1}}>
                     <Text allowFontScaling={false} style={styles.skip}>
@@ -186,7 +188,7 @@ const Screen1 = ({onDone}) => {
                     }}
                     style={{
                       backgroundColor: Colors.blueTextColor,
-                      borderRadius: 7,
+                      borderRadius: 10,
                     }}>
                     <Text allowFontScaling={false} style={styles.next}>
                       Next
@@ -198,32 +200,46 @@ const Screen1 = ({onDone}) => {
           ) : (
             <View style={styles.Container}>
               <View style={styles.topBar}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setnumber(number - 1);
-                  }}
-                  style={{position: 'absolute', left: 10, top: 35}}>
-                  <BackIcon w={dynamicSize(22)} h={dynamicSize(22)} />
-                </TouchableOpacity>
-                <Text
-                  allowFontScaling={false}
+                <View
                   style={{
-                    fontSize: getFontSize(22),
-                    fontFamily: RubikMedium,
-                    color:
-                      number <= 3
-                        ? Colors.blueTextColor
-                        : number === 4
-                        ? '#3FD7C8'
-                        : '#EE64DB',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    paddingBottom: dynamicSize(25),
                   }}>
-                  {/* {number <= 3
+                  <View style={{width: '33%' , justifyContent: 'center'}}>
+                    <TouchableOpacity
+                    style={{width: '30%' , marginLeft: 10}}
+                      onPress={() => {
+                        setnumber(number - 1);
+                      }}>
+                      <BackIcon w={dynamicSize(22)} h={dynamicSize(22)} />
+                    </TouchableOpacity>
+                  </View>
+
+                  <Text
+                    allowFontScaling={false}
+                    style={{
+                      fontSize: getFontSize(22),
+                      fontFamily: RubikMedium,
+                      // marginTop: dynamicSize(30),
+                      color:
+                        number <= 3
+                          ? Colors.blueTextColor
+                          : number === 4
+                          ? '#3FD7C8'
+                          : '#EE64DB',
+                    }}>
+                    {/* {number <= 3
                     ? 'Anonymity'
                     : number === 4
                     ? 'The Science'
                     : 'Rewards'} */}
-                  {data[number - 1].label}
-                </Text>
+                    {data[number - 1].label}
+                  </Text>
+                  <Text style={{width: '33%'}}></Text>
+                </View>
+
                 <View style={styles.rewardsTypes}>
                   <Anonimity
                     color={
@@ -308,7 +324,7 @@ const Screen1 = ({onDone}) => {
                           h={getFontSize(12.5)}
                         />
                         <Text allowFontScaling={false} style={styles.coinText}>
-                          +50 Points
+                          +50 Pointsee
                         </Text>
                       </ImageBackground>
                     </View>
@@ -320,7 +336,7 @@ const Screen1 = ({onDone}) => {
                       width: '100%',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      bottom: 0,
+                      marginBottom: dynamicSize(15),
                     }}>
                     <TouchableOpacity onPress={() => onDone(false)}>
                       <Text allowFontScaling={false} style={styles.skip}>
@@ -343,7 +359,7 @@ const Screen1 = ({onDone}) => {
               </View>
             </View>
           )}
-        </SafeAreaView>
+        </View>
       </ImageBackground>
     </View>
   );
@@ -425,7 +441,7 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     backgroundColor: Colors.blueTextColor,
-    borderRadius: 7,
+    borderRadius: 10,
   },
   smallText0: {
     marginTop: dynamicSize(10),
@@ -437,21 +453,23 @@ const styles = StyleSheet.create({
   bigText: {
     marginTop: dynamicSize(70),
     fontSize: dynamicSize(40),
-    paddingRight: 5,
-    fontFamily: RubikRegular,
+    // paddingRight: 5,
+    lineHeight: dynamicSize(41),
+    fontFamily: RubikSemiBold,
     color: 'white',
   },
   Container: {alignItems: 'center', height: '100%', width: '100%'},
   rewardsTypes: {
     flexDirection: 'row',
-    marginVertical: 22,
-    marginTop: 35,
+    // marginVertical: 22,
+    // marginTop: 35,
     justifyContent: 'space-around',
     width: '100%',
   },
   topBar: {
-    height: dynamicSize(160),
+    height: dynamicSize(130),
     backgroundColor: 'white',
+    // top: dynamicSize(10),
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
