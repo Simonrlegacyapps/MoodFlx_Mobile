@@ -165,7 +165,7 @@ const Screen1 = ({onDone}) => {
                   It's time to {'\n'}unleash your {'\n'}untapped!
                 </Text>
                 <Text allowFontScaling={false} style={styles.smallText0}>
-                  Let's take you through flx's features
+                  Let's take you through the {'\n'}moodflx features
                 </Text>
               </View>
               <View style={styles.bottomButtons}>
@@ -208,13 +208,13 @@ const Screen1 = ({onDone}) => {
                     paddingBottom: dynamicSize(25),
                   }}>
                   <View style={{width: '33%' , justifyContent: 'center'}}>
-                    <TouchableOpacity
+              <TouchableOpacity
                     style={{width: '30%' , marginLeft: 10}}
-                      onPress={() => {
-                        setnumber(number - 1);
+                    onPress={() => {
+                      setnumber(number - 1);
                       }}>
-                      <BackIcon w={dynamicSize(22)} h={dynamicSize(22)} />
-                    </TouchableOpacity>
+                    <BackIcon w={dynamicSize(22)} h={dynamicSize(22)} />
+                  </TouchableOpacity>
                   </View>
 
                   <Text
@@ -222,7 +222,6 @@ const Screen1 = ({onDone}) => {
                     style={{
                       fontSize: getFontSize(22),
                       fontFamily: RubikMedium,
-                      // marginTop: dynamicSize(30),
                       color:
                         number <= 3
                           ? Colors.blueTextColor
@@ -240,29 +239,29 @@ const Screen1 = ({onDone}) => {
                   <Text style={{width: '33%'}}></Text>
                 </View>
 
-                <View style={styles.rewardsTypes}>
-                  <Anonimity
-                    color={
-                      data[number - 1].label === 'Anonymity'
-                        ? Colors.blueTextColor
-                        : Colors.greyColorCode
-                    }
-                  />
-                  <Science
-                    color={
-                      data[number - 1].label === 'The Science'
-                        ? '#3FD7C8'
-                        : Colors.greyColorCode
-                    }
-                  />
-                  <Rewards
-                    color={
-                      data[number - 1].label === 'Rewards'
-                        ? '#EE64DB'
-                        : Colors.greyColorCode
-                    }
-                  />
-                </View>
+                  <View style={styles.rewardsTypes}>
+                    <Anonimity
+                      color={
+                        data[number - 1].label === 'Anonymity'
+                          ? Colors.blueTextColor
+                          : Colors.greyColorCode
+                      }
+                    />
+                    <Science
+                      color={
+                        data[number - 1].label === 'The Science'
+                          ? '#3FD7C8'
+                          : Colors.greyColorCode
+                      }
+                    />
+                    <Rewards
+                      color={
+                        data[number - 1].label === 'Rewards'
+                          ? '#EE64DB'
+                          : Colors.greyColorCode
+                      }
+                    />
+                  </View>
                 {console.log(`number`, number)}
               </View>
 
@@ -310,7 +309,7 @@ const Screen1 = ({onDone}) => {
                     onPress={() => onDone()}
                     style={styles.bottomFlatlistContainer}>
                     <View>
-                      <Text style={styles.anonymousTextStyle}>
+                      <Text style={styles.next}>
                         {data[number - 1].button}
                       </Text>
                       <ImageBackground
@@ -324,7 +323,7 @@ const Screen1 = ({onDone}) => {
                           h={getFontSize(12.5)}
                         />
                         <Text allowFontScaling={false} style={styles.coinText}>
-                          +50 Pointsee
+                          +50 Points
                         </Text>
                       </ImageBackground>
                     </View>
@@ -340,7 +339,10 @@ const Screen1 = ({onDone}) => {
                     }}>
                     <TouchableOpacity onPress={() => onDone(false)}>
                       <Text allowFontScaling={false} style={styles.skip}>
-                        Skip >>
+                        {isHowMoodFloWorksPtsGiven === false &&
+                        data[number - 1].button === 'Done'
+                          ? ' Skip >>'
+                          : ''}
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -381,9 +383,9 @@ const styles = StyleSheet.create({
   bottomButtons: {
     width: '100%',
     position: 'absolute',
-    bottom: 0,
+    bottom: 5,
     flexDirection: 'row',
-    // justifyContent: 'flex-end',
+    justifyContent: 'flex-end',
     paddingHorizontal: 20,
   },
   bottomFlatlistContainer: {
@@ -447,7 +449,7 @@ const styles = StyleSheet.create({
     marginTop: dynamicSize(10),
     fontSize: dynamicSize(23),
     paddingRight: 5,
-    fontFamily: RubikRegular,
+    fontFamily: RubikSemiBold,
     color: 'white',
   },
   bigText: {
@@ -461,8 +463,8 @@ const styles = StyleSheet.create({
   Container: {alignItems: 'center', height: '100%', width: '100%'},
   rewardsTypes: {
     flexDirection: 'row',
-    // marginVertical: 22,
-    // marginTop: 35,
+    marginVertical: 10,
+    marginTop: 25,
     justifyContent: 'space-around',
     width: '100%',
   },

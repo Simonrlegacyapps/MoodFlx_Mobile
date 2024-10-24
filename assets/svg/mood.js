@@ -4,8 +4,8 @@ import Svg, { Circle, Path } from 'react-native-svg'
 function Mood({w,h}) {
     return (
         <Svg
-      width={211}
-      height={211}
+      width={180}
+      height={180}
       viewBox="0 0 211 211"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

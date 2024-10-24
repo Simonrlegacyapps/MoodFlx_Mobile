@@ -16,8 +16,13 @@ import {
   RubikLight,
   RubikMedium,
   RubikRegular,
+  RubikSemiBold,
 } from '../../Constants/fonts/Fonts';
-import {dynamicSize, getFontSize, horizontalScale} from '../../Constants/sizeChoose';
+import {
+  dynamicSize,
+  getFontSize,
+  horizontalScale,
+} from '../../Constants/sizeChoose';
 import Anonimity from '../../../assets/svg/Anonimity';
 import Science from '../../../assets/svg/science';
 import Rewards from '../../../assets/svg/rewards';
@@ -34,7 +39,7 @@ import {getIsMoodLvlUp, getMyDeviceId} from '../../services/commonService';
 import {useDispatch} from 'react-redux';
 import Colors from '../../Constants/Colors/Colors';
 
-const {height} = Dimensions.get("window")
+const {height} = Dimensions.get('window');
 
 const ProgressScreen = ({navigation, route}) => {
   const [number, setnumber] = useState(0);
@@ -71,12 +76,12 @@ const ProgressScreen = ({navigation, route}) => {
     const prevRewardPts = userData?.floCoins;
     const deviceId = getMyDeviceId();
     let params = {
-      "device_id": deviceId,
-      "email": userData?.UserEmail ?? null,
-      "user_id": userData?.UserId ?? null,
-      "section_index": 1,
-      "reward_point": 50,
-      "description": "How moodflo works"
+      device_id: deviceId,
+      email: userData?.UserEmail ?? null,
+      user_id: userData?.UserId ?? null,
+      section_index: 1,
+      reward_point: 50,
+      description: 'How moodflo works',
     };
     console.log(`params of how mood flx works 50 Points`, params);
     setIsLoading(true);
@@ -84,7 +89,7 @@ const ProgressScreen = ({navigation, route}) => {
       setIsLoading(false);
       goBack();
     }
-    getUpdateRewardPoint(params, dispatch, onError).then((res) => {
+    getUpdateRewardPoint(params, dispatch, onError).then(res => {
       console.log('getUpdateRewardPoint res.data----', res?.data);
       setIsLoading(false);
       if (
@@ -101,7 +106,7 @@ const ProgressScreen = ({navigation, route}) => {
     });
   };
 
-  const onDone = (isClickFromDoneButton) => () => {
+  const onDone = isClickFromDoneButton => () => {
     if (isClickFromDoneButton && route?.params?.howMoodFloWorks) {
       checkStorage();
     } else {
@@ -112,156 +117,222 @@ const ProgressScreen = ({navigation, route}) => {
   const data = [
     {
       img1: <Lock />,
-      label:"Anonymity",
+      label: 'Anonymity',
       t1: "We really don't care who you are.",
       t2: 'We really care how you feel.',
       t3: 'Feel Secure',
       t4: "You're completely anonymous unless you say otherwise",
-      button: "Next"
+      button: 'Next',
     },
     {
       img1: <Lock />,
-      label:"Anonymity",
+      label: 'Anonymity',
       t1: '',
       t2: 'Complete Anonymity.',
       t3: 'Daily data is stored on your personal device',
-      t4:
-        "Your data is grouped with 19 others to make sure you're completely private",
-        button: "Next"
+      t4: "Your data is grouped with 19 others to make sure you're completely private",
+      button: 'Next',
     },
     {
       img1: <Lock />,
-      label:"Anonymity",
-      t1: 'flx creates a unified voice for you & your team ',
+      label: 'Anonymity',
+      t1: 'moodflx creates a unified voice for you & your team',
       t2: 'via Team Pulses.',
       t3: '',
       t4: 'This is what the boss sees',
       img2: <Graph />,
-      button: "Next"
+      button: 'Next',
     },
     {
       img1: <ScienceG />,
-      label:"The Science",
-      t1: 'flx can use your data. ',
-      t2: 'The more data, the more smarter!',
+      label: 'The Science',
+      t1: 'Flx can use your data.',
+      t2: 'The more data the more smarter!',
       t3: '',
-      t4: 'Let flx understand your environment and how it impacts your mood',
-      button: "Next"
+      t4: 'Let Flx understand your environment and how it impacts your mood',
+      button: 'Next',
     },
     {
       img1: <RewardG />,
-      label:"Rewards",
+      label: 'Rewards',
       t1: 'More data = more accurate insights + ',
       t2: 'more rewards.',
       t3: 'Get Rewarded!',
       t4: 'Spend your Flx Points on things that make you feel good',
-      button: "Done"
+      button: 'Done',
     },
   ];
 
   return (
-    <>
+    <View>
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
       <View>
         <ImageBackground
           source={require('../../../assets/newImage/WalkThrough/Onboarding.png')}
-          style={{ height: '100%', width: '100%' }}>
+          style={{height: '100%', width: '100%'}}>
           <SafeAreaView>
             {number === 0 ? (
               <View style={styles.Container}>
-                <View style={{ marginTop: dynamicSize(80) }}>
+                <View style={{marginTop: dynamicSize(80)}}>
                   <Mood />
                 </View>
-                <View style={{ width: '100%', paddingHorizontal: dynamicSize(13) }}>
+                <View
+                  style={{
+                    width: '100%',
+                    paddingHorizontal: dynamicSize(13),
+                    marginTop: dynamicSize(20),
+                  }}>
                   <Text allowFontScaling={false} style={styles.bigText}>
-                    It's time to unleash your untapped!
+                    It's time to {'\n'}unleash your {'\n'}untapped!
                   </Text>
                   <Text allowFontScaling={false} style={styles.smallText0}>
-                    Let's take you through flx's features
+                    Let's take you through the {'\n'}moodflx features
                   </Text>
                 </View>
                 <View style={styles.bottomButtons}>
-                  <TouchableOpacity onPress={onDone(false)} style={{ flex: 1 }}>
-                    <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
+                  <TouchableOpacity onPress={onDone(false)} style={{flex: 1}}>
+                    <Text allowFontScaling={false} style={styles.skip}>
+                      Skip >>
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
                       setnumber(number + 1);
                     }}
-                    style={{ backgroundColor: Colors.blueTextColor, borderRadius: 7 }}>
-                    <Text allowFontScaling={false} style={styles.next}>Next</Text>
+                    style={{
+                      backgroundColor: Colors.blueTextColor,
+                      borderRadius: 7,
+                    }}>
+                    <Text allowFontScaling={false} style={styles.next}>
+                      Next
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
             ) : (
               <View style={styles.Container}>
                 <View style={styles.topBar}>
-                  <TouchableOpacity onPress={() => { setnumber(number - 1) }} style={{ position: 'absolute', left: 10, top: 10 }}>
-                    <BackIcon w={dynamicSize(22)} h={dynamicSize(22)} />
-                  </TouchableOpacity>
-                  <Text allowFontScaling={false}
+                  <View
                     style={{
-                      fontSize: getFontSize(22),
-                      fontFamily: RubikMedium,
-                      color:
-                        number <= 3
-                          ? Colors.blueTextColor
-                          : number === 4
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      paddingBottom: dynamicSize(25),
+                    }}>
+                    <View style={{width: '33%', justifyContent: 'center'}}>
+                      <TouchableOpacity
+                        style={{width: '30%', marginLeft: 10}}
+                        onPress={() => {
+                          setnumber(number - 1);
+                        }}>
+                        <BackIcon w={dynamicSize(22)} h={dynamicSize(22)} />
+                      </TouchableOpacity>
+                    </View>
+
+                    <Text
+                      allowFontScaling={false}
+                      style={{
+                        fontSize: getFontSize(22),
+                        fontFamily: RubikMedium,
+                        color:
+                          number <= 3
+                            ? Colors.blueTextColor
+                            : number === 4
                             ? '#3FD7C8'
                             : '#EE64DB',
-                    }}>
-                    {/* {number <= 3
+                      }}>
+                      {/* {number <= 3
                     ? 'Anonymity'
                     : number === 4
                     ? 'The Science'
                     : 'Rewards'} */}
-                    {data[number - 1].label}
-                  </Text>
+                      {data[number - 1].label}
+                    </Text>
+                    <Text style={{width: '33%'}}></Text>
+                  </View>
                   <View style={styles.rewardsTypes}>
-                    <Anonimity color={data[number - 1].label === "Anonymity" ? Colors.blueTextColor : Colors.greyColorCode} />
-                    <Science color={data[number - 1].label === "The Science" ? '#3FD7C8' : Colors.greyColorCode} />
-                    <Rewards color={data[number - 1].label === "Rewards" ? '#EE64DB' : Colors.greyColorCode} />
+                    <Anonimity
+                      color={
+                        data[number - 1].label === 'Anonymity'
+                          ? Colors.blueTextColor
+                          : Colors.greyColorCode
+                      }
+                    />
+                    <Science
+                      color={
+                        data[number - 1].label === 'The Science'
+                          ? '#3FD7C8'
+                          : Colors.greyColorCode
+                      }
+                    />
+                    <Rewards
+                      color={
+                        data[number - 1].label === 'Rewards'
+                          ? '#EE64DB'
+                          : Colors.greyColorCode
+                      }
+                    />
                   </View>
                   {console.log(`number`, number)}
                 </View>
 
-                <View style={{ paddingHorizontal: 30 }}>
-                  <ScrollView style={{ height: '100%' }}>
+                <View style={{paddingHorizontal: 30}}>
+                  <ScrollView style={{height: '100%'}}>
                     <View style={styles.whiteBox}>
-                      <View style={{ marginBottom: 20 }}>
+                      <View style={{marginBottom: 20}}>
                         {data[number - 1].img1}
                       </View>
                       {data[number - 1].t1 != '' && (
-                        <Text allowFontScaling={false} style={styles.blackText}>{data[number - 1].t1}</Text>
+                        <Text allowFontScaling={false} style={styles.blackText}>
+                          {data[number - 1].t1}
+                        </Text>
                       )}
                       {data[number - 1].t2 != '' && (
-                        <Text allowFontScaling={false} style={[styles.blackText, styles.purpleText]}>
+                        <Text
+                          allowFontScaling={false}
+                          style={[styles.blackText, styles.purpleText]}>
                           {data[number - 1].t2}
                         </Text>
                       )}
                       {data[number - 1].t3 != '' && (
-                        <Text allowFontScaling={false} style={styles.smallText}>{data[number - 1].t3}</Text>
+                        <Text allowFontScaling={false} style={styles.smallText}>
+                          {data[number - 1].t3}
+                        </Text>
                       )}
                       {data[number - 1].t4 != '' && (
-                        <Text allowFontScaling={false} style={styles.smallGrey}>{data[number - 1].t4}</Text>
+                        <Text allowFontScaling={false} style={styles.smallGrey}>
+                          {data[number - 1].t4}
+                        </Text>
                       )}
                       {data[number - 1].t4 != null && (
                         <View style={{}}>{data[number - 1].img2}</View>
                       )}
                     </View>
-                    <View style={{ paddingBottom: 100 }} />
+                    <View style={{paddingBottom: 100}} />
                   </ScrollView>
                 </View>
 
                 {/* // bottom buttons */}
                 <View style={styles.bottomButtons}>
-                  <TouchableOpacity onPress={onDone(false)} style={{ flex: 1 }}>
-                    <Text allowFontScaling={false} style={styles.skip}>Skip >></Text>
+                  <TouchableOpacity onPress={onDone(false)} style={{flex: 1}}>
+                    <Text allowFontScaling={false} style={styles.skip}>
+                      {data[number - 1].button === 'Done' ? '' : 'Skip >>'}
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
-                      data[number - 1].button === "Next" ? setnumber(number + 1) : onDone(true)();
+                      data[number - 1].button === 'Next'
+                        ? setnumber(number + 1)
+                        : onDone(true)();
                     }}
-                    style={{ backgroundColor: Colors.blueTextColor, borderRadius: 7 }}>
+                    style={{
+                      backgroundColor: Colors.blueTextColor,
+                      borderRadius: 7,
+                    }}>
                     <Text allowFontScaling={false} style={styles.next}>
                       {data[number - 1].button}
                     </Text>
@@ -274,7 +345,7 @@ const ProgressScreen = ({navigation, route}) => {
       </View>
       {isLoading && !isOpenLvlUpModal && (
         <View style={styles.loader}>
-          <ActivityIndicator color='#9889F9' size="large" />
+          <ActivityIndicator color="#9889F9" size="large" />
         </View>
       )}
       <LvlUpModal
@@ -285,7 +356,7 @@ const ProgressScreen = ({navigation, route}) => {
         verifyDone={closeLvlUpModal}
         smallText="Check out what rewards you’ve unlocked"
       />
-    </>
+    </View>
   );
 };
 
@@ -320,14 +391,14 @@ const styles = StyleSheet.create({
     marginTop: dynamicSize(70),
     fontSize: dynamicSize(40),
     paddingRight: 5,
-    fontFamily: RubikRegular,
+    fontFamily: RubikSemiBold,
     color: 'white',
   },
   Container: {alignItems: 'center', height: '100%', width: '100%'},
   rewardsTypes: {
     flexDirection: 'row',
-    marginVertical: 22,
-    marginTop: 35,
+    marginVertical: 10,
+    marginTop: 25,
     justifyContent: 'space-around',
     width: '100%',
   },
