@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, Platform, StatusBar } from 'react-native';
 import Constants from '../../Constants';
 // import ToggleSwitch from 'toggle-switch-react-native';
 import AnonymousIcon from '../../../assets/commonicons/AnonymousIcon';
@@ -21,6 +21,7 @@ import CustomSwitch from '../CustomSwitch/CustomSwitch';
 import AnimatedNumber from '../AnimatedNumber/AnimatedNumber';
 import Colors from '../../Constants/Colors/Colors';
 import { VitalityIcon } from '../../../assets/svg/VitalityIcon';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
   const UserData = useSelector((state) => state.First);
@@ -152,7 +153,7 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.subContainer}>
         <View style={styles.floIconView}>
           {/* {vitality_member_id ? <VitalityIcon /> : <FloCoinIcon />} */}
@@ -257,7 +258,7 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
         value={name}
         onChangeText={setname}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -267,7 +268,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 20,
+    marginVertical: Platform.OS == 'ios' ? 1 :  dynamicSize(20),
+    // marginTop: Platform.OS == 'ios' ?  dynamicSize(55) : dynamicSize(10)
   },
   subContainer: {
     // height: horizontalScale(65),

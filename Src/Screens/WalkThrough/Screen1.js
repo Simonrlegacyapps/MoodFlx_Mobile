@@ -16,6 +16,7 @@ import Mood from '../../../assets/svg/mood';
 import {
   RubikLight,
   RubikMedium,
+  RubikMediumItalic,
   RubikRegular,
   RubikSemiBold,
 } from '../../Constants/fonts/Fonts';
@@ -157,10 +158,15 @@ const Screen1 = ({onDone}) => {
         <View>
           {number === 0 ? (
             <View style={styles.Container}>
-              <View style={{marginTop: dynamicSize(80)}}>
+              <View style={{marginTop: dynamicSize(150)}}>
                 <Mood />
               </View>
-              <View style={{width: '100%', paddingHorizontal: dynamicSize(13)}}>
+              <View
+                style={{
+                  width: '100%',
+                  paddingHorizontal: dynamicSize(13),
+                  marginTop: dynamicSize(30),
+                }}>
                 <Text allowFontScaling={false} style={styles.bigText}>
                   It's time to {'\n'}unleash your {'\n'}untapped!
                 </Text>
@@ -199,22 +205,22 @@ const Screen1 = ({onDone}) => {
             </View>
           ) : (
             <View style={styles.Container}>
-              <View style={styles.topBar}>
+              <View style={[styles.topBar]}>
                 <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     width: '100%',
-                    paddingBottom: dynamicSize(25),
+                    // marginTop: dynamicSize(70),
                   }}>
-                  <View style={{width: '33%' , justifyContent: 'center'}}>
-              <TouchableOpacity
-                    style={{width: '30%' , marginLeft: 10}}
-                    onPress={() => {
-                      setnumber(number - 1);
+                  <View style={{width: '33%', justifyContent: 'center'}}>
+                    <TouchableOpacity
+                      style={{width: '30%', marginLeft: 10}}
+                      onPress={() => {
+                        setnumber(number - 1);
                       }}>
-                    <BackIcon w={dynamicSize(22)} h={dynamicSize(22)} />
-                  </TouchableOpacity>
+                      <BackIcon w={dynamicSize(22)} h={dynamicSize(22)} />
+                    </TouchableOpacity>
                   </View>
 
                   <Text
@@ -239,29 +245,29 @@ const Screen1 = ({onDone}) => {
                   <Text style={{width: '33%'}}></Text>
                 </View>
 
-                  <View style={styles.rewardsTypes}>
-                    <Anonimity
-                      color={
-                        data[number - 1].label === 'Anonymity'
-                          ? Colors.blueTextColor
-                          : Colors.greyColorCode
-                      }
-                    />
-                    <Science
-                      color={
-                        data[number - 1].label === 'The Science'
-                          ? '#3FD7C8'
-                          : Colors.greyColorCode
-                      }
-                    />
-                    <Rewards
-                      color={
-                        data[number - 1].label === 'Rewards'
-                          ? '#EE64DB'
-                          : Colors.greyColorCode
-                      }
-                    />
-                  </View>
+                <View style={[styles.rewardsTypes]}>
+                  <Anonimity
+                    color={
+                      data[number - 1].label === 'Anonymity'
+                        ? Colors.blueTextColor
+                        : Colors.greyColorCode
+                    }
+                  />
+                  <Science
+                    color={
+                      data[number - 1].label === 'The Science'
+                        ? '#3FD7C8'
+                        : Colors.greyColorCode
+                    }
+                  />
+                  <Rewards
+                    color={
+                      data[number - 1].label === 'Rewards'
+                        ? '#EE64DB'
+                        : Colors.greyColorCode
+                    }
+                  />
+                </View>
                 {console.log(`number`, number)}
               </View>
 
@@ -309,9 +315,7 @@ const Screen1 = ({onDone}) => {
                     onPress={() => onDone()}
                     style={styles.bottomFlatlistContainer}>
                     <View>
-                      <Text style={styles.next}>
-                        {data[number - 1].button}
-                      </Text>
+                      <Text style={styles.next}>{data[number - 1].button}</Text>
                       <ImageBackground
                         style={styles.pupView}
                         imageStyle={styles.pup}
@@ -337,14 +341,16 @@ const Screen1 = ({onDone}) => {
                       justifyContent: 'space-between',
                       marginBottom: dynamicSize(15),
                     }}>
-                    <TouchableOpacity onPress={() => onDone(false)}>
-                      <Text allowFontScaling={false} style={styles.skip}>
-                        {isHowMoodFloWorksPtsGiven === false &&
-                        data[number - 1].button === 'Done'
-                          ? ' Skip >>'
-                          : ''}
-                      </Text>
-                    </TouchableOpacity>
+                    {isHowMoodFloWorksPtsGiven === true &&
+                    data[number - 1].button === 'Done' ? (
+                      <View></View>
+                    ) : (
+                      <TouchableOpacity onPress={() => onDone(false)}>
+                        <Text allowFontScaling={false} style={styles.skip}>
+                          Skip >>
+                        </Text>
+                      </TouchableOpacity>
+                    )}
                     <TouchableOpacity
                       onPress={() => {
                         data[number - 1].button === 'Next'
@@ -446,10 +452,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   smallText0: {
-    marginTop: dynamicSize(10),
+    marginTop: dynamicSize(25),
     fontSize: dynamicSize(23),
-    paddingRight: 5,
-    fontFamily: RubikSemiBold,
+    // paddingRight: 5,
+    fontFamily: RubikMedium,
     color: 'white',
   },
   bigText: {
@@ -463,15 +469,14 @@ const styles = StyleSheet.create({
   Container: {alignItems: 'center', height: '100%', width: '100%'},
   rewardsTypes: {
     flexDirection: 'row',
-    marginVertical: 10,
-    marginTop: 25,
+    marginVertical: dynamicSize(20),
+    marginTop: dynamicSize(30),
     justifyContent: 'space-around',
     width: '100%',
   },
   topBar: {
-    height: dynamicSize(130),
-    backgroundColor: 'white',
-    // top: dynamicSize(10),
+    height: dynamicSize(180),
+    backgroundColor: '#fff',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',

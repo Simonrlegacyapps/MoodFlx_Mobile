@@ -16,6 +16,7 @@ import { getPhotoUrl } from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
 import {VitalityIcon} from '../../../assets/svg/VitalityIcon';
 import moment from 'moment';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ProfileHeader = ({navigation}) => {
   const UserData = useSelector((state) => state.First);
@@ -30,7 +31,7 @@ const ProfileHeader = ({navigation}) => {
   }, [UserData?.UserDetails?.created_at]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity
         onPress={() => {
           navigation.navigate('ProfileTab');
@@ -85,7 +86,7 @@ const ProfileHeader = ({navigation}) => {
           </Text>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -93,10 +94,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: 'white',
-    paddingVertical: 16,
+    paddingVertical: Platform.OS == 'android' ? dynamicSize(10) : 'auto',
     marginHorizontal: 15,
     borderBottomWidth: 0.5,
-
+    paddingTop: dynamicSize(10),
     borderColor: Constants.Colors.lightGrey,
   },
   image: {

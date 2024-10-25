@@ -1266,11 +1266,11 @@ const App = () => {
         <NavigationContainer
           ref={RootNavigation.navigationRef}
           onReady={onNavigationReady}>
-          <SafeAreaView style={styles.container}>
+          <View style={styles.container}>
             <View style={styles.container}>
               <StackNavigation />
             </View>
-          </SafeAreaView>
+          </View>
           <Toast config={toastConfig} />
         </NavigationContainer>
       ) : (

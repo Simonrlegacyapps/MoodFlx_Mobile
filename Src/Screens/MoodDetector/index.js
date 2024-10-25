@@ -1997,7 +1997,11 @@ export default function MoodDetector({navigation}) {
         onLayoutScrollerContainer={onLayoutScrollerContainer}
         // toolTipSize={toolTipSize.current}
       />
-
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
       <VideoModal
         ModalVisible={isModalVisible}
         dismissModalHandler={closeModal}

@@ -174,17 +174,17 @@ const ProgressScreen = ({navigation, route}) => {
         <ImageBackground
           source={require('../../../assets/newImage/WalkThrough/Onboarding.png')}
           style={{height: '100%', width: '100%'}}>
-          <SafeAreaView>
+          <View>
             {number === 0 ? (
               <View style={styles.Container}>
-                <View style={{marginTop: dynamicSize(80)}}>
+                <View style={{marginTop: dynamicSize(150)}}>
                   <Mood />
                 </View>
                 <View
                   style={{
                     width: '100%',
                     paddingHorizontal: dynamicSize(13),
-                    marginTop: dynamicSize(20),
+                    marginTop: dynamicSize(30),
                   }}>
                   <Text allowFontScaling={false} style={styles.bigText}>
                     It's time to {'\n'}unleash your {'\n'}untapped!
@@ -193,7 +193,7 @@ const ProgressScreen = ({navigation, route}) => {
                     Let's take you through the {'\n'}moodflx features
                   </Text>
                 </View>
-                <View style={styles.bottomButtons}>
+                <View style={[styles.bottomButtons]}>
                   <TouchableOpacity onPress={onDone(false)} style={{flex: 1}}>
                     <Text allowFontScaling={false} style={styles.skip}>
                       Skip >>
@@ -221,7 +221,7 @@ const ProgressScreen = ({navigation, route}) => {
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                       width: '100%',
-                      paddingBottom: dynamicSize(25),
+                      // paddingBottom: dynamicSize(25),
                     }}>
                     <View style={{width: '33%', justifyContent: 'center'}}>
                       <TouchableOpacity
@@ -340,7 +340,7 @@ const ProgressScreen = ({navigation, route}) => {
                 </View>
               </View>
             )}
-          </SafeAreaView>
+          </View>
         </ImageBackground>
       </View>
       {isLoading && !isOpenLvlUpModal && (
@@ -374,36 +374,39 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(16),
   },
   bottomButtons: {
+    width: '100%',
     position: 'absolute',
-    bottom: 10,
+    bottom: dynamicSize(20),
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
     paddingHorizontal: 20,
   },
   smallText0: {
-    marginTop: dynamicSize(10),
+    marginTop: dynamicSize(25),
     fontSize: dynamicSize(23),
-    paddingRight: 5,
-    fontFamily: RubikRegular,
+    // paddingRight: 5,
+    fontFamily: RubikMedium,
     color: 'white',
   },
   bigText: {
     marginTop: dynamicSize(70),
     fontSize: dynamicSize(40),
-    paddingRight: 5,
+    // paddingRight: 5,
+    lineHeight: dynamicSize(41),
     fontFamily: RubikSemiBold,
     color: 'white',
   },
   Container: {alignItems: 'center', height: '100%', width: '100%'},
   rewardsTypes: {
     flexDirection: 'row',
-    marginVertical: 10,
-    marginTop: 25,
+    marginVertical: dynamicSize(20),
+    marginTop: dynamicSize(30),
     justifyContent: 'space-around',
     width: '100%',
   },
   topBar: {
-    height: dynamicSize(160),
+    height: dynamicSize(180),
     backgroundColor: 'white',
     width: '100%',
     alignItems: 'center',

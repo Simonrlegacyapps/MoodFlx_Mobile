@@ -24,7 +24,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import AnonymousPopUp from '../../../Components/Modals/AnonymousPopUp/AnonymousPopUp';
 import HomeSyncHeader from '../../../Components/HomeSyncHeader/HomeSyncHeader';
 import DataInsights from '../../../Components/DataInsights/DataInsights';
-import {getFontSize, horizontalScale} from '../../../Constants/sizeChoose';
+import {dynamicSize, getFontSize, horizontalScale} from '../../../Constants/sizeChoose';
 import isEmpty from 'lodash.isempty';
 import getStore from '../../../redux';
 import PostRequestApi from '../../../apirequest/PostRequestApi';
@@ -38,6 +38,7 @@ import Colors from '../../../Constants/Colors/Colors';
 import PreviousArrow from '../../../../assets/svg/PreviousArrow';
 import NextArrow from '../../../../assets/svg/NextArrow';
 import Svg, {Image as SvgImage} from 'react-native-svg';
+import { SafeAreaView } from 'react-native-safe-area-context';
 let mapStyle = [
   {
     elementType: 'geometry',
@@ -143,7 +144,7 @@ const CustomMarker = ({e, idx, setRef, markerIndex, markers
     >
       {!!e?.icon && (
         <View>
-          <Image source={Images?.[e?.icon]} style={styles.moodIcon} />
+          <Image source={Images?.[e?.icon]== undefined ?  65 : Images?.[e?.icon]} style={styles.moodIcon} />
         </View>
       )}
       <Callout style={styles.calloutStyle}>
@@ -154,10 +155,10 @@ const CustomMarker = ({e, idx, setRef, markerIndex, markers
                 width="100%"
                 height="100%"
                 preserveAspectRatio="xMidYMid slice"
-                href={Images?.[e?.icon]== undefined ?  70 : Images?.[e?.icon]}
+                href={Images?.[e?.icon]== undefined ?  65 : Images?.[e?.icon]}
               />
-            </Svg>
 
+            </Svg>
           )}
           
           <View style={styles.labelSubContainer}>
@@ -388,7 +389,7 @@ const LocationData = ({
   const isNextMoodButtonDisabled = (markerIndex === null || markerIndex <= 0);
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <HomeSyncHeader
         label={'Location'}
         isPermissionGiven={UserData.WeatherPermission}
@@ -501,7 +502,7 @@ const LocationData = ({
         dismissModalHandler={() => AnonymousPopUpcancelled()}
         verifyDone={() => AnonymousPopUpcancelled()}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -509,6 +510,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: Math.ceil(SIZE),
+    // marginTop: Platform.OS == 'ios' ?  dynamicSize(57) : dynamicSize(0)
   },
   actionSheetView: {
     position: 'absolute',

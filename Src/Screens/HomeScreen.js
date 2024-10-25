@@ -17,7 +17,7 @@ import LinkIcon from '../../assets/tabicons/LinkIcon';
 import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation';
 import MainProfileTab from './Profile/MainProfileTab';
 import {useSelector} from 'react-redux';
-import { horizontalScale } from '../Constants/sizeChoose';
+import { dynamicSize, horizontalScale } from '../Constants/sizeChoose';
 import DropShadow from 'react-native-drop-shadow';
 
 const Tab = createBottomTabNavigator();
@@ -49,7 +49,7 @@ const HomeScreen = ({ navigation, route }) => {
                     style={{ marginBottom: 75, width: 65, height: 65 }}
                     source={require('../../assets/tabicons/logo.png')}
                   /> */}
-                  <View style={{ marginBottom: 75, width: 65, height: 65 }} />
+                  <View style={{ marginBottom: dynamicSize(67),borderRadius: 100, width: 65, height: 65 }} />
                 </Pressable>
               );
             } else if (route.name === 'LinkCompanyStackNavigation') {
@@ -66,6 +66,8 @@ const HomeScreen = ({ navigation, route }) => {
             backgroundColor: 'transparent',
             borderTopWidth: 0,
             position: 'absolute',
+            paddingTop: Platform.OS == 'ios' ? dynamicSize(25) : 'auto',
+            paddingBottom:Platform.OS == 'ios' ? dynamicSize(20) :dynamicSize(30),
             zIndex: 9999,
             elevation: 0,
           },
@@ -138,17 +140,17 @@ const HomeScreen = ({ navigation, route }) => {
           }}>
           <Image
             resizeMode={'stretch'}
-            style={{ tintColor: 'white', height: 60, width: WIDTH }}
+            style={{ tintColor: 'white', height: dynamicSize(70), width: WIDTH }}
             source={require('../../assets/tabicons/Rectangle.png')}
           />
         </DropShadow>
       </View>
       <View
         style={{
-        bottom: Platform.OS === 'android' ? horizontalScale(20) : horizontalScale(30),
+        bottom: Platform.OS === 'android' ? horizontalScale(35) : horizontalScale(35),
         position: 'absolute',
         alignSelf: 'center',
-        zIndex: 100
+        zIndex: 100,
       }}>
         <Pressable
           disabled={!isDivisionSelected}

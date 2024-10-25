@@ -62,6 +62,7 @@ import { PERMISSIONS } from 'react-native-permissions';
 import { logger } from '../../..';
 import ContactUsIcon from '../../../assets/profileicons/ContactUsIcon';
 import * as Email from '../../../Src/share_module/index';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const listData = [
   { name: 'Name', value: 'Anonymous' },
   { name: 'Gender', value: 'Anonymous' },
@@ -547,7 +548,7 @@ const ProfileTab = ({ navigation }) => {
   };  
 
   return (
-    <>
+    <View style={{flex: 1}}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <ScrollView
         refreshControl={
@@ -628,7 +629,7 @@ const ProfileTab = ({ navigation }) => {
               />
             </View>
           </View>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20, top: 10, padding:5 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute',marginTop: dynamicSize(30), left: 20, top: 10, padding:5 }}>
             <BackIcon />
           </TouchableOpacity>
           <View style={styles.flatlistContainer}>
@@ -942,7 +943,7 @@ const ProfileTab = ({ navigation }) => {
           <ActivityIndicator color='#9889F9' size="large" />
         </View>
       )}
-    </>
+    </View>
   );
 };
 
@@ -961,7 +962,7 @@ const styles = StyleSheet.create({
     color: Colors.greyTwo,
   },
   profileImageStyle: {
-    marginTop: dynamicSize(40),
+    marginTop: dynamicSize(70),
     alignSelf: 'center',
   },
   vitalityMemberIdTxt: {
