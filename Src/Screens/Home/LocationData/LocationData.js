@@ -144,7 +144,7 @@ const CustomMarker = ({e, idx, setRef, markerIndex, markers
     >
       {!!e?.icon && (
         <View>
-          <Image source={Images?.[e?.icon]== undefined ?  65 : Images?.[e?.icon]} style={styles.moodIcon} />
+          <Image source={Images?.[e?.icon]== undefined ?  70 : Images?.[e?.icon]} style={styles.moodIcon} />
         </View>
       )}
       <Callout style={styles.calloutStyle}>
@@ -155,7 +155,7 @@ const CustomMarker = ({e, idx, setRef, markerIndex, markers
                 width="100%"
                 height="100%"
                 preserveAspectRatio="xMidYMid slice"
-                href={Images?.[e?.icon]== undefined ?  65 : Images?.[e?.icon]}
+                href={Images?.[e?.icon]== undefined ?  70 : Images?.[e?.icon]}
               />
 
             </Svg>
