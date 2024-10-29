@@ -249,7 +249,7 @@ android {
             }
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            buildConfigField 'String', 'BASE_URL', '"https://admin.moodflo.com/api/"'
+            buildConfigField 'String', 'BASE_URL', 'https://admin.moodflo.com/api/'
             signingConfig signingConfigs.release
 //            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
