@@ -42,6 +42,7 @@ import HomeSyncHeader from '../../Components/HomeSyncHeader/HomeSyncHeader';
 import getStore from '../../redux';
 import Skeleton from '../../Components/Skeleton/Skeleton';
 import Colors from '../../Constants/Colors/Colors';
+import { logger } from '../../..';
 
 const defaultActivityStepCount = {
   [insightsDurationFlags.daily]: 0,
@@ -794,6 +795,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: Math.ceil(SIZE),
+    paddingTop: Platform.OS == 'android'? 20: 0
   },
   scrollView: {
     // backgroundColor: '#FFF',

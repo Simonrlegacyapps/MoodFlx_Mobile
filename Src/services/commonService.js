@@ -281,7 +281,7 @@ export const openHealthApp = async () => {
     return;
   }
   const url = 'x-apple-health://';
-  const supported = await Linking.canOpenURL(url);
+    const supported = await Linking.canOpenURL(url);
 
   if (supported) {
     // Opening the link with some app, if the URL scheme is "http" the web link should be opened

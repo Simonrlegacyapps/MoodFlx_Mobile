@@ -40,6 +40,7 @@ import PostRequestApi from '../../apirequest/PostRequestApi'
 import isFunction from 'lodash.isfunction';
 import ProgressDay from './ProgressDay';
 import Colors from '../../Constants/Colors/Colors';
+import { logger } from '../../..';
 
 const getInsightsArray = (text) => {
   let insights = [];
@@ -249,6 +250,7 @@ function DataInsights({
   let suggestion = dailySuggestion;
   let suggestionType = dailySuggestionType;
   if (insightsDuration === insightsDurationFlags.daily) {
+    // logger("insightsDetails -=-=-=",!!dailySuggestion, insightsDurationFlags.daily,   insightsDetails)
     insightsDetails = !!dailyInsights === true ? dailyInsights : 'Not enough high quality data yet';
     suggestion = !!dailySuggestion === true ? dailySuggestion : '';
     suggestionType = !!dailySuggestionType === true ? dailySuggestionType : '';
@@ -264,6 +266,7 @@ function DataInsights({
 
   let insightsArray = getInsightsArray(insightsDetails);
 
+  // logger("dailyInsights -=-=-= /*/*/*/*/*/*/*/*", dailyInsights)
   if (!dailyInsights) {
     return null;
   }
@@ -283,7 +286,7 @@ function DataInsights({
   };
 
   // console.log(`MoodCountData`, MoodCountData)
-
+  // logger("insightsArray, */*/*/*/*/*  ",  insightsArray)
   return (
     <>
       <View style={styles.tabContainer}>
@@ -405,7 +408,7 @@ function DataInsights({
             })}
           </Text>
         </Pressable>
-        {insightsDuration === insightsDurationFlags.weekly && (
+        {insightsDuration == insightsDurationFlags.weekly && (
           <>
           <TouchableOpacity
             activeOpacity={0.7}

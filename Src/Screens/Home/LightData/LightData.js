@@ -16,6 +16,7 @@ import {
   DeviceEventEmitter,
   NativeModules,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -100,6 +101,9 @@ const LightData = ({
   const [lightGraphData, setLightGraphData] = useState(null);
   const isUpdateLightApiCalled = useRef(false);
   const [AnonymousClick, setAnonymousClick] = useState(false);
+
+  const scrollRef = useRef();
+
 
   const UserData = useSelector((state) => state.First);
   const dispatch = useDispatch();
@@ -292,6 +296,7 @@ const LightData = ({
   // Light data using react-native-sensor-manager
   useEffect(() => {
     if (light === -1 || swiperIndex === index) {
+      onPressTouch()
       isStopLightTimeout = false;
       if (Platform.OS === 'android') {
         SensorManager.startLightSensor(100);
@@ -348,9 +353,17 @@ const LightData = ({
     setAnonymousClick(false);
   };
 
+  const onPressTouch = () => {
+    // scrollRef.current?.scrollTo({
+    //   y: 0,
+    //   animated: true,
+    // });
+  }
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView
+        ref={scrollRef}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
@@ -561,7 +574,7 @@ const LightData = ({
         value={ScreenDuration}
         dismissModalHandler={() => setScreenDuration(false)}
       /> */}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -569,6 +582,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: Math.ceil(SIZE),
+    paddingTop: Platform.OS == 'android'? 20: 0
   },
   scrollView: {
     height: '100%',

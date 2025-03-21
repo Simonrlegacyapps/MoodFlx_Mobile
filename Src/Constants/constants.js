@@ -1,11 +1,14 @@
 export const PHOTO_URL = 'https://admin.moodflo.com/';
 // export const PHOTO_URL = 'https://adminstage.moodflo.com/';
 export const PHOTO_URL_DEV = 'https://dev.moodflo.com/';
+export const PHOTO_URL_STAGE = 'https://adminstage.moodflo.com/';
 export const MOOD_ICONS = 'https://super.moodflo.com/';
 // export const MOOD_ICONS = ' https://admin.moodflo.com/';
 // export const MOOD_ICONS = 'https://superstage.moodflo.com/';
 export const MOOD_ICONS_DEV = 'https://staging.moodflo.com/';
+export const MOOD_ICONS_STAGE = 'https://superstage.moodflo.com/';
 export const BASE_URL_DEV_API = 'https://dev.moodflo.com/api/';
+export const BASE_URL_STAGE_API = 'https://adminstage.moodflo.com/api/';
 // export const BASE_URL_PRODUCTION_API = 'https://adminstage.moodflo.com/api/';
 export const BASE_URL_PRODUCTION_API = 'https://admin.moodflo.com/api/';
 // export const BASE_URL_PRODUCTION_API = 'https://adminmoodflo.legacyapps.com.au/api/';
@@ -20,7 +23,7 @@ export const SUPPORT_EMAIL = 'queries@aiavitality.com.au'
 let isCurrentLocationCalled = false;
 // let isDevServer = (__DEV__);
 //let isDevServer = true;
-let isDevServer = false;
+let isDevServer = true;
 
 export const getIsDevServer = () => isDevServer;
 export const setIsDevServer = (flag = (__DEV__)) => {
@@ -29,7 +32,7 @@ export const setIsDevServer = (flag = (__DEV__)) => {
 
 export const getApiBaseUrl = () => {
   if (isDevServer) {
-    return BASE_URL_DEV_API;
+    return BASE_URL_STAGE_API;
   } else {
     return BASE_URL_PRODUCTION_API;
   }
@@ -37,7 +40,7 @@ export const getApiBaseUrl = () => {
 
 export const getPhotoUrl = () => {
   if (isDevServer) {
-    return PHOTO_URL_DEV;
+    return PHOTO_URL_STAGE;
   } else {
     return PHOTO_URL;
   }
@@ -45,7 +48,7 @@ export const getPhotoUrl = () => {
 
 export const getMoodIconsUrl = () => {
   if (isDevServer) {
-    return MOOD_ICONS_DEV;
+    return MOOD_ICONS_STAGE;
   } else {
     return MOOD_ICONS;
   }

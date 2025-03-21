@@ -73,8 +73,7 @@ import {
   googleFitScopes,
   activityHealthKitOptions,
 } from '../../services/appPermissions';
-import {
-  BASE_URL_PRODUCTION_API,
+import { 
   dataTypes,
   getApiBaseUrl,
   getScreensPriority,
@@ -285,7 +284,7 @@ const App = props => {
     const params = {user_id: userData?.UserId};
     if (userData?.UserId) {
       await axios
-        .post(BASE_URL_PRODUCTION_API + 'getSplashScreen', params)
+        .post(getApiBaseUrl() + 'getSplashScreen', params)
         .then(async resp => {
           setImageURL(resp?.data?.splash_screen);
           try {
@@ -431,6 +430,9 @@ const App = props => {
     //   `api.openweathermap.org/data/2.5/weather?lat=${this.state.lat}&lon=${this.state.lng}&appid=549e3cd91b498cafbd020698266c3aa3&units=metric`,
     // );
     if (Platform.OS === 'ios') {
+      logger(
+        ` results before`,
+        UserData.HealthPermission)
       const healthKitOptions = activityHealthKitOptions;
       let dataSyncArray = [];
       !UserData.HealthPermission &&
@@ -1253,7 +1255,7 @@ const App = props => {
           steps: !isNaN(totalSteps) ? Math.floor(totalSteps) : totalSteps,
           distance: totalDistance,
           calories: userCalories,
-          heart_rate: totalHeartRate,
+          heart_rate: !isNaN(totalHeartRate) ? totalHeartRate : 0,
           high_bp: highBp,
           low_bp: lowBp,
         });

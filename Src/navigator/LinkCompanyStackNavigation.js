@@ -1,5 +1,5 @@
 import React from 'react';
-import HomeScreen from '../Screens/HomeScreen';
+// import HomeScreen from '../Screens/HomeScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import EmailConfirmation from '../Screens/EmailConfirmation/EmailConfirmation';
 import VerifyEmail from '../Screens/VerifyEmail/VerifyEmail';

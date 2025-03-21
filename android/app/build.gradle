@@ -139,8 +139,8 @@ android {
         applicationId "com.moodflo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 95
-        versionName "1.6.7"
+        versionCode 96
+        versionName "1.6.8"
         multiDexEnabled true
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
@@ -203,7 +203,12 @@ android {
             }
         }
     }
-
+    packagingOptions {
+        exclude 'META-INF/*'
+    }
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
     splits {
         abi {
             reset()
@@ -222,6 +227,11 @@ android {
 //            storePassword 'android'
 //            keyAlias 'androiddebugkey'
 //            keyPassword 'android'
+
+            storeFile file('my-release-key.keystore')
+            storePassword '123456'
+            keyAlias 'alias_name'
+            keyPassword '123456'
         }
         release {
 
@@ -235,7 +245,7 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField 'String', 'BASE_URL', '"https://dev.moodflo.com/api/"'
+            buildConfigField 'String', 'BASE_URL', '"https://adminstage.moodflo.com/api/"'
             signingConfig signingConfigs.debug
         }
         release {
@@ -249,7 +259,8 @@ android {
             }
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            buildConfigField 'String', 'BASE_URL', 'https://admin.moodflo.com/api/'
+            // buildConfigField 'String', 'BASE_URL', '"https://admin.moodflo.com/api/"'
+             buildConfigField 'String', 'BASE_URL', '"https://adminstage.moodflo.com/api/"'
             signingConfig signingConfigs.release
 //            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds

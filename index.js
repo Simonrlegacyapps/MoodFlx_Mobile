@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
-import { AppRegistry, Platform, LogBox, UIManager } from 'react-native';
+import { AppRegistry, Platform, LogBox, UIManager, Alert } from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 import {Provider} from 'react-redux';
@@ -11,6 +11,9 @@ import NotifService from './Src/services/notifService';
 import {SetNotification} from './Src/redux/actions/actions';
 import getStore from './Src/redux';
 import SplashScreen from './Src/Screens/Splash/SplashScreen';
+import DeviceInfo from 'react-native-device-info';
+import JailMonkey from 'jail-monkey'
+import RNExitApp from 'react-native-exit-app';
 
 LogBox.ignoreAllLogs(true);
 
@@ -80,16 +83,34 @@ PushNotification.configure({
 const ProvidedApp = () => {
   const [isSplashVisible, setSplashVisible] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSplashVisible(false);
-    }, 5000);
+  // useEffect(() => {
+  //   // const timer = setTimeout(() => {
+  //   //   // setSplashVisible(false);
+  //   // }, 5000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   // return () => clearTimeout(timer);
+  // }, []);
+
+    const checkEmulatorStatus = async () => {
+      const isEmulator = await DeviceInfo.isEmulator();
+      if (isEmulator || JailMonkey.isJailBroken()) {
+        Alert.alert(
+          'Security Warning',
+          'This app cannot run on an emulator or rooted/jailbroken. Please use a physical mobile phone.',
+          [{ text: 'OK', onPress: () =>  RNExitApp.exitApp()}]
+        );
+        // Add logic to exit the app or restrict functionality
+      }else{
+        const timer = setTimeout(() => {
+          setSplashVisible(false);
+        }, 5000);
+      }
+    };
 
   if (isSplashVisible) {
-    return <SplashScreen onLoaded={() => setSplashVisible(false)} />;
+    return <SplashScreen onLoaded={() => {
+      checkEmulatorStatus()
+    }} />;
   }
 
   return (

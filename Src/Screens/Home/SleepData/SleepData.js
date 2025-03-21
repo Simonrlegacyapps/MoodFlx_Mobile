@@ -6,6 +6,7 @@ import {
   Dimensions,
   StyleSheet,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
 import Constants from '../../../Constants';
 import {
@@ -426,7 +427,7 @@ const SleepData = ({
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -533,7 +534,7 @@ const SleepData = ({
         dismissModalHandler={AnonymousPopUpcancelled}
         verifyDone={AnonymousPopUpcancelled}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -541,6 +542,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: Math.ceil(SIZE),
+    paddingTop:  20
   },
   scrollView: {
     height: '100%',

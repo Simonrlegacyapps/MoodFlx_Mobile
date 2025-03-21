@@ -5,7 +5,7 @@ import FastImage from 'react-native-fast-image';
 import {logger} from '../../..';
 import getStore from '../../redux';
 import axios from 'axios';
-import {BASE_URL_PRODUCTION_API} from '../../Constants/constants';
+import {getApiBaseUrl} from '../../Constants/constants';
 
 const SplashScreen = ({onLoaded}) => {
   const [imageURL, setImageURL] = useState();
@@ -40,7 +40,7 @@ const SplashScreen = ({onLoaded}) => {
     const params = {user_id: userData?.UserId || userID};
     if (userData?.UserId || userID) {
       await axios
-        .post(BASE_URL_PRODUCTION_API + 'getSplashScreen', params)
+        .post(getApiBaseUrl() + 'getSplashScreen', params)
         .then(async resp => {
           if (resp?.data?.splash_screen === '') {
             try {

@@ -39,6 +39,7 @@ import PreviousArrow from '../../../../assets/svg/PreviousArrow';
 import NextArrow from '../../../../assets/svg/NextArrow';
 import Svg, {Image as SvgImage} from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { logger } from '../../../..';
 let mapStyle = [
   {
     elementType: 'geometry',
@@ -123,8 +124,8 @@ let mapStyle = [
 
 const { width: SIZE, height: HEIGHT } = Dimensions.get('window');
 const defaultLoc = {
-  latitude: Number.parseFloat(defaultLocation.latitude),
-  longitude: Number.parseFloat(defaultLocation.longitude),
+  latitude: Number.parseFloat(defaultLocation?.latitude),
+  longitude: Number.parseFloat(defaultLocation?.longitude),
   latitudeDelta: 0.015,
   longitudeDelta: 0.0121,
 };
@@ -209,8 +210,8 @@ const LocationData = ({
       };
     } else {
       location = {
-        latitude: Number.parseFloat(defaultLocation.latitude),
-        longitude: Number.parseFloat(defaultLocation.longitude),
+        latitude: Number.parseFloat(defaultLocation?.latitude),
+        longitude: Number.parseFloat(defaultLocation?.longitude),
       };
     }
     // const isIndia = isCountryIndia();
@@ -268,7 +269,8 @@ const LocationData = ({
           Array.isArray(data?.data?.location_data) &&
           data.data.location_data.length > 0
         ) {
-          let m = data.data.location_data.map((e) => {
+          const filteredData =  data.data.location_data.filter((e) => e?.latitude !== "" || e?.longitude !== "") 
+          let m = filteredData.map((e) => {
             let l = {};
             if (!isNaN(e?.latitude)) {
               l.latitude = Number.parseFloat(e.latitude);
@@ -510,6 +512,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: Math.ceil(SIZE),
+    paddingTop: Platform.OS == 'android'? 0: 0
     // marginTop: Platform.OS == 'ios' ?  dynamicSize(57) : dynamicSize(0)
   },
   actionSheetView: {

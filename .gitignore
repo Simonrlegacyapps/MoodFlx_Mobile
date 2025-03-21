@@ -64,4 +64,5 @@ buck-out/
 
 package-lock.json
 yarn.lock
+.yarn
 android/app/release/app-release.aab

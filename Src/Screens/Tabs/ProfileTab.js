@@ -342,19 +342,51 @@ const ProfileTab = ({ navigation }) => {
     ImagePicker.openPicker({
       width: 300,
       height: 400,
-      cropping: true,
+      cropping: false,
       // compressImageQuality:0.6
     }).then((i) => {
-      let source = {
-        uri: i.path,
-        type: i.mime,
-        name: Platform.OS === 'android' ? i.path : i.path,
-      };
-      const images = [source];
 
-      imagePostFunction(source);
-      setOpenActionSheet(false);
-      console.log('images', images);
+      const allowedExtensions = ['jpeg','png','jpg'];
+      const fileExtension = i.filename.split('.').pop().toLowerCase();  
+
+      if(fileExtension == "gif") {
+
+        let source = {
+          uri: i.path,
+          type: i.mime,
+          name: Platform.OS === 'android' ? i.path : i.path,
+        };
+        const images = [source];
+  
+        imagePostFunction(source);
+        setOpenActionSheet(false);
+        console.log('images', images);
+
+      } else if (allowedExtensions.includes(fileExtension)) {
+
+        ImagePicker.openCropper({
+          path: i.path,
+          width: 300,
+          height: 400
+        }).then(image => {
+
+          let source = {
+            uri: image.path,
+            type: image.mime,
+            name: Platform.OS === 'android' ? image.path : image.path,
+          };
+          const images = [source];
+    
+          imagePostFunction(source);
+          setOpenActionSheet(false);
+          console.log('images', images);
+          
+        });
+
+      } else {
+        alert("Invalid file type selected! Please choose an image in one of the following formats: JPG, JPEG, PNG, or GIF.");
+        setOpenActionSheet(false);
+      }
     });
   };
 
@@ -509,7 +541,7 @@ const ProfileTab = ({ navigation }) => {
   //     : name,
   // );
 
-  async function requestPermission() {
+  async function requestPermission0() {
     try {
       const permissions = [
         PERMISSIONS.ANDROID.CAMERA,
@@ -530,6 +562,72 @@ const ProfileTab = ({ navigation }) => {
       }
     } catch (err) {
       logger('Error requesting permissions:', err);
+      return false;
+    }
+  }
+
+  async function requestPermission0() {
+    try {
+      const permissions = [
+        PERMISSIONS.ANDROID.CAMERA,
+        PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE, // For Android 10-12
+      ];
+  
+      if (Platform.Version >= 31) {
+        permissions.push(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES); // Android 13+
+      }
+  
+      console.log('Requesting permissions:', permissions);
+  
+      const granted = await PermissionsAndroid.requestMultiple(permissions);
+      console.log('Permissions granted:', granted);
+  
+      const allPermissionsGranted = Object.values(granted).every(
+        permission => permission === PermissionsAndroid.RESULTS.GRANTED
+      );
+  
+      if (allPermissionsGranted) {
+        console.log('✅ Camera and gallery permissions granted');
+        return true;
+      } else {
+        console.log('❌ Camera and/or gallery permissions denied');
+        return false;
+      }
+    } catch (err) {
+      console.error('🚨 Error requesting permissions:', err);
+      return false;
+    }
+  }
+
+  async function requestPermission() {
+    try {
+      const permissions = [
+        PERMISSIONS.ANDROID.CAMERA,
+        PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE, // For Android 10-12
+      ];
+  
+      if (Platform.Version >= 31) {
+        permissions.push(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES); // Android 13+
+      }
+  
+      console.log('Requesting permissions:', permissions);
+  
+      const granted = await PermissionsAndroid.requestMultiple(permissions);
+      console.log('Permissions granted:', granted);
+  
+      const allPermissionsGranted = Object.values(granted).every(
+        permission => permission === PermissionsAndroid.RESULTS.GRANTED
+      );
+  
+      if (allPermissionsGranted) {
+        console.log('✅ Camera and gallery permissions granted');
+        return true;
+      } else {
+        console.log('❌ Camera and/or gallery permissions denied');
+        return false;
+      }
+    } catch (err) {
+      console.error('🚨 Error requesting permissions:', err);
       return false;
     }
   }
