@@ -28,7 +28,7 @@
 		190280542801F7E8003E07A6 /* Rubik-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 190280532801F7E8003E07A6 /* Rubik-SemiBoldItalic.ttf */; };
 		1922D43B2706011A003403BB /* MoodInputWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 1922D43627060118003403BB /* MoodInputWidget.intentdefinition */; };
 		196AD42F281194F900D64A0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 196AD42E281194F900D64A0C /* GoogleService-Info.plist */; };
-		19DCB896267B1B19009C4DC1 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		19DCB896267B1B19009C4DC1 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		19ED3130282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 19ED312F282AA5C7003C35B9 /* RCTMoodDataModule.m */; };
 		19ED3131282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 19ED312F282AA5C7003C35B9 /* RCTMoodDataModule.m */; };
 		19F536DD281FD187008A1F82 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F536DC281FD187008A1F82 /* HealthKit.framework */; };
@@ -50,6 +50,7 @@
 		00E356EE1AD99517003FC87E /* MoodFloTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoodFloTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* MoodFloTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MoodFloTests.m; sourceTree = "<group>"; };
+		05EEF399BC604539949702ED /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* MoodFlo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoodFlo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = MoodFlo/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = MoodFlo/AppDelegate.mm; sourceTree = "<group>"; };
@@ -83,10 +84,25 @@
 		19ED312E282AA510003C35B9 /* RCTMoodDataModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTMoodDataModule.h; sourceTree = "<group>"; };
 		19ED312F282AA5C7003C35B9 /* RCTMoodDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTMoodDataModule.m; sourceTree = "<group>"; };
 		19F536DC281FD187008A1F82 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		25D4725A3ACA4F6D966A1BB2 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
+		2B7EA13D3B224A059768307D /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
 		2FE6E0BFF8AC1402A3FA92B6 /* Pods-MoodFlo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo.debug.xcconfig"; path = "Target Support Files/Pods-MoodFlo/Pods-MoodFlo.debug.xcconfig"; sourceTree = "<group>"; };
+		35B1D1150B1B401A8FFA2FF0 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		5415D2B0507D4786BC539574 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		71185B56F4255058C6CE5729 /* libPods-MoodFlo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MoodFlo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B705D9485914BB28C435A36 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
+		88014A3C4A8B49EDB476BDA2 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		8F292D0EF5C4F38AE6969007 /* Pods-MoodFlo-MoodFloTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-MoodFloTests.release.xcconfig"; path = "Target Support Files/Pods-MoodFlo-MoodFloTests/Pods-MoodFlo-MoodFloTests.release.xcconfig"; sourceTree = "<group>"; };
+		96C4D52836CD476891FA3C7E /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		9BFA6CD329364D25B3D6F2E4 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
+		A22A3EBB8B8F4A81863C7CDA /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		B8E0D3C181CE898871636764 /* Pods-MoodFlo-MoodFloTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo-MoodFloTests.debug.xcconfig"; path = "Target Support Files/Pods-MoodFlo-MoodFloTests/Pods-MoodFlo-MoodFloTests.debug.xcconfig"; sourceTree = "<group>"; };
+		BB15B935F1684CC0A1BDF38B /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
+		BD2782D81DD3466E9536E32C /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
+		D7AFEC51190B49438F958B09 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
+		DABBA7B53D314A40BE3F14ED /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
+		DC3355E761B048CB9CB802E7 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		E9A56FB1E5FD45049D72BB6D /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F8A21D452B7CC4587F0761D8 /* Pods-MoodFlo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoodFlo.release.xcconfig"; path = "Target Support Files/Pods-MoodFlo/Pods-MoodFlo.release.xcconfig"; sourceTree = "<group>"; };
 		FC5F8390D6028A358FF33724 /* libPods-MoodFlo-MoodFloTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MoodFlo-MoodFloTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -170,6 +186,29 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		2E617646200B4C0D9241AE2A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D7AFEC51190B49438F958B09 /* AntDesign.ttf */,
+				E9A56FB1E5FD45049D72BB6D /* Entypo.ttf */,
+				DABBA7B53D314A40BE3F14ED /* EvilIcons.ttf */,
+				7B705D9485914BB28C435A36 /* Feather.ttf */,
+				5415D2B0507D4786BC539574 /* FontAwesome.ttf */,
+				25D4725A3ACA4F6D966A1BB2 /* FontAwesome5_Brands.ttf */,
+				BB15B935F1684CC0A1BDF38B /* FontAwesome5_Regular.ttf */,
+				BD2782D81DD3466E9536E32C /* FontAwesome5_Solid.ttf */,
+				2B7EA13D3B224A059768307D /* Fontisto.ttf */,
+				88014A3C4A8B49EDB476BDA2 /* Foundation.ttf */,
+				96C4D52836CD476891FA3C7E /* Ionicons.ttf */,
+				DC3355E761B048CB9CB802E7 /* MaterialCommunityIcons.ttf */,
+				05EEF399BC604539949702ED /* MaterialIcons.ttf */,
+				A22A3EBB8B8F4A81863C7CDA /* Octicons.ttf */,
+				35B1D1150B1B401A8FFA2FF0 /* SimpleLineIcons.ttf */,
+				9BFA6CD329364D25B3D6F2E4 /* Zocial.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -203,6 +242,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				2E617646200B4C0D9241AE2A /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -542,7 +582,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				19ED3130282AA5C7003C35B9 /* RCTMoodDataModule.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				19DCB896267B1B19009C4DC1 /* BuildFile in Sources */,
+				19DCB896267B1B19009C4DC1 /* (null) in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,7 +670,7 @@
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFlo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = i386;
@@ -644,7 +684,7 @@
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 7.9.4;
+				MARKETING_VERSION = 7.9.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -671,7 +711,7 @@
 				CODE_SIGN_ENTITLEMENTS = MoodFlo/MoodFloRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = UV3Z6BTTHA;
 				EXCLUDED_ARCHS = i386;
 				INFOPLIST_FILE = MoodFlo/Info.plist;
@@ -684,7 +724,7 @@
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 7.9.4;
+				MARKETING_VERSION = 7.9.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",

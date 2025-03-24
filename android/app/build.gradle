@@ -259,8 +259,8 @@ android {
             }
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            // buildConfigField 'String', 'BASE_URL', '"https://admin.moodflo.com/api/"'
-             buildConfigField 'String', 'BASE_URL', '"https://adminstage.moodflo.com/api/"'
+            buildConfigField 'String', 'BASE_URL', '"https://admin.moodflo.com/api/"'
+            //  buildConfigField 'String', 'BASE_URL', '"https://adminstage.moodflo.com/api/"'
             signingConfig signingConfigs.release
 //            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
@@ -303,6 +303,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-base:18.0.1'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
+        // implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
+
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

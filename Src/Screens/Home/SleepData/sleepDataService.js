@@ -62,9 +62,9 @@ export async function getSleepDataAfterPermissionAndroid({ askPermission, onUpda
         if (results) {
           // logger('Google Fit getSleepSamples success +++++++++======>>>>', results);
           if(results?.length){
-            const sleepData = getSleepDataFormateData(results);
-            logger("--------------------------sleepData--------", sleepData)
-            const data = JSON.stringify(
+            const sleepData = getFormattedSleepData(results);
+        logger("_____________________sleepData", sleepData)
+        const data = JSON.stringify(
               {
                 "device_id": getMyDeviceId(),
                 "email": userData.UserEmail ?? '',
@@ -79,7 +79,7 @@ export async function getSleepDataAfterPermissionAndroid({ askPermission, onUpda
                 'Content-Type': 'application/json',
                 Cookie: '__cfduid=de42be196e76a7e54fe0b710d009e4dd11615455418',
               },
-              data: data,
+              data:data,
             };
             await axios(config)
           }
@@ -117,6 +117,47 @@ export async function getSleepDataAfterPermissionAndroid({ askPermission, onUpda
     console.log('Google Fit checkAuthorization error: ', error);
   }
 }
+
+function getFormattedSleepData(result) {
+    if (!(Array.isArray(result) && result.length > 0)) {
+      return null;
+    }
+    let formatData = [];
+    let currentDt = moment().date();
+    let previousDt = currentDt - 1;
+    if (result.length > 0) {
+      let data = null;
+      result.forEach((d, idx) => {
+        const startDateMillis = d?.startDate ? new Date(d.startDate).getTime() : null;
+        const endDateMillis = d?.endDate ? new Date(d.endDate).getTime() : null;
+        if (
+          (endDateMillis !== null && endDateMillis !== null) &&
+          (moment(endDateMillis).date() === previousDt ||
+            moment(endDateMillis).date() === currentDt)
+        ) {
+          data = {
+            start_date: moment(startDateMillis).format('YYYY-MM-DD HH:mm:ss'),
+            end_date: moment(endDateMillis).format('YYYY-MM-DD HH:mm:ss'),
+            type: (
+              d?.type?.toLowerCase() === 'inbed' ||
+              d?.type?.toLowerCase() === 'asleep')
+              ? d.type?.toUpperCase?.()
+              : 'INBED',
+          };
+          formatData.push(data);
+        }
+      });
+    }
+    formatData.sort(function (a, b) {
+      const aDateMillis = a?.start_date ? new Date(a.start_date).getTime() : null;
+      const bDateMillis = b?.start_date ? new Date(b.start_date).getTime() : null;
+      if (aDateMillis === null || bDateMillis === null) {
+        return 0;
+      }
+      return aDateMillis - bDateMillis;
+    });
+    return formatData;
+  }
 
 export function getSleepDataAfterPermissionIOS({ askPermission, onUpdate, dispatch }) {
   if (Platform.OS === 'ios') {
@@ -482,48 +523,8 @@ export function convertMinutesToHours(minutes) {
   return Number(hours);
 }
 
-export function getSleepDataFormateData(fitData) {
-  //  logger("fitData", fitData)
-  let formatData = [];
-  let currentDt = moment().date();
-  let previousDt = currentDt - 1;
-  if (fitData.length > 0) {
-    let data = null;
-    fitData.forEach((d, idx) => {
-      const startDateMillis = d?.startDate ? new Date(d.startDate).getTime() : null;
-      const endDateMillis = d?.endDate ? new Date(d.endDate).getTime() : null;
-      // logger("endDateMillis", moment(endDateMillis).date() , previousDt, currentDt)
-      if (
-        (endDateMillis !== null && endDateMillis !== null) &&
-        (moment(endDateMillis).date() === previousDt ||
-          moment(endDateMillis).date() === currentDt)
-      ) {
-        data = {
-          start_date: moment(startDateMillis).format('YYYY-MM-DD HH:mm:ss'),
-          end_date: moment(endDateMillis).format('YYYY-MM-DD HH:mm:ss'),
-          type: (
-            d?.type?.toLowerCase() === 'inbed' ||
-            d?.type?.toLowerCase() === 'asleep')
-            ? d.type?.toUpperCase?.()
-            : 'INBED',
-        };
-        formatData.push(data);
-      }
-    });
-  }
-  formatData.sort(function (a, b) {
-    const aDateMillis = a?.start_date ? new Date(a.start_date).getTime() : null;
-    const bDateMillis = b?.start_date ? new Date(b.start_date).getTime() : null;
-    if (aDateMillis === null || bDateMillis === null) {
-      return 0;
-    }
-    return aDateMillis - bDateMillis;
-  });
-  // console.log('api sleep data for update api: ', formatData);
-  return formatData;
-}
-
 export function getSleepDataForUpdateApi() {
+  logger("______________getSleepDataForUpdateApi")
   if (!(Array.isArray(sleepDataLastThirtyDays) && sleepDataLastThirtyDays.length > 0)) {
     return null;
   }
@@ -553,6 +554,7 @@ export function getSleepDataForUpdateApi() {
       }
     });
   }
+  logger("______________formatData", formatData)
   formatData.sort(function (a, b) {
     const aDateMillis = a?.start_date ? new Date(a.start_date).getTime() : null;
     const bDateMillis = b?.start_date ? new Date(b.start_date).getTime() : null;
