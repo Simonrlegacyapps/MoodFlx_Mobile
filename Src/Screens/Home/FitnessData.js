@@ -373,8 +373,8 @@ const FitnessData = ({
     };
 
     console.log('FitnessData  updateStaffProfile params --->', raw);
-
-    GetStaffUserData(
+    const message = "from FitnessData, inside ProfileApiCallHere() method ==>" + JSON.stringify(raw);
+    GetStaffUserData(message,
       {
         device_id: deviceId,
         email: UserData.UserEmail,

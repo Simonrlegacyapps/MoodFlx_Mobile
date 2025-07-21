@@ -140,8 +140,8 @@ const MicScreen = ({navigation}) => {
       redirect: 'follow',
     };
     setLoading(true);
-
-    GetStaffUserData(
+    const message = "from MicScreen, inside getQuestions() method ==>" + JSON.stringify(data);
+    GetStaffUserData(message,
       {
         device_id: deviceId,
         email: e,
@@ -204,7 +204,7 @@ const MicScreen = ({navigation}) => {
           email: userEmail,
         };
         setIsSelectDivisionLoading(true);
-        getDivisionName(params, dispatch, false, function (isFinish) {
+        getDivisionName("false 207, MicScreen",params, dispatch, false, function (isFinish) {
           setIsSelectDivisionLoading(false);
         });
       }

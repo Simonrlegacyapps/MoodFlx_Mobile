@@ -62,8 +62,8 @@ const AnonymousHeader = ({ backGround, isShowPrevFloCoins }) => {
     };
 
     console.log(`raw`, raw);
-
-    GetStaffUserData(
+    const message = "from AnonymousHeader,inside ProfileApiCallHere() method";
+    GetStaffUserData(message,
       {
         device_id: deviceId,
         email: UserData.UserEmail,

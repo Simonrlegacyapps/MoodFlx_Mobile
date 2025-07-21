@@ -118,8 +118,8 @@ const SaveMoodConfirmModal = ({
     };
 
     console.log(`raw`, raw);
-
-    GetStaffUserData(
+    const message = "from SaveMoodConfirmModal, inside ProfileApiCallHere() method ==>" + JSON.stringify(raw);
+    GetStaffUserData(message,
       {
         device_id: deviceId,
         email: UserData.UserEmail,

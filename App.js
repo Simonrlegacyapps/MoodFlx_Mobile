@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef, useCallback} from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View,
   SafeAreaView,
@@ -10,9 +10,9 @@ import {
   NativeModules,
   PermissionsAndroid,
 } from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ScaledSheet} from 'react-native-size-matters';
+import { ScaledSheet } from 'react-native-size-matters';
 import StackNavigation from './Src/navigator/StackNavigation';
 import SharedGroupPreferences from 'react-native-shared-group-preferences';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
@@ -71,8 +71,8 @@ import {
   setIsInitialVideoVisible,
   setMoodsArray,
 } from './Src/services/commonService';
-import Toast, {BaseToast} from 'react-native-toast-message';
-import {getFontSize} from './Src/Constants/sizeChoose';
+import Toast, { BaseToast } from 'react-native-toast-message';
+import { getFontSize } from './Src/Constants/sizeChoose';
 import Constants from './Src/Constants';
 import CustomModal from './Src/Components/Modals/CustomModal/CustomModal';
 import {
@@ -87,17 +87,17 @@ import {
   setIsGetCurrentLocationCalled,
   widgetDataGroup,
 } from './Src/Constants/constants';
-import {syncWeatherData} from './Src/Screens/Home/WeatherData/weatherService';
+import { syncWeatherData } from './Src/Screens/Home/WeatherData/weatherService';
 import WeeklyInsightsProgress from './Src/Components/Modals/WeeklyInsightsProgressModal/WeeklyInsightsProgressModal';
-import {setSleepDataSync} from './Src/Screens/Home/SleepData/sleepDataService';
+import { setSleepDataSync } from './Src/Screens/Home/SleepData/sleepDataService';
 import Screen1 from './Src/Screens/WalkThrough/Screen1';
 import BoardingNavigation from './Src/navigator/BoardingNavigation';
 import getStore from './Src/redux';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const SharedStorage = NativeModules.SharedStorage;
 import NoInternetModal from './Src/Components/Modals/NoInternetModal/NoInternetModal';
-import NetInfo, {useNetInfo} from "@react-native-community/netinfo";
+import NetInfo, { useNetInfo } from "@react-native-community/netinfo";
 import isEmpty from 'lodash.isempty';
 import RNRestart from 'react-native-restart';
 import MonthlyInsightsProgress from './Src/Components/Modals/MonthlyInsightsProgressModal/MonthlyInsightsProgressModal';
@@ -115,7 +115,7 @@ Number.prototype.format = function () {
 };
 
 // const store = createStore(allReducers, applyMiddleware(thunk));
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 messaging().registerDeviceForRemoteMessages();
 
 const slides = [
@@ -191,6 +191,7 @@ const App = () => {
   const [email, setEmail] = useState('');
   const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
   const [linkModalText, setLinkModalText] = useState('');
+  const [link, setLink] = useState('');
   const [isOpenLvlUpModal, setIsOpenLvlUpModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLinkLoader, setIsLinkLoader] = useState(false);
@@ -232,7 +233,7 @@ const App = () => {
   }, []);
 
   const requestLocationPermission = async () => {
-    const permissionGranted =  await AppPermissions.requestLocationPermission(dispatch);;
+    const permissionGranted = await AppPermissions.requestLocationPermission(dispatch);;
     if (permissionGranted) {
       console.warn('Location permission granted');
     } else {
@@ -253,17 +254,17 @@ const App = () => {
   useEffect(() => {
     logger("netinfo", netInfo)
     if (netInfo) {
-    setIsConnected((e) => {
-      const i = (netInfo.isConnected !== false || netInfo.isConnected === null ) &&
-       (netInfo.isInternetReachable !== false || netInfo.isInternetReachable === null);
-      //let i = (netInfo.isConnected || netInfo.isConnected === null) && 
-      //(netInfo.isInternetReachable || netInfo.isInternetReachable === null);
-      if (e === false && i === true) {
-        // Reload app to after internet comes back
-        RNRestart?.Restart?.();
-      }
-      return i;
-    });
+      setIsConnected((e) => {
+        const i = (netInfo.isConnected !== false || netInfo.isConnected === null) &&
+          (netInfo.isInternetReachable !== false || netInfo.isInternetReachable === null);
+        //let i = (netInfo.isConnected || netInfo.isConnected === null) && 
+        //(netInfo.isInternetReachable || netInfo.isInternetReachable === null);
+        if (e === false && i === true) {
+          // Reload app to after internet comes back
+          RNRestart?.Restart?.();
+        }
+        return i;
+      });
     }
   }, [netInfo?.isConnected]);
 
@@ -343,9 +344,9 @@ const App = () => {
     };
     if (
       ((UserData.UserId && UserData.UserEmail) ||
-      (!UserData.UserId && !UserData.UserEmail)) &&
+        (!UserData.UserId && !UserData.UserEmail)) &&
       ((UserData.lat && UserData.lon) ||
-      (!UserData.lat && !UserData.lon))
+        (!UserData.lat && !UserData.lon))
     ) {
       setWidgetData();
     }
@@ -366,167 +367,167 @@ const App = () => {
   }, []);
 
   const linkCompany = async (org, vitality_member_id) => {
-    
-      setIsLinkLoader(true)
-      const deviceId = getMyDeviceId();
-      let fcm = '';
-    
-      try {
-        fcm = await messaging().getToken();
-      } catch (error) {
-        const fcmToken = await NotifService.getDeviceToken();
-        if(fcmToken){
-          fcm = fcmToken
-        } else {
-          console.log('error getting fcm token company link');
-        }
+
+    setIsLinkLoader(true)
+    const deviceId = getMyDeviceId();
+    let fcm = '';
+
+    try {
+      fcm = await messaging().getToken();
+    } catch (error) {
+      const fcmToken = await NotifService.getDeviceToken();
+      if (fcmToken) {
+        fcm = fcmToken
+      } else {
+        console.log('error getting fcm token company link');
       }
-      if (!org) {
-        org = newOrg.current;
-      }
-      if (!vitality_member_id) {
-        vitality_member_id = vitalityMemberId.current;
-      }
-      if (typeof org === 'string' && deviceId && fcm) {
-        console.log('handleDynamicLink org true: ', org);
-        const params = {
-          device_id: deviceId,
-          user_id: org ?? newOrg.current,
-          device_token: fcm,
-          device_type: Platform.OS,
-          vitality_member_id, // vitality memeber id from custom param dynamic link
-        };
-        newOrg.current = null;
-        vitalityMemberId.current = null;
-        logger('getDownloadLink api params: ', params);
-        try {
-          const getDownloadLinkRes = await PostRequestApi('v2/getDownloadLink', params);
-          logger('getDownloadLink api res: ', getDownloadLinkRes);
-          try {
-            await AsyncStorage.setItem('splashURL',  getDownloadLinkRes?.data?.companyData?.splash_screen);
-          } catch (error) {
-            logger('Async Storage setItem Division error: ', error);
-          }
-          let _vitalityMemberId = null;
-          try {
-            _vitalityMemberId = await AsyncStorage.getItem('vitalityMemberId');
-          } catch (error) {
-            logger(
-              'error fetching vitalityMemberId from async storage',
-              error,
-            );
-          }
-          if (vitality_member_id) {
-            if (!Number(getDownloadLinkRes?.data?.staffData?.reward_point)) {
-              try {
-                await AsyncStorage.removeItem('MoodInputTimeStamp');
-                await AsyncStorage.removeItem('NotesInputTimeStamp');
-              } catch (error) {
-                console.log('error removing MoodInputTimeStamp NotesInputTImeStamp from AsyncStorage --- ', error);
-              }
-            }
-            await AsyncStorage.setItem('vitalityMemberId', String(vitality_member_id)).then(e => {}).catch(e => {});
-          } else if (_vitalityMemberId !== null) {
-            await AsyncStorage.removeItem('vitalityMemberId').then(() => {}).catch((e) => {});
-          }
-          let userData = null;
-          if (
-            !getDownloadLinkRes?.data.staffData?.email &&
-            getDownloadLinkRes?.data?.staffData === 'Not found'
-          ) {
-            // console.log('Showing Toast ====>');
-            Toast.show({
-              type: 'error',
-              text2: 'Cannot link this device, please contact your HR manager',
-              visibilityTime: 4000,
-              autoHide: true,
-            });
-          } else if (
-            getDownloadLinkRes?.data?.staffData &&
-            getDownloadLinkRes?.data?.user_id
-          ) {
-            userData = {
-              ...getDownloadLinkRes.data.staffData,
-              user_id: getDownloadLinkRes.data.user_id,
-            };
-          }
-          const currentRoute = RootNavigation.getCurrentRoute();
-          if (
-            currentRoute &&
-            currentRoute.name === 'Linktocompany' &&
-            userData?.email
-          ) {
-            RootNavigation?.getNavigationRef?.()?.current?.setParams?.({
-              email: userData?.email,
-            });
-          }
-          onDynamicLinkUpdate(userData, dispatch, async function (data) {
-            if (data !== false) {
-              if (data?.email) {
-                if (!isEmpty(vitality_member_id)) {
-                  const params = {
-                    device_id: deviceId,
-                    user_id: getDownloadLinkRes.data.user_id,
-                    email: data?.email ?? null,
-                  };
-                  dispatch(
-                    Division(
-                      getDownloadLinkRes?.data?.staffData?.division_id ?? '',
-                    ),
-                  );
-                  getDivisionName(
-                    params,
-                    dispatch,
-                    false,
-                    async function (isFinish, userDetails) {
-                      if (userData) {
-                        dispatch(UserDetail(userDetails));
-                      }
-                      try {
-                        await AsyncStorage.setItem(
-                          'Division',
-                          JSON.stringify(
-                            getStore?.()?.getState?.()?.First?.UserDivision,
-                          ),
-                        );
-                      } catch (error) {
-                        console.log('Async Storage setItem Division error: ', error);
-                      }
-                    },
-                  );
-                  setDivisionSetFlag(true);
-                  dispatch(SetIsDivisionSelected(true));
-                  AsyncStorage.removeItem('LinkDisabled').catch(error => {});
-                  return;
-                }
-                if (RootNavigation?.navigationRef?.current?.navigate) {
-                  dispatch(SetIsDivisionSelected(false));
-                  RootNavigation?.navigationRef?.current?.navigate(
-                    'HomeScreen',
-                    {
-                      screen: 'LinkCompanyStackNavigation',
-                      params: {
-                        screen: 'Linktocompany',
-                        params: {email: data.email},
-                      },
-                    },
-                  );
-                } else {
-                  setEmail(data.email);
-                }
-              } else {
-                console.log('Dynamic link onDynamicLinkUpdate onFinish else block');
-              }
-            }
-          });
-          console.log('getDownloadLink api res', getDownloadLinkRes);
-          // })
-        } catch (error) {
-          console.log('error calling getDownloadLink api: ', error);
-        }
-      }
-      setIsLinkLoader(false)
     }
+    if (!org) {
+      org = newOrg.current;
+    }
+    if (!vitality_member_id) {
+      vitality_member_id = vitalityMemberId.current;
+    }
+    if (typeof org === 'string' && deviceId && fcm) {
+      console.log('handleDynamicLink org true: ', org);
+      const params = {
+        device_id: deviceId,
+        user_id: org ?? newOrg.current,
+        device_token: fcm,
+        device_type: Platform.OS,
+        vitality_member_id, // vitality memeber id from custom param dynamic link
+      };
+      newOrg.current = null;
+      vitalityMemberId.current = null;
+      logger('getDownloadLink api params: ', params);
+      try {
+        const getDownloadLinkRes = await PostRequestApi('v2/getDownloadLink', params);
+        logger('getDownloadLink api res: ', getDownloadLinkRes);
+        try {
+          await AsyncStorage.setItem('splashURL', getDownloadLinkRes?.data?.companyData?.splash_screen);
+        } catch (error) {
+          logger('Async Storage setItem Division error: ', error);
+        }
+        let _vitalityMemberId = null;
+        try {
+          _vitalityMemberId = await AsyncStorage.getItem('vitalityMemberId');
+        } catch (error) {
+          logger(
+            'error fetching vitalityMemberId from async storage',
+            error,
+          );
+        }
+        if (vitality_member_id) {
+          if (!Number(getDownloadLinkRes?.data?.staffData?.reward_point)) {
+            try {
+              await AsyncStorage.removeItem('MoodInputTimeStamp');
+              await AsyncStorage.removeItem('NotesInputTimeStamp');
+            } catch (error) {
+              console.log('error removing MoodInputTimeStamp NotesInputTImeStamp from AsyncStorage --- ', error);
+            }
+          }
+          await AsyncStorage.setItem('vitalityMemberId', String(vitality_member_id)).then(e => { }).catch(e => { });
+        } else if (_vitalityMemberId !== null) {
+          await AsyncStorage.removeItem('vitalityMemberId').then(() => { }).catch((e) => { });
+        }
+        let userData = null;
+        if (
+          !getDownloadLinkRes?.data.staffData?.email &&
+          getDownloadLinkRes?.data?.staffData === 'Not found'
+        ) {
+          // console.log('Showing Toast ====>');
+          Toast.show({
+            type: 'error',
+            text2: 'Cannot link this device, please contact your HR manager',
+            visibilityTime: 4000,
+            autoHide: true,
+          });
+        } else if (
+          getDownloadLinkRes?.data?.staffData &&
+          getDownloadLinkRes?.data?.user_id
+        ) {
+          userData = {
+            ...getDownloadLinkRes.data.staffData,
+            user_id: getDownloadLinkRes.data.user_id,
+          };
+        }
+        const currentRoute = RootNavigation.getCurrentRoute();
+        if (
+          currentRoute &&
+          currentRoute.name === 'Linktocompany' &&
+          userData?.email
+        ) {
+          RootNavigation?.getNavigationRef?.()?.current?.setParams?.({
+            email: userData?.email,
+          });
+        }
+        onDynamicLinkUpdate(userData, dispatch, async function (data) {
+          if (data !== false) {
+            if (data?.email) {
+              if (!isEmpty(vitality_member_id)) {
+                const params = {
+                  device_id: deviceId,
+                  user_id: getDownloadLinkRes.data.user_id,
+                  email: data?.email ?? null,
+                };
+                dispatch(
+                  Division(
+                    getDownloadLinkRes?.data?.staffData?.division_id ?? '',
+                  ),
+                );
+                getDivisionName("false 478, app",
+                  params,
+                  dispatch,
+                  false,
+                  async function (isFinish, userDetails) {
+                    if (userData) {
+                      dispatch(UserDetail(userDetails));
+                    }
+                    try {
+                      await AsyncStorage.setItem(
+                        'Division',
+                        JSON.stringify(
+                          getStore?.()?.getState?.()?.First?.UserDivision,
+                        ),
+                      );
+                    } catch (error) {
+                      console.log('Async Storage setItem Division error: ', error);
+                    }
+                  },
+                );
+                setDivisionSetFlag(true);
+                dispatch(SetIsDivisionSelected(true));
+                AsyncStorage.removeItem('LinkDisabled').catch(error => { });
+                return;
+              }
+              if (RootNavigation?.navigationRef?.current?.navigate) {
+                dispatch(SetIsDivisionSelected(false));
+                RootNavigation?.navigationRef?.current?.navigate(
+                  'HomeScreen',
+                  {
+                    screen: 'LinkCompanyStackNavigation',
+                    params: {
+                      screen: 'Linktocompany',
+                      params: { email: data.email },
+                    },
+                  },
+                );
+              } else {
+                setEmail(data.email);
+              }
+            } else {
+              console.log('Dynamic link onDynamicLinkUpdate onFinish else block');
+            }
+          }
+        });
+        console.log('getDownloadLink api res', getDownloadLinkRes);
+        // })
+      } catch (error) {
+        console.log('error calling getDownloadLink api: ', error);
+      }
+    }
+    setIsLinkLoader(false)
+  }
 
   const onLinkConfirm = useCallback(async () => {
     setLinkModalText('');
@@ -559,9 +560,18 @@ const App = () => {
       vitalityMemberId.current = null;
       return;
     }
+    let unlinkReason = {
+      id: 1,
+      fileName: "app",
+      email: userEmail,
+      user_id: userId,
+      link: JSON.stringify(link),
+      linkModalText: linkModalText,
+    }
     const params = {
       email: userEmail,
       user_id: userId,
+      unlink_reason: JSON.stringify(unlinkReason)
     };
     PostRequestApi('unlinkToCompany', params)
       .then(async (resp) => {
@@ -647,7 +657,10 @@ const App = () => {
       newOrg.current = org;
       vitalityMemberId.current = memberId;
       if (link) {
+        setLink(link)
         isHandleDynamicLinkCalled.current = true;
+      } else {
+        setLink("");
       }
       setLinkModalText(modalText);
       setIsLinkModalVisible(true);
@@ -656,7 +669,10 @@ const App = () => {
         return;
       }
       if (link) {
+        setLink(link)
         isHandleDynamicLinkCalled.current = true;
+      }else{
+        setLink("");
       }
       console.log('handleDynamicLink org: ', org);
       linkCompany(org, memberId);
@@ -681,7 +697,7 @@ const App = () => {
     let welcome = await JSON.parse(p);
     let aia = await AsyncStorage.getItem('IsRedirectToAIA');
     let isRedirectToAIA = await JSON.parse(aia);
-    if((isRedirectToAIA === null || isRedirectToAIA === true) && Platform.OS === 'ios' && isCallFromDone){
+    if ((isRedirectToAIA === null || isRedirectToAIA === true) && Platform.OS === 'ios' && isCallFromDone) {
       await AsyncStorage.setItem('IsRedirectToAIA', 'false');
       let url = '';
       url = 'https://v2020.page.link/mentalact';
@@ -857,6 +873,7 @@ const App = () => {
   }, []);
 
   const getProfileUserData = async () => {
+    logger("TESTING getProfileUserData CALLED",isHandleDynamicLinkCalled.current !== true)
     let DateCheck = await AsyncStorage.getItem('DateCheck');
     let CheckForTodayDate = await JSON.parse(DateCheck);
     // console.log(`CheckForTodayDate ------ 1`, CheckForTodayDate);
@@ -982,8 +999,8 @@ const App = () => {
       body: raw,
       redirect: 'follow',
     };
-
-    GetStaffUserData(raw, dispatch)
+    const message = "998 from app, inside getProfileUserData() method";
+    GetStaffUserData(message,raw, dispatch)
       .then(async (result) => {
         // console.log(
         //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
@@ -1002,7 +1019,9 @@ const App = () => {
       .catch((error) => {
         console.log('❌ ❌ ❌ ❌ Error Get Staff User Data ❌ ❌ ❌ ❌', error);
       });
-    getDivisionName(raw, dispatch, isHandleDynamicLinkCalled.current !== true);
+    const message2 =  "1018 from app, inside getProfileUserData() method ==>"+JSON.stringify(isHandleDynamicLinkCalled.current !== true);
+    logger("TESTING CALLED",isHandleDynamicLinkCalled.current !== true)
+    getDivisionName(message2,raw, dispatch, isHandleDynamicLinkCalled.current !== true);
   };
 
   const requestNotificationPermissions = async () => {
@@ -1020,16 +1039,16 @@ const App = () => {
   };
 
   const checkApplicationPermission = async () => {
-      try {
-        const grant = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-        );
-        if(grant){
-          fp();
-        }
-      } catch (error) {
-        console.log("checkApplicationPermission Err",error);
+    try {
+      const grant = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
+      if (grant) {
+        fp();
       }
+    } catch (error) {
+      console.log("checkApplicationPermission Err", error);
+    }
   };
 
   useEffect(() => {
@@ -1072,7 +1091,7 @@ const App = () => {
   useEffect(() => {
     // console.log(`LightSensor`, LightSensor);
     if (
-      UserData.WeatherPermission && 
+      UserData.WeatherPermission &&
       (UserData.lat == null || UserData.lon == null) &&
       getIsGetCurrentLocationCalled() === false
     ) {
@@ -1108,10 +1127,12 @@ const App = () => {
           setIsGetCurrentLocationCalled(false);
           console.log('error getting lat lon from geolocation api', code, message);
         });
-      }
+    }
   }, []);
 
   useEffect(() => {
+    logger("TESTING 1134")
+    
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     dynamicLinks().getInitialLink().then(handleDynamicLink);
     // handleDynamicLink();
@@ -1152,7 +1173,7 @@ const App = () => {
     }
   }, [UserData.UserId, UserData.UserEmail]);
 
-  const renderItems = ({item, index}, parallaxProps) => {
+  const renderItems = ({ item, index }, parallaxProps) => {
     // console.log('item', item.img);
     // console.log('ShowWelcome--', ShowWelcome);
     return (
@@ -1162,7 +1183,7 @@ const App = () => {
             source={item.img}
             height={'100%'}
             width={'100%'}
-            style={{height: '100%', width: '100%'}}
+            style={{ height: '100%', width: '100%' }}
           />
         </View>
       </>
@@ -1245,7 +1266,7 @@ const App = () => {
     });
   };
 
-  const checkAppUpdate = async() => {
+  const checkAppUpdate = async () => {
     const isUpdate = await checkAppVersion()
     setUpdateModalAlert(isUpdate)
   }
@@ -1315,7 +1336,7 @@ const App = () => {
         isModalVisible={UserData.showIsDevServerModal}
         dispatch={dispatch}
       />
-    <UpdateModal isVisible={updateModalAlert}/>
+      <UpdateModal isVisible={updateModalAlert} />
     </>
   );
 };

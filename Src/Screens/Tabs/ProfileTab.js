@@ -32,15 +32,15 @@ import FaqIcon from '../../../assets/profileicons/FaqIcon';
 import TermsIcon from '../../../assets/profileicons/TermsIcon';
 import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from '../../Components/ImageSelection/ActionSheet';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AddAnswer from '../../Components/AddAnswer/AddAnswer';
-import {NotificationPerm, SetShowIsDevServerModal, UserDetail} from '../../redux/actions/actions';
-import PostRequestApi, {GetStaffUserData} from '../../apirequest/PostRequestApi';
-import {AppPermissions} from '../../services/appPermissions';
-import {useFocusEffect} from '@react-navigation/native';
-import {getSleepDataAfterPermissionIOS} from '../Home/SleepData/sleepDataService';
+import { NotificationPerm, SetShowIsDevServerModal, UserDetail } from '../../redux/actions/actions';
+import PostRequestApi, { GetStaffUserData } from '../../apirequest/PostRequestApi';
+import { AppPermissions } from '../../services/appPermissions';
+import { useFocusEffect } from '@react-navigation/native';
+import { getSleepDataAfterPermissionIOS } from '../Home/SleepData/sleepDataService';
 import BackIcon from '../../../assets/svg/backIcon';
-import {getMyDeviceId, onUnlinkUpdate, openHealthApp} from '../../services/commonService';
+import { getMyDeviceId, onUnlinkUpdate, openHealthApp } from '../../services/commonService';
 import PlayButton from '../../../assets/svg/playButton';
 import {
   BASE_URL_PRODUCTION_API,
@@ -52,11 +52,11 @@ import {
   TERMS_OF_USE_URL,
 } from '../../Constants/constants';
 import Colors from '../../Constants/Colors/Colors';
-import {BitCoinIcon} from '../../../assets/svg/bitCoin';
-import {RubikMedium, RubikRegular} from '../../Constants/fonts/Fonts';
+import { BitCoinIcon } from '../../../assets/svg/bitCoin';
+import { RubikMedium, RubikRegular } from '../../Constants/fonts/Fonts';
 import Clipboard from '@react-native-clipboard/clipboard';
 import getStore from '../../redux';
-import {VitalityIcon} from '../../../assets/svg/VitalityIcon';
+import { VitalityIcon } from '../../../assets/svg/VitalityIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PERMISSIONS } from 'react-native-permissions';
 import { logger } from '../../..';
@@ -77,7 +77,7 @@ const FAQ_DETAILS = {
   link: FAQ_URL,
 }
 
-const CONTACT_US =   {
+const CONTACT_US = {
   id: "4",
   name: 'Contact Us',
   icon: <ContactUsIcon />,
@@ -100,7 +100,7 @@ const bottomList = [
 ];
 
 const ProfileTab = ({ navigation }) => {
- 
+
   const [openActionSheet, setOpenActionSheet] = useState(false);
   // const [value, onChangeText] = React.useState('');
   const UserData = useSelector((state) => state.First);
@@ -143,8 +143,8 @@ const ProfileTab = ({ navigation }) => {
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-
-    GetStaffUserData(
+    const message = "from ProfileTab, inside getProfileUserData() method ==>";
+    GetStaffUserData(message,
       {
         device_id: deviceId,
         email: userData.UserEmail,
@@ -195,7 +195,7 @@ const ProfileTab = ({ navigation }) => {
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', _handleAppStateChange);
-    
+
     return () => {
       subscription?.remove?.();
     };
@@ -260,8 +260,8 @@ const ProfileTab = ({ navigation }) => {
     const deviceId = getMyDeviceId();
     const imageResponse = imageData
       ? {
-          ...imageData,
-        }
+        ...imageData,
+      }
       : null;
     console.log('imageResponse', imageResponse);
     let formData = new FormData();
@@ -272,16 +272,16 @@ const ProfileTab = ({ navigation }) => {
       'image',
       imageResponse
         ? {
-            name:
-              Platform.OS === 'android'
-                ? imageResponse.uri
-                : imageResponse.uri.replace('file://', ''),
-            type: imageResponse.type,
-            uri:
-              Platform.OS === 'android'
-                ? imageResponse.uri
-                : imageResponse.uri.replace('file://', ''),
-          }
+          name:
+            Platform.OS === 'android'
+              ? imageResponse.uri
+              : imageResponse.uri.replace('file://', ''),
+          type: imageResponse.type,
+          uri:
+            Platform.OS === 'android'
+              ? imageResponse.uri
+              : imageResponse.uri.replace('file://', ''),
+        }
         : '',
     );
     console.warn('this data', JSON.stringify(formData));
@@ -346,10 +346,10 @@ const ProfileTab = ({ navigation }) => {
       // compressImageQuality:0.6
     }).then((i) => {
 
-      const allowedExtensions = ['jpeg','png','jpg'];
-      const fileExtension = i.filename.split('.').pop().toLowerCase();  
+      const allowedExtensions = ['jpeg', 'png', 'jpg'];
+      const fileExtension = i.filename.split('.').pop().toLowerCase();
 
-      if(fileExtension == "gif") {
+      if (fileExtension == "gif") {
 
         let source = {
           uri: i.path,
@@ -357,7 +357,7 @@ const ProfileTab = ({ navigation }) => {
           name: Platform.OS === 'android' ? i.path : i.path,
         };
         const images = [source];
-  
+
         imagePostFunction(source);
         setOpenActionSheet(false);
         console.log('images', images);
@@ -376,11 +376,11 @@ const ProfileTab = ({ navigation }) => {
             name: Platform.OS === 'android' ? image.path : image.path,
           };
           const images = [source];
-    
+
           imagePostFunction(source);
           setOpenActionSheet(false);
           console.log('images', images);
-          
+
         });
 
       } else {
@@ -390,7 +390,7 @@ const ProfileTab = ({ navigation }) => {
     });
   };
 
-  const ProfileApiCallHere = async ({_name, _gender, _pronoun}) => {
+  const ProfileApiCallHere = async ({ _name, _gender, _pronoun }) => {
     const name_ = _name ? _name : name;
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
@@ -405,21 +405,21 @@ const ProfileTab = ({ navigation }) => {
         name_ != 'Anonymous'
           ? name_
           : name_ != '' && UserData?.UserDetails?.full_name
-          ? UserData?.UserDetails?.full_name
-          : name_,
+            ? UserData?.UserDetails?.full_name
+            : name_,
       pronouns: _pronoun
         ? _pronoun.name
         : UserData?.UserDetails?.pronouns
-        ? UserData?.UserDetails?.pronouns
-        : '',
+          ? UserData?.UserDetails?.pronouns
+          : '',
       date_of_birth: UserData?.UserDetails?.date_of_bitrh
         ? UserData?.UserDetails?.date_of_bitrh
         : Birthday,
       gender: _gender
         ? _gender.id
         : UserData?.UserDetails?.gender
-        ? UserData?.UserDetails?.gender
-        : '',
+          ? UserData?.UserDetails?.gender
+          : '',
     });
 
     var requestOptions = {
@@ -485,9 +485,17 @@ const ProfileTab = ({ navigation }) => {
 
   const onUnlink = useCallback(async () => {
     setDisconnecting(true);
+    let unlinkReason = {
+      id: 2,
+      fileName: "ProfileTab",
+      email: getStore?.()?.getState?.()?.First?.UserEmail,
+      user_id: getStore?.()?.getState?.()?.First?.UserId,
+      vitality_member_id: UserData?.UserDetails?.vitality_member_id,
+    }
     PostRequestApi('unlinkToCompany', {
       email: getStore?.()?.getState?.()?.First?.UserEmail,
       user_id: getStore?.()?.getState?.()?.First?.UserId,
+      unlink_reason: JSON.stringify(unlinkReason)
     })
       .then(async resp => {
         const isDone = await onUnlinkUpdate(dispatch);
@@ -572,20 +580,20 @@ const ProfileTab = ({ navigation }) => {
         PERMISSIONS.ANDROID.CAMERA,
         PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE, // For Android 10-12
       ];
-  
+
       if (Platform.Version >= 31) {
         permissions.push(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES); // Android 13+
       }
-  
+
       console.log('Requesting permissions:', permissions);
-  
+
       const granted = await PermissionsAndroid.requestMultiple(permissions);
       console.log('Permissions granted:', granted);
-  
+
       const allPermissionsGranted = Object.values(granted).every(
         permission => permission === PermissionsAndroid.RESULTS.GRANTED
       );
-  
+
       if (allPermissionsGranted) {
         console.log('✅ Camera and gallery permissions granted');
         return true;
@@ -605,20 +613,20 @@ const ProfileTab = ({ navigation }) => {
         PERMISSIONS.ANDROID.CAMERA,
         PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE, // For Android 10-12
       ];
-  
+
       if (Platform.Version >= 31) {
         permissions.push(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES); // Android 13+
       }
-  
+
       console.log('Requesting permissions:', permissions);
-  
+
       const granted = await PermissionsAndroid.requestMultiple(permissions);
       console.log('Permissions granted:', granted);
-  
+
       const allPermissionsGranted = Object.values(granted).every(
         permission => permission === PermissionsAndroid.RESULTS.GRANTED
       );
-  
+
       if (allPermissionsGranted) {
         console.log('✅ Camera and gallery permissions granted');
         return true;
@@ -643,10 +651,10 @@ const ProfileTab = ({ navigation }) => {
         Alert.alert('Error', 'Unable to open the email client.');
         logger("OpenComposer Err", err)
       });
-  };  
+  };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <ScrollView
         refreshControl={
@@ -672,11 +680,11 @@ const ProfileTab = ({ navigation }) => {
                 />
               )}
               <View style={styles.pickupIconStyle}>
-              <TouchableOpacity
+                <TouchableOpacity
                   onPress={async () => {
                     const isPermission = await requestPermission();
                     if (Platform.OS === "android") {
-                      if(isPermission){
+                      if (isPermission) {
                         setOpenActionSheet(true);
                       }
                     } else {
@@ -711,23 +719,24 @@ const ProfileTab = ({ navigation }) => {
                     onPress: () => console.log("Cancel Pressed"),
                     style: "cancel"
                   },
-                  { text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
-                    device_id: getMyDeviceId(),
-                    email: UserData.UserEmail,
-                    user_id: UserData.UserId,
-                    division: UserData.UserDivision,
-                    server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
-                  }))
+                  {
+                    text: "Copy", onPress: () => Clipboard.setString(JSON.stringify({
+                      device_id: getMyDeviceId(),
+                      email: UserData.UserEmail,
+                      user_id: UserData.UserId,
+                      division: UserData.UserDivision,
+                      server: getApiBaseUrl() === BASE_URL_PRODUCTION_API ? "ADMIN" : "DEV"
+                    }))
                   }
                 ])}
-                // onLongPress={() => dispatch(SetShowIsDevServerModal(true))}
+              // onLongPress={() => dispatch(SetShowIsDevServerModal(true))}
               >PERSONAL DETAILS</Text>
               <View
                 style={[styles.borderStyle, { marginLeft: dynamicSize(11) }]}
               />
             </View>
           </View>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute',marginTop: dynamicSize(30), left: 20, top: 10, padding:5 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', marginTop: dynamicSize(30), left: 20, top: 10, padding: 5 }}>
             <BackIcon />
           </TouchableOpacity>
           <View style={styles.flatlistContainer}>
@@ -894,9 +903,8 @@ const ProfileTab = ({ navigation }) => {
               <View style={styles.marginLeft12}>
                 <Text style={styles.vitalityMemberIdTxt}>
                   {UserData?.UserDetails?.vitality_member_id
-                    ? `Member #${
-                        UserData?.UserDetails?.vitality_member_id ?? ''
-                      }`
+                    ? `Member #${UserData?.UserDetails?.vitality_member_id ?? ''
+                    }`
                     : 'Link to AIA Vitality'}
                 </Text>
               </View>
@@ -921,7 +929,7 @@ const ProfileTab = ({ navigation }) => {
                 containerStyle={[
                   styles.unlinkButton,
                   !UserData?.UserDetails?.vitality_member_id &&
-                    styles.linkButton,
+                  styles.linkButton,
                 ]}
               />
             </TouchableOpacity>
@@ -975,8 +983,8 @@ const ProfileTab = ({ navigation }) => {
               </View>
             </TouchableOpacity>
             {
-            !UserData?.UserDetails?.vitality_member_id &&
-            <TouchableOpacity
+              !UserData?.UserDetails?.vitality_member_id &&
+              <TouchableOpacity
                 onPress={() => {
                   Linking.openURL(FAQ_DETAILS.link);
                 }}>
@@ -991,7 +999,7 @@ const ProfileTab = ({ navigation }) => {
                   </Text>
                 </View>
               </TouchableOpacity>
-            }       
+            }
             {bottomList.map((item, idx) => (
               <TouchableOpacity
                 onPress={() => {
@@ -1010,11 +1018,12 @@ const ProfileTab = ({ navigation }) => {
               </TouchableOpacity>
             ))}
             {
-            UserData?.UserDetails?.vitality_member_id &&
-            <TouchableOpacity 
-            onPress={() => {Linking.openURL(CONTACT_US.link);
-              
-            }}>
+              UserData?.UserDetails?.vitality_member_id &&
+              <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(CONTACT_US.link);
+
+                }}>
                 <View style={styles.bottomFlatlistContainer}>
                   <View style={{ marginTop: dynamicSize(5) }}>{CONTACT_US.icon}</View>
                   <Text
@@ -1026,7 +1035,7 @@ const ProfileTab = ({ navigation }) => {
                   </Text>
                 </View>
               </TouchableOpacity>
-            } 
+            }
             <View style={styles.bottomFlatlistContainer} />
           </View>
         </View>

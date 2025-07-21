@@ -131,7 +131,8 @@ export async function onUnlinkUpdate(dispatch, onFinish) {
       onFinish(true);
     }
     const deviceId = getMyDeviceId();
-    GetStaffUserData(
+    const message = "from onUnlinkUpdate, inside onUnlinkUpdate() method ==>";
+    GetStaffUserData(message,
       {
         device_id: deviceId,
         email: '',

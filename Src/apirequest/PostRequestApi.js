@@ -16,7 +16,7 @@ import { logger } from '../..';
 const PostRequestApi = async (url, params) => {
   axios.defaults.timeout = 10000000000;
   return await axios.post(getApiBaseUrl() + url, params).then((resp) => {
-    logger("Response =",resp)
+    // logger("Response =",resp)
     return resp;
   }).catch(err=>{
     logger("Catch erro =", err)
@@ -24,6 +24,7 @@ const PostRequestApi = async (url, params) => {
 };
 
 export async function GetStaffUserData(
+  message,
   params,
   dispatch,
   isNotCheckUserBlocked = false,
@@ -34,6 +35,7 @@ export async function GetStaffUserData(
 
   var raw = JSON.stringify(params);
 logger("raw", raw)
+logger(message,"getStaffUserData raw123789", raw)
   var requestOptions = {
     method: 'POST',
     headers: myHeaders,
@@ -56,7 +58,7 @@ logger("raw", raw)
         !isNotCheckUserBlocked && 
         (result?.userData?.status === 2 || result?.userData?.status === 3)
       ) {
-        unlinkFromCompany(params, dispatch);
+        unlinkFromCompany(message,params, dispatch);
         // onUnlinkUpdate(dispatch);
       }
       return result;
@@ -66,11 +68,20 @@ logger("raw", raw)
     );
 }
 
-export const unlinkFromCompany = (params, dispatch, onFinish) => {
+export const unlinkFromCompany = (message,params, dispatch, onFinish) => {
   if (params?.email && params?.user_id) {
+    let unlinkReason = {
+      id: 4,
+      fileName: "PostRequestApi",
+      email: params?.email,
+      user_id: params?.user_id,
+      message:message,
+      paramsFromOthers:params,
+    }
     const p = {
       email: params?.email,
       user_id: params?.user_id,
+      unlink_reason: JSON.stringify(unlinkReason)
     };
     PostRequestApi('unlinkToCompany', p)
       .then(async (resp) => {
@@ -84,6 +95,7 @@ export const unlinkFromCompany = (params, dispatch, onFinish) => {
 };
 
 export async function getDivisionName(
+  message,
   params,
   dispatch,
   isUnlinkAllowed,
@@ -94,9 +106,13 @@ export async function getDivisionName(
 
   var raw = JSON.stringify(params);
   let isFinished = false;
-  GetStaffUserData(params, dispatch)
+  const message2 = "from PostRequestApi, inside getDivisionName() method===> MESSAGE from getDivisionName() method" + message;
+  logger("TESTING GetStaffUserData calling");
+  GetStaffUserData(message2,params, dispatch)
     .then(async (result) => {
       // return new Promise((resolve, reject) => {
+      logger("TESTING GetStaffUserData called",result?.userData?.status);
+      
       if (result?.userData?.status !== 2) {
         axios
           .post(`${getApiBaseUrl()}getAllDivision`, params)
@@ -116,6 +132,7 @@ export async function getDivisionName(
                 }
               });
               dispatch(getDivisions(divisions));
+              logger("TESTING GetStaffUserData called CHECK FOR DIVISION ID",result?.userData?.division_id);
               // console.log('getDivisions success dispatch getDivision');
               if (result?.userData?.division_id) {
                 res.data.data.forEach((e) => {
@@ -137,17 +154,32 @@ export async function getDivisionName(
                 }
               } else if (isUnlinkAllowed) {
                 if (params?.email && params?.user_id) {
+                  let unlinkReason = {
+                    id: 5,
+                    fileName: "PostRequestApi",
+                    email: params?.email,
+                    user_id: params?.user_id,
+                    paramsFromOthers: params,
+                    message: message,
+                    isUnlinkAllowed: isUnlinkAllowed,
+                    reason:"isUnlinkAllowed is allowed and inside getDivisionName()->GetStaffUserData() method"
+                  }
+                  logger("TESTING unlinkReason",JSON.stringify(unlinkReason));
+                  
                   const p = {
                     email: params?.email,
                     user_id: params?.user_id,
+                    unlink_reason: JSON.stringify(unlinkReason)
                   };
                   PostRequestApi('unlinkToCompany', p)
                     .then(async (resp) => {
                       console.log('unlinkToCompany api Success');
+                      logger('TESTING unlinkToCompany api Success');
                       onUnlinkUpdate(dispatch);
                     })
                     .catch((err) => {
                       console.log('unlink api failed error: ', err);
+                      logger('TESTING unlink api failed error: ', err);
                     });
                 }
               }
@@ -252,7 +284,8 @@ export const updateNameInProfileApi = (requestData, dispatch) => {
     email: requestData.email,
     user_id: requestData.user_id,
   };
-  GetStaffUserData(staffUserDataRequest, dispatch)
+  const message = "from PostRequestApi, inside updateNameInProfileApi() method";
+  GetStaffUserData(message,staffUserDataRequest, dispatch)
     .then(async (result) => {
       // console.log(
       //   '✅ ✅ ✅ ✅ Success Get Staff User Data ✅ ✅ ✅ ✅',
@@ -319,7 +352,8 @@ const fetchAndUpdateUserDetail = (requestData, dispatch) => {
 export const checkAndUpdateUserIfBlocked = (dispatch) => {
   const userData = getStore?.()?.getState?.()?.First;
   const deviceId = getMyDeviceId();
-  GetStaffUserData(
+  const message = "from PostRequestApi, inside checkAndUpdateUserIfBlocked() method";
+  GetStaffUserData(message,
     {
       device_id: deviceId,
       email: userData.UserEmail,

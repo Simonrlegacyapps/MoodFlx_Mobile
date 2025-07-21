@@ -15,6 +15,7 @@ export const BASE_URL_PRODUCTION_API = 'https://admin.moodflo.com/api/';
 
 import moment from 'moment';
 import {Platform} from 'react-native';
+import { logger } from '../..';
 
 export const PRIVACY_POLICY_URL = 'https://moodflo.com/privacy-policy';
 export const TERMS_OF_USE_URL = 'https://moodflo.com/terms-of-use';
@@ -24,6 +25,7 @@ let isCurrentLocationCalled = false;
 // let isDevServer = (__DEV__);
 //let isDevServer = true;
 let isDevServer = false;
+// let isDevServer = true;
 
 export const getIsDevServer = () => isDevServer;
 export const setIsDevServer = (flag = (__DEV__)) => {
@@ -32,8 +34,10 @@ export const setIsDevServer = (flag = (__DEV__)) => {
 
 export const getApiBaseUrl = () => {
   if (isDevServer) {
+    logger("BASE URL DEV")
     return BASE_URL_STAGE_API;
   } else {
+    logger("BASE URL PROD")
     return BASE_URL_PRODUCTION_API;
   }
 };

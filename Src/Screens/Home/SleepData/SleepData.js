@@ -109,7 +109,8 @@ const SleepData = ({
           logger('SleepData ',sleepData)
           setLastThirtyDaySleepData(sleepData);
           if (sleepData) {
-            callSleepDataUpdateApi(sleepData);
+            // logger("Test ===>",sleepData)
+            callSleepDataUpdateApi("From : VerifyDone",sleepData);
           } else {
             callInsightsApi();
             callGetSleepDataApi();
@@ -136,7 +137,7 @@ const SleepData = ({
         console.log('setLastThirtyDaySleepData: ', sleepData);
         setLastThirtyDaySleepData(sleepData);
         if (sleepData) {
-          callSleepDataUpdateApi(sleepData);
+          callSleepDataUpdateApi('From : useEffect',sleepData);
         } else {
           callInsightsApi();
           callGetSleepDataApi();
@@ -342,7 +343,7 @@ const SleepData = ({
       });
   };
 
-  const callSleepDataUpdateApi = (sData) => {
+  const callSleepDataUpdateApi = (msg, sData) => {
     if (!(Array.isArray(sData) && sData.length > 0)) {
       return;
     }
@@ -376,7 +377,8 @@ const SleepData = ({
     };
 
     logger("updateSleepQuality",getApiBaseUrl(),data.sleep_data, JSON.stringify(data), config)
-    GetStaffUserData(
+    const message = msg + " SleepData, inside callSleepDataUpdateApi() method ==>" + JSON.stringify(sData);
+    GetStaffUserData(message,
       {
         device_id: deviceId,
         email: userData.UserEmail ?? '',

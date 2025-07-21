@@ -75,7 +75,8 @@ function SetIsDevServerFlagModal({isModalVisible, dispatch}) {
       }, 1000);
     };
     if (userData.UserEmail && userData.UserId) {
-      unlinkFromCompany(
+      const message = "from SetIsDevServerFlagModal,inside onSubmit() method ==>";
+      unlinkFromCompany(message,
         {email: userData.UserEmail, user_id: userData.UserId},
         dispatch,
         onFinish,

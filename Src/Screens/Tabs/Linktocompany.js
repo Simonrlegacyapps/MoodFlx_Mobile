@@ -39,20 +39,20 @@ import {
   RubikMedium,
   RubikRegular,
 } from '../../Constants/fonts/Fonts';
-import PostRequestApi, {getDivisionName} from '../../apirequest/PostRequestApi';
-import {useRoute, useFocusEffect} from '@react-navigation/native';
+import PostRequestApi, { getDivisionName } from '../../apirequest/PostRequestApi';
+import { useRoute, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UnlinkConfirmModal from '../../Components/Modals/UnlinkConfirmModal/UnlinkConfirmModal';
 import { getApiBaseUrl, getMoodIconsUrl } from '../../Constants/constants';
 import axios from 'axios';
-import {getMyDeviceId, onUnlinkUpdate, setDivisionSetFlag} from '../../services/commonService';
+import { getMyDeviceId, onUnlinkUpdate, setDivisionSetFlag } from '../../services/commonService';
 import CustomModal from '../../Components/Modals/CustomModal/CustomModal';
 import FeedBackModal from '../../Components/Modals/FeedBackModal/FeedBackModal';
-import {NoteIcon} from '../../../assets/svg/noteIcon';
+import { NoteIcon } from '../../../assets/svg/noteIcon';
 import getStore from '../../redux';
 import Colors from '../../Constants/Colors/Colors';
 
-const FeedbackButton = ({onClick}) => (
+const FeedbackButton = ({ onClick }) => (
   <Pressable
     // disabled={selectedLanguage ? false : true}
     onPress={() => onClick?.(true)}>
@@ -131,7 +131,8 @@ const Linktocompany = ({ navigation }) => {
       if (route?.params?.email) {
         setLoading(true);
       }
-      getDivisionName(params, dispatch, isUnlinkAllowed, function (isFinish) {
+      const message = "134 from LinkToCompany, inside useEffect ==>" +JSON.stringify(isUnlinkAllowed);
+      getDivisionName(message,params, dispatch, isUnlinkAllowed, function (isFinish) {
         setLoading(false);
       });
 
@@ -180,7 +181,7 @@ const Linktocompany = ({ navigation }) => {
         .then((response) => response.json())
         .then((result) => {
           console.log('getting company details', result);
-          setCompanyDetails({...result.companyData});
+          setCompanyDetails({ ...result.companyData });
           dispatch(CompanyName(result.companyData));
         })
         .catch((error) => console.log('error', error));
@@ -267,7 +268,8 @@ const Linktocompany = ({ navigation }) => {
         console.log('===LinkToCompany useFocusEffect route?.params?.email ===', route?.params?.email);
         const isUnlinkAllowed = route?.params?.email ? false : true;
         setDivisions(null);
-        getDivisionName(params, dispatch, isUnlinkAllowed);
+        const message = "271 from LinkToCompany, inside useFocusEffect ==>" +JSON.stringify(isUnlinkAllowed);
+        getDivisionName(message,params, dispatch, isUnlinkAllowed);
       } else if (labelShow) {
         setLabelShow(null);
         setSelectedDivision('');
@@ -281,19 +283,19 @@ const Linktocompany = ({ navigation }) => {
     ]),
   );
 
-  const giveFeedback = ()=>{
+  const giveFeedback = () => {
     const deviceId = getMyDeviceId();
     const params = {
-      "device_id": deviceId ,
+      "device_id": deviceId,
       "email": UserData.UserEmail,
       "user_id": UserData.UserId,
-      "feedback":FeedbackText
-  }
-  console.log(`params of feedback`, params)
-    PostRequestApi("staffFeedback", params).then((res)=>{if(res.status === 200){console.log(`res.data.data`, res.data)}}).catch((err)=>{console.log(`err`, err)})
+      "feedback": FeedbackText
+    }
+    console.log(`params of feedback`, params)
+    PostRequestApi("staffFeedback", params).then((res) => { if (res.status === 200) { console.log(`res.data.data`, res.data) } }).catch((err) => { console.log(`err`, err) })
   }
 
-  const SaveFeedBack = ()=>{
+  const SaveFeedBack = () => {
     setshowFeedBack(false)
     giveFeedback()
   }
@@ -356,9 +358,18 @@ const Linktocompany = ({ navigation }) => {
   };
 
   const VerifyDone = async (type) => {
+    let unlinkReason = {
+      id: 3,
+      fileName: "Linktocompany",
+      email: UserData.UserEmail,
+      user_id: UserData.UserId,
+      vitality_member_id: UserData?.UserDetails?.vitality_member_id,
+      type: type,
+    }
     const params = {
       email: UserData.UserEmail,
       user_id: UserData.UserId,
+      unlink_reason: JSON.stringify(unlinkReason)
     };
     console.log('verify', type);
     if (type === 'Yes') {
@@ -423,7 +434,7 @@ const Linktocompany = ({ navigation }) => {
               justifyContent: 'center',
               minHeight: 200,
             }}>
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={{backgroundColor:'black', width:'100%', height:'100%', position:'absolute', opacity:0.4}}></TouchableOpacity>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={{ backgroundColor: 'black', width: '100%', height: '100%', position: 'absolute', opacity: 0.4 }}></TouchableOpacity>
             <View
               style={{
                 backgroundColor: 'white',
@@ -437,50 +448,50 @@ const Linktocompany = ({ navigation }) => {
                 elevation: 5,
                 width: '80%',
                 minHeight: 100,
-                maxHeight:dynamicSize(400),
+                maxHeight: dynamicSize(400),
                 borderRadius: 15,
                 paddingTop: 14,
                 paddingBottom: 14,
               }}>
-                <ScrollView>
-                
-              {Divisions &&
-                Divisions.length > 0 &&
-                Divisions.map((item, index) => {
-                  // console.log(`item`, item);
-                  return (
-                    <TouchableOpacity
-                      onPress={async () => {
-                        setSelectedDivisionId(item.id);
-                        setLabelShow({ ...item });
-                        setModalVisible(false);
-                      }}
-                      key={`${index}`}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginVertical: 10,
-                          fontSize: 18,
-                          color: Colors.greyTwo,
-                          fontFamily: RubikRegular,
-                        }}>
-                        {item.name}
-                      </Text>
-                      {index != Divisions.length - 1 && (
-                        <View
+              <ScrollView>
+
+                {Divisions &&
+                  Divisions.length > 0 &&
+                  Divisions.map((item, index) => {
+                    // console.log(`item`, item);
+                    return (
+                      <TouchableOpacity
+                        onPress={async () => {
+                          setSelectedDivisionId(item.id);
+                          setLabelShow({ ...item });
+                          setModalVisible(false);
+                        }}
+                        key={`${index}`}>
+                        <Text
                           style={{
-                            alignSelf: 'center',
-                            width: '90%',
-                            borderBottomColor: '#ebebeb',
-                            borderBottomWidth: 1,
-                            height: 1,
-                          }}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  );
-                })}
-                </ScrollView>
+                            textAlign: 'center',
+                            marginVertical: 10,
+                            fontSize: 18,
+                            color: Colors.greyTwo,
+                            fontFamily: RubikRegular,
+                          }}>
+                          {item.name}
+                        </Text>
+                        {index != Divisions.length - 1 && (
+                          <View
+                            style={{
+                              alignSelf: 'center',
+                              width: '90%',
+                              borderBottomColor: '#ebebeb',
+                              borderBottomWidth: 1,
+                              height: 1,
+                            }}
+                          />
+                        )}
+                      </TouchableOpacity>
+                    );
+                  })}
+              </ScrollView>
             </View>
           </TouchableOpacity>
         </Modal>
@@ -488,86 +499,86 @@ const Linktocompany = ({ navigation }) => {
 
       <AnonymousHeader backGround />
       <ScrollView>
-      {!UserData.UserDivision && !UserData.UserEmail && (
-        <View
-          style={{ flex: 1, alignItems: 'center', marginTop: dynamicSize(95) }}>
-          <Text style={{ fontSize: dynamicSize(24), fontFamily: RubikMedium, color: Colors.blackColorCode }}>
-            Connect to a company
-          </Text>
-          <Text
-            numberOfLines={4}
-            style={{
-              lineHeight: 28,
-              fontSize: getFontSize(15),
-              marginTop: dynamicSize(12),
-              fontFamily: RubikLight,
-              color: Colors.greyTwo,
-              textAlign: 'center',
-              width: 270,
-            }}>
-            Your mood is anonymous, why not link it to your company and help
-            them better understand the mood pulse of their staff
-          </Text>
-          <TouchableOpacity onPress={() => onLink('Complete')}>
-            <View
+        {!UserData.UserDivision && !UserData.UserEmail && (
+          <View
+            style={{ flex: 1, alignItems: 'center', marginTop: dynamicSize(95) }}>
+            <Text style={{ fontSize: dynamicSize(24), fontFamily: RubikMedium, color: Colors.blackColorCode }}>
+              Connect to a company
+            </Text>
+            <Text
+              numberOfLines={4}
               style={{
-                marginTop: dynamicSize(48),
-                height: dynamicSize(56),
-                width: dynamicSize(250),
-                backgroundColor: Colors.blueTextColor,
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
+                lineHeight: 28,
+                fontSize: getFontSize(15),
+                marginTop: dynamicSize(12),
+                fontFamily: RubikLight,
+                color: Colors.greyTwo,
+                textAlign: 'center',
+                width: 270,
               }}>
+              Your mood is anonymous, why not link it to your company and help
+              them better understand the mood pulse of their staff
+            </Text>
+            <TouchableOpacity onPress={() => onLink('Complete')}>
+              <View
+                style={{
+                  marginTop: dynamicSize(48),
+                  height: dynamicSize(56),
+                  width: dynamicSize(250),
+                  backgroundColor: Colors.blueTextColor,
+                  borderRadius: 16,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Text
+                  style={{
+                    fontWeight: '500',
+                    fontSize: dynamicSize(15),
+                    color: '#FFFFFF',
+                    fontFamily: RubikMedium,
+                  }}>
+                  Connect Now
+                </Text>
+              </View>
+            </TouchableOpacity>
+            <View style={styles.lineSeperator} />
+            <FeedbackButton onClick={setshowFeedBack} />
+          </View>
+        )}
+        {UserData.UserEmail && (UserData.UserDivision === null || route?.params?.email) && (
+          <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
+            {APIfail && (
               <Text
                 style={{
-                  fontWeight: '500',
-                  fontSize: dynamicSize(15),
-                  color: '#FFFFFF',
-                  fontFamily: RubikMedium,
+                  fontWeight: '300',
+                  letterSpacing: 0.2,
+                  fontSize: 12,
+                  marginTop: dynamicSize(10),
+                  marginLeft: 62,
+                  marginRight: 62,
+                  textAlign: 'center',
+                  // width: '60%',
+                  color: 'red',
                 }}>
-                Connect Now
+                Sever Error: Please try again
               </Text>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.lineSeperator} />
-          <FeedbackButton onClick={setshowFeedBack} />
-        </View>
-      )}
-      {UserData.UserEmail && (UserData.UserDivision === null || route?.params?.email) && (
-        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
-          {APIfail && (
-            <Text
-              style={{
-                fontWeight: '300',
-                letterSpacing: 0.2,
-                fontSize: 12,
-                marginTop: dynamicSize(10),
-                marginLeft: 62,
-                marginRight: 62,
-                textAlign: 'center',
-                // width: '60%',
-                color: 'red',
-              }}>
-              Sever Error: Please try again
+            )}
+            <Text style={{ fontWeight: '500', fontSize: dynamicSize(24), color: Colors.greyTwo }}>
+              What division are you in?
             </Text>
-          )}
-          <Text style={{ fontWeight: '500', fontSize: dynamicSize(24), color: Colors.greyTwo }}>
-            What division are you in?
-          </Text>
-          <Text
-            numberOfLines={3}
-            style={{
-              lineHeight: 28,
-              fontWeight: '300',
-              fontSize: dynamicSize(14),
-              marginTop: 12,
-              color: Colors.greyTwo,
-              textAlign: 'center',
-              width: dynamicSize(230),
-            }}>
-            This, and which region you are located, are the only things
-            {/* <Text
+            <Text
+              numberOfLines={3}
+              style={{
+                lineHeight: 28,
+                fontWeight: '300',
+                fontSize: dynamicSize(14),
+                marginTop: 12,
+                color: Colors.greyTwo,
+                textAlign: 'center',
+                width: dynamicSize(230),
+              }}>
+              This, and which region you are located, are the only things
+              {/* <Text
               style={{
                 lineHeight: 28,
                 fontWeight: '500',
@@ -579,195 +590,195 @@ const Linktocompany = ({ navigation }) => {
                 textAlign: 'center',
                 width: dynamicSize(230),
               }}> */}{' '}
-            {UserData?.NameCompany?.full_name
-              ? UserData?.NameCompany?.full_name
-              : ''}{' '}
-            {/* </Text> */}
-            will know about you
-          </Text>
-          <TouchableOpacity
-            onPress={() => setModalVisible(true)}
-            style={{
-              marginTop: 20,
-              height: 50,
-              width: '70%',
-              backgroundColor: 'white',
-              borderRadius: 16,
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'row',
-              shadowColor: 'black',
-              shadowOffset: { height: 2 },
-              shadowOpacity: 0.3,
-              elevation: 3,
-            }}>
-            <Text
-              style={{
-                fontWeight: '400',
-                flex: 1,
-                color: Colors.blackColorCode,
-                fontSize: getFontSize(15), 
-                marginHorizontal: 18,
-              }}>
-              {labelShow ? labelShow.name : 'Select division'}
+              {UserData?.NameCompany?.full_name
+                ? UserData?.NameCompany?.full_name
+                : ''}{' '}
+              {/* </Text> */}
+              will know about you
             </Text>
-            <Image
-              resizeMode={'contain'}
-              style={{ marginHorizontal: dynamicSize(16), height: 15, width: 15 }}
-              source={Constants.Images.DropDown}
-            />
-          </TouchableOpacity>
-          <Text
-            style={{
-              lineHeight: 28,
-              fontWeight: '300',
-              fontSize: 14,
-              color: Colors.greyTwo,
-              marginTop: dynamicSize(10),
-              textAlign: 'center',
-              width: 270,
-            }}>
-            E.g. Anonymous in Melbourne is Excited
-          </Text>
-          <TouchableOpacity
-            disabled={selectedDivisionId ? false : true}
-            onPress={() => onDone('Done')}>
-            <View
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
               style={{
-                marginTop: dynamicSize(18),
-                height: 56,
-                width: dynamicSize(235),
-                backgroundColor: Colors.blueTextColor,
+                marginTop: 20,
+                height: 50,
+                width: '70%',
+                backgroundColor: 'white',
                 borderRadius: 16,
                 alignItems: 'center',
                 justifyContent: 'center',
+                flexDirection: 'row',
+                shadowColor: 'black',
+                shadowOffset: { height: 2 },
+                shadowOpacity: 0.3,
+                elevation: 3,
               }}>
-              <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
-                Done
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      )}
-      {UserData.UserDivision !== null && !route?.params?.email && (
-        <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
-          <View style={{}}>
-            {console.log(
-              getMoodIconsUrl() + UserData?.NameCompany?.logo,
-            )}
-            {UserData?.NameCompany?.logo ? (
-              <Image
+              <Text
                 style={{
-                  height: dynamicSize(80),
-                  width: dynamicSize(122),
-                  resizeMode: 'contain',
-                }}
-                source={{
-                  uri:
-                  getMoodIconsUrl() + UserData?.NameCompany?.logo,
-                  // UserData?.NameCompany?.company_logo,
-                }}
+                  fontWeight: '400',
+                  flex: 1,
+                  color: Colors.blackColorCode,
+                  fontSize: getFontSize(15),
+                  marginHorizontal: 18,
+                }}>
+                {labelShow ? labelShow.name : 'Select division'}
+              </Text>
+              <Image
+                resizeMode={'contain'}
+                style={{ marginHorizontal: dynamicSize(16), height: 15, width: 15 }}
+                source={Constants.Images.DropDown}
               />
-            ) : CompanyDetails && CompanyDetails?.logo ? (
+            </TouchableOpacity>
+            <Text
+              style={{
+                lineHeight: 28,
+                fontWeight: '300',
+                fontSize: 14,
+                color: Colors.greyTwo,
+                marginTop: dynamicSize(10),
+                textAlign: 'center',
+                width: 270,
+              }}>
+              E.g. Anonymous in Melbourne is Excited
+            </Text>
+            <TouchableOpacity
+              disabled={selectedDivisionId ? false : true}
+              onPress={() => onDone('Done')}>
               <View
                 style={{
-                  shadowColor: '#ebebeb',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.8,
-                  shadowRadius: 2,
-                  borderRadius: 5,
-                  overflow: 'hidden',
+                  marginTop: dynamicSize(18),
+                  height: 56,
+                  width: dynamicSize(235),
+                  backgroundColor: Colors.blueTextColor,
+                  borderRadius: 16,
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}>
+                <Text style={{ fontWeight: '500', fontSize: 16, color: '#FFFFFF' }}>
+                  Done
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
+        {UserData.UserDivision !== null && !route?.params?.email && (
+          <View style={{ flex: 1, alignItems: 'center', marginTop: 40 }}>
+            <View style={{}}>
+              {console.log(
+                getMoodIconsUrl() + UserData?.NameCompany?.logo,
+              )}
+              {UserData?.NameCompany?.logo ? (
+                <Image
+                  style={{
+                    height: dynamicSize(80),
+                    width: dynamicSize(122),
+                    resizeMode: 'contain',
+                  }}
+                  source={{
+                    uri:
+                      getMoodIconsUrl() + UserData?.NameCompany?.logo,
+                    // UserData?.NameCompany?.company_logo,
+                  }}
+                />
+              ) : CompanyDetails && CompanyDetails?.logo ? (
+                <View
+                  style={{
+                    shadowColor: '#ebebeb',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.8,
+                    shadowRadius: 2,
+                    borderRadius: 5,
+                    overflow: 'hidden',
+                  }}>
+                  <Image
+                    style={{
+                      height: dynamicSize(80),
+                      width: dynamicSize(80),
+                      resizeMode: 'contain',
+                      // backgroundColor: 'grey',
+                      // borderRadius: dynamicSize(40),
+                    }}
+                    source={{
+                      uri: getMoodIconsUrl() + CompanyDetails?.logo,
+                      // UserData?.NameCompany?.company_logo,
+                    }}
+                  />
+                </View>
+              ) : (
                 <Image
                   style={{
                     height: dynamicSize(80),
                     width: dynamicSize(80),
                     resizeMode: 'contain',
-                    // backgroundColor: 'grey',
-                    // borderRadius: dynamicSize(40),
+                    borderWidth: 0.3,
+                    borderColor: '#ebebeb',
+                    borderRadius: dynamicSize(40),
                   }}
                   source={{
-                    uri: getMoodIconsUrl() + CompanyDetails?.logo,
+                    uri: 'https://admin.launchnet.works/images/logo/ic_mood.jpg',
                     // UserData?.NameCompany?.company_logo,
                   }}
                 />
-              </View>
-            ) : (
-              <Image
-                style={{
-                  height: dynamicSize(80),
-                  width: dynamicSize(80),
-                  resizeMode: 'contain',
-                  borderWidth: 0.3,
-                  borderColor: '#ebebeb',
-                  borderRadius: dynamicSize(40),
-                }}
-                source={{
-                  uri: 'https://admin.launchnet.works/images/logo/ic_mood.jpg',
-                  // UserData?.NameCompany?.company_logo,
-                }}
-              />
-            )}
-          </View>
-          <Text
-            numberOfLines={2}
-            style={{
-              lineHeight: 28,
-              fontWeight: '300',
-              fontSize: 16,
-              marginTop: dynamicSize(52),
-              color: Colors.greyTwo,
-              // marginLeft: 62,
-              // marginRight: 62,
-              textAlign: 'center',
-              width: 270,
-            }}>
-            You are anonymously linked to your company{UserData?.UserDetails?.vitality_member_id ? '' : ' under the division'}
-          </Text>
-          <Text
-            style={{
-              lineHeight: 28,
-              fontWeight: '500',
-              fontSize: 16,
-              color: Colors.greyTwo,
-              marginTop: 12,
-              marginLeft: 62,
-              marginRight: 62,
-              textAlign: 'center',
-              marginBottom: horizontalScale(42),
-              width: 270,
-            }}>
+              )}
+            </View>
+            <Text
+              numberOfLines={2}
+              style={{
+                lineHeight: 28,
+                fontWeight: '300',
+                fontSize: 16,
+                marginTop: dynamicSize(52),
+                color: Colors.greyTwo,
+                // marginLeft: 62,
+                // marginRight: 62,
+                textAlign: 'center',
+                width: 270,
+              }}>
+              You are anonymously linked to your company{UserData?.UserDetails?.vitality_member_id ? '' : ' under the division'}
+            </Text>
+            <Text
+              style={{
+                lineHeight: 28,
+                fontWeight: '500',
+                fontSize: 16,
+                color: Colors.greyTwo,
+                marginTop: 12,
+                marginLeft: 62,
+                marginRight: 62,
+                textAlign: 'center',
+                marginBottom: horizontalScale(42),
+                width: 270,
+              }}>
               {UserData?.UserDetails?.vitality_member_id
                 ? ''
                 : UserData?.UserDivision ?? ''}
-          </Text>
-          <TouchableOpacity
-            // disabled={selectedLanguage ? false : true}
-            onPress={() => setUnlinkConfirm(true)}>
-            <View
-              style={{
-                // marginTop: 20,
-                height: dynamicSize(56),
-                width: dynamicSize(250),
-                backgroundColor: Colors.blueTextColor,
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'row',
-              }}>
-              <UnlockIcon />
-              <Text
+            </Text>
+            <TouchableOpacity
+              // disabled={selectedLanguage ? false : true}
+              onPress={() => setUnlinkConfirm(true)}>
+              <View
                 style={{
-                  fontWeight: '500',
-                  fontSize: 16,
-                  color: '#FFFFFF',
-                  marginLeft: dynamicSize(11),
+                  // marginTop: 20,
+                  height: dynamicSize(56),
+                  width: dynamicSize(250),
+                  backgroundColor: Colors.blueTextColor,
+                  borderRadius: 16,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
                 }}>
-                Unlink
-              </Text>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.lineSeperator} />
+                <UnlockIcon />
+                <Text
+                  style={{
+                    fontWeight: '500',
+                    fontSize: 16,
+                    color: '#FFFFFF',
+                    marginLeft: dynamicSize(11),
+                  }}>
+                  Unlink
+                </Text>
+              </View>
+            </TouchableOpacity>
+            <View style={styles.lineSeperator} />
             <FeedbackButton onClick={setshowFeedBack} />
           </View>
         )}
@@ -790,7 +801,7 @@ const Linktocompany = ({ navigation }) => {
         text={setFeedbackText}
         moodText={'okayy'}
         modalVisible={showFeedBack}
-        dismissModalHandler={()=>{setshowFeedBack(false)}}
+        dismissModalHandler={() => { setshowFeedBack(false) }}
         onClickButtonOne={() => SaveFeedBack()}
       />
 

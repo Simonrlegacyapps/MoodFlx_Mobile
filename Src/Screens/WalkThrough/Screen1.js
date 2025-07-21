@@ -105,8 +105,8 @@ const Screen1 = ({onDone}) => {
     const deviceId = getMyDeviceId();
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-
-    GetStaffUserData(
+    const message = "from Screen1, inside checkHowMoodFloWorksPtsGive() method ==>";
+    GetStaffUserData(message,
       {
         device_id: deviceId,
         email: userEmail,

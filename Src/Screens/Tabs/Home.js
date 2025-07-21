@@ -818,14 +818,18 @@ const App = props => {
           return false;
         }
       } catch (error) {
+        logger('error while checking if google fit is installed:', error);
         console.log('error while checking if google fit is installed:', error);
       }
 
       console.log(`herer?`);
       const s = moment().subtract(1, 'days').endOf('day').toISOString();
       const options = googleFitScopes;
+      // const isAlreadyAuthorized = await GoogleFit.checkIsAuthorized();
+      // logger('error while checking 1234567', GoogleFit.isAuthorized);
       try {
         await GoogleFit.checkIsAuthorized();
+        logger('error while checking 123', await GoogleFit.checkIsAuthorized());
         console.log('Google Fit isAuthorized: ', GoogleFit.isAuthorized);
         if (!GoogleFit.isAuthorized) {
           dispatch?.(SetFitnessSyncText('Trying to Sync'));
@@ -845,6 +849,7 @@ const App = props => {
           setLoading(true);
         }
       } catch (error) {
+        logger('Google Fit checkAuthorization error: ', error)
         console.log('Google Fit checkAuthorization error: ', error);
       }
 
