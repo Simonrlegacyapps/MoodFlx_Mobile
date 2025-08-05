@@ -43,6 +43,8 @@ logger(message,"getStaffUserData raw123789", raw)
     redirect: 'follow',
   };
 
+  logger("TESING getStaffUserData", requestOptions)
+
   return await fetch(`${getApiBaseUrl()}getStaffUserData`, requestOptions)
     .then((response) => response.json())
     .then(async (result) => {
@@ -58,7 +60,7 @@ logger(message,"getStaffUserData raw123789", raw)
         !isNotCheckUserBlocked && 
         (result?.userData?.status === 2 || result?.userData?.status === 3)
       ) {
-        unlinkFromCompany(message,params, dispatch);
+        // unlinkFromCompany(message,params, dispatch);
         // onUnlinkUpdate(dispatch);
       }
       return result;
@@ -153,35 +155,35 @@ export async function getDivisionName(
                   //   );
                 }
               } else if (isUnlinkAllowed) {
-                if (params?.email && params?.user_id) {
-                  let unlinkReason = {
-                    id: 5,
-                    fileName: "PostRequestApi",
-                    email: params?.email,
-                    user_id: params?.user_id,
-                    paramsFromOthers: params,
-                    message: message,
-                    isUnlinkAllowed: isUnlinkAllowed,
-                    reason:"isUnlinkAllowed is allowed and inside getDivisionName()->GetStaffUserData() method"
-                  }
-                  logger("TESTING unlinkReason",JSON.stringify(unlinkReason));
+                // if (params?.email && params?.user_id) {
+                //   let unlinkReason = {
+                //     id: 5,
+                //     fileName: "PostRequestApi",
+                //     email: params?.email,
+                //     user_id: params?.user_id,
+                //     paramsFromOthers: params,
+                //     message: message,
+                //     isUnlinkAllowed: isUnlinkAllowed,
+                //     reason:"isUnlinkAllowed is allowed and inside getDivisionName()->GetStaffUserData() method"
+                //   }
+                //   logger("TESTING unlinkReason",JSON.stringify(unlinkReason));
                   
-                  const p = {
-                    email: params?.email,
-                    user_id: params?.user_id,
-                    unlink_reason: JSON.stringify(unlinkReason)
-                  };
-                  PostRequestApi('unlinkToCompany', p)
-                    .then(async (resp) => {
-                      console.log('unlinkToCompany api Success');
-                      logger('TESTING unlinkToCompany api Success');
-                      onUnlinkUpdate(dispatch);
-                    })
-                    .catch((err) => {
-                      console.log('unlink api failed error: ', err);
-                      logger('TESTING unlink api failed error: ', err);
-                    });
-                }
+                //   const p = {
+                //     email: params?.email,
+                //     user_id: params?.user_id,
+                //     unlink_reason: JSON.stringify(unlinkReason)
+                //   };
+                //   PostRequestApi('unlinkToCompany', p)
+                //     .then(async (resp) => {
+                //       console.log('unlinkToCompany api Success');
+                //       logger('TESTING unlinkToCompany api Success');
+                //       onUnlinkUpdate(dispatch);
+                //     })
+                //     .catch((err) => {
+                //       console.log('unlink api failed error: ', err);
+                //       logger('TESTING unlink api failed error: ', err);
+                //     });
+                // }
               }
               // console.log('getDivision data =>', res.data.data);
             }
