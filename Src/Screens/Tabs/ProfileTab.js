@@ -147,13 +147,8 @@ const ProfileTab = ({ navigation }) => {
     GetStaffUserData(message,
       {
         device_id: deviceId,
-<<<<<<< HEAD
         email: userData.UserEmail && userData.UserId ? userData.UserEmail : null,
         user_id: userData.UserEmail && userData.UserId ? userData.UserId : null,
-=======
-        email: userData.UserEmail,
-        user_id: userData.UserId,
->>>>>>> 543dad63abd2d8548d3a04cd830b952c7dfecb87
       },
       dispatch,
     )
