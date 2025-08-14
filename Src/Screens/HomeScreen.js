@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, View, Dimensions, Pressable, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, View, Dimensions, Pressable, Platform, ActivityIndicator } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './Tabs/Home';
 import Linktocompany from './Tabs/Linktocompany';
@@ -16,16 +16,74 @@ import LinkActive from '../../assets/tabicons/LinkActive';
 import LinkIcon from '../../assets/tabicons/LinkIcon';
 import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation';
 import MainProfileTab from './Profile/MainProfileTab';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { dynamicSize, horizontalScale } from '../Constants/sizeChoose';
 import DropShadow from 'react-native-drop-shadow';
+import { logger } from '../..';
+import { getMyDeviceId } from '../services/commonService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GetStaffUserData } from '../apirequest/PostRequestApi';
+import { UserDetail } from '../redux/actions/actions';
 
 const Tab = createBottomTabNavigator();
 const WIDTH = Dimensions.get('screen').width;
 
 const HomeScreen = ({ navigation, route }) => {
   const isDivisionSelected = useSelector((state) => state.First?.isDivisionSelected);
-  const vitality_member_id = useSelector(state => state.First?.UserDetails?.vitality_member_id);
+  const reduxVitalityId = useSelector((state) => state.First?.UserDetails?.vitality_member_id);
+
+  const [vitality_member_id, setIsVitalityMemberId] = useState(undefined);
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
+  // logger("reduxVitalityId132",reduxVitalityId)
+
+  // Runs when either `reduxVitalityId` changes OR when screen first mounts
+  useEffect(() => {
+    // setIsVitalityMemberId(reduxVitalityId);
+    // if (route?.params?.from === "Skip" && reduxVitalityId == undefined) {
+    if (reduxVitalityId == undefined) {
+      doGetData();
+    } else {
+      setIsVitalityMemberId(reduxVitalityId);
+    }
+  }, [reduxVitalityId]); // re-run when Redux value changes
+
+   const doGetData = async () => {
+    try {
+      setLoading(true); // show loader
+      // logger("result?.userData IN HOME SCREEN11")
+      const deviceId = getMyDeviceId();
+      let UserId = await AsyncStorage.getItem('UserId');
+      let Id = await JSON.parse(UserId);
+      let p = await AsyncStorage.getItem('Email');
+      let e = await JSON.parse(p);
+      var raw = {
+        device_id: deviceId,
+        email: e,
+        user_id: Id,
+      };
+      const message = "From HomeScreen"
+      const result = await GetStaffUserData(message, raw, dispatch);
+
+      if (result?.userData?.status !== 2) {
+        if (result?.userData?.vitality_member_id) {
+          setIsVitalityMemberId(result?.userData?.vitality_member_id);
+        } else {
+          setIsVitalityMemberId(undefined);
+        }
+        // await dispatch(UserDetail(result?.userData));
+        // setLoading(false);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      logger("❌ Error Get Staff User Data ❌", error)
+    } finally {
+      // setLoading(false); // hide loader
+    }
+  }
   
   return (
     <View style={{ flex: 1 }}>
@@ -33,6 +91,9 @@ const HomeScreen = ({ navigation, route }) => {
         initialRouteName={route.params.screen}
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
+            if (loading) {
+              return null;
+            }
             let iconName;
             if (route.name === 'Home') {
               iconName = focused ? <HomeActiveIcon isVitalityUser={vitality_member_id} /> : <HomeIcon isVitalityUser={vitality_member_id} />;
@@ -68,7 +129,7 @@ const HomeScreen = ({ navigation, route }) => {
             position: 'absolute',
             paddingTop: Platform.OS == 'ios' ? dynamicSize(25) : 'auto',
             paddingBottom:Platform.OS == 'ios' ? dynamicSize(20) :dynamicSize(30),
-            zIndex: 9999,
+            zIndex: loading ? 0 : 9999,
             elevation: 0,
           },
         }}>
@@ -121,7 +182,7 @@ const HomeScreen = ({ navigation, route }) => {
           }}
         />
       </Tab.Navigator>
-      <View
+      {!loading&&<View
         style={{
           position: 'absolute',
           alignSelf: 'flex-end',
@@ -144,8 +205,8 @@ const HomeScreen = ({ navigation, route }) => {
             source={require('../../assets/tabicons/Rectangle.png')}
           />
         </DropShadow>
-      </View>
-      <View
+      </View>}
+      {!loading&&<View
         style={{
         bottom: Platform.OS === 'android' ? horizontalScale(35) : horizontalScale(35),
         position: 'absolute',
@@ -162,7 +223,21 @@ const HomeScreen = ({ navigation, route }) => {
             source={require('../../assets/tabicons/logo.png')}
           />
         </Pressable>
-      </View>
+      </View>}
+
+      {loading && (
+        <View style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.3)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 99999,
+          elevation: 99999
+        }}>
+          <ActivityIndicator size="large" color="#9889F9" />
+        </View>
+      )}
     </View>
   );
 };
