@@ -20,6 +20,11 @@ import com.moodflo.SharedStoragePackager;
 import com.moodflo.CheckPackageInstallationPackage;
 import com.moodflo.nativemodules.sensormanager.SensorManagerPackage;
 import com.moodflo.nativemodules.usagestats.UsageStatsPackage;
+import android.content.BroadcastReceiver; 
+import android.content.Intent; 
+import android.content.IntentFilter;
+import android.os.Build;
+import javax.annotation.Nullable;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
@@ -69,6 +74,15 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
+
+  @Override
+  public Intent registerReceiver(@Nullable BroadcastReceiver receiver, IntentFilter filter) {
+    if (Build.VERSION.SDK_INT >= 34 && getApplicationInfo().targetSdkVersion >= 34) {
+      return super.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
+    } else {
+      return super.registerReceiver(receiver, filter);
+    }
+}
 
   /**
    * Loads Flipper in React Native templates. Call this in the onCreate method with something like

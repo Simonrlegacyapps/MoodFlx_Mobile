@@ -99,6 +99,7 @@
     "jest": "^26.6.3",
     "metro-react-native-babel-preset": "^0.72.3",
     "patch-package": "^8.0.0",
+    "postinstall-postinstall": "^2.1.0",
     "react-test-renderer": "18.1.0"
   },
   "resolutions": {

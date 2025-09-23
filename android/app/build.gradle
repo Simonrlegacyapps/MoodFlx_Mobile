@@ -80,7 +80,7 @@ import com.android.build.OutputFile
 
 project.ext.react = [
         entryFile: "index.js",
-        enableHermes: true,  // clean and rebuild if changing
+        enableHermes: false,  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -139,8 +139,8 @@ android {
         applicationId "com.moodflo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 103
-        versionName "1.6.15"
+        versionCode 104
+        versionName "1.6.16"
         multiDexEnabled true
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
@@ -303,6 +303,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-base:18.0.1'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation 'org.jetbrains:annotations:16.0.2'
 
         // implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
 
