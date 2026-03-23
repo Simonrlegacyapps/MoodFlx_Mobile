@@ -6,19 +6,15 @@ buildscript {
         minSdkVersion = 23
         compileSdkVersion = 34
         targetSdkVersion = 35
+        // Pin a modern NDK across all machines so native libraries can be rebuilt
+        // with Android's current flexible page-size support.
+        ndkVersion = "27.1.12297006"
         googlePlayServicesVersion = "+"
         googlePlayServicesAuthVersion = "16.0.1"
         firebaseMessagingVersion="21.1.0"
         androidMapsUtilsVersion="3.3.0"
         vectoricons = [iconFontNames: [ 'MaterialCommunityIcons.ttf' ]] // Name of the font files you want to copy
-        if (System.properties['os.arch'] == "aarch64") {
-            // For M1 Users we need to use the NDK 24 which added support for aarch64
-            ndkVersion = "24.0.8215888"
-        } else {
-            // Otherwise we default to the side-by-side NDK version from AGP.
-            ndkVersion = "21.4.7075529"
-        }
-        //kotlinVersion = "1.9.22" // or the latest version
+        // kotlinVersion = "1.8.0" // or the latest version
     }
     repositories {
         google()
@@ -31,7 +27,7 @@ buildscript {
         classpath("de.undercouch:gradle-download-task:5.0.1")
         classpath 'com.google.gms:google-services:4.3.10'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
-        //classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        // classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

@@ -80,7 +80,7 @@ import com.android.build.OutputFile
 
 project.ext.react = [
         entryFile: "index.js",
-        enableHermes: false,  // clean and rebuild if changing
+        enableHermes: true,  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -139,8 +139,8 @@ android {
         applicationId "com.moodflo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 104
-        versionName "1.6.16"
+        versionCode 106
+        versionName "1.6.18"
         multiDexEnabled true
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
@@ -152,7 +152,8 @@ android {
                         "-DREACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
                         "-DREACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
                         "-DNODE_MODULES_DIR=$rootDir/../node_modules",
-                        "-DANDROID_STL=c++_shared"
+                        "-DANDROID_STL=c++_shared",
+                        "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
                 }
             }
             if (!enableSeparateBuildPerCPUArchitecture) {
@@ -204,6 +205,9 @@ android {
         }
     }
     packagingOptions {
+         jniLibs {
+            useLegacyPackaging false
+        }
         exclude 'META-INF/*'
     }
     lint {

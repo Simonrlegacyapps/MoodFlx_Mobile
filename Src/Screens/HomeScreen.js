@@ -16,9 +16,8 @@ import LinkActive from '../../assets/tabicons/LinkActive';
 import LinkIcon from '../../assets/tabicons/LinkIcon';
 import LinkCompanyStackNavigation from '../navigator/LinkCompanyStackNavigation';
 import MainProfileTab from './Profile/MainProfileTab';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { dynamicSize, horizontalScale } from '../Constants/sizeChoose';
-import DropShadow from 'react-native-drop-shadow';
 import { logger } from '../..';
 import { getMyDeviceId } from '../services/commonService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -59,12 +58,14 @@ const HomeScreen = ({ navigation, route }) => {
       let Id = await JSON.parse(UserId);
       let p = await AsyncStorage.getItem('Email');
       let e = await JSON.parse(p);
-      var raw = {
+
+      const raw = {
         device_id: deviceId,
         email: e,
         user_id: Id,
       };
-      const message = "From HomeScreen"
+
+      const message = "From HomeScreen";
       const result = await GetStaffUserData(message, raw, dispatch);
 
       if (result?.userData?.status !== 2) {
@@ -182,63 +183,65 @@ const HomeScreen = ({ navigation, route }) => {
           }}
         />
       </Tab.Navigator>
-      {!loading&&<View
-        style={{
-          position: 'absolute',
-          alignSelf: 'flex-end',
-          justifyContent: 'flex-end',
-          bottom: 0,
-        }}>
-        <DropShadow
+
+      {!loading && (
+        <View
           style={{
+            position: 'absolute',
+            alignSelf: 'flex-end',
+            bottom: 0,
+
             shadowColor: '#000',
-            shadowOffset: {
-              width: 0,
-              height: 0,
-            },
+            shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.3,
             shadowRadius: 4.65,
+
+            elevation: 8,
           }}>
           <Image
-            resizeMode={'stretch'}
+            resizeMode="stretch"
             style={{ tintColor: 'white', height: dynamicSize(70), width: WIDTH }}
             source={require('../../assets/tabicons/Rectangle.png')}
           />
-        </DropShadow>
-      </View>}
-      {!loading&&<View
-        style={{
-        bottom: Platform.OS === 'android' ? horizontalScale(35) : horizontalScale(35),
-        position: 'absolute',
-        alignSelf: 'center',
-        zIndex: 100,
-      }}>
-        <Pressable
-          disabled={!isDivisionSelected}
-          onPress={() => navigation.replace('MoodEmotionDetector')}>
-          <Image
-            resizeMode={'contain'}
-            // activeOpacity={1}
-            style={{ width: 65, height: 65 }}
-            source={require('../../assets/tabicons/logo.png')}
-          />
-        </Pressable>
-      </View>}
+        </View>
+      )}
+
+      {!loading && (
+        <View
+          style={{
+            bottom: horizontalScale(35),
+            position: 'absolute',
+            alignSelf: 'center',
+            zIndex: 100,
+          }}>
+          <Pressable
+            disabled={!isDivisionSelected}
+            onPress={() => navigation.replace('MoodEmotionDetector')}>
+            <Image
+              resizeMode="contain"
+              style={{ width: 65, height: 65 }}
+              source={require('../../assets/tabicons/logo.png')}
+            />
+          </Pressable>
+        </View>
+      )}
 
       {loading && (
-        <View style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.3)',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 99999,
-          elevation: 99999
-        }}>
+        <View
+          style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 99999,
+            elevation: 99999,
+          }}>
           <ActivityIndicator size="large" color="#9889F9" />
         </View>
       )}
     </View>
+
   );
 };
 
