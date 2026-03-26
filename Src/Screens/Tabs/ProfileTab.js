@@ -85,12 +85,12 @@ const CONTACT_US = {
 }
 
 const bottomList = [
-  {
-    id: "2",
-    name: 'Terms & Conditions',
-    icon: <TermsIcon />,
-    link: TERMS_OF_USE_URL,
-  },
+  // {
+  //   id: "2",
+  //   name: 'Terms & Conditions',
+  //   icon: <TermsIcon />,
+  //   link: TERMS_OF_USE_URL,
+  // },
   {
     id: "3",
     name: 'Privacy Policy',
@@ -982,7 +982,7 @@ const ProfileTab = ({ navigation }) => {
                 </View>
               </View>
             </TouchableOpacity>
-            {
+            {/* {
               !UserData?.UserDetails?.vitality_member_id &&
               <TouchableOpacity
                 onPress={() => {
@@ -999,7 +999,7 @@ const ProfileTab = ({ navigation }) => {
                   </Text>
                 </View>
               </TouchableOpacity>
-            }
+            } */}
             {bottomList.map((item, idx) => (
               <TouchableOpacity
                 onPress={() => {
