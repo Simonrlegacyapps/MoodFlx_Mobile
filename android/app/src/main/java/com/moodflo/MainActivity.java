@@ -1,9 +1,32 @@
 package com.moodflo;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 
 public class MainActivity extends ReactActivity {
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    // Android 15+ (API 35) forces edge-to-edge for apps targeting SDK 35, so content is drawn
+    // behind the navigation bar and adjustResize no longer lifts it above the keyboard.
+    // Pad the bottom by the nav bar / keyboard height to restore the previous layout.
+    if (Build.VERSION.SDK_INT >= 35) {
+      View content = findViewById(android.R.id.content);
+      ViewCompat.setOnApplyWindowInsetsListener(content, (v, insets) -> {
+        Insets navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+        Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
+        v.setPadding(navBars.left, 0, navBars.right, Math.max(navBars.bottom, ime.bottom));
+        return insets;
+      });
+    }
+  }
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule
